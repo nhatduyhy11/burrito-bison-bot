@@ -53,3 +53,18 @@ class VisionTest(TestCase):
         match = self.vision.find_template('left-goalpost', screenshot, threshold=0.99)
         self.assertEqual(np.shape(match)[1], 1)
 
+    def test_detects_scale_on_new_screenshot(self):
+        screenshot = self.vision.get_image('tests/new_screens_1/ground-started.png')
+        detected_scale = self.vision.detect_scale(screenshot)
+        self.assertIsNotNone(detected_scale)
+        self.assertAlmostEqual(detected_scale, 0.82, places=2)
+
+    def test_finds_bison_head_on_scaled_screenshot(self):
+        screenshot = self.vision.get_image('tests/new_screens_1/ground-started.png')
+        detected_scale = self.vision.detect_scale(screenshot)
+        self.vision.set_scale(detected_scale)
+        match = self.vision.find_template('bison-head', screenshot, threshold=0.8)
+        self.assertGreaterEqual(np.shape(match)[1], 1)
+        self.vision.set_scale(1.0)
+
+

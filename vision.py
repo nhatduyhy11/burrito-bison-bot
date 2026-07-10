@@ -20,12 +20,64 @@ class Vision:
             'full-rocket': 'assets/full-rocket.png'
         }
 
-        self.templates = { k: cv2.imread(v, 0) for (k, v) in self.static_templates.items() }
+        self.scale = 1.0
+        self.templates = {}
+        self.set_scale(1.0)
 
         self.monitor = {'top': 0, 'left': 0, 'width': 1920, 'height': 1080}
         self.screen = mss()
 
         self.frame = None
+
+    def set_scale(self, scale):
+        if scale is None:
+            scale = 1.0
+        self.scale = scale
+        self.templates = {}
+        for k, v in self.static_templates.items():
+            original = cv2.imread(v, 0)
+            if original is not None:
+                if scale == 1.0:
+                    self.templates[k] = original
+                else:
+                    self.templates[k] = cv2.resize(original, (0,0), fx=scale, fy=scale)
+
+    def detect_scale(self, image=None):
+        """
+        Scans key templates across scales to determine the current game scaling factor.
+        """
+        if image is None:
+            if self.frame is None:
+                self.refresh_frame()
+            image = self.frame
+
+        best_scale = 1.0
+        best_val = 0.0
+        
+        candidates = ['bison-health-bar', 'next-button', 'tap-to-continue', 'cancel-button']
+        scales = np.linspace(0.5, 1.8, 66)
+        
+        for name in candidates:
+            original_path = self.static_templates[name]
+            template = cv2.imread(original_path, 0)
+            if template is None:
+                continue
+                
+            for scale in scales:
+                scaled_template = cv2.resize(template, (0,0), fx=scale, fy=scale)
+                if scaled_template.shape[1] > image.shape[1] or scaled_template.shape[0] > image.shape[0]:
+                    continue
+                res = cv2.matchTemplate(image, scaled_template, cv2.TM_CCOEFF_NORMED)
+                _, max_val, _, _ = cv2.minMaxLoc(res)
+                if max_val > best_val:
+                    best_val = max_val
+                    best_scale = scale
+            if best_val > 0.8:
+                break
+                
+        if best_val > 0.8:
+            return best_scale
+        return None
 
     def take_screenshot(self):
         sct_img = self.screen.grab(self.monitor)

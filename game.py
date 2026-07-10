@@ -7,10 +7,27 @@ class Game:
         self.vision = vision
         self.controller = controller
         self.state = 'not started'
+        self.scale_locked = False
+
+    def scale_val(self, val):
+        if hasattr(self.vision, 'scale') and self.vision.scale is not None:
+            return int(val * self.vision.scale)
+        return val
 
     def run(self):
         while True:
             self.vision.refresh_frame()
+            
+            # Dynamically auto-detect scale factor at runtime if not locked yet
+            if not self.scale_locked:
+                detected_scale = self.vision.detect_scale()
+                if detected_scale is not None:
+                    self.log(f"Auto-detected game scaling factor: {detected_scale:.3f}")
+                    self.vision.set_scale(detected_scale)
+                    self.scale_locked = True
+                else:
+                    self.log("Searching for game screen scale...")
+
             if self.state == 'not started' and self.round_starting('bison'):
                 self.log('Round needs to be started, launching bison')
                 self.launch_player()
@@ -54,7 +71,7 @@ class Game:
 
         self.controller.left_mouse_drag(
             (x, y),
-            (x-200, y+10)
+            (x - self.scale_val(200), y + self.scale_val(10))
         )
 
         time.sleep(0.5)
@@ -69,7 +86,7 @@ class Game:
         x = matches[1][0]
         y = matches[0][0]
 
-        self.controller.move_mouse(x+50, y+30)
+        self.controller.move_mouse(x + self.scale_val(50), y + self.scale_val(30))
         self.controller.left_mouse_click()
 
         time.sleep(0.5)
@@ -84,7 +101,7 @@ class Game:
         x = matches[1][0]
         y = matches[0][0]
 
-        self.controller.move_mouse(x+100, y+30)
+        self.controller.move_mouse(x + self.scale_val(100), y + self.scale_val(30))
         self.controller.left_mouse_click()
 
         time.sleep(0.5)
