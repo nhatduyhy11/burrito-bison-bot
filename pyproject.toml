@@ -1,0 +1,20 @@
+[project]
+name = "burrito-bison-bot"
+version = "0.1.0"
+description = "A template-matching bot that automates Burrito Bison: Launcha Libre using OpenCV"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "opencv-python",
+    "numpy",
+    "mss",
+    "pillow",
+    "pynput",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []

@@ -44,7 +44,7 @@ The bot should replicate standard player behavior to loop rounds efficiently:
 
 ## 4. User Experience (UX) Requirements
 
-*   **Single-Step Start**: The user should be able to launch the bot using a single command (e.g., `python run.py`) without having to align windows, set screen scaling, or configure coordinates.
+*   **Single-Step Start**: The user should be able to launch the bot using a single command (e.g., `python main.py`) without having to align windows, set screen scaling, or configure coordinates.
 *   **Cross-Platform Compatibility**: The bot must run seamlessly on **Windows, macOS, and Linux**. The design and implementation cannot rely on operating-system-specific features (such as the Windows Win32 API) that restrict execution to a single platform.
 *   **Resiliency**: The bot must recover if template matches are delayed, or if transient load times occur, without crashing or freezing.
 *   **Low System Impact**: Running the background browser and bot logic should not lag or drag down the system performance of the user's active foreground tasks.

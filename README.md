@@ -32,24 +32,54 @@ As it is right now, the bot can work semi-autonomously, requiring help to start 
 
 ## Requirements
 
-- Python 3
-- OpenCV
-- Numpy
-- Pynput
+- Python 3.9+
+- See [`pyproject.toml`](pyproject.toml) for the full list (OpenCV, NumPy, mss, Pillow, pynput).
 
 ## Installation
 
-- Clone this repository
-- Install opencv globally (see [these instructions](https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html))
-- Create a virtual environment using system packages: `virtualenv -p python3 --system-site-packages venv`
-- Use virtualenv with `source venv/bin/activate`
-- Install required packages: `pip install -r requirements.txt`
+Dependencies are declared once in `pyproject.toml`; both tools below read them from there.
+
+### Option A — `uv` (recommended)
+
+[`uv`](https://docs.astral.sh/uv/) creates the virtual environment and installs the exact locked versions in seconds:
+
+```bash
+uv sync
+```
+
+You don't need to activate anything — run commands through `uv run`, which uses `.venv` automatically:
+
+```bash
+uv run main.py
+```
+
+### Option B — `pip` (fallback)
+
+If you don't have `uv`, standard `pip` reads the same dependencies from `pyproject.toml`:
+
+```bash
+python -m venv venv
+# Windows (PowerShell/cmd): venv\Scripts\activate
+# macOS/Linux:              source venv/bin/activate
+pip install .
+```
+
+Then run with:
+
+```bash
+python main.py
+```
+
+### Notes
+
+- OpenCV comes from the [`opencv-python`](https://pypi.org/project/opencv-python/) wheel, which ships prebuilt binaries for Windows, macOS and Linux. No global install or source build is required.
+- Earlier versions of this README installed OpenCV system-wide and used `virtualenv --system-site-packages`. That is no longer needed — all dependencies live inside the virtual environment.
 
 ## Running the bot
 
-1) Run a resized version of Burrito Bison in your browser with `cd website && python -m SimpleHTTPServer 8080`
+1) Run a resized version of Burrito Bison in your browser with `cd website && python -m http.server 8080`
 2) Open up `http://localhost:8080` in your browser
-3) Run the bot with `python run.py`
+3) Run the bot with `uv run main.py` (or `python main.py` if you used the pip flow)
 4) Switch to the browser and ensure that the game screen is fully visible on your screen in the top left corner.
 5) Go through the interfaces manually and put the game into a state where you would launch the bison from the Ring. The bot should pick it up and launch the hero from there.
 

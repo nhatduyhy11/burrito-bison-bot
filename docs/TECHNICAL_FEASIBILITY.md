@@ -9,7 +9,7 @@ This document addresses the feasibility of running browser game automation in th
 > **Core Objective**: Automate a browser-based game in a background window without losing physical mouse control or requiring the browser to remain in focus.
 > 
 > *   **Q1**: Is it possible to automate a browser game without losing mouse control?
-> *   **Q2**: Is the current template-matching and global mouse-simulation ([pynput](file:///D:/myData/teemp/burrito-bison-bot/requirements.txt#L6)) approach still suitable, or is it outdated?
+> *   **Q2**: Is the current template-matching and global mouse-simulation ([pynput](pyproject.toml)) approach still suitable, or is it outdated?
 > *   **Q3**: What are the best alternative architectures and tools to achieve non-intrusive background game automation?
 
 ---
@@ -23,8 +23,8 @@ By separating the automation interactions from the operating system's physical m
 ### Q2: Is the current approach good enough?
 **No, the current approach is highly restrictive and outdated.**
 The project relies on:
-1.  **[mss](file:///D:/myData/teemp/burrito-bison-bot/requirements.txt#L3)**: Grabs screenshots of the primary monitor.
-2.  **[pynput](file:///D:/myData/teemp/burrito-bison-bot/requirements.txt#L6)**: Sends global, OS-level mouse movements and click events.
+1.  **[mss](pyproject.toml)**: Grabs screenshots of the primary monitor.
+2.  **[pynput](pyproject.toml)**: Sends global, OS-level mouse movements and click events.
 
 #### Why the current approach fails modern usability standards:
 *   **Mouse Hijacking**: The simulated mouse events move your actual physical pointer. If you move your mouse, you disrupt the bot, and vice versa.

@@ -12,7 +12,7 @@ The `burrito-bison-bot` is a Python-based computer vision bot designed to automa
 
 ```mermaid
 graph TD
-    Run[run.py] --> Game[game.py]
+    Main[main.py] --> Game[game.py]
     Game --> Vision[vision.py]
     Game --> Controller[controller.py]
     Vision --> Screen[Screen Capture / mss]
@@ -20,7 +20,7 @@ graph TD
     Controller --> Mouse[Mouse Controls / pynput]
 ```
 
-*   **[run.py](file:///D:/myData/teemp/burrito-bison-bot/run.py)**: The main entry point. Instantiates dependencies and runs the bot loop.
+*   **[main.py](main.py)**: The main entry point. Instantiates dependencies and runs the bot loop.
 *   **[game.py](file:///D:/myData/teemp/burrito-bison-bot/game.py)**: Implements the main state machine (`not started`, `started`, `mission_finished`) and game flow logic.
 *   **[vision.py](file:///D:/myData/teemp/burrito-bison-bot/vision.py)**: Coordinates screen captures and uses OpenCV's template matching to locate game UI components.
 *   **[controller.py](file:///D:/myData/teemp/burrito-bison-bot/controller.py)**: Handles mouse gestures, clicks, and dragging to interact with the game.
@@ -42,8 +42,9 @@ burrito-bison-bot/
 │   └── index.html             # HTML wrapper embedding the game in an iframe
 ├── controller.py              # Mouse input controller
 ├── game.py                    # Core game loop and state machine
-├── requirements.txt           # Project dependencies
-├── run.py                     # Entry point script
+├── pyproject.toml             # Project metadata and dependencies
+├── uv.lock                    # Locked dependency versions
+├── main.py                     # Entry point script
 └── vision.py                  # Computer vision and template matching module
 ```
 
