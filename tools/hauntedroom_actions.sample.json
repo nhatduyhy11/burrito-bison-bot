@@ -1,0 +1,18 @@
+[
+  { "type": "click", "x": 330, "y": 570, "note": "Start HOME" },
+  { "type": "wait", "ms": 1500, "note": "" },
+  { "type": "click", "x": 325, "y": 680, "note": "Start Battle" },
+  { "type": "wait", "ms": 30000, "note": "Load battle and wait bed" },
+  { "type": "click", "x": 145, "y": 150, "note": "Exit click" },
+  { "type": "wait", "ms": 1000, "note": "" },
+  { "type": "click", "x": 240, "y": 640, "note": "Exit confirm" },
+  { "type": "wait", "ms": 1000, "note": "" },
+  { "type": "click", "x": 310, "y": 590, "note": "Exit Back" },
+  { "type": "wait", "ms": 1000, "note": "" },
+  { "type": "click", "x": 453, "y": 66, "note": "Exit upgrade" },
+  { "type": "wait", "ms": 800, "note": "" },
+  { "type": "click", "x": 453, "y": 66, "note": "Exit Lv Up" },
+  { "type": "wait", "ms": 800, "note": "" },
+  { "type": "click", "x": 453, "y": 66, "note": "Exit Lubu" },
+  { "type": "wait", "ms": 800, "note": "" }
+]

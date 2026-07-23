@@ -10,6 +10,7 @@ dependencies = [
     "mss",
     "pillow",
     "pynput",
+    "playwright>=1.60.0",
 ]
 
 [build-system]
