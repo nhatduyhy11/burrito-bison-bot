@@ -1,6 +1,6 @@
 # Haunted Room Runner
 
-Runner Playwright đơn giản để tự động click và chờ trong Haunted Room. Script dùng browser context của Playwright, không điều khiển chuột ở cấp hệ điều hành.
+Runner Playwright dùng OpenCV template matching để tìm và click các nút trong Haunted Room. Script dùng browser context của Playwright, không điều khiển chuột ở cấp hệ điều hành.
 
 ## Yêu cầu
 
@@ -56,17 +56,28 @@ uv run python tools/hauntedroom_runner.py --help
 
 File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom_common.py`. Khi `ACTION_LOOP_COUNT = 0`, runner chỉ mở trang game, không đọc/chạy action và chờ cho tới khi nhấn `Ctrl+C`.
 
-Hai action hiện được hỗ trợ:
+Ba action hiện được hỗ trợ. Flow mặc định chỉ cần chuỗi `click_template`:
 
 ```json
 [
-  { "type": "click", "x": 330, "y": 570, "button": "left", "note": "Start" },
-  { "type": "wait", "ms": 1500, "note": "Wait for screen" }
+  { "type": "click_template", "template": "rooms/start_home.png", "note": "Start HOME" },
+  { "type": "click_template", "template": "rooms/start_battle.png", "note": "Start Battle" }
 ]
 ```
 
+- `click_template`: chụp viewport và dùng OpenCV tìm template liên tục. Khi score đạt threshold, runner chờ `delay_ms` rồi click tâm template.
 - `click`: bắt buộc có `x`, `y`; `button` và `note` là tùy chọn.
 - `wait`: bắt buộc có `ms`; `note` là tùy chọn.
+
+Đường dẫn `template` được tính tương đối từ file action JSON. Các tùy chọn của `click_template`:
+
+- `threshold`: mặc định `0.9`.
+- `timeout_ms`: thời gian tối đa chờ ảnh, mặc định `30000`.
+- `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `150`.
+- `delay_ms`: thời gian chờ sau khi detect trước khi click, mặc định `500`.
+- `button`: mặc định `left`.
+
+Không có thời gian load cố định trước flow. Template đầu tiên đóng vai trò điều kiện báo game đã load.
 
 File mặc định là `tools/hauntedroom_actions.sample.json`.
 
@@ -94,6 +105,6 @@ Xóa profile sẽ reset session và có thể làm game quay lại luồng guest
 
 ## Giới hạn hiện tại
 
-- Chỉ hỗ trợ click theo tọa độ và wait.
-- Chưa có screenshot action, template matching hoặc image recognition.
-- Viewport cần được giữ cố định để tọa độ click không bị lệch.
+- Template matching dùng đúng kích thước ảnh, chưa có multi-scale matching.
+- Viewport nên được giữ cố định ở kích thước dùng khi chụp template.
+- Khi hết `timeout_ms`, runner dừng và log best score thay vì click sai vị trí.
