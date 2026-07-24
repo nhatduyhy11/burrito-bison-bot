@@ -129,7 +129,8 @@ Xóa profile sẽ reset session và có thể làm game quay lại luồng guest
 
 ## Giới hạn hiện tại
 
-- Template matching dùng đúng kích thước ảnh, chưa có multi-scale matching.
+- Template matching thử hai scale cố định `1.0` và `0.67`, sau đó dùng kết quả có score cao hơn.
 - Viewport nên được giữ cố định ở kích thước dùng khi chụp template.
-- Khi hết `timeout_ms`, runner dừng và log best score thay vì click sai vị trí.
-- Trước khi dừng vì timeout, runner lưu screenshot cuối vào `.tmp/hauntedroom-timeouts/` và in đường dẫn file trong terminal.
+- Khi hết `timeout_ms` lần đầu, runner ghi `timeout count=1/2`, bỏ phần action còn lại của loop hiện tại và thử lại từ đầu ở loop kế tiếp.
+- Hai loop timeout liên tiếp sẽ dừng runner. Một loop hoàn tất không timeout sẽ reset bộ đếm về `0`.
+- Mỗi lần timeout, runner lưu screenshot cuối vào `.tmp/hauntedroom-timeouts/` và in đường dẫn file trong terminal.

@@ -272,9 +272,11 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
             template_paths.update(action["_blocker_paths"])
             template_paths.add(action["_until_template_path"])
     templates = {path: load_template(path) for path in template_paths}
+    timeout_count = 0
 
     for loop_index in range(1, loop_count + 1):
         print(f"loop {loop_index}/{loop_count} start", flush=True)
+        loop_timed_out = False
 
         for action_index, action in enumerate(actions, start=1):
             kind = action["type"]
@@ -294,18 +296,35 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                 note = action.get("note")
                 note_suffix = f" ({note})" if note else ""
                 label = f"{loop_index}.{action_index}{note_suffix}"
-                await clear_blockers(
-                    page,
-                    action["_blocker_paths"],
-                    action["_until_template_path"],
-                    templates,
-                    float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD)),
-                    int(action.get("timeout_ms", DEFAULT_TEMPLATE_TIMEOUT_MS)),
-                    int(action.get("poll_ms", DEFAULT_TEMPLATE_POLL_MS)),
-                    int(action.get("delay_ms", DEFAULT_CLICK_DELAY_MS)),
-                    action.get("click_positions", {}),
-                    label,
-                )
+                try:
+                    await clear_blockers(
+                        page,
+                        action["_blocker_paths"],
+                        action["_until_template_path"],
+                        templates,
+                        float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD)),
+                        int(action.get("timeout_ms", DEFAULT_TEMPLATE_TIMEOUT_MS)),
+                        int(action.get("poll_ms", DEFAULT_TEMPLATE_POLL_MS)),
+                        int(action.get("delay_ms", DEFAULT_CLICK_DELAY_MS)),
+                        action.get("click_positions", {}),
+                        label,
+                    )
+                except TimeoutError as error:
+                    timeout_count += 1
+                    print(
+                        f"{label}: timeout count={timeout_count}/2: {error}",
+                        flush=True,
+                    )
+                    if timeout_count >= 2:
+                        print("Second timeout; stopping runner.", flush=True)
+                        raise
+                    print(
+                        f"Skipping the rest of loop {loop_index}/{loop_count}; "
+                        "retrying from the first action on the next loop.",
+                        flush=True,
+                    )
+                    loop_timed_out = True
+                    break
                 continue
 
             if kind == "click_template":
@@ -328,14 +347,32 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                     f"{template_path.name}{note_suffix}",
                     flush=True,
                 )
-                x, y, score = await wait_for_template(
-                    page,
-                    templates[template_path],
-                    template_path.name,
-                    threshold,
-                    timeout_ms,
-                    poll_ms,
-                )
+                try:
+                    x, y, score = await wait_for_template(
+                        page,
+                        templates[template_path],
+                        template_path.name,
+                        threshold,
+                        timeout_ms,
+                        poll_ms,
+                    )
+                except TimeoutError as error:
+                    timeout_count += 1
+                    print(
+                        f"{loop_index}.{action_index}{note_suffix}: "
+                        f"timeout count={timeout_count}/2: {error}",
+                        flush=True,
+                    )
+                    if timeout_count >= 2:
+                        print("Second timeout; stopping runner.", flush=True)
+                        raise
+                    print(
+                        f"Skipping the rest of loop {loop_index}/{loop_count}; "
+                        "retrying from the first action on the next loop.",
+                        flush=True,
+                    )
+                    loop_timed_out = True
+                    break
                 print(
                     f"{loop_index}.{action_index}: detected "
                     f"{template_path.name} at {x},{y}, score={score:.3f}; "
@@ -354,6 +391,17 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
             note = action.get("note")
             note_suffix = f" ({note})" if note else ""
             await wait_with_countdown(page, ms, f"{loop_index}.{action_index}{note_suffix}")
+
+        if loop_timed_out:
+            continue
+
+        if timeout_count:
+            print(
+                f"loop {loop_index}/{loop_count} completed successfully; "
+                "resetting timeout count to 0.",
+                flush=True,
+            )
+            timeout_count = 0
 
         print(f"loop {loop_index}/{loop_count} finish", flush=True)
 

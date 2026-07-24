@@ -5,6 +5,7 @@ import numpy as np
 
 
 DEFAULT_TEMPLATE_THRESHOLD = 0.9
+TEMPLATE_SCALES = (1.0, 0.67)
 
 
 def validate_threshold(action: dict, index: int) -> None:
@@ -38,15 +39,42 @@ def find_template(
     click_position: str = "center",
 ) -> tuple[int, int, float]:
     screenshot_height, screenshot_width = screenshot.shape
-    template_height, template_width = template.shape
-    if template_width > screenshot_width or template_height > screenshot_height:
+    best_match = None
+
+    for scale in TEMPLATE_SCALES:
+        if scale == 1.0:
+            scaled_template = template
+        else:
+            scaled_template = cv2.resize(
+                template,
+                None,
+                fx=scale,
+                fy=scale,
+                interpolation=cv2.INTER_AREA,
+            )
+
+        template_height, template_width = scaled_template.shape
+        if template_width > screenshot_width or template_height > screenshot_height:
+            continue
+
+        result = cv2.matchTemplate(
+            screenshot,
+            scaled_template,
+            cv2.TM_CCOEFF_NORMED,
+        )
+        _, score, _, top_left = cv2.minMaxLoc(result)
+        if best_match is None or score > best_match[0]:
+            best_match = (score, top_left, template_width, template_height)
+
+    if best_match is None:
+        template_height, template_width = template.shape
         raise ValueError(
             f"Template {template_name!r} is {template_width}x{template_height}, "
-            f"larger than screenshot {screenshot_width}x{screenshot_height}."
+            f"larger than screenshot {screenshot_width}x{screenshot_height} "
+            f"at all configured scales."
         )
 
-    result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
-    _, score, _, top_left = cv2.minMaxLoc(result)
+    score, top_left, template_width, template_height = best_match
     center_x = top_left[0] + template_width // 2
     if click_position == "top_middle":
         click_y = top_left[1] + min(1, template_height - 1)
