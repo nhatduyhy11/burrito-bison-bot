@@ -42,3 +42,17 @@ class FindTemplateScaleTest(TestCase):
 
         self.assertEqual((x, y), (70 + width // 2, 20 + height // 2))
         self.assertAlmostEqual(score, 1.0, places=5)
+
+    def test_uses_bottom_left_click_position(self):
+        screenshot = np.zeros((100, 120), dtype=np.uint8)
+        screenshot[40:70, 50:80] = self.template
+
+        x, y, score = find_template(
+            screenshot,
+            self.template,
+            "test.png",
+            "bottom_left",
+        )
+
+        self.assertEqual((x, y), (51, 68))
+        self.assertAlmostEqual(score, 1.0, places=5)

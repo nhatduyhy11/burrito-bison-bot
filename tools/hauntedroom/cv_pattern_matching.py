@@ -37,11 +37,12 @@ def find_template(
     template: np.ndarray,
     template_name: str,
     click_position: str = "center",
+    scales: tuple[float, ...] = TEMPLATE_SCALES,
 ) -> tuple[int, int, float]:
     screenshot_height, screenshot_width = screenshot.shape
     best_match = None
 
-    for scale in TEMPLATE_SCALES:
+    for scale in scales:
         if scale == 1.0:
             scaled_template = template
         else:
@@ -76,6 +77,10 @@ def find_template(
 
     score, top_left, template_width, template_height = best_match
     center_x = top_left[0] + template_width // 2
+    if click_position == "bottom_left":
+        click_x = top_left[0] + min(1, template_width - 1)
+        click_y = top_left[1] + max(template_height - 2, 0)
+        return click_x, click_y, score
     if click_position == "top_middle":
         click_y = top_left[1] + min(1, template_height - 1)
     else:

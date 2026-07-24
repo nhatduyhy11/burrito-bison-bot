@@ -1,6 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
+from typing import Optional, Tuple
 
 import numpy as np
 from playwright.async_api import async_playwright
@@ -16,16 +17,18 @@ from hauntedroom.common import (
     ACTION_LOOP_COUNT,
     prepare_runner,
     save_timeout_screenshot,
+    start_hotkey_listener,
     start_user_click_logger,
     wait_for_ctrl_c,
     wait_with_countdown,
 )
+from hauntedroom.custom_macro import run_research_flow
 
 
 DEFAULT_TEMPLATE_TIMEOUT_MS = 30_000
 DEFAULT_TEMPLATE_POLL_MS = 400
 DEFAULT_CLICK_DELAY_MS = 400
-SUPPORTED_CLICK_POSITIONS = {"center", "top_middle"}
+SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "top_middle"}
 
 
 def validate_timing_fields(action: dict, index: int) -> None:
@@ -157,12 +160,15 @@ async def wait_for_template(
     threshold: float,
     timeout_ms: int,
     poll_ms: int,
-) -> tuple[int, int, float]:
+    stop_event: Optional[asyncio.Event] = None,
+) -> Optional[Tuple[int, int, float]]:
     loop = asyncio.get_running_loop()
     deadline = loop.time() + timeout_ms / 1000
     best_score = -1.0
 
     while True:
+        if stop_event is not None and stop_event.is_set():
+            return None
         screenshot = await capture_page_grayscale(page)
         center_x, center_y, score = find_template(
             screenshot,
@@ -199,12 +205,15 @@ async def clear_blockers(
     delay_ms: int,
     click_positions: dict[str, str],
     label: str,
-) -> None:
+    stop_event: Optional[asyncio.Event] = None,
+) -> bool:
     loop = asyncio.get_running_loop()
     deadline = loop.time() + timeout_ms / 1000
     best_until_score = -1.0
 
     while True:
+        if stop_event is not None and stop_event.is_set():
+            return False
         screenshot = await capture_page_grayscale(page)
 
         blocker_match = None
@@ -227,6 +236,8 @@ async def clear_blockers(
                 flush=True,
             )
             await page.wait_for_timeout(delay_ms)
+            if stop_event is not None and stop_event.is_set():
+                return False
             await page.evaluate(
                 "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
             )
@@ -247,7 +258,7 @@ async def clear_blockers(
                 f"(score={until_score:.3f})",
                 flush=True,
             )
-            return
+            return True
 
         if loop.time() >= deadline:
             screenshot_path = await save_timeout_screenshot(page, label)
@@ -263,7 +274,12 @@ async def clear_blockers(
         await page.wait_for_timeout(poll_ms)
 
 
-async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_COUNT) -> None:
+async def run_actions(
+    page,
+    actions: list[dict],
+    loop_count: Optional[int] = ACTION_LOOP_COUNT,
+    stop_event: Optional[asyncio.Event] = None,
+) -> bool:
     template_paths: set[Path] = set()
     for action in actions:
         if action["type"] == "click_template":
@@ -274,11 +290,20 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
     templates = {path: load_template(path) for path in template_paths}
     timeout_count = 0
 
-    for loop_index in range(1, loop_count + 1):
-        print(f"loop {loop_index}/{loop_count} start", flush=True)
+    loop_index = 0
+    while loop_count is None or loop_index < loop_count:
+        if stop_event is not None and stop_event.is_set():
+            print("Flow stopped; runner is idle.", flush=True)
+            return False
+        loop_index += 1
+        loop_total = "infinite" if loop_count is None else str(loop_count)
+        print(f"loop {loop_index}/{loop_total} start", flush=True)
         loop_timed_out = False
 
         for action_index, action in enumerate(actions, start=1):
+            if stop_event is not None and stop_event.is_set():
+                print("Flow stopped; runner is idle.", flush=True)
+                return False
             kind = action["type"]
 
             if kind == "click":
@@ -297,7 +322,7 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                 note_suffix = f" ({note})" if note else ""
                 label = f"{loop_index}.{action_index}{note_suffix}"
                 try:
-                    await clear_blockers(
+                    completed = await clear_blockers(
                         page,
                         action["_blocker_paths"],
                         action["_until_template_path"],
@@ -308,6 +333,7 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                         int(action.get("delay_ms", DEFAULT_CLICK_DELAY_MS)),
                         action.get("click_positions", {}),
                         label,
+                        stop_event,
                     )
                 except TimeoutError as error:
                     timeout_count += 1
@@ -319,12 +345,15 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                         print("Second timeout; stopping runner.", flush=True)
                         raise
                     print(
-                        f"Skipping the rest of loop {loop_index}/{loop_count}; "
+                        f"Skipping the rest of loop {loop_index}/{loop_total}; "
                         "retrying from the first action on the next loop.",
                         flush=True,
                     )
                     loop_timed_out = True
                     break
+                if not completed:
+                    print("Flow stopped; runner is idle.", flush=True)
+                    return False
                 continue
 
             if kind == "click_template":
@@ -348,13 +377,14 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                     flush=True,
                 )
                 try:
-                    x, y, score = await wait_for_template(
+                    match = await wait_for_template(
                         page,
                         templates[template_path],
                         template_path.name,
                         threshold,
                         timeout_ms,
                         poll_ms,
+                        stop_event,
                     )
                 except TimeoutError as error:
                     timeout_count += 1
@@ -367,12 +397,16 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                         print("Second timeout; stopping runner.", flush=True)
                         raise
                     print(
-                        f"Skipping the rest of loop {loop_index}/{loop_count}; "
+                        f"Skipping the rest of loop {loop_index}/{loop_total}; "
                         "retrying from the first action on the next loop.",
                         flush=True,
                     )
                     loop_timed_out = True
                     break
+                if match is None:
+                    print("Flow stopped; runner is idle.", flush=True)
+                    return False
+                x, y, score = match
                 print(
                     f"{loop_index}.{action_index}: detected "
                     f"{template_path.name} at {x},{y}, score={score:.3f}; "
@@ -381,6 +415,9 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                 )
                 for _ in range(click_count):
                     await page.wait_for_timeout(delay_ms)
+                    if stop_event is not None and stop_event.is_set():
+                        print("Flow stopped; runner is idle.", flush=True)
+                        return False
                     await page.evaluate(
                         "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
                     )
@@ -390,20 +427,101 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
             ms = int(action["ms"])
             note = action.get("note")
             note_suffix = f" ({note})" if note else ""
-            await wait_with_countdown(page, ms, f"{loop_index}.{action_index}{note_suffix}")
+            completed = await wait_with_countdown(
+                page,
+                ms,
+                f"{loop_index}.{action_index}{note_suffix}",
+                stop_event,
+            )
+            if not completed:
+                print("Flow stopped; runner is idle.", flush=True)
+                return False
 
         if loop_timed_out:
             continue
 
         if timeout_count:
             print(
-                f"loop {loop_index}/{loop_count} completed successfully; "
+                f"loop {loop_index}/{loop_total} completed successfully; "
                 "resetting timeout count to 0.",
                 flush=True,
             )
             timeout_count = 0
 
-        print(f"loop {loop_index}/{loop_count} finish", flush=True)
+        print(f"loop {loop_index}/{loop_total} finish", flush=True)
+
+    return True
+
+
+async def run_standby_controller(page, actions: list[dict]) -> None:
+    command_queue: asyncio.Queue[str] = asyncio.Queue()
+    await start_hotkey_listener(page, command_queue)
+
+    flow_task = None
+    stop_event = None
+    command_names = {"1": "enter-exit room", "9": "research"}
+    print(
+        "Runner idle. Shift+1: enter-exit room; Shift+9: research; "
+        "Shift+0: stop current flow; Ctrl+C in terminal: close runner.",
+        flush=True,
+    )
+
+    command_task = asyncio.create_task(command_queue.get())
+    try:
+        while True:
+            wait_for = {command_task}
+            if flow_task is not None:
+                wait_for.add(flow_task)
+
+            done, _ = await asyncio.wait(wait_for, return_when=asyncio.FIRST_COMPLETED)
+
+            if flow_task is not None and flow_task in done:
+                try:
+                    flow_task.result()
+                except Exception as error:
+                    print(f"Flow failed; runner is idle: {error}", flush=True)
+                flow_task = None
+                stop_event = None
+                print("Runner idle.", flush=True)
+
+            if command_task not in done:
+                continue
+
+            command = command_task.result()
+            command_task = asyncio.create_task(command_queue.get())
+            if command == "0":
+                if flow_task is None:
+                    print("Runner is already idle.", flush=True)
+                else:
+                    print("Stopping current flow...", flush=True)
+                    stop_event.set()
+                continue
+
+            if command not in command_names:
+                print(f"Shift+{command}: no flow configured.", flush=True)
+                continue
+
+            if flow_task is not None:
+                print(
+                    f"Runner busy; press Shift+0 before starting Shift+{command}.",
+                    flush=True,
+                )
+                continue
+
+            stop_event = asyncio.Event()
+            print(f"Starting {command_names[command]} flow...", flush=True)
+            if command == "1":
+                flow_task = asyncio.create_task(
+                    run_actions(page, actions, loop_count=None, stop_event=stop_event)
+                )
+            else:
+                flow_task = asyncio.create_task(run_research_flow(page, stop_event))
+    finally:
+        command_task.cancel()
+        await asyncio.gather(command_task, return_exceptions=True)
+        if flow_task is not None:
+            stop_event.set()
+            await asyncio.gather(flow_task, return_exceptions=True)
 
 
 async def main() -> None:
@@ -427,10 +545,7 @@ async def main() -> None:
             await start_user_click_logger(page)
 
             if ACTION_LOOP_COUNT == 0:
-                await wait_for_ctrl_c(
-                    page,
-                    "ACTION_LOOP_COUNT is 0; no actions will run. Press Ctrl+C to exit.",
-                )
+                await run_standby_controller(page, actions)
             else:
                 await run_actions(page, actions)
                 if args.keep_open:

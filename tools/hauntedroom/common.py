@@ -11,13 +11,42 @@ DEFAULT_VIEWPORT_WIDTH = 640
 DEFAULT_VIEWPORT_HEIGHT = 720
 DEFAULT_BROWSER = "chrome"
 
-ACTION_LOOP_COUNT = 100
+ACTION_LOOP_COUNT = 0
 
 LOAD_WAIT_MS = 16000
 COUNTDOWN_WAIT_THRESHOLD_MS = 10000
 
 DEFAULT_PROFILE_DIR = Path(".tmp/hauntedroom-profile")
 TIMEOUT_SCREENSHOT_DIR = Path(".tmp/hauntedroom-timeouts")
+HOTKEY_SCRIPT = """
+() => {
+    if (window.__hauntedRoomHotkeysInstalled) {
+        return;
+    }
+
+    window.__hauntedRoomHotkeysInstalled = true;
+    window.addEventListener(
+        "keydown",
+        (event) => {
+            if (
+                !event.shiftKey ||
+                event.ctrlKey ||
+                event.altKey ||
+                event.metaKey ||
+                event.repeat ||
+                !/^Digit(?:[0-7]|9)$/.test(event.code)
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            window.sendHauntedRoomCommand(event.code.slice(-1));
+        },
+        true
+    );
+}
+"""
 
 
 def prepare_runner(
@@ -62,7 +91,8 @@ def prepare_runner(
     )
     args = parser.parse_args()
 
-    actions = [] if ACTION_LOOP_COUNT == 0 else action_loader(Path(args.actions))
+    # Standby mode still needs the actions so a hotkey can start the flow later.
+    actions = action_loader(Path(args.actions))
     profile_dir = Path(args.profile)
     profile_dir.mkdir(parents=True, exist_ok=True)
     return args, actions, profile_dir
@@ -92,19 +122,38 @@ async def save_timeout_screenshot(page, label: str) -> Optional[Path]:
     return resolved_path
 
 
-async def wait_with_countdown(page, ms: int, label: str) -> None:
+async def wait_with_countdown(
+    page,
+    ms: int,
+    label: str,
+    stop_event: Optional[asyncio.Event] = None,
+) -> bool:
     if ms <= COUNTDOWN_WAIT_THRESHOLD_MS:
         print(f"{label}: wait {ms}ms")
-        await page.wait_for_timeout(ms)
-        return
-
     remaining_ms = ms
     while remaining_ms > 0:
-        remaining_seconds = (remaining_ms + 999) // 1000
-        print(f"{label}: wait {remaining_seconds}s remaining")
-        step_ms = min(1000, remaining_ms)
+        if stop_event is not None and stop_event.is_set():
+            return False
+        if ms > COUNTDOWN_WAIT_THRESHOLD_MS:
+            remaining_seconds = (remaining_ms + 999) // 1000
+            print(f"{label}: wait {remaining_seconds}s remaining")
+        step_ms = min(250, remaining_ms)
         await page.wait_for_timeout(step_ms)
         remaining_ms -= step_ms
+    return stop_event is None or not stop_event.is_set()
+
+
+async def start_hotkey_listener(
+    page,
+    command_queue: asyncio.Queue[str],
+) -> None:
+    async def send_command(source, command: str) -> None:
+        command_queue.put_nowait(command)
+
+    await page.expose_binding("sendHauntedRoomCommand", send_command)
+    await page.add_init_script(HOTKEY_SCRIPT)
+    for frame in page.frames:
+        await frame.evaluate(HOTKEY_SCRIPT)
 
 
 async def start_user_click_logger(page) -> None:

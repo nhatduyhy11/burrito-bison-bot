@@ -18,13 +18,13 @@ Khi cần thêm Playwright vào một project `uv` mới, lệnh tương đươn
 
 ## Lệnh chạy
 
-Chạy action mặc định rồi tự đóng browser khi hoàn tất:
+Mở runner với action mặc định. Với `ACTION_LOOP_COUNT = 0`, runner vào chế độ standby:
 
 ```shell
 uv run python tools/hauntedroom_runner.py
 ```
 
-Giữ browser mở sau khi chạy xong:
+Khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`, giữ browser mở sau khi chạy xong:
 
 ```shell
 uv run python tools/hauntedroom_runner.py --keep-open
@@ -54,7 +54,17 @@ uv run python tools/hauntedroom_runner.py --help
 
 ## Action file
 
-File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/common.py`. Khi `ACTION_LOOP_COUNT = 0`, runner chỉ mở trang game, không đọc/chạy action và chờ cho tới khi nhấn `Ctrl+C`.
+File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/common.py`.
+
+Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
+
+- `Shift+1`: chạy flow enter-exit room liên tục.
+- `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 400 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
+- `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
+- `Shift+2` đến `Shift+7`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
+- `Ctrl+C` trong terminal: đóng runner và browser.
+
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit7`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`.
 
 Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các checkpoint có thể xuất hiện popup:
 
