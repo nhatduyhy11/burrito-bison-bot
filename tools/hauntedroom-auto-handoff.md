@@ -7,7 +7,8 @@ The click/wait automation runner is implemented and documented in `tools/haunted
 Current implementation files:
 
 - `tools/hauntedroom_runner.py`
-- `tools/hauntedroom_common.py`
+- `tools/hauntedroom/common.py`
+- `tools/hauntedroom/cv_pattern_matching.py`
 - `tools/hauntedroom_actions.sample.json`
 
 The runner uses Playwright browser channels rather than hardcoded executable paths. Installed Chrome is the default, and `channel="chrome"` was verified successfully on Windows with Chrome `150.0.7871.115`.

@@ -54,7 +54,7 @@ uv run python tools/hauntedroom_runner.py --help
 
 ## Action file
 
-File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom_common.py`. Khi `ACTION_LOOP_COUNT = 0`, runner chỉ mở trang game, không đọc/chạy action và chờ cho tới khi nhấn `Ctrl+C`.
+File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/common.py`. Khi `ACTION_LOOP_COUNT = 0`, runner chỉ mở trang game, không đọc/chạy action và chờ cho tới khi nhấn `Ctrl+C`.
 
 Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các checkpoint có thể xuất hiện popup:
 
@@ -67,7 +67,7 @@ Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các 
 ```
 
 - `click_template`: chụp viewport và dùng OpenCV tìm template liên tục. Khi score đạt threshold, runner chờ `delay_ms` rồi click tâm template.
-- `clear_blockers`: match tất cả file PNG trong `templates_dir` trên cùng một screenshot. Nếu thấy blocker, runner click blocker có score cao nhất rồi quét tiếp. Khi thấy `until_template` và không còn blocker, runner chuyển sang action kế tiếp mà không click `until_template`.
+- `clear_blockers`: match các file PNG trong `templates_dir` theo thứ tự `priority`. Runner click blocker đầu tiên đạt threshold rồi quét lại từ đầu. Khi thấy `until_template` và không còn blocker, runner chuyển sang action kế tiếp mà không click `until_template`.
 - `click`: bắt buộc có `x`, `y`; `button` và `note` là tùy chọn.
 - `wait`: bắt buộc có `ms`; `note` là tùy chọn.
 
@@ -76,9 +76,8 @@ Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các 
 - `threshold`: mặc định `0.9`.
 - `timeout_ms`: thời gian tối đa chờ ảnh, mặc định `30000`.
 - `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `400`.
-- `delay_ms`: thời gian chờ sau khi detect trước khi click, mặc định `500`.
+- `delay_ms`: thời gian chờ trước mỗi click, gồm cả click đầu sau detect và các click liên tiếp; mặc định `500`.
 - `click_count`: số lần click template sau khi detect, mặc định `1`.
-- `click_interval_ms`: khoảng cách giữa nhiều click, mặc định `100`.
 - `button`: mặc định `left`.
 
 `clear_blockers` hỗ trợ `click_positions` để đổi điểm click theo tên file. Vị trí mặc định là `center`; `top_middle` click chính giữa cạnh trên của vùng match:
@@ -87,7 +86,22 @@ Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các 
 { "click_positions": { "overlay_newbie.png": "top_middle" } }
 ```
 
+Thứ tự kiểm tra blocker được cấu hình bằng tên file trong `priority`. Các PNG không được liệt kê sẽ được nối vào cuối theo thứ tự tên file:
+
+```json
+{
+  "priority": [
+    "lubu_close.png",
+    "overlay_close.png",
+    "overlay_close_2.png",
+    "overlay_newbie.png"
+  ]
+}
+```
+
 Không có thời gian load cố định trước flow. Template đầu tiên đóng vai trò điều kiện báo game đã load.
+
+Flow cũng chạy `clear_blockers` sau khi click `start_home` và trước khi click `start_battle`, vì blocker có thể xuất hiện trong lúc chuyển giữa hai màn hình này.
 
 File mặc định là `tools/hauntedroom_actions.sample.json`.
 
@@ -103,7 +117,7 @@ loop 1/10 finish
 
 Các thao tác click thủ công trong browser được in ra terminal dưới dạng JSON để có thể chép vào action file. Click do runner tự gửi sẽ không bị ghi lại.
 
-Wait dài có countdown; ngưỡng countdown và số vòng lặp được cấu hình trong `tools/hauntedroom_common.py`.
+Wait dài có countdown; ngưỡng countdown và số vòng lặp được cấu hình trong `tools/hauntedroom/common.py`.
 
 ## Browser profile
 

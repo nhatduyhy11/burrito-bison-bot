@@ -2,11 +2,17 @@ import asyncio
 import json
 from pathlib import Path
 
-import cv2
 import numpy as np
 from playwright.async_api import async_playwright
 
-from hauntedroom_common import (
+from hauntedroom.cv_pattern_matching import (
+    DEFAULT_TEMPLATE_THRESHOLD,
+    capture_page_grayscale,
+    find_template,
+    load_template,
+    validate_threshold,
+)
+from hauntedroom.common import (
     ACTION_LOOP_COUNT,
     prepare_runner,
     save_timeout_screenshot,
@@ -16,24 +22,14 @@ from hauntedroom_common import (
 )
 
 
-DEFAULT_TEMPLATE_THRESHOLD = 0.9
 DEFAULT_TEMPLATE_TIMEOUT_MS = 30_000
 DEFAULT_TEMPLATE_POLL_MS = 400
-DEFAULT_CLICK_DELAY_MS = 500
-DEFAULT_CLICK_INTERVAL_MS = 100
+DEFAULT_CLICK_DELAY_MS = 400
 SUPPORTED_CLICK_POSITIONS = {"center", "top_middle"}
 
 
-def validate_threshold(action: dict, index: int) -> None:
-    threshold = float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD))
-    if not 0 < threshold <= 1:
-        raise ValueError(
-            f"Action #{index} threshold must be greater than 0 and at most 1."
-        )
-
-
 def validate_timing_fields(action: dict, index: int) -> None:
-    for field in ("timeout_ms", "poll_ms", "delay_ms", "click_interval_ms"):
+    for field in ("timeout_ms", "poll_ms", "delay_ms"):
         if field in action and int(action[field]) < 0:
             raise ValueError(f"Action #{index} {field} cannot be negative.")
 
@@ -94,6 +90,31 @@ def load_actions(path: Path) -> list[dict]:
                     f"{templates_dir_path}"
                 )
 
+            priority = action.get("priority", [])
+            if not isinstance(priority, list) or not all(
+                isinstance(name, str) for name in priority
+            ):
+                raise ValueError(f"Action #{index} priority must be an array of names.")
+            blocker_paths_by_name = {blocker_path.name: blocker_path for blocker_path in blocker_paths}
+            unknown_priority_names = [
+                name for name in priority if name not in blocker_paths_by_name
+            ]
+            if unknown_priority_names:
+                raise ValueError(
+                    f"Action #{index} priority references unknown blockers: "
+                    f"{unknown_priority_names}"
+                )
+            if len(priority) != len(set(priority)):
+                raise ValueError(f"Action #{index} priority contains duplicate names.")
+            prioritized_names = priority + [
+                blocker_path.name
+                for blocker_path in blocker_paths
+                if blocker_path.name not in priority
+            ]
+            blocker_paths = [
+                blocker_paths_by_name[name] for name in prioritized_names
+            ]
+
             until_template_path = (path.parent / until_template).resolve()
             if not until_template_path.is_file():
                 raise ValueError(
@@ -129,22 +150,6 @@ def load_actions(path: Path) -> list[dict]:
     return actions
 
 
-def load_template(path: Path) -> np.ndarray:
-    template = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
-    if template is None:
-        raise ValueError(f"OpenCV could not read template: {path}")
-    return template
-
-
-async def capture_page_grayscale(page) -> np.ndarray:
-    screenshot = await page.screenshot(type="png", scale="css")
-    encoded = np.frombuffer(screenshot, dtype=np.uint8)
-    image = cv2.imdecode(encoded, cv2.IMREAD_GRAYSCALE)
-    if image is None:
-        raise RuntimeError("OpenCV could not decode the Playwright screenshot.")
-    return image
-
-
 async def wait_for_template(
     page,
     template: np.ndarray,
@@ -159,26 +164,14 @@ async def wait_for_template(
 
     while True:
         screenshot = await capture_page_grayscale(page)
-        screenshot_height, screenshot_width = screenshot.shape
-        template_height, template_width = template.shape
-
-        if template_width > screenshot_width or template_height > screenshot_height:
-            raise ValueError(
-                f"Template {template_name!r} is {template_width}x{template_height}, "
-                f"larger than screenshot {screenshot_width}x{screenshot_height}."
-            )
-
-        result = cv2.matchTemplate(
+        center_x, center_y, score = find_template(
             screenshot,
             template,
-            cv2.TM_CCOEFF_NORMED,
+            template_name,
         )
-        _, score, _, top_left = cv2.minMaxLoc(result)
         best_score = max(best_score, score)
 
         if score >= threshold:
-            center_x = top_left[0] + template_width // 2
-            center_y = top_left[1] + template_height // 2
             return center_x, center_y, score
 
         if loop.time() >= deadline:
@@ -193,30 +186,6 @@ async def wait_for_template(
             )
 
         await page.wait_for_timeout(poll_ms)
-
-
-def find_template(
-    screenshot: np.ndarray,
-    template: np.ndarray,
-    template_name: str,
-    click_position: str = "center",
-) -> tuple[int, int, float]:
-    screenshot_height, screenshot_width = screenshot.shape
-    template_height, template_width = template.shape
-    if template_width > screenshot_width or template_height > screenshot_height:
-        raise ValueError(
-            f"Template {template_name!r} is {template_width}x{template_height}, "
-            f"larger than screenshot {screenshot_width}x{screenshot_height}."
-        )
-
-    result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
-    _, score, _, top_left = cv2.minMaxLoc(result)
-    center_x = top_left[0] + template_width // 2
-    if click_position == "top_middle":
-        click_y = top_left[1] + min(1, template_height - 1)
-    else:
-        click_y = top_left[1] + template_height // 2
-    return center_x, click_y, score
 
 
 async def clear_blockers(
@@ -238,7 +207,7 @@ async def clear_blockers(
     while True:
         screenshot = await capture_page_grayscale(page)
 
-        blocker_matches = []
+        blocker_match = None
         for blocker_path in blocker_paths:
             x, y, score = find_template(
                 screenshot,
@@ -247,10 +216,11 @@ async def clear_blockers(
                 click_positions.get(blocker_path.name, "center"),
             )
             if score >= threshold:
-                blocker_matches.append((score, blocker_path, x, y))
+                blocker_match = (score, blocker_path, x, y)
+                break
 
-        if blocker_matches:
-            score, blocker_path, x, y = max(blocker_matches, key=lambda match: match[0])
+        if blocker_match:
+            score, blocker_path, x, y = blocker_match
             print(
                 f"{label}: blocker {blocker_path.name} at {x},{y}, "
                 f"score={score:.3f}; click in {delay_ms}ms",
@@ -349,9 +319,6 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                 poll_ms = int(action.get("poll_ms", DEFAULT_TEMPLATE_POLL_MS))
                 delay_ms = int(action.get("delay_ms", DEFAULT_CLICK_DELAY_MS))
                 click_count = int(action.get("click_count", 1))
-                click_interval_ms = int(
-                    action.get("click_interval_ms", DEFAULT_CLICK_INTERVAL_MS)
-                )
                 button = action.get("button", "left")
                 note = action.get("note")
                 note_suffix = f" ({note})" if note else ""
@@ -372,17 +339,15 @@ async def run_actions(page, actions: list[dict], loop_count: int = ACTION_LOOP_C
                 print(
                     f"{loop_index}.{action_index}: detected "
                     f"{template_path.name} at {x},{y}, score={score:.3f}; "
-                    f"click {click_count} time(s) in {delay_ms}ms",
+                    f"click {click_count} time(s), wait {delay_ms}ms before each",
                     flush=True,
                 )
-                await page.wait_for_timeout(delay_ms)
-                for click_index in range(click_count):
+                for _ in range(click_count):
+                    await page.wait_for_timeout(delay_ms)
                     await page.evaluate(
                         "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
                     )
                     await page.mouse.click(x, y, button=button)
-                    if click_index + 1 < click_count:
-                        await page.wait_for_timeout(click_interval_ms)
                 continue
 
             ms = int(action["ms"])

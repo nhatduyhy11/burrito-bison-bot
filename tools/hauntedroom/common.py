@@ -71,6 +71,8 @@ def prepare_runner(
 async def save_timeout_screenshot(page, label: str) -> Optional[Path]:
     safe_label = re.sub(r"[^A-Za-z0-9_.-]+", "-", label).strip("-_")
     safe_label = safe_label or "timeout"
+    if safe_label.lower().endswith(".png"):
+        safe_label = safe_label[:-4]
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     screenshot_path = TIMEOUT_SCREENSHOT_DIR / f"{timestamp}-{safe_label}.png"
     screenshot_path.parent.mkdir(parents=True, exist_ok=True)
