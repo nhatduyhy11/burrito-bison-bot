@@ -1,10 +1,9 @@
 [
-  { "type": "click_template", "template": "rooms/start_home.png", "note": "Start HOME" },
+  { "type": "clear_blockers", "templates_dir": "rooms/blocker", "until_template": "rooms/start_home.png", "click_positions": { "overlay_newbie.png": "top_middle" }, "note": "Before Start HOME" },
+  { "type": "click_template", "template": "rooms/start_home.png", "click_count": 3, "note": "Start HOME" },
   { "type": "click_template", "template": "rooms/start_battle.png", "note": "Start Battle" },
   { "type": "click_template", "template": "rooms/exit_click.png", "timeout_ms": 60000, "note": "Exit click" },
   { "type": "click_template", "template": "rooms/exit_confirm.png", "note": "Exit confirm" },
   { "type": "click_template", "template": "rooms/exit_back.png", "note": "Exit Back" },
-  { "type": "click_template", "template": "rooms/overlay_close.png", "note": "Exit upgrade" },
-  { "type": "click_template", "template": "rooms/automap/lv_up.png", "note": "Exit Lv Up" },
-  { "type": "click_template", "template": "rooms/lubu_close.png", "note": "Exit Lubu" }
+  { "type": "clear_blockers", "templates_dir": "rooms/blocker", "until_template": "rooms/start_home.png", "click_positions": { "overlay_newbie.png": "top_middle" }, "note": "After Exit Back" }
 ]

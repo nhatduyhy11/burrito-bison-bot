@@ -56,16 +56,18 @@ uv run python tools/hauntedroom_runner.py --help
 
 File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom_common.py`. Khi `ACTION_LOOP_COUNT = 0`, runner chỉ mở trang game, không đọc/chạy action và chờ cho tới khi nhấn `Ctrl+C`.
 
-Ba action hiện được hỗ trợ. Flow mặc định chỉ cần chuỗi `click_template`:
+Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các checkpoint có thể xuất hiện popup:
 
 ```json
 [
+  { "type": "clear_blockers", "templates_dir": "rooms/blocker", "until_template": "rooms/start_home.png" },
   { "type": "click_template", "template": "rooms/start_home.png", "note": "Start HOME" },
   { "type": "click_template", "template": "rooms/start_battle.png", "note": "Start Battle" }
 ]
 ```
 
 - `click_template`: chụp viewport và dùng OpenCV tìm template liên tục. Khi score đạt threshold, runner chờ `delay_ms` rồi click tâm template.
+- `clear_blockers`: match tất cả file PNG trong `templates_dir` trên cùng một screenshot. Nếu thấy blocker, runner click blocker có score cao nhất rồi quét tiếp. Khi thấy `until_template` và không còn blocker, runner chuyển sang action kế tiếp mà không click `until_template`.
 - `click`: bắt buộc có `x`, `y`; `button` và `note` là tùy chọn.
 - `wait`: bắt buộc có `ms`; `note` là tùy chọn.
 
@@ -73,9 +75,17 @@ Ba action hiện được hỗ trợ. Flow mặc định chỉ cần chuỗi `cl
 
 - `threshold`: mặc định `0.9`.
 - `timeout_ms`: thời gian tối đa chờ ảnh, mặc định `30000`.
-- `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `150`.
+- `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `400`.
 - `delay_ms`: thời gian chờ sau khi detect trước khi click, mặc định `500`.
+- `click_count`: số lần click template sau khi detect, mặc định `1`.
+- `click_interval_ms`: khoảng cách giữa nhiều click, mặc định `100`.
 - `button`: mặc định `left`.
+
+`clear_blockers` hỗ trợ `click_positions` để đổi điểm click theo tên file. Vị trí mặc định là `center`; `top_middle` click chính giữa cạnh trên của vùng match:
+
+```json
+{ "click_positions": { "overlay_newbie.png": "top_middle" } }
+```
 
 Không có thời gian load cố định trước flow. Template đầu tiên đóng vai trò điều kiện báo game đã load.
 
@@ -108,3 +118,4 @@ Xóa profile sẽ reset session và có thể làm game quay lại luồng guest
 - Template matching dùng đúng kích thước ảnh, chưa có multi-scale matching.
 - Viewport nên được giữ cố định ở kích thước dùng khi chụp template.
 - Khi hết `timeout_ms`, runner dừng và log best score thay vì click sai vị trí.
+- Trước khi dừng vì timeout, runner lưu screenshot cuối vào `.tmp/hauntedroom-timeouts/` và in đường dẫn file trong terminal.

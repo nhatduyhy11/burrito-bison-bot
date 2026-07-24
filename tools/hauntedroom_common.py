@@ -1,18 +1,93 @@
+import argparse
 import asyncio
 import json
+import re
+from datetime import datetime
 from pathlib import Path
+from typing import Callable, Optional
 
 GAME_URL = "https://hauntedroomvnh5.joynetgame.com/"
 DEFAULT_VIEWPORT_WIDTH = 640
 DEFAULT_VIEWPORT_HEIGHT = 720
 DEFAULT_BROWSER = "chrome"
 
-ACTION_LOOP_COUNT = 2
+ACTION_LOOP_COUNT = 120
 
 LOAD_WAIT_MS = 16000
 COUNTDOWN_WAIT_THRESHOLD_MS = 10000
 
 DEFAULT_PROFILE_DIR = Path(".tmp/hauntedroom-profile")
+TIMEOUT_SCREENSHOT_DIR = Path(".tmp/hauntedroom-timeouts")
+
+
+def prepare_runner(
+    action_loader: Callable[[Path], list[dict]],
+) -> tuple[argparse.Namespace, list[dict], Path]:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run template/click/wait automation for Haunted Room in a "
+            "persistent browser profile."
+        )
+    )
+    parser.add_argument(
+        "--actions",
+        default="tools/hauntedroom_actions.sample.json",
+        help="JSON file containing template, blocker, click, or wait actions.",
+    )
+    parser.add_argument(
+        "--profile",
+        default=str(DEFAULT_PROFILE_DIR),
+        help=(
+            "Persistent browser profile directory. "
+            "Cookies and local storage are kept here."
+        ),
+    )
+    parser.add_argument("--url", default=GAME_URL)
+    parser.add_argument("--headless", action="store_true")
+    parser.add_argument(
+        "--browser",
+        choices=("chrome", "msedge", "chromium"),
+        default=DEFAULT_BROWSER,
+        help=(
+            "Browser channel to use. Chrome and Edge are discovered by Playwright "
+            "on the current OS; chromium requires a Playwright-managed browser install."
+        ),
+    )
+    parser.add_argument("--width", type=int, default=DEFAULT_VIEWPORT_WIDTH)
+    parser.add_argument("--height", type=int, default=DEFAULT_VIEWPORT_HEIGHT)
+    parser.add_argument(
+        "--keep-open",
+        action="store_true",
+        help="Keep the browser open after actions finish.",
+    )
+    args = parser.parse_args()
+
+    actions = [] if ACTION_LOOP_COUNT == 0 else action_loader(Path(args.actions))
+    profile_dir = Path(args.profile)
+    profile_dir.mkdir(parents=True, exist_ok=True)
+    return args, actions, profile_dir
+
+
+async def save_timeout_screenshot(page, label: str) -> Optional[Path]:
+    safe_label = re.sub(r"[^A-Za-z0-9_.-]+", "-", label).strip("-_")
+    safe_label = safe_label or "timeout"
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+    screenshot_path = TIMEOUT_SCREENSHOT_DIR / f"{timestamp}-{safe_label}.png"
+    screenshot_path.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        await page.screenshot(
+            path=str(screenshot_path),
+            type="png",
+            scale="css",
+        )
+    except Exception as error:
+        print(f"Failed to save timeout screenshot: {error}", flush=True)
+        return None
+
+    resolved_path = screenshot_path.resolve()
+    print(f"Timeout screenshot saved: {resolved_path}", flush=True)
+    return resolved_path
 
 
 async def wait_with_countdown(page, ms: int, label: str) -> None:
