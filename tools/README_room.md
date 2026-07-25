@@ -89,6 +89,7 @@ Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các 
 - `delay_ms`: thời gian chờ trước mỗi click, gồm cả click đầu sau detect và các click liên tiếp; mặc định `500`.
 - `click_count`: số lần click template sau khi detect, mặc định `1`.
 - `button`: mặc định `left`.
+- `skip_if_template`: template báo action hiện tại đã không còn cần thiết; nếu template này đạt cùng `threshold`, runner bỏ qua click hiện tại và chuyển sang action kế tiếp.
 
 `clear_blockers` hỗ trợ `click_positions` để đổi điểm click theo tên file. Vị trí mặc định là `center`; `top_middle` click chính giữa cạnh trên của vùng match:
 

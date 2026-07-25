@@ -11,7 +11,7 @@ sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.common import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.custom_macro import run_research_flow
-from hauntedroom_runner import run_actions
+from hauntedroom_runner import SKIP_TEMPLATE_MATCHED, run_actions, wait_for_template
 
 
 class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
@@ -90,6 +90,48 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
 
         self.assertEqual(wait_for_template.await_count, 4)
         self.assertEqual(self.page.mouse.click.await_count, 2)
+
+    @patch(
+        "hauntedroom_runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom_runner.wait_for_template", new_callable=AsyncMock)
+    async def test_click_template_skip_if_template_avoids_clicking_stale_step(
+        self, wait_for_template, load_template
+    ):
+        skip_path = Path("home.png")
+        self.actions[0]["_skip_if_template_path"] = skip_path
+        wait_for_template.return_value = SKIP_TEMPLATE_MATCHED
+
+        await run_actions(self.page, self.actions, loop_count=1)
+
+        self.assertEqual(load_template.call_count, 2)
+        wait_for_template.assert_awaited_once()
+        self.assertIs(wait_for_template.await_args.args[-2], load_template.return_value)
+        self.assertEqual(wait_for_template.await_args.args[-1], skip_path.name)
+        self.page.mouse.click.assert_awaited_once_with(10, 20, button="left")
+
+    @patch("hauntedroom_runner.capture_page_grayscale", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.find_template")
+    async def test_wait_for_template_returns_skip_when_skip_template_matches(
+        self, find_template, capture_page_grayscale
+    ):
+        capture_page_grayscale.return_value = np.zeros((10, 10), dtype=np.uint8)
+        find_template.side_effect = [(0, 0, 0.4), (20, 30, 0.95)]
+
+        result = await wait_for_template(
+            self.page,
+            np.zeros((1, 1), dtype=np.uint8),
+            "exit_back.png",
+            0.75,
+            1000,
+            400,
+            skip_template=np.zeros((1, 1), dtype=np.uint8),
+            skip_template_name="start_home.png",
+        )
+
+        self.assertIs(result, SKIP_TEMPLATE_MATCHED)
+        self.page.wait_for_timeout.assert_not_awaited()
 
 
 class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):

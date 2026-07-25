@@ -29,6 +29,7 @@ DEFAULT_TEMPLATE_TIMEOUT_MS = 30_000
 DEFAULT_TEMPLATE_POLL_MS = 400
 DEFAULT_CLICK_DELAY_MS = 400
 SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "top_middle"}
+SKIP_TEMPLATE_MATCHED = object()
 
 
 def validate_timing_fields(action: dict, index: int) -> None:
@@ -63,6 +64,21 @@ def load_actions(path: Path) -> list[dict]:
                     f"Action #{index} template does not exist: {template_path}"
                 )
             action["_template_path"] = template_path
+
+            skip_if_template = action.get("skip_if_template")
+            if skip_if_template is not None:
+                if not isinstance(skip_if_template, str) or not skip_if_template:
+                    raise ValueError(
+                        f"Action #{index} skip_if_template must be a template path."
+                    )
+                skip_if_template_path = (path.parent / skip_if_template).resolve()
+                if not skip_if_template_path.is_file():
+                    raise ValueError(
+                        f"Action #{index} skip_if_template does not exist: "
+                        f"{skip_if_template_path}"
+                    )
+                action["_skip_if_template_path"] = skip_if_template_path
+
             validate_threshold(action, index)
             validate_timing_fields(action, index)
             click_count = int(action.get("click_count", 1))
@@ -161,10 +177,13 @@ async def wait_for_template(
     timeout_ms: int,
     poll_ms: int,
     stop_event: Optional[asyncio.Event] = None,
-) -> Optional[Tuple[int, int, float]]:
+    skip_template: Optional[np.ndarray] = None,
+    skip_template_name: Optional[str] = None,
+) -> object:
     loop = asyncio.get_running_loop()
     deadline = loop.time() + timeout_ms / 1000
     best_score = -1.0
+    best_skip_score = -1.0
 
     while True:
         if stop_event is not None and stop_event.is_set():
@@ -180,15 +199,30 @@ async def wait_for_template(
         if score >= threshold:
             return center_x, center_y, score
 
+        if skip_template is not None and skip_template_name is not None:
+            _, _, skip_score = find_template(
+                screenshot,
+                skip_template,
+                skip_template_name,
+            )
+            best_skip_score = max(best_skip_score, skip_score)
+            if skip_score >= threshold:
+                return SKIP_TEMPLATE_MATCHED
+
         if loop.time() >= deadline:
             screenshot_path = await save_timeout_screenshot(page, template_name)
             screenshot_suffix = (
                 f", screenshot={screenshot_path}" if screenshot_path else ""
             )
+            skip_suffix = (
+                f", best {skip_template_name} score={best_skip_score:.3f}"
+                if skip_template_name is not None
+                else ""
+            )
             raise TimeoutError(
                 f"Timed out waiting for {template_name!r}; "
                 f"best score={best_score:.3f}, threshold={threshold:.3f}"
-                f"{screenshot_suffix}."
+                f"{skip_suffix}{screenshot_suffix}."
             )
 
         await page.wait_for_timeout(poll_ms)
@@ -284,6 +318,8 @@ async def run_actions(
     for action in actions:
         if action["type"] == "click_template":
             template_paths.add(action["_template_path"])
+            if "_skip_if_template_path" in action:
+                template_paths.add(action["_skip_if_template_path"])
         elif action["type"] == "clear_blockers":
             template_paths.update(action["_blocker_paths"])
             template_paths.add(action["_until_template_path"])
@@ -370,6 +406,7 @@ async def run_actions(
                 button = action.get("button", "left")
                 note = action.get("note")
                 note_suffix = f" ({note})" if note else ""
+                skip_template_path = action.get("_skip_if_template_path")
 
                 print(
                     f"{loop_index}.{action_index}: wait for "
@@ -385,6 +422,8 @@ async def run_actions(
                         timeout_ms,
                         poll_ms,
                         stop_event,
+                        templates[skip_template_path] if skip_template_path else None,
+                        skip_template_path.name if skip_template_path else None,
                     )
                 except TimeoutError as error:
                     timeout_count += 1
@@ -403,6 +442,13 @@ async def run_actions(
                     )
                     loop_timed_out = True
                     break
+                if match is SKIP_TEMPLATE_MATCHED:
+                    print(
+                        f"{loop_index}.{action_index}: skip {template_path.name}; "
+                        f"{skip_template_path.name} already ready",
+                        flush=True,
+                    )
+                    continue
                 if match is None:
                     print("Flow stopped; runner is idle.", flush=True)
                     return False
