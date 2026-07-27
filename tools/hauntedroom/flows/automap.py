@@ -8,6 +8,7 @@ import numpy as np
 from hauntedroom.core.runtime import wait_with_countdown
 from hauntedroom.core.vision import (
     capture_page_bgr,
+    find_template,
     find_template_matches,
     load_template,
 )
@@ -15,11 +16,16 @@ from hauntedroom.core.vision import (
 
 AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "automap"
 LV_UP_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_up.png"
+LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
-AUTOMAP_POLL_MS = 400
+AUTOMAP_POLL_MS = 600
 AUTOMAP_ACTION_DELAY_MS = 800
+LV_SPIN_CLICK_OFFSET_X = -70
+LV_SPIN_TEMPLATE_THRESHOLD = 0.58
+LV_SPIN_TEMPLATE_SCALES = (1.0, 0.8, 0.67)
+LV_SPIN_SEARCH_TOP_RATIO = 0.75
 
 # The right-aligned price digit is more stable than the money icon or the
 # complete price. Coordinates are in the fixed 640x720 Playwright viewport.
@@ -74,6 +80,7 @@ async def run_automap_flow(
     stop_event: Optional[asyncio.Event] = None,
     lv_up_template_path: Path = LV_UP_TEMPLATE_PATH,
     threshold: float = AUTOMAP_TEMPLATE_THRESHOLD,
+    lv_spin_template_path: Path = LV_SPIN_TEMPLATE_PATH,
 ) -> bool:
     """Run battle situations in priority order until stopped.
 
@@ -83,6 +90,36 @@ async def run_automap_flow(
     scheduling loop.
     """
     lv_up_template = load_template(lv_up_template_path)
+    lv_spin_template = load_template(lv_spin_template_path)
+
+    async def click_level_spin_if_present(frame_gray: np.ndarray) -> bool:
+        search_top = int(frame_gray.shape[0] * LV_SPIN_SEARCH_TOP_RATIO)
+        search_frame = frame_gray[search_top:, :]
+        x, y, score = find_template(
+            search_frame,
+            lv_spin_template,
+            lv_spin_template_path.name,
+            scales=LV_SPIN_TEMPLATE_SCALES,
+        )
+        if score < LV_SPIN_TEMPLATE_THRESHOLD:
+            return False
+
+        y += search_top
+        click_x = max(0, x + LV_SPIN_CLICK_OFFSET_X)
+        print(
+            f"Level spin interrupt at {x},{y}, score={score:.3f}; "
+            f"clicking {click_x},{y}.",
+            flush=True,
+        )
+        await _click(page, click_x, y)
+        await page.wait_for_timeout(AUTOMAP_POLL_MS)
+        return True
+
+    async def level_spin_interrupt(
+        _frame_bgr: np.ndarray,
+        frame_gray: np.ndarray,
+    ) -> bool:
+        return await click_level_spin_if_present(frame_gray)
 
     async def protect_gate(frame_bgr: np.ndarray, _frame_gray: np.ndarray) -> bool:
         if not region_has_enough_white(frame_bgr):
@@ -118,10 +155,15 @@ async def run_automap_flow(
             page, AUTOMAP_ACTION_DELAY_MS, "Level up", stop_event
         ):
             return True
+        frame_bgr = await capture_page_bgr(page)
+        frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
+        if await click_level_spin_if_present(frame_gray):
+            return True
         await _click(page, *UPGRADE_CONFIRM_CLICK)
         return True
 
     handlers: tuple[SituationHandler, ...] = (
+        level_spin_interrupt,
         protect_gate,
         level_up,
         # Add future situations here in descending priority order.

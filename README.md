@@ -74,13 +74,14 @@ File action là một JSON array. Runner chạy tuần tự toàn bộ array r�
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
-- `Shift+2`: chạy riêng flow auto-map sau khi đã vào map và bấm `start_battle` thủ công. Flow ưu tiên bảo vệ cửa (vùng giá `x=328..348, y=630..647` phải có đủ pixel trắng; crop sai hoặc không đủ trắng được xem là unavailable), sau đó xử lý `automap/lv_up.png`; nếu có nhiều nút nâng cấp thì chọn nút có `y` lớn nhất. Bấm `Shift+0` để dừng flow trong phase hiện tại.
-- `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 400 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
+- `Shift+2`: chạy riêng flow auto-map sau khi đã vào map và bấm `start_battle` thủ công. Priority là interrupt `automap/lv_spin.png` trước, sau đó bảo vệ cửa, rồi `automap/lv_up.png`. Nếu thấy `lv_spin` thì click lệch trái 70 px từ tâm match; `lv_spin` cũng được check lại ngay sau khi click `lv_up` và trước confirm. Bấm `Shift+0` để dừng flow trong phase hiện tại.
+- `Shift+8`: lưu screenshot live của viewport hiện tại vào `.tmp/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
+- `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
 - `Shift+3` đến `Shift+7`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
-Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit7`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`.
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`; riêng `Shift+8` chỉ chụp screenshot nên không bị chặn.
 
 Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các checkpoint có thể xuất hiện popup:
 
@@ -101,7 +102,7 @@ Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các 
 
 - `threshold`: mặc định `0.9`.
 - `timeout_ms`: thời gian tối đa chờ ảnh, mặc định `30000`.
-- `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `400`.
+- `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `600`.
 - `delay_ms`: thời gian chờ trước mỗi click, gồm cả click đầu sau detect và các click liên tiếp; mặc định `500`.
 - `click_count`: số lần click template sau khi detect, mặc định `1`.
 - `button`: mặc định `left`.

@@ -17,6 +17,8 @@ from hauntedroom.actions.runner import (
 )
 from hauntedroom.core.runtime import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.flows.automap import (
+    AUTOMAP_POLL_MS,
+    LV_SPIN_CLICK_OFFSET_X,
     PROTECT_AVAILABLE_REGION,
     PROTECT_CLICK,
     PROTECT_CONFIRM_CLICK,
@@ -25,7 +27,7 @@ from hauntedroom.flows.automap import (
     run_automap_flow,
 )
 from hauntedroom.flows.research import run_research_flow
-from hauntedroom_runner import get_automap_flow
+from hauntedroom_runner import get_automap_flow, run_standby_controller
 
 
 class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
@@ -179,6 +181,32 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
 
         self.assertIs(get_automap_flow(), automap.run_automap_flow)
 
+    def test_hotkey_script_accepts_shift_8(self):
+        self.assertIn("!/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
+
+    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    async def test_shift_8_saves_live_screenshot_and_stays_idle(
+        self,
+        start_hotkey_listener,
+        save_live_screenshot,
+    ):
+        page = Mock()
+
+        async def enqueue_capture(_page, command_queue):
+            command_queue.put_nowait("8")
+
+        async def stop_after_capture(_page):
+            raise RuntimeError("stop test loop")
+
+        start_hotkey_listener.side_effect = enqueue_capture
+        save_live_screenshot.side_effect = stop_after_capture
+
+        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+            await run_standby_controller(page, [], dev_reload=False)
+
+        save_live_screenshot.assert_awaited_once_with(page)
+
     async def test_stop_event_ends_flow_without_clicking(self):
         page = Mock()
         page.evaluate = AsyncMock()
@@ -250,9 +278,15 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
+    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     async def test_available_protect_gate_clicks_twice_then_stops(
-        self, capture_page_bgr, _load_template
+        self,
+        capture_page_bgr,
+        _find_template_matches,
+        _find_template,
+        _load_template,
     ):
         capture_page_bgr.return_value = self.make_protect_available(
             np.zeros((720, 640, 3), dtype=np.uint8)
@@ -281,17 +315,96 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
+    @patch("hauntedroom.flows.automap.find_template", return_value=(200, 20, 0.92))
     @patch("hauntedroom.flows.automap.find_template_matches")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_level_up_uses_largest_y_and_rechecks_priority_one(
+    async def test_level_spin_interrupt_clicks_left_offset_before_protect_gate(
         self,
         capture_page_bgr,
         find_template_matches,
+        _find_template,
+        _load_template,
+    ):
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+        find_template_matches.return_value = []
+        stop_event = asyncio.Event()
+
+        async def stop_after_first_click(*_args, **_kwargs):
+            stop_event.set()
+
+        self.page.mouse.click.side_effect = stop_after_first_click
+
+        completed = await run_automap_flow(self.page, stop_event)
+
+        self.assertFalse(completed)
+        self.page.mouse.click.assert_awaited_once_with(
+            max(0, 200 + LV_SPIN_CLICK_OFFSET_X),
+            560,
+        )
+        self.page.wait_for_timeout.assert_awaited_once_with(AUTOMAP_POLL_MS)
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch(
+        "hauntedroom.flows.automap.find_template",
+        side_effect=[(0, 0, 0.0), (200, 20, 0.92)],
+    )
+    @patch("hauntedroom.flows.automap.find_template_matches")
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_level_up_rechecks_level_spin_before_confirm_click(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        _find_template,
+        _load_template,
+    ):
+        capture_page_bgr.side_effect = [
+            np.zeros((720, 640, 3), dtype=np.uint8),
+            np.zeros((720, 640, 3), dtype=np.uint8),
+        ]
+        find_template_matches.side_effect = [
+            [(120, 500, 0.91)],
+        ]
+        stop_event = asyncio.Event()
+
+        async def stop_after_level_spin_click(*_args, **_kwargs):
+            if self.page.mouse.click.await_count == 2:
+                stop_event.set()
+
+        self.page.mouse.click.side_effect = stop_after_level_spin_click
+
+        completed = await run_automap_flow(self.page, stop_event)
+
+        self.assertFalse(completed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(120, 500),
+                call(max(0, 200 + LV_SPIN_CLICK_OFFSET_X), 560),
+            ],
+        )
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap.find_template_matches")
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_level_up_uses_largest_y_and_rechecks_before_confirm(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        _find_template,
         _load_template,
     ):
         unavailable = np.zeros((720, 640, 3), dtype=np.uint8)
         available = self.make_protect_available(np.zeros_like(unavailable))
-        capture_page_bgr.side_effect = [unavailable, available]
+        capture_page_bgr.side_effect = [unavailable, unavailable, available]
         find_template_matches.return_value = [
             (100, 200, 0.99),
             (120, 500, 0.91),
@@ -316,11 +429,12 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
                 call(*PROTECT_CONFIRM_CLICK),
             ],
         )
-        self.assertEqual(capture_page_bgr.await_count, 2)
-        matched_frame = find_template_matches.call_args.args[0]
+        self.assertEqual(capture_page_bgr.await_count, 3)
+        level_up_call = find_template_matches.call_args_list[0]
+        matched_frame = level_up_call.args[0]
         self.assertEqual(matched_frame.shape, (720, 640))
         self.assertEqual(
-            find_template_matches.call_args.kwargs["threshold"],
+            level_up_call.kwargs["threshold"],
             0.80,
         )
 
