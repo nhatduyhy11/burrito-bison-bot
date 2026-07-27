@@ -17,6 +17,7 @@ from hauntedroom.core.vision import (
 AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "automap"
 LV_UP_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_up.png"
 LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
+MAP_END_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "map_end.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
@@ -26,6 +27,8 @@ LV_SPIN_CLICK_OFFSET_X = -70
 LV_SPIN_TEMPLATE_THRESHOLD = 0.58
 LV_SPIN_TEMPLATE_SCALES = (1.0, 0.8, 0.67)
 LV_SPIN_SEARCH_TOP_RATIO = 0.75
+MAP_END_TEMPLATE_THRESHOLD = 0.90
+MAP_END_CHECK_INTERVAL_SEC = 5.0
 
 # The right-aligned price digit is more stable than the money icon or the
 # complete price. Coordinates are in the fixed 640x720 Playwright viewport.
@@ -81,6 +84,7 @@ async def run_automap_flow(
     lv_up_template_path: Path = LV_UP_TEMPLATE_PATH,
     threshold: float = AUTOMAP_TEMPLATE_THRESHOLD,
     lv_spin_template_path: Path = LV_SPIN_TEMPLATE_PATH,
+    map_end_template_path: Path = MAP_END_TEMPLATE_PATH,
 ) -> bool:
     """Run battle situations in priority order until stopped.
 
@@ -91,6 +95,9 @@ async def run_automap_flow(
     """
     lv_up_template = load_template(lv_up_template_path)
     lv_spin_template = load_template(lv_spin_template_path)
+    map_end_template = load_template(map_end_template_path)
+    loop = asyncio.get_running_loop()
+    last_map_end_check: Optional[float] = None
 
     async def click_level_spin_if_present(frame_gray: np.ndarray) -> bool:
         search_top = int(frame_gray.shape[0] * LV_SPIN_SEARCH_TOP_RATIO)
@@ -120,6 +127,31 @@ async def run_automap_flow(
         frame_gray: np.ndarray,
     ) -> bool:
         return await click_level_spin_if_present(frame_gray)
+
+    async def map_end(_frame_bgr: np.ndarray, frame_gray: np.ndarray) -> bool:
+        nonlocal last_map_end_check
+        now = loop.time()
+        if (
+            last_map_end_check is not None
+            and now - last_map_end_check < MAP_END_CHECK_INTERVAL_SEC
+        ):
+            return False
+
+        last_map_end_check = now
+        x, y, score = find_template(
+            frame_gray,
+            map_end_template,
+            map_end_template_path.name,
+        )
+        if score < MAP_END_TEMPLATE_THRESHOLD:
+            return False
+
+        print(
+            f"Map end at {x},{y}, score={score:.3f}; clicking and completing auto-map.",
+            flush=True,
+        )
+        await _click(page, x, y)
+        return True
 
     async def protect_gate(frame_bgr: np.ndarray, _frame_gray: np.ndarray) -> bool:
         if not region_has_enough_white(frame_bgr):
@@ -164,6 +196,7 @@ async def run_automap_flow(
 
     handlers: tuple[SituationHandler, ...] = (
         level_spin_interrupt,
+        map_end,
         protect_gate,
         level_up,
         # Add future situations here in descending priority order.
@@ -176,6 +209,9 @@ async def run_automap_flow(
             if stop_event is not None and stop_event.is_set():
                 break
             if await handler(frame_bgr, frame_gray):
+                if handler is map_end:
+                    print("Auto-map flow completed; runner is idle.", flush=True)
+                    return True
                 break
         else:
             await page.wait_for_timeout(AUTOMAP_POLL_MS)

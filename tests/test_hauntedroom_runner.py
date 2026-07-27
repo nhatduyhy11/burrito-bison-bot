@@ -19,6 +19,8 @@ from hauntedroom.core.runtime import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.flows.automap import (
     AUTOMAP_POLL_MS,
     LV_SPIN_CLICK_OFFSET_X,
+    MAP_END_CHECK_INTERVAL_SEC,
+    MAP_END_TEMPLATE_THRESHOLD,
     PROTECT_AVAILABLE_REGION,
     PROTECT_CLICK,
     PROTECT_CONFIRM_CLICK,
@@ -351,7 +353,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     )
     @patch(
         "hauntedroom.flows.automap.find_template",
-        side_effect=[(0, 0, 0.0), (200, 20, 0.92)],
+        side_effect=[(0, 0, 0.0), (0, 0, 0.0), (200, 20, 0.92)],
     )
     @patch("hauntedroom.flows.automap.find_template_matches")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
@@ -387,6 +389,72 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
                 call(max(0, 200 + LV_SPIN_CLICK_OFFSET_X), 560),
             ],
         )
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch(
+        "hauntedroom.flows.automap.find_template",
+        side_effect=[(0, 0, 0.0), (300, 400, 0.91)],
+    )
+    @patch("hauntedroom.flows.automap.find_template_matches")
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_map_end_clicks_match_and_completes_before_lower_priority_cases(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        find_template,
+        _load_template,
+    ):
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+
+        completed = await run_automap_flow(self.page, asyncio.Event())
+
+        self.assertTrue(completed)
+        self.page.mouse.click.assert_awaited_once_with(300, 400)
+        find_template_matches.assert_not_called()
+        self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_map_end_is_checked_at_most_once_per_interval(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        find_template,
+        _load_template,
+    ):
+        capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
+        stop_event = asyncio.Event()
+
+        async def stop_after_second_poll(*_args, **_kwargs):
+            if self.page.wait_for_timeout.await_count == 2:
+                stop_event.set()
+
+        self.page.wait_for_timeout.side_effect = stop_after_second_poll
+
+        completed = await run_automap_flow(self.page, stop_event)
+
+        self.assertFalse(completed)
+        self.assertGreater(MAP_END_CHECK_INTERVAL_SEC, AUTOMAP_POLL_MS / 1000)
+        self.assertGreater(MAP_END_TEMPLATE_THRESHOLD, 0.80)
+        self.assertEqual(
+            [
+                call_args.args[2]
+                for call_args in find_template.call_args_list
+                if call_args.args[2] == "map_end.png"
+            ],
+            ["map_end.png"],
+        )
+        self.assertEqual(find_template_matches.call_count, 2)
 
     @patch(
         "hauntedroom.flows.automap.load_template",
