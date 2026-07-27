@@ -9,6 +9,7 @@ from hauntedroom.core import vision
 from hauntedroom.core.cli import prepare_runner
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
+    save_live_screenshot,
     start_hotkey_listener,
     start_user_click_logger,
     wait_for_ctrl_c,
@@ -45,7 +46,7 @@ async def run_standby_controller(
     }
     print(
         "Runner idle. Shift+1: enter-exit room; Shift+2: auto-map battle; "
-        "Shift+9: research; "
+        "Shift+8: capture screenshot; Shift+9: research; "
         "Shift+0: stop current flow; Ctrl+C in terminal: close runner.",
         flush=True,
     )
@@ -79,6 +80,14 @@ async def run_standby_controller(
                 else:
                     print("Stopping current flow...", flush=True)
                     stop_event.set()
+                continue
+
+            if command == "8":
+                await save_live_screenshot(page)
+                if flow_task is None:
+                    print("Runner idle.", flush=True)
+                else:
+                    print("Current flow continues.", flush=True)
                 continue
 
             if command not in command_names:

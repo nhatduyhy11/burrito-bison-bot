@@ -10,6 +10,7 @@ ACTION_LOOP_COUNT = 0
 COUNTDOWN_WAIT_THRESHOLD_MS = 10000
 
 TIMEOUT_SCREENSHOT_DIR = Path(".tmp/hauntedroom-timeouts")
+LIVE_SCREENSHOT_DIR = Path(".tmp/hauntedroom-captures")
 HOTKEY_SCRIPT = """
 () => {
     if (window.__hauntedRoomHotkeysInstalled) {
@@ -26,7 +27,7 @@ HOTKEY_SCRIPT = """
                 event.altKey ||
                 event.metaKey ||
                 event.repeat ||
-                !/^Digit(?:[0-7]|9)$/.test(event.code)
+                !/^Digit[0-9]$/.test(event.code)
             ) {
                 return;
             }
@@ -41,13 +42,18 @@ HOTKEY_SCRIPT = """
 """
 
 
-async def save_timeout_screenshot(page, label: str) -> Optional[Path]:
+async def save_screenshot(
+    page,
+    label: str,
+    directory: Path,
+    description: str,
+) -> Optional[Path]:
     safe_label = re.sub(r"[^A-Za-z0-9_.-]+", "-", label).strip("-_")
-    safe_label = safe_label or "timeout"
+    safe_label = safe_label or description.lower().replace(" ", "-")
     if safe_label.lower().endswith(".png"):
         safe_label = safe_label[:-4]
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
-    screenshot_path = TIMEOUT_SCREENSHOT_DIR / f"{timestamp}-{safe_label}.png"
+    screenshot_path = directory / f"{timestamp}-{safe_label}.png"
     screenshot_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -57,12 +63,20 @@ async def save_timeout_screenshot(page, label: str) -> Optional[Path]:
             scale="css",
         )
     except Exception as error:
-        print(f"Failed to save timeout screenshot: {error}", flush=True)
+        print(f"Failed to save {description.lower()} screenshot: {error}", flush=True)
         return None
 
     resolved_path = screenshot_path.resolve()
-    print(f"Timeout screenshot saved: {resolved_path}", flush=True)
+    print(f"{description} screenshot saved: {resolved_path}", flush=True)
     return resolved_path
+
+
+async def save_timeout_screenshot(page, label: str) -> Optional[Path]:
+    return await save_screenshot(page, label, TIMEOUT_SCREENSHOT_DIR, "Timeout")
+
+
+async def save_live_screenshot(page, label: str = "live") -> Optional[Path]:
+    return await save_screenshot(page, label, LIVE_SCREENSHOT_DIR, "Live")
 
 
 async def wait_with_countdown(
