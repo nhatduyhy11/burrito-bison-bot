@@ -4,13 +4,13 @@ from typing import Optional
 
 import numpy as np
 
-from hauntedroom.clear_blocker import clear_blockers
-from hauntedroom.common import (
+from hauntedroom.control_events.blockers import clear_blockers
+from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
     save_timeout_screenshot,
     wait_with_countdown,
 )
-from hauntedroom.cv_pattern_matching import (
+from hauntedroom.core.vision import (
     DEFAULT_TEMPLATE_THRESHOLD,
     capture_page_grayscale,
     find_template,

@@ -8,7 +8,7 @@ import numpy as np
 TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.cv_pattern_matching import find_template, find_template_matches
+from hauntedroom.core.vision import find_template, find_template_matches
 
 
 class FindTemplateScaleTest(TestCase):

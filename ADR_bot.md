@@ -1,258 +1,161 @@
-# ADR: Phân tách load actions và run actions
+# ADR: Cấu trúc `core / actions / flows`
+
+## Trạng thái
+
+Accepted.
 
 ## Bối cảnh
 
-Flow `Shift+1` được mô tả bằng một file JSON chứa các action như `click`,
-`click_template`, `clear_blockers` và `wait`. Việc đọc/cấu hình action và việc
-điều khiển browser được tách thành hai bước: `load_actions` và `run_actions`.
+Haunted Room runner có ba nhóm trách nhiệm:
+
+- Khởi tạo CLI/browser và các primitive dùng chung.
+- Load và thực thi flow action-driven `Shift+1` từ JSON.
+- Thực thi các flow độc lập theo hotkey như auto-map và research.
+
+Khi tất cả module nằm trực tiếp trong `hauntedroom/`, dependency vẫn có thể không
+cycle nhưng khó nhìn ra module nào là nền tảng và module nào là business flow.
+`common.py` cũng chứa CLI cùng nhiều runtime helper không cùng responsibility.
 
 ## Quyết định
 
-### `load_actions(path)`
+Package được tổ chức thành các foundational, execution, flow và control-event
+module:
 
-`load_actions` chịu trách nhiệm đọc và chuẩn bị cấu hình trước khi automation
-bắt đầu:
+```text
+tools/hauntedroom/
+├── core/
+│   ├── __init__.py
+│   ├── cli.py
+│   ├── runtime.py
+│   └── vision.py
+├── actions/
+│   ├── __init__.py
+│   ├── loader.py
+│   └── runner.py
+├── control_events/
+│   ├── __init__.py
+│   └── blockers.py
+└── flows/
+    ├── __init__.py
+    ├── automap.py
+    └── research.py
+```
 
-- Đọc JSON từ `path` và yêu cầu root value là một array.
-- Validate type cùng các field bắt buộc của từng action.
-- Validate threshold, timing, click count và danh sách priority.
-- Resolve đường dẫn template tương đối theo thư mục chứa file action.
-- Kiểm tra template hoặc thư mục blocker có tồn tại.
-- Gắn metadata nội bộ như `_template_path`, `_skip_if_template_path`,
-  `_blocker_paths` và `_until_template_path`.
-- Trả về `list[dict]` đã được validate và chuẩn bị.
+Trong project này, `core` có nghĩa là **foundational modules**. Đây không phải
+domain layer theo Clean Architecture. Module trong `core` được phép phụ thuộc
+stdlib hoặc thư viện ngoài như Playwright, NumPy và OpenCV, nhưng không được
+import `actions`, `flows` hay entrypoint.
 
-Hàm này không screenshot, không template matching và không click browser. Cấu
-hình sai sẽ fail sớm tại đây, trước khi flow được chạy.
+### Trách nhiệm
 
-### `run_actions(page, actions, loop_count, stop_event)`
+- `core/cli.py`: argparse, default launch config, profile và chuẩn bị actions.
+- `core/runtime.py`: hotkey, wait/countdown, screenshot lỗi, click logger và
+  runtime lifecycle.
+- `core/vision.py`: load/capture ảnh và template matching.
+- `actions/loader.py`: parse, validate và resolve action JSON.
+- `actions/runner.py`: thực thi action, retry và stop mềm.
+- `control_events/blockers.py`: kiểm tra và xử lý blocker có quyền tạm thời
+  preempt normal flow.
+- `flows/automap.py`: flow battle priority của `Shift+2`.
+- `flows/research.py`: flow research của `Shift+9`.
+- `hauntedroom_runner.py`: composition root, browser bootstrap, hotkey controller
+  và hot-reload.
 
-`run_actions` chịu trách nhiệm thực thi danh sách đã được `load_actions` chuẩn
-bị:
+Validation liên quan schema action, bao gồm `validate_threshold`, nằm trong
+`actions/loader.py`; `core/vision.py` không biết raw action dictionary.
 
-- Load các template đã resolve vào memory bằng OpenCV.
-- Chạy action tuần tự theo thứ tự trong array.
-- Screenshot page và template matching khi cần.
-- Thực hiện click, wait và gọi `clear_blockers`.
-- Quản lý số vòng lặp, timeout liên tiếp và retry từ đầu vòng.
-- Kiểm tra `stop_event` để `Shift+0` có thể dừng mềm flow.
-- Trả về `True` khi hoàn tất, hoặc `False` khi bị dừng mềm.
+## Dependency rule
 
-`run_actions` giả định `actions` đã được validate và có metadata nội bộ cần
-thiết. Không truyền trực tiếp JSON thô chưa qua `load_actions` vào hàm này.
+Dependency chỉ được đi xuống hoặc đi ngang trong cùng feature package:
 
-## Luồng dữ liệu
+```mermaid
+flowchart TD
+    entry[hauntedroom_runner.py]
+    actions[hauntedroom.actions]
+    flows[hauntedroom.flows]
+    controlEvents[hauntedroom.control_events]
+    cli[hauntedroom.core.cli]
+    runtime[hauntedroom.core.runtime]
+    vision[hauntedroom.core.vision]
+
+    entry --> actions
+    entry --> flows
+    entry --> cli
+    entry --> runtime
+    entry --> vision
+    actions --> runtime
+    actions --> vision
+    actions --> controlEvents
+    flows --> runtime
+    flows --> vision
+    controlEvents --> runtime
+    controlEvents --> vision
+```
+
+Các rule cụ thể:
+
+1. `core` không import module nào từ `actions` hoặc `flows`.
+2. `control_events` chỉ phụ thuộc `core`, không import `actions` hoặc `flows`.
+3. `actions` và `flows` không import lẫn nhau.
+4. Flow trong `flows` không import flow khác.
+5. Entrypoint là nơi nối hotkey với flow; module tầng dưới không import ngược
+   `hauntedroom_runner`.
+
+Hiện tại `blockers.py` là control event duy nhất. Chưa tạo enum, registry hay
+contract tổng quát. Khi battle win/lose được implement và xuất hiện nhu cầu dùng
+chung thật, abstraction sẽ được thiết kế dựa trên behavior thực tế lúc đó.
+
+## Action-driven flow
+
+Flow `Shift+1` giữ ranh giới hai bước:
 
 ```text
 JSON action file
-      |
-      v
-load_actions(path)
-  - parse
-  - validate
+      ↓
+actions.loader.load_actions
+  - parse / validate
   - resolve template paths
-      |
-      v
+      ↓
 prepared list[dict]
-      |
-      v
-run_actions(page, actions, ...)
+      ↓
+actions.runner.run_actions
   - load templates
-  - screenshot/match
-  - click/wait/retry
+  - screenshot / match
+  - click / wait / retry
 ```
 
-## Phạm vi áp dụng
+`run_actions` giả định input đã qua `load_actions`. Auto-map và research không
+dùng action JSON và chạy độc lập trong `flows`.
 
-Hai hàm trên phục vụ flow action-driven `Shift+1` (`start-exit`). Flow
-`Shift+2` (`auto-map`) không dùng action JSON và gọi trực tiếp
-`run_automap_flow`. Việc tách riêng giúp logic battle theo priority không bị
-ràng buộc vào schema action tuần tự của flow `Shift+1`.
+## Hot-reload
 
-## Dependency graph hiện tại
+`Shift+2` trong dev mode reload `core.vision` trước, sau đó reload
+`flows.automap`. Reload theo thứ tự này giúp automap bind các function vision mới
+trong khi browser và session hiện tại vẫn được giữ nguyên.
 
-Mũi tên `A --> B` có nghĩa là module A import module B.
+## Hệ quả
 
-```mermaid
-flowchart TD
-    runner[hauntedroom_runner.py]
-    loader[hauntedroom/action_loader.py]
-    actionRunner[hauntedroom/action_runner.py]
-    automap[hauntedroom/flows/automap.py]
-    blocker[hauntedroom/clear_blocker.py]
-    research[hauntedroom/flows/research.py]
-    common[hauntedroom/common.py]
-    cv[hauntedroom/cv_pattern_matching.py]
+### Tích cực
 
-    runner --> loader
-    runner --> actionRunner
-    runner --> automap
-    runner --> research
-    runner --> common
-    runner --> cv
+- Nhìn tree có thể nhận ra ngay foundational layer và hai nhóm feature.
+- Dependency direction rõ ràng và không có circular import.
+- Thêm flow mới không làm action engine hoặc core biết về flow đó.
+- Schema action không rò rỉ vào vision layer.
+- `common.py` không còn là nơi gom helper không giới hạn.
 
-    loader --> cv
-    actionRunner --> blocker
-    actionRunner --> common
-    actionRunner --> cv
-    automap --> common
-    automap --> cv
-    blocker --> common
-    blocker --> cv
-    research --> common
-    research --> cv
-```
+### Trade-off
 
-Graph hiện tại không có circular dependency. `common` và
-`cv_pattern_matching` là hai dependency ở tầng thấp nhất và không import ngược
-lên runner hoặc các flow.
+- Import path dài hơn, ví dụ `hauntedroom.core.vision`.
+- `core/vision.py` hiện vẫn chứa cả pure matching và Playwright page capture.
+  Chỉ tách tiếp khi hai phần có lifecycle hoặc consumer khác nhau; chưa tạo thêm
+  package chỉ để giảm số dòng.
+- Action vẫn dùng raw dictionary cùng metadata key nội bộ. Có thể chuyển sang
+  `TypedDict` hoặc dataclass khi schema tiếp tục lớn, nhưng không thuộc refactor
+  cấu trúc này.
 
-`prepare_runner` nhận `load_actions` qua callback thay vì import runner từ
-`common`. Đây là dependency inversion có chủ ý, giúp tránh cycle
-`runner -> common -> runner`.
+## Tiêu chí mở rộng
 
-## Runtime flow của các hàm core
-
-```mermaid
-flowchart TD
-    main[main]
-    prepare[prepare_runner]
-    load[load_actions]
-    standby[run_standby_controller]
-    actions[run_actions]
-    waitTemplate[wait_for_template]
-    blockers[clear_blockers]
-    auto[run_automap_flow]
-    research[run_research_flow]
-    cv[CV capture and template matching]
-
-    main --> prepare
-    prepare -->|callback| load
-    main --> standby
-
-    standby -->|Shift+1| actions
-    actions --> waitTemplate
-    actions --> blockers
-    waitTemplate --> cv
-    blockers --> cv
-
-    standby -->|Shift+2| auto
-    auto --> cv
-
-    standby -->|Shift+9| research
-    research --> cv
-```
-
-## Review structure hiện tại
-
-### Điểm đang tốt
-
-- Dependency graph đi một chiều và chưa có circular import.
-- Các flow `start-exit`, `auto-map` và `research` không gọi trực tiếp lẫn nhau.
-- CV primitives được dùng chung thay vì duplicate template-matching logic.
-- `clear_blockers` đã được tách khỏi runner mà không import ngược runner.
-- `stop_event` được truyền từ controller xuống flow, nên flow không cần biết
-  hotkey được implement như thế nào.
-
-### Điểm cần chú ý
-
-#### Runner vẫn giữ controller và browser bootstrap
-
-`load_actions`, `wait_for_template` và `run_actions` đã được extract khỏi
-`hauntedroom_runner.py`. Runner hiện còn điều phối hotkey, hot-reload và
-bootstrap Playwright. Bước tách tiếp theo hợp lý là `controller.py`, nhưng không
-cần thực hiện cùng lúc với action extraction.
-
-Nguyên tắc: module được extract không được import `hauntedroom_runner`. Nếu cần
-dùng chung type, constant hoặc helper, chuyển dependency đó xuống một module
-tầng thấp hơn.
-
-#### `common.py` có cohesion thấp
-
-`common.py` đang chứa CLI parsing, timeout screenshot, countdown, hotkey
-listener, click logger và lifecycle chờ `Ctrl+C`. Các flow chỉ cần một helper
-nhưng phải phụ thuộc vào module chứa nhiều concern khác.
-
-Tên `common` cũng dễ trở thành nơi đặt mọi helper mới. Về lâu dài nên tách theo
-khả năng cụ thể thay vì tiếp tục mở rộng file này.
-
-#### CV đang trộn pure logic và browser I/O
-
-`find_template`, `find_template_matches` và `load_template` là logic CV; trong
-khi `capture_page_grayscale` và `capture_page_bgr` phụ thuộc Playwright page.
-Tách hai nhóm này sẽ giúp test matching không cần biết browser và giúp các flow
-mock screenshot đơn giản hơn.
-
-#### Action dùng raw dictionary và metadata key nội bộ
-
-`load_actions` thêm các key như `_template_path` và `_blocker_paths`, sau đó
-`run_actions` ngầm giả định các key này tồn tại. Ranh giới hiện tại hoạt động,
-nhưng type checker không thể bảo đảm JSON thô chưa bị truyền thẳng vào runner.
-
-Khi action schema tiếp tục lớn, nên chuyển sang `TypedDict`, dataclass hoặc các
-action type riêng. Chưa cần làm bước này trước khi tách module vì đây là thay
-đổi rộng hơn.
-
-#### Import CV đang bị chồng kiểu
-
-Runner hiện vừa dùng:
-
-```python
-from hauntedroom.cv_pattern_matching import find_template, load_template
-from hauntedroom import cv_pattern_matching
-```
-
-Import module thứ hai phục vụ `importlib.reload`. Đây không phải circular
-import, nhưng function import trực tiếp giữ reference cũ sau khi module được
-reload. Kết quả hiện tại:
-
-- `Shift+2` reload CV rồi reload `automap`, nên auto-map nhận function CV mới.
-- Các function đã import trực tiếp trong runner vẫn dùng implementation cũ cho
-  tới khi process được restart.
-
-Nếu mở rộng hot-reload cho `Shift+1`, nên thống nhất import module và gọi qua
-namespace, ví dụ `cv_pattern_matching.find_template(...)`.
-
-## Hướng refactor đề xuất
-
-Hai bước đầu đã hoàn thành mà không tạo dependency cycle:
-
-1. Hoàn thành: `action_loader.py` chứa `validate_timing_fields` và
-   `load_actions`.
-2. Hoàn thành: `action_runner.py` chứa `wait_for_template`, sentinel và
-   `run_actions`; module này import `clear_blocker`, không có chiều import
-   ngược lại.
-
-Các bước tiếp theo:
-
-3. Tách controller/hot-reload khỏi entrypoint khi cần tiếp tục làm mỏng runner.
-4. Tách `common.py` thành các module có concern cụ thể, ví dụ `cli.py`,
-   `browser_events.py`, `timing.py` và `screenshots.py`.
-5. Tách `cv_pattern_matching.py` thành pure CV matching và page capture. Pure CV
-   phải nằm ở tầng thấp hơn page capture.
-6. Khi số flow tăng, thay chuỗi `if command == ...` trong controller bằng flow
-   registry. Registry map hotkey sang factory/coroutine và controller không cần
-   biết chi tiết từng flow.
-7. Sau khi ranh giới module ổn định, thay raw action dictionary bằng typed
-   action model.
-
-Dependency direction mục tiêu:
-
-```mermaid
-flowchart TD
-    entry[Entrypoint]
-    controller[Standby controller]
-    flows[Action runner / Auto-map / Research]
-    services[Browser events / Timing / Screenshots / Page capture]
-    primitives[Action types / Pure CV / Config]
-
-    entry --> controller
-    controller --> flows
-    flows --> services
-    flows --> primitives
-    services --> primitives
-```
-
-Không module nào ở tầng dưới được import ngược lên tầng trên. Nếu hai module
-cần type hoặc constant của nhau, dependency chung đó phải được đưa xuống
-`primitives`, thay vì để hai module import lẫn nhau.
+- Thêm hotkey flow: tạo module mới trong `flows/` và đăng ký tại composition root.
+- Thêm action type: cập nhật `actions/loader.py` và `actions/runner.py`.
+- Thêm foundational capability: chỉ đặt trong `core` nếu capability không biết
+  feature nào đang sử dụng nó và không import lên `actions`/`flows`.

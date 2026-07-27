@@ -3,12 +3,12 @@ import importlib
 
 from playwright.async_api import async_playwright
 
-from hauntedroom import cv_pattern_matching
-from hauntedroom.action_loader import load_actions
-from hauntedroom.action_runner import run_actions
-from hauntedroom.common import (
+from hauntedroom.actions.loader import load_actions
+from hauntedroom.actions.runner import run_actions
+from hauntedroom.core import vision
+from hauntedroom.core.cli import prepare_runner
+from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
-    prepare_runner,
     start_hotkey_listener,
     start_user_click_logger,
     wait_for_ctrl_c,
@@ -22,9 +22,9 @@ def get_automap_flow(dev_reload: bool = False):
         return automap.run_automap_flow
 
     importlib.invalidate_caches()
-    importlib.reload(cv_pattern_matching)
+    importlib.reload(vision)
     reloaded_automap = importlib.reload(automap)
-    print("Auto-map and CV modules reloaded.", flush=True)
+    print("Auto-map and vision modules reloaded.", flush=True)
     return reloaded_automap.run_automap_flow
 
 

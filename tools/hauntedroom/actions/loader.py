@@ -1,10 +1,18 @@
 import json
 from pathlib import Path
 
-from hauntedroom.cv_pattern_matching import validate_threshold
+from hauntedroom.core.vision import DEFAULT_TEMPLATE_THRESHOLD
 
 
 SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "top_middle"}
+
+
+def validate_threshold(action: dict, index: int) -> None:
+    threshold = float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD))
+    if not 0 < threshold <= 1:
+        raise ValueError(
+            f"Action #{index} threshold must be greater than 0 and at most 1."
+        )
 
 
 def validate_timing_fields(action: dict, index: int) -> None:

@@ -9,12 +9,12 @@ import numpy as np
 TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.common import HOTKEY_SCRIPT, start_hotkey_listener
-from hauntedroom.action_runner import (
+from hauntedroom.actions.runner import (
     SKIP_TEMPLATE_MATCHED,
     run_actions,
     wait_for_template,
 )
+from hauntedroom.core.runtime import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.flows.automap import (
     PROTECT_CLICK,
     PROTECT_CONFIRM_CLICK,
@@ -46,10 +46,10 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
         ]
 
     @patch(
-        "hauntedroom.action_runner.load_template",
+        "hauntedroom.actions.runner.load_template",
         return_value=np.zeros((1, 1), dtype=np.uint8),
     )
-    @patch("hauntedroom.action_runner.wait_for_template", new_callable=AsyncMock)
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
     async def test_first_timeout_skips_rest_of_loop_then_retries(
         self, wait_for_template, _load_template
     ):
@@ -64,10 +64,10 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
         self.assertEqual(self.page.mouse.click.await_count, 2)
 
     @patch(
-        "hauntedroom.action_runner.load_template",
+        "hauntedroom.actions.runner.load_template",
         return_value=np.zeros((1, 1), dtype=np.uint8),
     )
-    @patch("hauntedroom.action_runner.wait_for_template", new_callable=AsyncMock)
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
     async def test_second_timeout_stops_runner(
         self, wait_for_template, _load_template
     ):
@@ -83,10 +83,10 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
         self.page.mouse.click.assert_not_awaited()
 
     @patch(
-        "hauntedroom.action_runner.load_template",
+        "hauntedroom.actions.runner.load_template",
         return_value=np.zeros((1, 1), dtype=np.uint8),
     )
-    @patch("hauntedroom.action_runner.wait_for_template", new_callable=AsyncMock)
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
     async def test_successful_loop_resets_timeout_count(
         self, wait_for_template, _load_template
     ):
@@ -104,10 +104,10 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
         self.assertEqual(self.page.mouse.click.await_count, 2)
 
     @patch(
-        "hauntedroom.action_runner.load_template",
+        "hauntedroom.actions.runner.load_template",
         return_value=np.zeros((1, 1), dtype=np.uint8),
     )
-    @patch("hauntedroom.action_runner.wait_for_template", new_callable=AsyncMock)
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
     async def test_click_template_skip_if_template_avoids_clicking_stale_step(
         self, wait_for_template, load_template
     ):
@@ -123,8 +123,11 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
         self.assertEqual(wait_for_template.await_args.args[-1], skip_path.name)
         self.page.mouse.click.assert_awaited_once_with(10, 20, button="left")
 
-    @patch("hauntedroom.action_runner.capture_page_grayscale", new_callable=AsyncMock)
-    @patch("hauntedroom.action_runner.find_template")
+    @patch(
+        "hauntedroom.actions.runner.capture_page_grayscale",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.actions.runner.find_template")
     async def test_wait_for_template_returns_skip_when_skip_template_matches(
         self, find_template, capture_page_grayscale
     ):
@@ -149,15 +152,15 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
 class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
     @patch("hauntedroom_runner.importlib.reload")
     @patch("hauntedroom_runner.importlib.invalidate_caches")
-    def test_dev_reload_refreshes_cv_before_automap(
+    def test_dev_reload_refreshes_vision_before_automap(
         self, invalidate_caches, reload_module
     ):
-        from hauntedroom import cv_pattern_matching
+        from hauntedroom.core import vision
         from hauntedroom.flows import automap
 
         refreshed_flow = Mock()
         refreshed_automap = Mock(run_automap_flow=refreshed_flow)
-        reload_module.side_effect = [cv_pattern_matching, refreshed_automap]
+        reload_module.side_effect = [vision, refreshed_automap]
 
         result = get_automap_flow(dev_reload=True)
 
@@ -165,7 +168,7 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
         invalidate_caches.assert_called_once_with()
         self.assertEqual(
             reload_module.call_args_list,
-            [call(cv_pattern_matching), call(automap)],
+            [call(vision), call(automap)],
         )
 
     @patch("hauntedroom_runner.importlib.reload", side_effect=AssertionError)

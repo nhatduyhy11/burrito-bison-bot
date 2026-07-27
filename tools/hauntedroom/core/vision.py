@@ -8,14 +8,6 @@ DEFAULT_TEMPLATE_THRESHOLD = 0.9
 TEMPLATE_SCALES = (1.0, 0.67)
 
 
-def validate_threshold(action: dict, index: int) -> None:
-    threshold = float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD))
-    if not 0 < threshold <= 1:
-        raise ValueError(
-            f"Action #{index} threshold must be greater than 0 and at most 1."
-        )
-
-
 def load_template(path: Path) -> np.ndarray:
     template = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
     if template is None:

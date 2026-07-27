@@ -5,8 +5,8 @@ from typing import Awaitable, Callable, Optional
 import cv2
 import numpy as np
 
-from hauntedroom.common import wait_with_countdown
-from hauntedroom.cv_pattern_matching import (
+from hauntedroom.core.runtime import wait_with_countdown
+from hauntedroom.core.vision import (
     capture_page_bgr,
     capture_page_grayscale,
     find_template_matches,

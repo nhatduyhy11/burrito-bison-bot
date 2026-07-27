@@ -2,8 +2,8 @@ import asyncio
 from pathlib import Path
 from typing import Optional
 
-from hauntedroom.common import wait_with_countdown
-from hauntedroom.cv_pattern_matching import (
+from hauntedroom.core.runtime import wait_with_countdown
+from hauntedroom.core.vision import (
     capture_page_grayscale,
     find_template,
     load_template,

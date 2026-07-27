@@ -30,7 +30,7 @@ Khi đang phát triển auto-map, bật hot-reload để giữ nguyên browser v
 uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 
-Sau khi sửa `hauntedroom/flows/automap.py`, `hauntedroom/cv_pattern_matching.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
+Sau khi sửa `hauntedroom/flows/automap.py`, `hauntedroom/core/vision.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
 
 Với `ACTION_LOOP_COUNT = 0`, standby đã tự giữ browser mở cho tới khi bấm `Ctrl+C`, vì vậy không cần thêm `--keep-open` vào lệnh hot-reload. `--keep-open` chỉ có tác dụng khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`.
 
@@ -55,7 +55,7 @@ Các tùy chọn thường dùng:
 - `--width` và `--height`: thay đổi viewport; mặc định hiện tại là `640x720`.
 - `--profile`: thay đổi thư mục browser profile.
 - `--url`: thay đổi URL đích.
-- `--dev-reload`: reload module auto-map và CV mỗi lần bắt đầu `Shift+2`; dùng cho vòng lặp debug `Shift+0` → sửa code/template → `Shift+2`.
+- `--dev-reload`: reload module auto-map và vision mỗi lần bắt đầu `Shift+2`; dùng cho vòng lặp debug `Shift+0` → sửa code/template → `Shift+2`.
 - `--keep-open`: chỉ giữ browser sau khi action hoàn tất khi `ACTION_LOOP_COUNT > 0`; không cần trong standby mặc định.
 
 Xem toàn bộ tùy chọn:
@@ -66,7 +66,7 @@ uv run python tools/hauntedroom_runner.py --help
 
 ## Action file
 
-File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/common.py`.
+File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/core/runtime.py`.
 
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
@@ -141,7 +141,7 @@ loop 1/10 finish
 
 Các thao tác click thủ công trong browser được in ra terminal dưới dạng JSON để có thể chép vào action file. Click do runner tự gửi sẽ không bị ghi lại.
 
-Wait dài có countdown; ngưỡng countdown và số vòng lặp được cấu hình trong `tools/hauntedroom/common.py`.
+Wait dài có countdown; ngưỡng countdown và số vòng lặp được cấu hình trong `tools/hauntedroom/core/runtime.py`.
 
 ## Browser profile
 

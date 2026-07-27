@@ -4,8 +4,8 @@ from typing import Optional
 
 import numpy as np
 
-from hauntedroom.common import save_timeout_screenshot
-from hauntedroom.cv_pattern_matching import capture_page_grayscale, find_template
+from hauntedroom.core.runtime import save_timeout_screenshot
+from hauntedroom.core.vision import capture_page_grayscale, find_template
 
 
 async def clear_blockers(
