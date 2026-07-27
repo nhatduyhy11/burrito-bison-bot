@@ -8,7 +8,7 @@ import numpy as np
 TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.cv_pattern_matching import find_template
+from hauntedroom.cv_pattern_matching import find_template, find_template_matches
 
 
 class FindTemplateScaleTest(TestCase):
@@ -56,3 +56,20 @@ class FindTemplateScaleTest(TestCase):
 
         self.assertEqual((x, y), (51, 68))
         self.assertAlmostEqual(score, 1.0, places=5)
+
+    def test_finds_distinct_matches_ordered_by_largest_y(self):
+        screenshot = np.zeros((140, 120), dtype=np.uint8)
+        screenshot[15:45, 20:50] = self.template
+        screenshot[90:120, 70:100] = self.template
+
+        matches = find_template_matches(
+            screenshot,
+            self.template,
+            "test.png",
+            threshold=0.99,
+            scales=(1.0,),
+        )
+
+        self.assertEqual(len(matches), 2)
+        self.assertEqual(matches[0][:2], (85, 105))
+        self.assertEqual(matches[1][:2], (35, 30))

@@ -10,6 +10,12 @@ TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.common import HOTKEY_SCRIPT, start_hotkey_listener
+from hauntedroom.automap import (
+    PROTECT_CLICK,
+    UPGRADE_CONFIRM_CLICK,
+    region_has_red,
+    run_automap_flow,
+)
 from hauntedroom.custom_macro import run_research_flow
 from hauntedroom_runner import SKIP_TEMPLATE_MATCHED, run_actions, wait_for_template
 
@@ -153,6 +159,98 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
 
         self.assertFalse(completed)
         page.mouse.click.assert_not_awaited()
+
+
+class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
+    def setUp(self):
+        self.page = Mock()
+        self.page.evaluate = AsyncMock()
+        self.page.wait_for_timeout = AsyncMock()
+        self.page.mouse = Mock()
+        self.page.mouse.click = AsyncMock()
+
+    def test_region_has_red_only_checks_configured_rectangle(self):
+        image = np.zeros((720, 640, 3), dtype=np.uint8)
+        image[645, 315] = (20, 30, 220)
+        self.assertTrue(region_has_red(image))
+
+        image[645, 315] = (220, 30, 20)
+        image[100, 100] = (20, 30, 220)
+        self.assertFalse(region_has_red(image))
+
+    @patch(
+        "hauntedroom.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_available_protect_gate_clicks_twice_then_stops(
+        self, capture_page_bgr, _load_template
+    ):
+        capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
+        stop_event = asyncio.Event()
+
+        async def stop_after_second_click(*_args, **_kwargs):
+            if self.page.mouse.click.await_count == 2:
+                stop_event.set()
+
+        self.page.mouse.click.side_effect = stop_after_second_click
+
+        completed = await run_automap_flow(self.page, stop_event)
+
+        self.assertFalse(completed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*PROTECT_CLICK), call(*PROTECT_CLICK)],
+        )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [call(250), call(250), call(250), call(50)],
+        )
+
+    @patch(
+        "hauntedroom.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.automap.find_template_matches")
+    @patch("hauntedroom.automap.capture_page_grayscale", new_callable=AsyncMock)
+    @patch("hauntedroom.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_level_up_uses_largest_y_and_rechecks_priority_one(
+        self,
+        capture_page_bgr,
+        capture_page_grayscale,
+        find_template_matches,
+        _load_template,
+    ):
+        unavailable = np.zeros((720, 640, 3), dtype=np.uint8)
+        unavailable[645, 315] = (0, 0, 255)
+        capture_page_bgr.side_effect = [unavailable, np.zeros_like(unavailable)]
+        capture_page_grayscale.return_value = np.zeros((720, 640), dtype=np.uint8)
+        find_template_matches.return_value = [
+            (100, 200, 0.99),
+            (120, 500, 0.91),
+        ]
+        stop_event = asyncio.Event()
+
+        async def stop_after_protect_clicks(*_args, **_kwargs):
+            if self.page.mouse.click.await_count == 4:
+                stop_event.set()
+
+        self.page.mouse.click.side_effect = stop_after_protect_clicks
+
+        completed = await run_automap_flow(self.page, stop_event)
+
+        self.assertFalse(completed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(120, 500),
+                call(*UPGRADE_CONFIRM_CLICK),
+                call(*PROTECT_CLICK),
+                call(*PROTECT_CLICK),
+            ],
+        )
+        self.assertEqual(capture_page_bgr.await_count, 2)
+        capture_page_grayscale.assert_awaited_once()
 
     async def test_hotkey_listener_is_installed_for_current_and_future_frames(self):
         page = Mock()

@@ -1,0 +1,21 @@
+tests\test_hauntedroom_runner.py read để hiểu flow start-exit trước, 
+hiện t sẽ setup thêm 1 hotkey là shift+2 để thay vì start - exit,
+flow này sẽ chạy auto đi ải cho tới khi win/lose 
+(việc vào / thoát map sẽ do t manual trước để debug, 
+nhưng m hiểu ý tưởng là để mở rộng ở phase sau thành full auto
+ - có 2 flow riêng, start-exit và start-auto chứ ko phải là bỏ flow cũ
+ - điểm swap vào là sau khi start_battle (t sẽ manual tới bước này trước dùm trong phase này trước)
+
+Flow giải thuật auto như sau
+  + 1st prio: capture vào vùng hcn x 310-330 , y 640 655 , tìm xem vùng này có màu đỏ ko
+  (có là unavailable, còn ko có đỏ tức là nó đang available)
+  click vào top middle, delay 800ms, click lần nữa
+  + 2th tìm @lv_up.png , nếu nhiều match thì ưu tiên chọn match có y lớn hơn 
+  (tức match nằm dọc xa nhất thì chọn) , chờ 800ms click x:430, y:366
+  -> tiếp tục đến khi hết case 2
+  -> đang làm mà case1 có thì thực hiện 1 trước rồi mới check lại
+  
+ Giải thích : 1st là check nâng tướng - bảo vệ cửa quan trọng hơn
+ 2nd : đúng buss chỉ có 2 case, nâng resource và nâng hp nhà, resource là higher y và ưu tiên hơn
+ Tạm thời là 2 case đơn giản và priority cao nhất trước,
+ Hãy code để có thể mở rộng vì còn thêm 3 case situation nữa nhưng chưa implement trong phase này
