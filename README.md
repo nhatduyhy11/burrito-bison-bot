@@ -74,7 +74,7 @@ File action là một JSON array. Runner chạy tuần tự toàn bộ array r�
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
-- `Shift+2`: chạy riêng flow auto-map sau khi đã vào map và bấm `start_battle` thủ công. Flow ưu tiên bảo vệ cửa (vùng `x=310..330, y=640..655` không có màu đỏ), sau đó xử lý `automap/lv_up.png`; nếu có nhiều nút nâng cấp thì chọn nút có `y` lớn nhất. Bấm `Shift+0` để dừng flow trong phase hiện tại.
+- `Shift+2`: chạy riêng flow auto-map sau khi đã vào map và bấm `start_battle` thủ công. Flow ưu tiên bảo vệ cửa (vùng giá `x=328..348, y=630..647` phải có đủ pixel trắng; crop sai hoặc không đủ trắng được xem là unavailable), sau đó xử lý `automap/lv_up.png`; nếu có nhiều nút nâng cấp thì chọn nút có `y` lớn nhất. Bấm `Shift+0` để dừng flow trong phase hiện tại.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 400 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
 - `Shift+3` đến `Shift+7`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.

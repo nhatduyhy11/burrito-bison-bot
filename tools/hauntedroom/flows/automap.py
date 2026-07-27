@@ -21,36 +21,45 @@ AUTOMAP_TEMPLATE_THRESHOLD = 0.80
 AUTOMAP_POLL_MS = 400
 AUTOMAP_ACTION_DELAY_MS = 800
 
-PROTECT_REGION = (310, 640, 330, 655)
+# The right-aligned price digit is more stable than the money icon or the
+# complete price. Coordinates are in the fixed 640x720 Playwright viewport.
+PROTECT_AVAILABLE_REGION = (328, 630, 348, 647)
 PROTECT_CLICK = (320, 640)
 PROTECT_CONFIRM_CLICK = (357, 623)
 UPGRADE_CONFIRM_CLICK = (430, 366)
 
+WHITE_MAX_SATURATION = 50
+WHITE_MIN_VALUE = 180
+WHITE_MIN_PIXELS = 8
+
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
 
-def region_has_red(
+def region_has_enough_white(
     image: np.ndarray,
-    region: tuple[int, int, int, int] = PROTECT_REGION,
+    region: tuple[int, int, int, int] = PROTECT_AVAILABLE_REGION,
+    min_pixels: int = WHITE_MIN_PIXELS,
 ) -> bool:
-    """Detect a red unavailable indicator inside an x1,y1,x2,y2 region."""
+    """Return True only when the configured price region is visibly white."""
     x1, y1, x2, y2 = region
     height, width = image.shape[:2]
-    x1, x2 = max(0, x1), min(width, x2)
-    y1, y2 = max(0, y1), min(height, y2)
-    if x1 >= x2 or y1 >= y2:
+    if (
+        x1 < 0
+        or y1 < 0
+        or x2 > width
+        or y2 > height
+        or x1 >= x2
+        or y1 >= y2
+    ):
         return False
 
     hsv = cv2.cvtColor(image[y1:y2, x1:x2], cv2.COLOR_BGR2HSV)
-    hue, saturation, value = np.moveaxis(hsv, -1, 0)
-    # OpenCV stores hue in [0, 179]. True red is close to either endpoint;
-    # checking hue avoids treating the summon button's gold background as red.
-    red_pixels = (
-        ((hue <= 5) | (hue >= 175))
-        & (saturation >= 100)
-        & (value >= 120)
+    _hue, saturation, value = np.moveaxis(hsv, -1, 0)
+    white_pixels = (
+        (saturation <= WHITE_MAX_SATURATION)
+        & (value >= WHITE_MIN_VALUE)
     )
-    return bool(np.any(red_pixels))
+    return int(np.count_nonzero(white_pixels)) >= min_pixels
 
 
 async def _click(page, x: int, y: int) -> None:
@@ -76,7 +85,7 @@ async def run_automap_flow(
     lv_up_template = load_template(lv_up_template_path)
 
     async def protect_gate(frame_bgr: np.ndarray, _frame_gray: np.ndarray) -> bool:
-        if region_has_red(frame_bgr):
+        if not region_has_enough_white(frame_bgr):
             return False
 
         print("Protect gate available; clicking twice with 800ms delay.", flush=True)

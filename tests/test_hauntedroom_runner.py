@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock, call, patch
 
+import cv2
 import numpy as np
 
 TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
@@ -16,10 +17,11 @@ from hauntedroom.actions.runner import (
 )
 from hauntedroom.core.runtime import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.flows.automap import (
+    PROTECT_AVAILABLE_REGION,
     PROTECT_CLICK,
     PROTECT_CONFIRM_CLICK,
     UPGRADE_CONFIRM_CLICK,
-    region_has_red,
+    region_has_enough_white,
     run_automap_flow,
 )
 from hauntedroom.flows.research import run_research_flow
@@ -205,20 +207,44 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.page.mouse = Mock()
         self.page.mouse.click = AsyncMock()
 
-    def test_region_has_red_only_checks_configured_rectangle(self):
+    @staticmethod
+    def make_protect_available(image):
+        x1, y1, _, _ = PROTECT_AVAILABLE_REGION
+        image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
+        return image
+
+    def test_region_requires_enough_white_inside_configured_rectangle(self):
         image = np.zeros((720, 640, 3), dtype=np.uint8)
-        image[645, 315] = (20, 30, 220)
-        self.assertTrue(region_has_red(image))
+        x1, y1, _, _ = PROTECT_AVAILABLE_REGION
+        image[y1 : y1 + 2, x1 : x1 + 3] = (255, 255, 255)
+        self.assertFalse(region_has_enough_white(image))
 
-        image[645, 315] = (220, 30, 20)
-        image[100, 100] = (20, 30, 220)
-        self.assertFalse(region_has_red(image))
+        image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
+        self.assertTrue(region_has_enough_white(image))
 
-    def test_region_has_red_does_not_treat_gold_as_red(self):
+    def test_region_does_not_treat_gold_as_white(self):
         image = np.zeros((720, 640, 3), dtype=np.uint8)
-        image[640:655, 310:330] = (40, 180, 245)
+        x1, y1, x2, y2 = PROTECT_AVAILABLE_REGION
+        image[y1:y2, x1:x2] = (40, 180, 245)
 
-        self.assertFalse(region_has_red(image))
+        self.assertFalse(region_has_enough_white(image))
+
+    def test_region_outside_image_fails_closed(self):
+        image = np.full((100, 100, 3), 255, dtype=np.uint8)
+
+        self.assertFalse(region_has_enough_white(image))
+
+    def test_available_and_unavailable_reference_colors(self):
+        misc_dir = TOOLS_DIR / "rooms" / "misc"
+        available = cv2.imread(str(misc_dir / "white_available.png"))
+        unavailable = cv2.imread(str(misc_dir / "red_unavailable.png"))
+
+        self.assertTrue(
+            region_has_enough_white(available, region=(90, 8, 140, 30))
+        )
+        self.assertFalse(
+            region_has_enough_white(unavailable, region=(90, 8, 140, 30))
+        )
 
     @patch(
         "hauntedroom.flows.automap.load_template",
@@ -228,7 +254,9 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     async def test_available_protect_gate_clicks_twice_then_stops(
         self, capture_page_bgr, _load_template
     ):
-        capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
         stop_event = asyncio.Event()
 
         async def stop_after_second_click(*_args, **_kwargs):
@@ -262,8 +290,8 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         _load_template,
     ):
         unavailable = np.zeros((720, 640, 3), dtype=np.uint8)
-        unavailable[645, 315] = (0, 0, 255)
-        capture_page_bgr.side_effect = [unavailable, np.zeros_like(unavailable)]
+        available = self.make_protect_available(np.zeros_like(unavailable))
+        capture_page_bgr.side_effect = [unavailable, available]
         find_template_matches.return_value = [
             (100, 200, 0.99),
             (120, 500, 0.91),
