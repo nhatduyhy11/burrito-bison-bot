@@ -24,6 +24,16 @@ Mở runner với action mặc định. Với `ACTION_LOOP_COUNT = 0`, runner v�
 uv run python tools/hauntedroom_runner.py
 ```
 
+Khi đang phát triển auto-map, bật hot-reload để giữ nguyên browser và session:
+
+```powershell
+uv run python tools/hauntedroom_runner.py --dev-reload
+```
+
+Sau khi sửa `hauntedroom/automap.py`, `hauntedroom/cv_pattern_matching.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
+
+Với `ACTION_LOOP_COUNT = 0`, standby đã tự giữ browser mở cho tới khi bấm `Ctrl+C`, vì vậy không cần thêm `--keep-open` vào lệnh hot-reload. `--keep-open` chỉ có tác dụng khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`.
+
 Khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`, giữ browser mở sau khi chạy xong:
 
 ```shell
@@ -45,6 +55,8 @@ Các tùy chọn thường dùng:
 - `--width` và `--height`: thay đổi viewport; mặc định hiện tại là `640x720`.
 - `--profile`: thay đổi thư mục browser profile.
 - `--url`: thay đổi URL đích.
+- `--dev-reload`: reload module auto-map và CV mỗi lần bắt đầu `Shift+2`; dùng cho vòng lặp debug `Shift+0` → sửa code/template → `Shift+2`.
+- `--keep-open`: chỉ giữ browser sau khi action hoàn tất khi `ACTION_LOOP_COUNT > 0`; không cần trong standby mặc định.
 
 Xem toàn bộ tùy chọn:
 

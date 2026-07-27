@@ -12,12 +12,18 @@ sys.path.insert(0, str(TOOLS_DIR))
 from hauntedroom.common import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.automap import (
     PROTECT_CLICK,
+    PROTECT_CONFIRM_CLICK,
     UPGRADE_CONFIRM_CLICK,
     region_has_red,
     run_automap_flow,
 )
 from hauntedroom.custom_macro import run_research_flow
-from hauntedroom_runner import SKIP_TEMPLATE_MATCHED, run_actions, wait_for_template
+from hauntedroom_runner import (
+    SKIP_TEMPLATE_MATCHED,
+    get_automap_flow,
+    run_actions,
+    wait_for_template,
+)
 
 
 class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
@@ -141,6 +147,32 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
 
 
 class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
+    @patch("hauntedroom_runner.importlib.reload")
+    @patch("hauntedroom_runner.importlib.invalidate_caches")
+    def test_dev_reload_refreshes_cv_before_automap(
+        self, invalidate_caches, reload_module
+    ):
+        from hauntedroom import automap, cv_pattern_matching
+
+        refreshed_flow = Mock()
+        refreshed_automap = Mock(run_automap_flow=refreshed_flow)
+        reload_module.side_effect = [cv_pattern_matching, refreshed_automap]
+
+        result = get_automap_flow(dev_reload=True)
+
+        self.assertIs(result, refreshed_flow)
+        invalidate_caches.assert_called_once_with()
+        self.assertEqual(
+            reload_module.call_args_list,
+            [call(cv_pattern_matching), call(automap)],
+        )
+
+    @patch("hauntedroom_runner.importlib.reload", side_effect=AssertionError)
+    def test_normal_mode_does_not_reload(self, _reload_module):
+        from hauntedroom import automap
+
+        self.assertIs(get_automap_flow(), automap.run_automap_flow)
+
     async def test_stop_event_ends_flow_without_clicking(self):
         page = Mock()
         page.evaluate = AsyncMock()
@@ -178,6 +210,12 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         image[100, 100] = (20, 30, 220)
         self.assertFalse(region_has_red(image))
 
+    def test_region_has_red_does_not_treat_gold_as_red(self):
+        image = np.zeros((720, 640, 3), dtype=np.uint8)
+        image[640:655, 310:330] = (40, 180, 245)
+
+        self.assertFalse(region_has_red(image))
+
     @patch(
         "hauntedroom.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
@@ -200,7 +238,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.assertFalse(completed)
         self.assertEqual(
             self.page.mouse.click.await_args_list,
-            [call(*PROTECT_CLICK), call(*PROTECT_CLICK)],
+            [call(*PROTECT_CLICK), call(*PROTECT_CONFIRM_CLICK)],
         )
         self.assertEqual(
             self.page.wait_for_timeout.await_args_list,
@@ -246,11 +284,15 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
                 call(120, 500),
                 call(*UPGRADE_CONFIRM_CLICK),
                 call(*PROTECT_CLICK),
-                call(*PROTECT_CLICK),
+                call(*PROTECT_CONFIRM_CLICK),
             ],
         )
         self.assertEqual(capture_page_bgr.await_count, 2)
         capture_page_grayscale.assert_awaited_once()
+        self.assertEqual(
+            find_template_matches.call_args.kwargs["threshold"],
+            0.80,
+        )
 
     async def test_hotkey_listener_is_installed_for_current_and_future_frames(self):
         page = Mock()

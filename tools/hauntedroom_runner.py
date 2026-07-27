@@ -1,4 +1,5 @@
 import asyncio
+import importlib
 import json
 from pathlib import Path
 from typing import Optional, Tuple
@@ -22,7 +23,8 @@ from hauntedroom.common import (
     wait_for_ctrl_c,
     wait_with_countdown,
 )
-from hauntedroom.automap import run_automap_flow
+from hauntedroom import automap, cv_pattern_matching
+from hauntedroom.clear_blocker import clear_blockers
 from hauntedroom.custom_macro import run_research_flow
 
 
@@ -229,86 +231,6 @@ async def wait_for_template(
         await page.wait_for_timeout(poll_ms)
 
 
-async def clear_blockers(
-    page,
-    blocker_paths: list[Path],
-    until_template_path: Path,
-    templates: dict[Path, np.ndarray],
-    threshold: float,
-    timeout_ms: int,
-    poll_ms: int,
-    delay_ms: int,
-    click_positions: dict[str, str],
-    label: str,
-    stop_event: Optional[asyncio.Event] = None,
-) -> bool:
-    loop = asyncio.get_running_loop()
-    deadline = loop.time() + timeout_ms / 1000
-    best_until_score = -1.0
-
-    while True:
-        if stop_event is not None and stop_event.is_set():
-            return False
-        screenshot = await capture_page_grayscale(page)
-
-        blocker_match = None
-        for blocker_path in blocker_paths:
-            x, y, score = find_template(
-                screenshot,
-                templates[blocker_path],
-                blocker_path.name,
-                click_positions.get(blocker_path.name, "center"),
-            )
-            if score >= threshold:
-                blocker_match = (score, blocker_path, x, y)
-                break
-
-        if blocker_match:
-            score, blocker_path, x, y = blocker_match
-            print(
-                f"{label}: blocker {blocker_path.name} at {x},{y}, "
-                f"score={score:.3f}; click in {delay_ms}ms",
-                flush=True,
-            )
-            await page.wait_for_timeout(delay_ms)
-            if stop_event is not None and stop_event.is_set():
-                return False
-            await page.evaluate(
-                "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-            )
-            await page.mouse.click(x, y)
-            await page.wait_for_timeout(poll_ms)
-            deadline = loop.time() + timeout_ms / 1000
-            continue
-
-        _, _, until_score = find_template(
-            screenshot,
-            templates[until_template_path],
-            until_template_path.name,
-        )
-        best_until_score = max(best_until_score, until_score)
-        if until_score >= threshold:
-            print(
-                f"{label}: no blocker; {until_template_path.name} ready "
-                f"(score={until_score:.3f})",
-                flush=True,
-            )
-            return True
-
-        if loop.time() >= deadline:
-            screenshot_path = await save_timeout_screenshot(page, label)
-            screenshot_suffix = (
-                f", screenshot={screenshot_path}" if screenshot_path else ""
-            )
-            raise TimeoutError(
-                f"{label}: timed out clearing blockers and waiting for "
-                f"{until_template_path.name!r}; best score={best_until_score:.3f}, "
-                f"threshold={threshold:.3f}{screenshot_suffix}."
-            )
-
-        await page.wait_for_timeout(poll_ms)
-
-
 async def run_actions(
     page,
     actions: list[dict],
@@ -500,7 +422,22 @@ async def run_actions(
     return True
 
 
-async def run_standby_controller(page, actions: list[dict]) -> None:
+def get_automap_flow(dev_reload: bool = False):
+    if not dev_reload:
+        return automap.run_automap_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(cv_pattern_matching)
+    reloaded_automap = importlib.reload(automap)
+    print("Auto-map and CV modules reloaded.", flush=True)
+    return reloaded_automap.run_automap_flow
+
+
+async def run_standby_controller(
+    page,
+    actions: list[dict],
+    dev_reload: bool = False,
+) -> None:
     command_queue: asyncio.Queue[str] = asyncio.Queue()
     await start_hotkey_listener(page, command_queue)
 
@@ -560,6 +497,17 @@ async def run_standby_controller(page, actions: list[dict]) -> None:
                 )
                 continue
 
+            automap_flow = None
+            if command == "2":
+                try:
+                    automap_flow = get_automap_flow(dev_reload)
+                except Exception as error:
+                    print(
+                        f"Auto-map reload failed; runner remains idle: {error}",
+                        flush=True,
+                    )
+                    continue
+
             stop_event = asyncio.Event()
             print(f"Starting {command_names[command]} flow...", flush=True)
             if command == "1":
@@ -567,7 +515,7 @@ async def run_standby_controller(page, actions: list[dict]) -> None:
                     run_actions(page, actions, loop_count=None, stop_event=stop_event)
                 )
             elif command == "2":
-                flow_task = asyncio.create_task(run_automap_flow(page, stop_event))
+                flow_task = asyncio.create_task(automap_flow(page, stop_event))
             else:
                 flow_task = asyncio.create_task(run_research_flow(page, stop_event))
     finally:
@@ -599,7 +547,7 @@ async def main() -> None:
             await start_user_click_logger(page)
 
             if ACTION_LOOP_COUNT == 0:
-                await run_standby_controller(page, actions)
+                await run_standby_controller(page, actions, args.dev_reload)
             else:
                 await run_actions(page, actions)
                 if args.keep_open:

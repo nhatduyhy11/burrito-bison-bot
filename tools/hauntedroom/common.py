@@ -89,6 +89,14 @@ def prepare_runner(
         action="store_true",
         help="Keep the browser open after actions finish.",
     )
+    parser.add_argument(
+        "--dev-reload",
+        action="store_true",
+        help=(
+            "Reload auto-map and CV modules whenever Shift+2 starts, while "
+            "keeping the current browser session open."
+        ),
+    )
     args = parser.parse_args()
 
     # Standby mode still needs the actions so a hotkey can start the flow later.
