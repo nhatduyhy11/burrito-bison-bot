@@ -30,7 +30,7 @@ Khi đang phát triển auto-map, bật hot-reload để giữ nguyên browser v
 uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 
-Sau khi sửa `hauntedroom/automap.py`, `hauntedroom/cv_pattern_matching.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
+Sau khi sửa `hauntedroom/flows/automap.py`, `hauntedroom/cv_pattern_matching.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
 
 Với `ACTION_LOOP_COUNT = 0`, standby đã tự giữ browser mở cho tới khi bấm `Ctrl+C`, vì vậy không cần thêm `--keep-open` vào lệnh hot-reload. `--keep-open` chỉ có tác dụng khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`.
 

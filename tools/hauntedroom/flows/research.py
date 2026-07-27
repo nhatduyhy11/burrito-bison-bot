@@ -10,7 +10,7 @@ from hauntedroom.cv_pattern_matching import (
 )
 
 
-MISC_TEMPLATE_DIR = Path(__file__).resolve().parents[1] / "rooms" / "misc"
+MISC_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "misc"
 RESEARCH_AVAILABLE_TEMPLATE_PATH = MISC_TEMPLATE_DIR / "research_available.png"
 RESEARCH_ACTIVE_TEMPLATE_PATH = MISC_TEMPLATE_DIR / "research_active.png"
 RESEARCH_TEMPLATE_THRESHOLD = 0.6

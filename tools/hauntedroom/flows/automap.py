@@ -14,7 +14,7 @@ from hauntedroom.cv_pattern_matching import (
 )
 
 
-AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[1] / "rooms" / "automap"
+AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "automap"
 LV_UP_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_up.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
