@@ -1,89 +1,163 @@
-# Burrito Bison Bot
+# Haunted Room Runner
 
-This is an example showing how a basic Computer Vision technique of Template Matching can be used to automate gameplay.
-Goal of this exercise is simply to explore how far one can get by using only template matching in OpenCV to automate primary tasks within the game.
+Mã nguồn Burrito Bison cũ được giữ làm tài liệu tham khảo độc lập tại
+[`ref_cv/`](ref_cv/README.md); runner và test ở root hiện chỉ dành cho Haunted Room.
 
-This exercise is based on [Burrito Bison: Launcha Libre](http://www.kongregate.com/games/JuicyBeast/burrito-bison-launcha-libre) free online game, a goal of which is to throw the main character as far as possible, crush gummy bears to gain gold, use gold to buy upgrades, and use upgrades to throw yourself as far as possible.
-If you've never seen the game before, here is [a human playing it](https://youtu.be/VQve8LoiFyQ).
+Runner Playwright dùng OpenCV template matching để tìm và click các nút trong Haunted Room. Script dùng browser context của Playwright, không điều khiển chuột ở cấp hệ điều hành.
 
-Why this game? The main reason is a fairly easily automatable gameplay. Controls require the player only use the mouse.
-There is also the grinding factor, requiring the player grind coins for upgrades to progress.
+## Yêu cầu
 
-## Notes
+- Có [`uv`](https://docs.astral.sh/uv/) trong `PATH`.
+- Đã cài Google Chrome trên Windows hoặc macOS.
+- Chạy lệnh từ thư mục gốc của repo.
 
-What works:
+Playwright được khai báo trong `pyproject.toml` và khóa phiên bản trong `uv.lock`. Cài hoặc đồng bộ toàn bộ dependency bằng:
 
-- Launching the character;
-- Skipping Pinata ads;
-- Skipping mission screen;
-- Restarting the round;
-- Using the rocket;
-
-What doesn't work or could be improved:
-
-- Rocket is used whenever it fills up. It could be better timed for when there are targets below;
-- Only a single blast of a rocket is used. At later game stages multiple available blasts could be used when necessary;
-- Special capabilities gained from gummy bears aren't used (targeting with barrels, rockets, jumping jack);
-- Player launch isn't timed or targeted. This may cause slower speeds at start, or completely miss the opponent;
-- Some screens are not skipped, e.g. cards gained, unlocked items;
-- Shopping for upgrades.
-
-As it is right now, the bot can work semi-autonomously, requiring help to start the game, buy new upgrades and help it get past non-automated screens (such as new upgrade notices).
-
-## Requirements
-
-- Python 3.9+
-- See [`pyproject.toml`](pyproject.toml) for the full list (OpenCV, NumPy, mss, Pillow, pynput).
-
-## Installation
-
-Dependencies are declared once in `pyproject.toml`; both tools below read them from there.
-
-### Option A — `uv` (recommended)
-
-[`uv`](https://docs.astral.sh/uv/) creates the virtual environment and installs the exact locked versions in seconds:
-
-```bash
+```shell
 uv sync
 ```
 
-You don't need to activate anything — run commands through `uv run`, which uses `.venv` automatically:
+Khi cần thêm Playwright vào một project `uv` mới, lệnh tương đương phù hợp với `pip install playwright` là `uv add playwright`; lệnh này cập nhật cả `pyproject.toml` và `uv.lock`. Browser mặc định là Chrome cài trên máy và được Playwright tự tìm theo hệ điều hành, không dùng đường dẫn hardcoded.
 
-```bash
-uv run main.py
+## Lệnh chạy
+
+Mở runner với action mặc định. Với `ACTION_LOOP_COUNT = 0`, runner vào chế độ standby:
+
+```shell
+uv run python tools/hauntedroom_runner.py
 ```
 
-### Option B — `pip` (fallback)
+Khi đang phát triển auto-map, bật hot-reload để giữ nguyên browser và session:
 
-If you don't have `uv`, standard `pip` reads the same dependencies from `pyproject.toml`:
-
-```bash
-python -m venv venv
-# Windows (PowerShell/cmd): venv\Scripts\activate
-# macOS/Linux:              source venv/bin/activate
-pip install .
+```powershell
+uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 
-Then run with:
+Sau khi sửa `hauntedroom/flows/automap.py`, `hauntedroom/core/vision.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
 
-```bash
-python main.py
+Với `ACTION_LOOP_COUNT = 0`, standby đã tự giữ browser mở cho tới khi bấm `Ctrl+C`, vì vậy không cần thêm `--keep-open` vào lệnh hot-reload. `--keep-open` chỉ có tác dụng khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`.
+
+Khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`, giữ browser mở sau khi chạy xong:
+
+```shell
+uv run python tools/hauntedroom_runner.py --keep-open
 ```
 
-### Notes
+Chạy một file action khác:
 
-- OpenCV comes from the [`opencv-python`](https://pypi.org/project/opencv-python/) wheel, which ships prebuilt binaries for Windows, macOS and Linux. No global install or source build is required.
-- Earlier versions of this README installed OpenCV system-wide and used `virtualenv --system-site-packages`. That is no longer needed — all dependencies live inside the virtual environment.
+```shell
+uv run python tools/hauntedroom_runner.py --actions tools/my_actions.json
+```
 
-## Running the bot
+Các tùy chọn thường dùng:
 
-1) Run a resized version of Burrito Bison in your browser with `cd website && python -m http.server 8080`
-2) Open up `http://localhost:8080` in your browser
-3) Run the bot with `uv run main.py` (or `python main.py` if you used the pip flow)
-4) Switch to the browser and ensure that the game screen is fully visible on your screen in the top left corner.
-5) Go through the interfaces manually and put the game into a state where you would launch the bison from the Ring. The bot should pick it up and launch the hero from there.
+- `--browser chrome`: dùng Google Chrome; đây là mặc định và hoạt động trên Windows/macOS.
+- `--browser msedge`: dùng Microsoft Edge đã cài trên máy.
+- `--browser chromium`: dùng Chromium do Playwright quản lý; browser binary phải được cài riêng.
+- `--headless`: chạy không hiển thị cửa sổ browser.
+- `--width` và `--height`: thay đổi viewport; mặc định hiện tại là `640x720`.
+- `--profile`: thay đổi thư mục browser profile.
+- `--url`: thay đổi URL đích.
+- `--dev-reload`: reload module auto-map và vision mỗi lần bắt đầu `Shift+2`; dùng cho vòng lặp debug `Shift+0` → sửa code/template → `Shift+2`.
+- `--keep-open`: chỉ giữ browser sau khi action hoàn tất khi `ACTION_LOOP_COUNT > 0`; không cần trong standby mặc định.
 
-Tips:
+Xem toàn bộ tùy chọn:
 
-- This bot can no longer be run on Kongregate's website, you have to run a resized version of the game locally. This bot was tailored for Burrito Bison game to be run in 1173x660 px game screen, however Kongregate has since changed their design slightly, running the game in 1280x768 resolution, which throws off scaling in image templates.
-- The bot is configured to work only with 1920x1080 screen resolution. If you have an HD (1366x768) or a 4K monitor, you may need to play around with game screen placement, or change observed area in `vision.py`
+```shell
+uv run python tools/hauntedroom_runner.py --help
+```
+
+## Action file
+
+File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/core/runtime.py`.
+
+Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
+
+- `Shift+1`: chạy flow enter-exit room liên tục.
+- `Shift+2`: chạy riêng flow auto-map sau khi đã vào map và bấm `start_battle` thủ công. Flow ưu tiên bảo vệ cửa (vùng `x=310..330, y=640..655` không có màu đỏ), sau đó xử lý `automap/lv_up.png`; nếu có nhiều nút nâng cấp thì chọn nút có `y` lớn nhất. Bấm `Shift+0` để dừng flow trong phase hiện tại.
+- `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 400 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
+- `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
+- `Shift+3` đến `Shift+7`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
+- `Ctrl+C` trong terminal: đóng runner và browser.
+
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit7`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`.
+
+Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các checkpoint có thể xuất hiện popup:
+
+```json
+[
+  { "type": "clear_blockers", "templates_dir": "rooms/blocker", "until_template": "rooms/start_home.png" },
+  { "type": "click_template", "template": "rooms/start_home.png", "note": "Start HOME" },
+  { "type": "click_template", "template": "rooms/start_battle.png", "note": "Start Battle" }
+]
+```
+
+- `click_template`: chụp viewport và dùng OpenCV tìm template liên tục. Khi score đạt threshold, runner chờ `delay_ms` rồi click tâm template.
+- `clear_blockers`: match các file PNG trong `templates_dir` theo thứ tự `priority`. Runner click blocker đầu tiên đạt threshold rồi quét lại từ đầu. Khi thấy `until_template` và không còn blocker, runner chuyển sang action kế tiếp mà không click `until_template`.
+- `click`: bắt buộc có `x`, `y`; `button` và `note` là tùy chọn.
+- `wait`: bắt buộc có `ms`; `note` là tùy chọn.
+
+Đường dẫn `template` được tính tương đối từ file action JSON. Các tùy chọn của `click_template`:
+
+- `threshold`: mặc định `0.9`.
+- `timeout_ms`: thời gian tối đa chờ ảnh, mặc định `30000`.
+- `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `400`.
+- `delay_ms`: thời gian chờ trước mỗi click, gồm cả click đầu sau detect và các click liên tiếp; mặc định `500`.
+- `click_count`: số lần click template sau khi detect, mặc định `1`.
+- `button`: mặc định `left`.
+- `skip_if_template`: template báo action hiện tại đã không còn cần thiết; nếu template này đạt cùng `threshold`, runner bỏ qua click hiện tại và chuyển sang action kế tiếp.
+
+`clear_blockers` hỗ trợ `click_positions` để đổi điểm click theo tên file. Vị trí mặc định là `center`; `top_middle` click chính giữa cạnh trên của vùng match:
+
+```json
+{ "click_positions": { "overlay_newbie.png": "top_middle" } }
+```
+
+Thứ tự kiểm tra blocker được cấu hình bằng tên file trong `priority`. Các PNG không được liệt kê sẽ được nối vào cuối theo thứ tự tên file:
+
+```json
+{
+  "priority": [
+    "lubu_close.png",
+    "overlay_close.png",
+    "overlay_close_2.png",
+    "overlay_newbie.png"
+  ]
+}
+```
+
+Không có thời gian load cố định trước flow. Template đầu tiên đóng vai trò điều kiện báo game đã load.
+
+Flow cũng chạy `clear_blockers` sau khi click `start_home` và trước khi click `start_battle`, vì blocker có thể xuất hiện trong lúc chuyển giữa hai màn hình này.
+
+File mặc định là `tools/hauntedroom_actions.sample.json`.
+
+## Log và ghi tọa độ
+
+Mỗi vòng lặp có log bắt đầu và hoàn tất:
+
+```text
+loop 1/10 start
+...
+loop 1/10 finish
+```
+
+Các thao tác click thủ công trong browser được in ra terminal dưới dạng JSON để có thể chép vào action file. Click do runner tự gửi sẽ không bị ghi lại.
+
+Wait dài có countdown; ngưỡng countdown và số vòng lặp được cấu hình trong `tools/hauntedroom/core/runtime.py`.
+
+## Browser profile
+
+Profile mặc định nằm tại `.tmp/hauntedroom-profile`. Cookies, localStorage, IndexedDB và session game được giữ lại giữa các lần chạy.
+
+Chỉ một browser instance được dùng profile này tại cùng thời điểm. Nếu một lần chạy với `--keep-open` vẫn còn hoạt động, lần chạy tiếp theo có thể báo profile đang được sử dụng.
+
+Xóa profile sẽ reset session và có thể làm game quay lại luồng guest/intro.
+
+## Giới hạn hiện tại
+
+- Template matching thử hai scale cố định `1.0` và `0.67`, sau đó dùng kết quả có score cao hơn.
+- Viewport nên được giữ cố định ở kích thước dùng khi chụp template.
+- Khi hết `timeout_ms` lần đầu, runner ghi `timeout count=1/2`, bỏ phần action còn lại của loop hiện tại và thử lại từ đầu ở loop kế tiếp.
+- Hai loop timeout liên tiếp sẽ dừng runner. Một loop hoàn tất không timeout sẽ reset bộ đếm về `0`.
+- Mỗi lần timeout, runner lưu screenshot cuối vào `.tmp/hauntedroom-timeouts/` và in đường dẫn file trong terminal.

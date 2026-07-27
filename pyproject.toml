@@ -1,21 +1,14 @@
 [project]
-name = "burrito-bison-bot"
+name = "hauntedroom-bot"
 version = "0.1.0"
-description = "A template-matching bot that automates Burrito Bison: Launcha Libre using OpenCV"
+description = "Playwright and OpenCV automation for Haunted Room"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "opencv-python",
     "numpy",
-    "mss",
-    "pillow",
-    "pynput",
+    "opencv-python",
     "playwright>=1.60.0",
 ]
 
-[build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-py-modules = []
+[tool.uv]
+package = false

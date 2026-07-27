@@ -254,22 +254,16 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch(
-        "hauntedroom.flows.automap.capture_page_grayscale",
-        new_callable=AsyncMock,
-    )
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     async def test_level_up_uses_largest_y_and_rechecks_priority_one(
         self,
         capture_page_bgr,
-        capture_page_grayscale,
         find_template_matches,
         _load_template,
     ):
         unavailable = np.zeros((720, 640, 3), dtype=np.uint8)
         unavailable[645, 315] = (0, 0, 255)
         capture_page_bgr.side_effect = [unavailable, np.zeros_like(unavailable)]
-        capture_page_grayscale.return_value = np.zeros((720, 640), dtype=np.uint8)
         find_template_matches.return_value = [
             (100, 200, 0.99),
             (120, 500, 0.91),
@@ -295,7 +289,8 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             ],
         )
         self.assertEqual(capture_page_bgr.await_count, 2)
-        capture_page_grayscale.assert_awaited_once()
+        matched_frame = find_template_matches.call_args.args[0]
+        self.assertEqual(matched_frame.shape, (720, 640))
         self.assertEqual(
             find_template_matches.call_args.kwargs["threshold"],
             0.80,

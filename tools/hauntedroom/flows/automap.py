@@ -8,7 +8,6 @@ import numpy as np
 from hauntedroom.core.runtime import wait_with_countdown
 from hauntedroom.core.vision import (
     capture_page_bgr,
-    capture_page_grayscale,
     find_template_matches,
     load_template,
 )
@@ -27,7 +26,7 @@ PROTECT_CLICK = (320, 640)
 PROTECT_CONFIRM_CLICK = (357, 623)
 UPGRADE_CONFIRM_CLICK = (430, 366)
 
-SituationHandler = Callable[[], Awaitable[bool]]
+SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
 
 def region_has_red(
@@ -76,9 +75,8 @@ async def run_automap_flow(
     """
     lv_up_template = load_template(lv_up_template_path)
 
-    async def protect_gate() -> bool:
-        screenshot = await capture_page_bgr(page)
-        if region_has_red(screenshot):
+    async def protect_gate(frame_bgr: np.ndarray, _frame_gray: np.ndarray) -> bool:
+        if region_has_red(frame_bgr):
             return False
 
         print("Protect gate available; clicking twice with 800ms delay.", flush=True)
@@ -90,10 +88,9 @@ async def run_automap_flow(
         await _click(page, *PROTECT_CONFIRM_CLICK)
         return True
 
-    async def level_up() -> bool:
-        screenshot = await capture_page_grayscale(page)
+    async def level_up(_frame_bgr: np.ndarray, frame_gray: np.ndarray) -> bool:
         matches = find_template_matches(
-            screenshot,
+            frame_gray,
             lv_up_template,
             lv_up_template_path.name,
             threshold=threshold,
@@ -122,10 +119,12 @@ async def run_automap_flow(
     )
 
     while stop_event is None or not stop_event.is_set():
+        frame_bgr = await capture_page_bgr(page)
+        frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
         for handler in handlers:
             if stop_event is not None and stop_event.is_set():
                 break
-            if await handler():
+            if await handler(frame_bgr, frame_gray):
                 break
         else:
             await page.wait_for_timeout(AUTOMAP_POLL_MS)
