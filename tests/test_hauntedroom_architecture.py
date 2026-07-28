@@ -41,10 +41,18 @@ class HauntedRoomDependencyTest(TestCase):
             self.assertEqual(forbidden, set(), path.name)
 
     def test_flows_are_independent_from_actions_and_each_other(self):
+        allowed_support_imports = {
+            "automap.py": {
+                "hauntedroom.flows.boss_action",
+                "hauntedroom.flows.map_vision_helper",
+            },
+            "boss_action.py": {"hauntedroom.flows.map_vision_helper"},
+        }
         for path in (PACKAGE_DIR / "flows").glob("*.py"):
             forbidden = {
                 module
                 for module in internal_imports(path)
                 if module.startswith(("hauntedroom.actions", "hauntedroom.flows"))
+                and module not in allowed_support_imports.get(path.name, set())
             }
             self.assertEqual(forbidden, set(), path.name)

@@ -2,7 +2,7 @@ import asyncio
 import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import AsyncMock, Mock, call, patch
+from unittest.mock import ANY, AsyncMock, Mock, call, patch
 
 import cv2
 import numpy as np
@@ -18,21 +18,36 @@ from hauntedroom.actions.runner import (
 from hauntedroom.core.runtime import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.flows.automap import (
     AUTOMAP_POLL_MS,
-    BOSS_CRITICAL_REGION,
+    AutomapConfig,
+    AutomapFlow,
     BOSS_HP_TEMPLATE_PATH,
     LV_SPIN_CLICK_OFFSET_X,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
-    PROTECT_AVAILABLE_REGION,
     PROTECT_CLICK,
     PROTECT_CONFIRM_CLICK,
     UPGRADE_CONFIRM_CLICK,
+    run_automap_flow,
+)
+from hauntedroom.flows.boss_action import (
+    PET_ACTION_POSITION,
+    PET_READY_TEMPLATE_PATH,
+    SPELL_ACTION_POSITION,
+    SPELL_READY_TEMPLATE_PATH,
+    activate_boss_spell,
+    deploy_boss_pet,
+)
+from hauntedroom.flows.research import run_research_flow
+from hauntedroom.flows.map_vision_helper import (
+    BOSS_CRITICAL_REGION,
+    PET_READY_REGION,
+    PROTECT_AVAILABLE_REGION,
+    SPELL_READY_REGION,
+    boss_action_has_ready_glow,
     find_boss_health_bar,
     find_first_available_build_option,
     region_has_enough_white,
-    run_automap_flow,
 )
-from hauntedroom.flows.research import run_research_flow
 from hauntedroom_runner import get_automap_flow, run_standby_controller
 
 
@@ -166,11 +181,16 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
         self, invalidate_caches, reload_module
     ):
         from hauntedroom.core import vision
-        from hauntedroom.flows import automap
+        from hauntedroom.flows import automap, boss_action, map_vision_helper
 
         refreshed_flow = Mock()
         refreshed_automap = Mock(run_automap_flow=refreshed_flow)
-        reload_module.side_effect = [vision, refreshed_automap]
+        reload_module.side_effect = [
+            vision,
+            map_vision_helper,
+            boss_action,
+            refreshed_automap,
+        ]
 
         result = get_automap_flow(dev_reload=True)
 
@@ -178,7 +198,12 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
         invalidate_caches.assert_called_once_with()
         self.assertEqual(
             reload_module.call_args_list,
-            [call(vision), call(automap)],
+            [
+                call(vision),
+                call(map_vision_helper),
+                call(boss_action),
+                call(automap),
+            ],
         )
 
     @patch("hauntedroom_runner.importlib.reload", side_effect=AssertionError)
@@ -240,6 +265,9 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.page.wait_for_timeout = AsyncMock()
         self.page.mouse = Mock()
         self.page.mouse.click = AsyncMock()
+        self.page.mouse.move = AsyncMock()
+        self.page.mouse.down = AsyncMock()
+        self.page.mouse.up = AsyncMock()
 
     @staticmethod
     def make_protect_available(image):
@@ -315,6 +343,111 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
 
         self.assertIsNone(find_boss_health_bar(frame, template))
 
+    def test_ready_glow_detector_accepts_supplied_live_capture(self):
+        capture = cv2.imread(
+            str(
+                TOOLS_DIR.parent
+                / ".tmp"
+                / "hauntedroom-captures"
+                / "pet-spell-ready.png"
+            )
+        )
+        pet_reference = cv2.imread(str(PET_READY_TEMPLATE_PATH))
+        spell_reference = cv2.imread(str(SPELL_READY_TEMPLATE_PATH))
+
+        self.assertIsNotNone(capture)
+        self.assertTrue(
+            boss_action_has_ready_glow(
+                capture,
+                pet_reference,
+                PET_READY_REGION,
+            )
+        )
+        self.assertTrue(
+            boss_action_has_ready_glow(
+                capture,
+                spell_reference,
+                SPELL_READY_REGION,
+            )
+        )
+
+    def test_ready_glow_detector_ignores_exact_glow_shape(self):
+        reference = np.zeros((20, 20, 3), dtype=np.uint8)
+        reference[2:10, 2:10] = (0, 220, 255)
+        frame = np.zeros((40, 40, 3), dtype=np.uint8)
+        frame[20:24, 10:26] = (0, 220, 255)
+
+        self.assertTrue(
+            boss_action_has_ready_glow(frame, reference, (0, 10, 30, 30))
+        )
+        self.assertFalse(
+            boss_action_has_ready_glow(
+                np.zeros_like(frame),
+                reference,
+                (0, 10, 30, 30),
+            )
+        )
+
+    @patch("hauntedroom.flows.boss_action.capture_page_bgr", new_callable=AsyncMock)
+    async def test_activate_boss_spell_clicks_ready_spell_then_boss(
+        self,
+        capture_page_bgr,
+    ):
+        capture_page_bgr.return_value = cv2.imread(
+            str(
+                TOOLS_DIR.parent
+                / ".tmp"
+                / "hauntedroom-captures"
+                / "pet-spell-ready.png"
+            )
+        )
+        boss_position = (250, 300)
+
+        activated = await activate_boss_spell(self.page, boss_position)
+
+        self.assertTrue(activated)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*SPELL_ACTION_POSITION), call(*boss_position)],
+        )
+
+    @patch("hauntedroom.flows.boss_action.capture_page_bgr", new_callable=AsyncMock)
+    async def test_deploy_boss_pet_drags_ready_pet_to_boss(
+        self,
+        capture_page_bgr,
+    ):
+        capture_page_bgr.return_value = cv2.imread(
+            str(
+                TOOLS_DIR.parent
+                / ".tmp"
+                / "hauntedroom-captures"
+                / "pet-spell-ready.png"
+            )
+        )
+        boss_position = (250, 300)
+
+        deployed = await deploy_boss_pet(self.page, boss_position)
+
+        self.assertTrue(deployed)
+        self.page.mouse.move.assert_has_awaits(
+            [call(*PET_ACTION_POSITION), call(*boss_position, steps=10)]
+        )
+        self.page.mouse.down.assert_awaited_once_with()
+        self.page.mouse.up.assert_awaited_once_with()
+
+    @patch("hauntedroom.flows.automap.load_boss_action_references")
+    @patch("hauntedroom.flows.automap.load_template")
+    async def test_automap_flow_loads_boss_references_once_per_run(
+        self,
+        load_template,
+        load_boss_action_references,
+    ):
+        load_template.return_value = np.zeros((2, 2), dtype=np.uint8)
+
+        AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        load_boss_action_references.assert_called_once_with()
+
     @patch("hauntedroom.flows.automap.deploy_boss_pet", new_callable=AsyncMock)
     @patch("hauntedroom.flows.automap.activate_boss_spell", new_callable=AsyncMock)
     @patch(
@@ -340,6 +473,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     ):
         capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
         stop_event = asyncio.Event()
+        activate_boss_spell.return_value = False
 
         async def stop_after_pet(*_args, **_kwargs):
             stop_event.set()
@@ -349,8 +483,19 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         completed = await run_automap_flow(self.page, stop_event)
 
         self.assertFalse(completed)
-        activate_boss_spell.assert_awaited_once_with(self.page, (250, 300))
-        deploy_boss_pet.assert_awaited_once_with(self.page, (250, 300))
+        activate_boss_spell.assert_awaited_once_with(
+            self.page,
+            (250, 300),
+            frame_bgr=capture_page_bgr.return_value,
+            ready_reference=ANY,
+        )
+        deploy_boss_pet.assert_awaited_once_with(
+            self.page,
+            (250, 300),
+            frame_bgr=capture_page_bgr.return_value,
+            ready_reference=ANY,
+        )
+        capture_page_bgr.assert_awaited_once_with(self.page)
         self.page.mouse.click.assert_not_awaited()
 
     @patch(
