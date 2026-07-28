@@ -12,13 +12,7 @@ from hauntedroom.core.vision import (
     find_template_matches,
     load_template,
 )
-from hauntedroom.flows.boss_action import (
-    BossActionReferences,
-    activate_boss_spell,
-    click as _click,
-    deploy_boss_pet,
-    load_boss_action_references,
-)
+from hauntedroom.flows.boss_action import click as _click
 from hauntedroom.flows.map_vision_helper import (
     BOSS_CRITICAL_REGION,
     PROTECT_AVAILABLE_REGION,
@@ -39,6 +33,7 @@ MAP_END_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "map_end.png"
 WIN_REWARD_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "win_reward.png"
 BOSS_HP_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "boss_hp_bar.png"
 START_HOME_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "start_home.png"
+EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
@@ -53,6 +48,7 @@ MAP_END_TEMPLATE_THRESHOLD = 0.90
 MAP_END_CHECK_INTERVAL_SEC = 5.0
 WIN_REWARD_TEMPLATE_THRESHOLD = 0.90
 START_HOME_TEMPLATE_THRESHOLD = 0.90
+EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
 
 PROTECT_CLICK = (320, 640)
 PROTECT_CONFIRM_CLICK = (357, 623)
@@ -71,6 +67,7 @@ class AutomapConfig:
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
+    exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
 
 
 class AutomapFlow:
@@ -92,14 +89,11 @@ class AutomapFlow:
         self.win_reward_template = load_template(config.win_reward_template_path)
         self.boss_hp_template = load_template(config.boss_hp_template_path)
         self.start_home_template = load_template(config.start_home_template_path)
-        self.boss_action_references: BossActionReferences = (
-            load_boss_action_references()
-        )
+        self.exit_click_template = load_template(config.exit_click_template_path)
         self.loop = asyncio.get_running_loop()
         self.last_map_end_check: Optional[float] = None
         self.map_completed = False
-        self.boss_spell_activated = False
-        self.boss_pet_deployed = False
+        self.boss_handoff_requested = False
 
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
         search_top = int(frame_gray.shape[0] * LV_SPIN_SEARCH_TOP_RATIO)
@@ -225,43 +219,35 @@ class AutomapFlow:
 
     async def handle_boss_critical(
         self,
-        frame_bgr: np.ndarray,
+        _frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
         match = find_boss_health_bar(frame_gray, self.boss_hp_template)
         if match is None:
-            self.boss_spell_activated = False
-            self.boss_pet_deployed = False
-            return False
-
-        if self.boss_spell_activated and self.boss_pet_deployed:
             return False
 
         x, y, score = match
+        exit_x, exit_y, exit_score = find_template(
+            frame_gray,
+            self.exit_click_template,
+            self.config.exit_click_template_path.name,
+        )
+        if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
+            print(
+                f"Boss HP entered critical region at {x},{y}, score={score:.3f}; "
+                f"exit_click not found (score={exit_score:.3f}).",
+                flush=True,
+            )
+            return False
+
         print(
-            f"Boss HP entered critical region at {x},{y}, score={score:.3f}.",
+            f"Boss HP entered critical region at {x},{y}, score={score:.3f}; "
+            f"clicking exit_click once at {exit_x},{exit_y} and stopping auto-map.",
             flush=True,
         )
-        acted = False
-        spell_activated_now = False
-        if not self.boss_spell_activated:
-            spell_activated_now = await activate_boss_spell(
-                self.page,
-                (x, y),
-                frame_bgr=frame_bgr,
-                ready_reference=self.boss_action_references.spell_ready,
-            )
-            self.boss_spell_activated = spell_activated_now
-            acted = acted or spell_activated_now
-        if not self.boss_pet_deployed:
-            self.boss_pet_deployed = await deploy_boss_pet(
-                self.page,
-                (x, y),
-                frame_bgr=None if spell_activated_now else frame_bgr,
-                ready_reference=self.boss_action_references.pet_ready,
-            )
-            acted = acted or self.boss_pet_deployed
-        return acted
+        await _click(self.page, exit_x, exit_y)
+        self.boss_handoff_requested = True
+        return True
 
     async def handle_level_up(
         self,
@@ -357,6 +343,12 @@ class AutomapFlow:
                 if self.stop_event is not None and self.stop_event.is_set():
                     break
                 if await handler(frame_bgr, frame_gray):
+                    if self.boss_handoff_requested:
+                        print(
+                            "Auto-map stopped after boss handoff; runner is idle.",
+                            flush=True,
+                        )
+                        return False
                     if handler is map_end_handler:
                         if self.map_completed:
                             print(
@@ -383,6 +375,7 @@ async def run_automap_flow(
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH,
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH,
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
+    exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -394,5 +387,6 @@ async def run_automap_flow(
         win_reward_template_path=win_reward_template_path,
         boss_hp_template_path=boss_hp_template_path,
         start_home_template_path=start_home_template_path,
+        exit_click_template_path=exit_click_template_path,
     )
     return await AutomapFlow(page, stop_event, config).run()

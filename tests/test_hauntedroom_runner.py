@@ -435,21 +435,14 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.page.mouse.down.assert_awaited_once_with()
         self.page.mouse.up.assert_awaited_once_with()
 
-    @patch("hauntedroom.flows.automap.load_boss_action_references")
     @patch("hauntedroom.flows.automap.load_template")
-    async def test_automap_flow_loads_boss_references_once_per_run(
-        self,
-        load_template,
-        load_boss_action_references,
-    ):
+    async def test_automap_flow_loads_all_templates_once_per_run(self, load_template):
         load_template.return_value = np.zeros((2, 2), dtype=np.uint8)
 
         AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
 
-        load_boss_action_references.assert_called_once_with()
+        self.assertEqual(load_template.call_count, 8)
 
-    @patch("hauntedroom.flows.automap.deploy_boss_pet", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.activate_boss_spell", new_callable=AsyncMock)
     @patch(
         "hauntedroom.flows.automap.find_boss_health_bar",
         return_value=(250, 300, 0.90),
@@ -458,45 +451,32 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
+    @patch(
+        "hauntedroom.flows.automap.find_template",
+        side_effect=[
+            (0, 0, 0.0),
+            (0, 0, 0.0),
+            (612, 35, 0.95),
+        ],
+    )
     @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_boss_in_critical_region_invokes_both_action_placeholders(
+    async def test_boss_in_critical_region_clicks_exit_once_then_stops(
         self,
         capture_page_bgr,
         _find_template_matches,
         _find_template,
         _load_template,
         _find_boss_health_bar,
-        activate_boss_spell,
-        deploy_boss_pet,
     ):
         capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
         stop_event = asyncio.Event()
-        activate_boss_spell.return_value = False
-
-        async def stop_after_pet(*_args, **_kwargs):
-            stop_event.set()
-
-        deploy_boss_pet.side_effect = stop_after_pet
 
         completed = await run_automap_flow(self.page, stop_event)
 
         self.assertFalse(completed)
-        activate_boss_spell.assert_awaited_once_with(
-            self.page,
-            (250, 300),
-            frame_bgr=capture_page_bgr.return_value,
-            ready_reference=ANY,
-        )
-        deploy_boss_pet.assert_awaited_once_with(
-            self.page,
-            (250, 300),
-            frame_bgr=capture_page_bgr.return_value,
-            ready_reference=ANY,
-        )
         capture_page_bgr.assert_awaited_once_with(self.page)
-        self.page.mouse.click.assert_not_awaited()
+        self.page.mouse.click.assert_awaited_once_with(612, 35)
 
     @patch(
         "hauntedroom.flows.automap.load_template",
