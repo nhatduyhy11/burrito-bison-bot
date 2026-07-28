@@ -10,7 +10,7 @@ ACTION_LOOP_COUNT = 0
 COUNTDOWN_WAIT_THRESHOLD_MS = 10000
 
 TIMEOUT_SCREENSHOT_DIR = Path(".tmp/hauntedroom-timeouts")
-LIVE_SCREENSHOT_DIR = Path(".tmp/hauntedroom-captures")
+LIVE_SCREENSHOT_DIR = Path("tests/fixtures/hauntedroom-captures")
 HOTKEY_SCRIPT = """
 () => {
     if (window.__hauntedRoomHotkeysInstalled) {

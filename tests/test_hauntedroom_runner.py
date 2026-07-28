@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 
 TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
+FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.actions.runner import (
@@ -15,7 +16,11 @@ from hauntedroom.actions.runner import (
     run_actions,
     wait_for_template,
 )
-from hauntedroom.core.runtime import HOTKEY_SCRIPT, start_hotkey_listener
+from hauntedroom.core.runtime import (
+    HOTKEY_SCRIPT,
+    LIVE_SCREENSHOT_DIR,
+    start_hotkey_listener,
+)
 from hauntedroom.flows.automap import (
     AUTOMAP_POLL_MS,
     AutomapConfig,
@@ -215,6 +220,12 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
     def test_hotkey_script_accepts_shift_8(self):
         self.assertIn("!/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
 
+    def test_shift_8_capture_directory_is_inside_test_fixtures(self):
+        self.assertEqual(
+            LIVE_SCREENSHOT_DIR,
+            Path("tests/fixtures/hauntedroom-captures"),
+        )
+
     @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
     async def test_shift_8_saves_live_screenshot_and_stays_idle(
@@ -345,12 +356,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
 
     def test_ready_glow_detector_accepts_supplied_live_capture(self):
         capture = cv2.imread(
-            str(
-                TOOLS_DIR.parent
-                / ".tmp"
-                / "hauntedroom-captures"
-                / "pet-spell-ready.png"
-            )
+            str(FIXTURES_DIR / "hauntedroom-captures" / "pet-spell-ready.png")
         )
         pet_reference = cv2.imread(str(PET_READY_TEMPLATE_PATH))
         spell_reference = cv2.imread(str(SPELL_READY_TEMPLATE_PATH))
@@ -394,12 +400,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         capture_page_bgr,
     ):
         capture_page_bgr.return_value = cv2.imread(
-            str(
-                TOOLS_DIR.parent
-                / ".tmp"
-                / "hauntedroom-captures"
-                / "pet-spell-ready.png"
-            )
+            str(FIXTURES_DIR / "hauntedroom-captures" / "pet-spell-ready.png")
         )
         boss_position = (250, 300)
 
@@ -417,12 +418,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         capture_page_bgr,
     ):
         capture_page_bgr.return_value = cv2.imread(
-            str(
-                TOOLS_DIR.parent
-                / ".tmp"
-                / "hauntedroom-captures"
-                / "pet-spell-ready.png"
-            )
+            str(FIXTURES_DIR / "hauntedroom-captures" / "pet-spell-ready.png")
         )
         boss_position = (250, 300)
 
