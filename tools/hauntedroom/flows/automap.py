@@ -17,6 +17,7 @@ from hauntedroom.core.vision import (
 AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "automap"
 ROOM_TEMPLATE_DIR = AUTOMAP_TEMPLATE_DIR.parent
 LV_UP_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_up.png"
+BUILT_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "built.png"
 LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
 MAP_END_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "map_end.png"
 WIN_REWARD_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "win_reward.png"
@@ -24,6 +25,7 @@ START_HOME_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "start_home.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
+BUILT_TEMPLATE_THRESHOLD = 0.80
 AUTOMAP_POLL_MS = 600
 AUTOMAP_ACTION_DELAY_MS = 800
 LV_SPIN_CLICK_OFFSET_X = -70
@@ -41,6 +43,17 @@ PROTECT_AVAILABLE_REGION = (328, 630, 348, 647)
 PROTECT_CLICK = (320, 640)
 PROTECT_CONFIRM_CLICK = (357, 623)
 UPGRADE_CONFIRM_CLICK = (430, 366)
+
+# A popup can contain one or two choices, and the single choice is vertically
+# centered. Detect the yellow buttons instead of assuming fixed row positions.
+BUILD_BUTTON_SEARCH_REGION = (380, 300, 480, 450)
+BUILD_BUTTON_MIN_HUE = 15
+BUILD_BUTTON_MAX_HUE = 40
+BUILD_BUTTON_MIN_SATURATION = 100
+BUILD_BUTTON_MIN_VALUE = 180
+BUILD_BUTTON_MIN_AREA = 500
+BUILD_BUTTON_MIN_WIDTH = 50
+BUILD_BUTTON_MIN_HEIGHT = 15
 
 WHITE_MAX_SATURATION = 50
 WHITE_MIN_VALUE = 180
@@ -76,6 +89,66 @@ def region_has_enough_white(
     return int(np.count_nonzero(white_pixels)) >= min_pixels
 
 
+def find_first_available_build_option(
+    image: np.ndarray,
+) -> Optional[tuple[int, int]]:
+    """Return the first top-to-bottom yellow button with a white price."""
+    x1, y1, x2, y2 = BUILD_BUTTON_SEARCH_REGION
+    height, width = image.shape[:2]
+    if x2 > width or y2 > height:
+        return None
+
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    search = hsv[y1:y2, x1:x2]
+    yellow_mask = (
+        (search[:, :, 0] >= BUILD_BUTTON_MIN_HUE)
+        & (search[:, :, 0] <= BUILD_BUTTON_MAX_HUE)
+        & (search[:, :, 1] >= BUILD_BUTTON_MIN_SATURATION)
+        & (search[:, :, 2] >= BUILD_BUTTON_MIN_VALUE)
+    ).astype(np.uint8)
+    component_count, _labels, stats, _centroids = (
+        cv2.connectedComponentsWithStats(yellow_mask)
+    )
+
+    buttons: list[tuple[int, int, int, int]] = []
+    for component in range(1, component_count):
+        local_x, local_y, button_width, button_height, area = stats[component]
+        if (
+            area < BUILD_BUTTON_MIN_AREA
+            or button_width < BUILD_BUTTON_MIN_WIDTH
+            or button_height < BUILD_BUTTON_MIN_HEIGHT
+        ):
+            continue
+        buttons.append(
+            (
+                x1 + int(local_x),
+                y1 + int(local_y),
+                int(button_width),
+                int(button_height),
+            )
+        )
+
+    for button_x, button_y, button_width, button_height in sorted(
+        buttons,
+        key=lambda button: button[1],
+    ):
+        # Prices are in the right half; excluding the resource icon prevents
+        # white pixels in that icon from making a red price look available.
+        price_region = (
+            button_x + button_width // 2,
+            button_y,
+            button_x + button_width,
+            button_y + button_height,
+        )
+        if region_has_enough_white(image, price_region):
+            return (
+                button_x + button_width // 2,
+                button_y + button_height // 2,
+            )
+
+    return None
+
+
 async def _click(page, x: int, y: int) -> None:
     await page.evaluate(
         "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
@@ -88,6 +161,7 @@ async def run_automap_flow(
     stop_event: Optional[asyncio.Event] = None,
     lv_up_template_path: Path = LV_UP_TEMPLATE_PATH,
     threshold: float = AUTOMAP_TEMPLATE_THRESHOLD,
+    built_template_path: Path = BUILT_TEMPLATE_PATH,
     lv_spin_template_path: Path = LV_SPIN_TEMPLATE_PATH,
     map_end_template_path: Path = MAP_END_TEMPLATE_PATH,
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH,
@@ -101,6 +175,7 @@ async def run_automap_flow(
     scheduling loop.
     """
     lv_up_template = load_template(lv_up_template_path)
+    built_template = load_template(built_template_path)
     lv_spin_template = load_template(lv_spin_template_path)
     map_end_template = load_template(map_end_template_path)
     win_reward_template = load_template(win_reward_template_path)
@@ -248,11 +323,50 @@ async def run_automap_flow(
         await _click(page, *UPGRADE_CONFIRM_CLICK)
         return True
 
+    async def build_structure(
+        _frame_bgr: np.ndarray,
+        frame_gray: np.ndarray,
+    ) -> bool:
+        matches = find_template_matches(
+            frame_gray,
+            built_template,
+            built_template_path.name,
+            threshold=BUILT_TEMPLATE_THRESHOLD,
+            scales=(1.0,),
+        )
+        if not matches:
+            return False
+
+        # Prefer the right-most marker, then the bottom-most marker when two
+        # candidates share the same x coordinate.
+        x, y, score = max(matches, key=lambda match: (match[0], match[1]))
+        print(
+            f"Build marker at {x},{y}, score={score:.3f}; "
+            "clicking the highest-x/highest-y match.",
+            flush=True,
+        )
+        await _click(page, x, y)
+        if not await wait_with_countdown(
+            page, AUTOMAP_ACTION_DELAY_MS, "Build menu", stop_event
+        ):
+            return True
+
+        popup_frame = await capture_page_bgr(page)
+        available_option = find_first_available_build_option(popup_frame)
+        if available_option is not None:
+            print("White-price build option is available; clicking it.", flush=True)
+            await _click(page, *available_option)
+            return True
+
+        print("No white-price build option is available; skipping.", flush=True)
+        return True
+
     handlers: tuple[SituationHandler, ...] = (
         level_spin_interrupt,
         map_end,
         protect_gate,
         level_up,
+        build_structure,
         # Add future situations here in descending priority order.
     )
 
