@@ -396,11 +396,59 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     )
     @patch(
         "hauntedroom.flows.automap.find_template",
-        side_effect=[(0, 0, 0.0), (300, 400, 0.91)],
+        side_effect=[
+            (0, 0, 0.0),
+            (300, 400, 0.91),
+            (50, 600, 0.95),
+        ],
     )
     @patch("hauntedroom.flows.automap.find_template_matches")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_clicks_match_and_completes_before_lower_priority_cases(
+    async def test_map_end_clicks_reward_first_match_then_completes_at_home(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        find_template,
+        _load_template,
+    ):
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+        find_template_matches.return_value = [
+            (305, 466, 1.0),
+            (341, 466, 0.98),
+        ]
+
+        completed = await run_automap_flow(self.page, asyncio.Event())
+
+        self.assertTrue(completed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(300, 400),
+                call(305, 466),
+            ],
+        )
+        self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
+        reward_call = find_template_matches.call_args_list[0]
+        self.assertEqual(reward_call.args[2], "win_reward.png")
+        self.assertEqual(reward_call.kwargs["threshold"], 0.90)
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch(
+        "hauntedroom.flows.automap.find_template",
+        side_effect=[
+            (0, 0, 0.0),
+            (300, 400, 0.91),
+            (50, 600, 0.95),
+        ],
+    )
+    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_map_end_completes_when_home_ready_without_reward(
         self,
         capture_page_bgr,
         find_template_matches,
@@ -415,8 +463,8 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(completed)
         self.page.mouse.click.assert_awaited_once_with(300, 400)
-        find_template_matches.assert_not_called()
         self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
+        find_template_matches.assert_called_once()
 
     @patch(
         "hauntedroom.flows.automap.load_template",
