@@ -21,6 +21,7 @@ BUILT_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "built.png"
 LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
 MAP_END_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "map_end.png"
 WIN_REWARD_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "win_reward.png"
+BOSS_HP_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "boss_hp_bar.png"
 START_HOME_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "start_home.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
@@ -36,6 +37,16 @@ MAP_END_TEMPLATE_THRESHOLD = 0.90
 MAP_END_CHECK_INTERVAL_SEC = 5.0
 WIN_REWARD_TEMPLATE_THRESHOLD = 0.90
 START_HOME_TEMPLATE_THRESHOLD = 0.90
+
+# Rectangle drawn in spell_region_detect.png, expressed as an exclusive x2/y2
+# viewport region. A boss action is armed only while the whole HP signature is
+# inside this area.
+BOSS_CRITICAL_REGION = (163, 248, 367, 411)
+BOSS_HP_TEMPLATE_THRESHOLD = 0.65
+BOSS_HP_MIN_WIDTH = 55
+BOSS_HP_MAX_WIDTH = 70
+BOSS_HP_MIN_HEIGHT = 8
+BOSS_HP_MAX_HEIGHT = 14
 
 # The right-aligned price digit is more stable than the money icon or the
 # complete price. Coordinates are in the fixed 640x720 Playwright viewport.
@@ -60,6 +71,81 @@ WHITE_MIN_VALUE = 180
 WHITE_MIN_PIXELS = 8
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
+
+
+def _vertical_edge_signature(image: np.ndarray) -> np.ndarray:
+    """Describe narrow vertical stripes without depending on their color."""
+    return cv2.convertScaleAbs(
+        cv2.Sobel(image, cv2.CV_16S, 1, 0, ksize=3)
+    )
+
+
+def find_boss_health_bar(
+    frame_gray: np.ndarray,
+    template: np.ndarray,
+    region: tuple[int, int, int, int] = BOSS_CRITICAL_REGION,
+    threshold: float = BOSS_HP_TEMPLATE_THRESHOLD,
+) -> Optional[tuple[int, int, float]]:
+    """Find a boss-sized striped HP bar wholly inside the critical region.
+
+    Matching the x-gradient makes red, orange, and green fills equivalent. The
+    template is deliberately matched only at its native size: mini-boss bars
+    are smaller and must not activate boss actions.
+    """
+    if frame_gray.ndim != 2 or template.ndim != 2:
+        return None
+
+    template_height, template_width = template.shape
+    if not (
+        BOSS_HP_MIN_WIDTH <= template_width <= BOSS_HP_MAX_WIDTH
+        and BOSS_HP_MIN_HEIGHT <= template_height <= BOSS_HP_MAX_HEIGHT
+    ):
+        return None
+
+    x1, y1, x2, y2 = region
+    frame_height, frame_width = frame_gray.shape
+    if (
+        x1 < 0
+        or y1 < 0
+        or x2 > frame_width
+        or y2 > frame_height
+        or x1 >= x2
+        or y1 >= y2
+        or template_width > x2 - x1
+        or template_height > y2 - y1
+    ):
+        return None
+
+    template_signature = _vertical_edge_signature(template)
+    if float(template_signature.std()) < 1.0:
+        return None
+
+    search_signature = _vertical_edge_signature(frame_gray[y1:y2, x1:x2])
+    x, y, score = find_template(
+        search_signature,
+        template_signature,
+        BOSS_HP_TEMPLATE_PATH.name,
+        scales=(1.0,),
+    )
+    if score < threshold:
+        return None
+    return x1 + x, y1 + y, score
+
+
+async def activate_boss_spell(
+    _page,
+    _boss_position: tuple[int, int],
+) -> None:
+    """Placeholder for selecting and targeting the boss spell."""
+    print("Boss spell action placeholder invoked.", flush=True)
+
+
+async def deploy_boss_pet(
+    _page,
+    _boss_position: tuple[int, int],
+) -> None:
+    """Placeholder for dragging/deploying the pet onto the boss."""
+    print("Boss pet action placeholder invoked.", flush=True)
 
 
 def region_has_enough_white(
@@ -165,6 +251,7 @@ async def run_automap_flow(
     lv_spin_template_path: Path = LV_SPIN_TEMPLATE_PATH,
     map_end_template_path: Path = MAP_END_TEMPLATE_PATH,
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH,
+    boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH,
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
 ) -> bool:
     """Run battle situations in priority order until stopped.
@@ -179,10 +266,12 @@ async def run_automap_flow(
     lv_spin_template = load_template(lv_spin_template_path)
     map_end_template = load_template(map_end_template_path)
     win_reward_template = load_template(win_reward_template_path)
+    boss_hp_template = load_template(boss_hp_template_path)
     start_home_template = load_template(start_home_template_path)
     loop = asyncio.get_running_loop()
     last_map_end_check: Optional[float] = None
     map_completed = False
+    boss_actions_triggered = False
 
     async def click_level_spin_if_present(frame_gray: np.ndarray) -> bool:
         search_top = int(frame_gray.shape[0] * LV_SPIN_SEARCH_TOP_RATIO)
@@ -295,6 +384,29 @@ async def run_automap_flow(
         await _click(page, *PROTECT_CONFIRM_CLICK)
         return True
 
+    async def boss_critical(
+        _frame_bgr: np.ndarray,
+        frame_gray: np.ndarray,
+    ) -> bool:
+        nonlocal boss_actions_triggered
+        match = find_boss_health_bar(frame_gray, boss_hp_template)
+        if match is None:
+            boss_actions_triggered = False
+            return False
+
+        if boss_actions_triggered:
+            return False
+
+        x, y, score = match
+        boss_actions_triggered = True
+        print(
+            f"Boss HP entered critical region at {x},{y}, score={score:.3f}.",
+            flush=True,
+        )
+        await activate_boss_spell(page, (x, y))
+        await deploy_boss_pet(page, (x, y))
+        return True
+
     async def level_up(_frame_bgr: np.ndarray, frame_gray: np.ndarray) -> bool:
         matches = find_template_matches(
             frame_gray,
@@ -364,6 +476,7 @@ async def run_automap_flow(
     handlers: tuple[SituationHandler, ...] = (
         level_spin_interrupt,
         map_end,
+        boss_critical,
         protect_gate,
         level_up,
         build_structure,

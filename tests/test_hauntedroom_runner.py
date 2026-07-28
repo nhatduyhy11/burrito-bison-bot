@@ -18,6 +18,8 @@ from hauntedroom.actions.runner import (
 from hauntedroom.core.runtime import HOTKEY_SCRIPT, start_hotkey_listener
 from hauntedroom.flows.automap import (
     AUTOMAP_POLL_MS,
+    BOSS_CRITICAL_REGION,
+    BOSS_HP_TEMPLATE_PATH,
     LV_SPIN_CLICK_OFFSET_X,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
@@ -25,6 +27,7 @@ from hauntedroom.flows.automap import (
     PROTECT_CLICK,
     PROTECT_CONFIRM_CLICK,
     UPGRADE_CONFIRM_CLICK,
+    find_boss_health_bar,
     find_first_available_build_option,
     region_has_enough_white,
     run_automap_flow,
@@ -276,6 +279,79 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.assertFalse(
             region_has_enough_white(unavailable, region=(90, 8, 140, 30))
         )
+
+    def test_finds_boss_sized_hp_bar_in_critical_region_without_color(self):
+        template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+        self.assertIsNotNone(template)
+        frame = np.full((720, 640), 80, dtype=np.uint8)
+        x, y = 220, 300
+        height, width = template.shape
+        # Inversion changes every source color/intensity while preserving the
+        # narrow vertical stripe geometry used by the detector.
+        frame[y : y + height, x : x + width] = 255 - template
+
+        match = find_boss_health_bar(frame, template)
+
+        self.assertIsNotNone(match)
+        match_x, match_y, score = match
+        self.assertEqual((match_x, match_y), (x + width // 2, y + height // 2))
+        self.assertGreaterEqual(score, 0.85)
+
+    def test_rejects_miniboss_sized_hp_bar(self):
+        template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+        frame = np.full((720, 640), 80, dtype=np.uint8)
+        mini = cv2.resize(template, (40, template.shape[0]), interpolation=cv2.INTER_AREA)
+        frame[300 : 300 + mini.shape[0], 220 : 220 + mini.shape[1]] = mini
+
+        self.assertIsNone(find_boss_health_bar(frame, template))
+
+    def test_rejects_boss_bar_outside_critical_region(self):
+        template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+        frame = np.full((720, 640), 80, dtype=np.uint8)
+        height, width = template.shape
+        x = BOSS_CRITICAL_REGION[0] - width
+        y = BOSS_CRITICAL_REGION[1]
+        frame[y : y + height, x : x + width] = template
+
+        self.assertIsNone(find_boss_health_bar(frame, template))
+
+    @patch("hauntedroom.flows.automap.deploy_boss_pet", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.activate_boss_spell", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap.find_boss_health_bar",
+        return_value=(250, 300, 0.90),
+    )
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_boss_in_critical_region_invokes_both_action_placeholders(
+        self,
+        capture_page_bgr,
+        _find_template_matches,
+        _find_template,
+        _load_template,
+        _find_boss_health_bar,
+        activate_boss_spell,
+        deploy_boss_pet,
+    ):
+        capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
+        stop_event = asyncio.Event()
+
+        async def stop_after_pet(*_args, **_kwargs):
+            stop_event.set()
+
+        deploy_boss_pet.side_effect = stop_after_pet
+
+        completed = await run_automap_flow(self.page, stop_event)
+
+        self.assertFalse(completed)
+        activate_boss_spell.assert_awaited_once_with(self.page, (250, 300))
+        deploy_boss_pet.assert_awaited_once_with(self.page, (250, 300))
+        self.page.mouse.click.assert_not_awaited()
 
     @patch(
         "hauntedroom.flows.automap.load_template",
