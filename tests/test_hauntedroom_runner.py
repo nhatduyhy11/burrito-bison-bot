@@ -602,7 +602,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     )
     @patch("hauntedroom.flows.automap.find_template_matches")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_clicks_reward_first_match_then_completes_at_home(
+    async def test_map_end_clicks_fixed_reward_position_then_completes_at_home(
         self,
         capture_page_bgr,
         find_template_matches,
@@ -624,7 +624,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             self.page.mouse.click.await_args_list,
             [
                 call(300, 400),
-                call(305, 466),
+                call(320, 433),
             ],
         )
         self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")

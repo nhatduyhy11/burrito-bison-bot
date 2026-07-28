@@ -53,6 +53,7 @@ EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
 PROTECT_CLICK = (320, 640)
 PROTECT_CONFIRM_CLICK = (357, 623)
 UPGRADE_CONFIRM_CLICK = (430, 366)
+WIN_REWARD_CLICK = (320, 433)
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -169,13 +170,14 @@ class AutomapFlow:
                     scales=(1.0,),
                 )
                 if reward_matches:
-                    x, y, score = reward_matches[0]
+                    best_score = max(match[2] for match in reward_matches)
                     print(
-                        f"Win reward at {x},{y}, score={score:.3f}; "
-                        "clicking first match.",
+                        f"Win reward found, best score={best_score:.3f}; "
+                        f"clicking fixed position {WIN_REWARD_CLICK[0]},"
+                        f"{WIN_REWARD_CLICK[1]}.",
                         flush=True,
                     )
-                    await _click(self.page, x, y)
+                    await _click(self.page, *WIN_REWARD_CLICK)
                     reward_clicked = True
                     await self.page.wait_for_timeout(AUTOMAP_POLL_MS)
                     continue
