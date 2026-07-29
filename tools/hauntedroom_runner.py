@@ -18,6 +18,25 @@ from hauntedroom.flows import automap, boss_action, map_vision_helper
 from hauntedroom.flows.research import run_research_flow
 
 
+AUTOMAP_HOTKEY_OPTIONS = {
+    "2": {
+        "protect_gate_enabled": True,
+        "level_up_enabled": False,
+        "pause_on_boss": True,
+    },
+    "3": {
+        "protect_gate_enabled": True,
+        "level_up_enabled": True,
+        "pause_on_boss": True,
+    },
+    "4": {
+        "protect_gate_enabled": True,
+        "level_up_enabled": True,
+        "pause_on_boss": False,
+    },
+}
+
+
 def get_automap_flow(dev_reload: bool = False):
     if not dev_reload:
         return automap.run_automap_flow
@@ -43,11 +62,13 @@ async def run_standby_controller(
     stop_event = None
     command_names = {
         "1": "enter-exit room",
-        "2": "auto-map battle",
+        "2": "auto-map (protect gate only, pause on boss)",
+        "3": "auto-map (protect gate and level up, pause on boss)",
+        "4": "auto-map (protect gate and level up, continue on boss)",
         "9": "research",
     }
     print(
-        "Runner idle. Shift+1: enter-exit room; Shift+2: auto-map battle; "
+        "Runner idle. Shift+1: enter-exit room; Shift+2/3/4: auto-map modes; "
         "Shift+8: capture screenshot; Shift+9: research; "
         "Shift+0: stop current flow; Ctrl+C in terminal: close runner.",
         flush=True,
@@ -104,7 +125,7 @@ async def run_standby_controller(
                 continue
 
             automap_flow = None
-            if command == "2":
+            if command in AUTOMAP_HOTKEY_OPTIONS:
                 try:
                     automap_flow = get_automap_flow(dev_reload)
                 except Exception as error:
@@ -120,8 +141,14 @@ async def run_standby_controller(
                 flow_task = asyncio.create_task(
                     run_actions(page, actions, loop_count=None, stop_event=stop_event)
                 )
-            elif command == "2":
-                flow_task = asyncio.create_task(automap_flow(page, stop_event))
+            elif command in AUTOMAP_HOTKEY_OPTIONS:
+                flow_task = asyncio.create_task(
+                    automap_flow(
+                        page,
+                        stop_event,
+                        **AUTOMAP_HOTKEY_OPTIONS[command],
+                    )
+                )
             else:
                 flow_task = asyncio.create_task(run_research_flow(page, stop_event))
     finally:

@@ -53,7 +53,11 @@ from hauntedroom.flows.map_vision_helper import (
     find_first_available_build_option,
     region_has_enough_white,
 )
-from hauntedroom_runner import get_automap_flow, run_standby_controller
+from hauntedroom_runner import (
+    AUTOMAP_HOTKEY_OPTIONS,
+    get_automap_flow,
+    run_standby_controller,
+)
 
 
 class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
@@ -180,6 +184,28 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
 
 
 class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
+    def test_automap_hotkeys_select_expected_options(self):
+        self.assertEqual(
+            AUTOMAP_HOTKEY_OPTIONS,
+            {
+                "2": {
+                    "protect_gate_enabled": True,
+                    "level_up_enabled": False,
+                    "pause_on_boss": True,
+                },
+                "3": {
+                    "protect_gate_enabled": True,
+                    "level_up_enabled": True,
+                    "pause_on_boss": True,
+                },
+                "4": {
+                    "protect_gate_enabled": True,
+                    "level_up_enabled": True,
+                    "pause_on_boss": False,
+                },
+            },
+        )
+
     @patch("hauntedroom_runner.importlib.reload")
     @patch("hauntedroom_runner.importlib.invalidate_caches")
     def test_dev_reload_refreshes_vision_before_automap(
@@ -460,7 +486,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     async def test_boss_in_critical_region_clicks_exit_once_then_stops(
         self,
         capture_page_bgr,
-        _find_template_matches,
+        find_template_matches,
         _find_template,
         _load_template,
         _find_boss_health_bar,
@@ -509,6 +535,99 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             self.page.wait_for_timeout.await_args_list,
             [call(250), call(250), call(250), call(50)],
+        )
+
+    @patch(
+        "hauntedroom.flows.automap.find_boss_health_bar",
+        return_value=(250, 300, 0.90),
+    )
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_continue_on_boss_still_handles_protect_gate(
+        self,
+        capture_page_bgr,
+        _find_template_matches,
+        _find_template,
+        _load_template,
+        find_boss_health_bar,
+    ):
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+        stop_event = asyncio.Event()
+
+        async def stop_after_second_click(*_args, **_kwargs):
+            if self.page.mouse.click.await_count == 2:
+                stop_event.set()
+
+        self.page.mouse.click.side_effect = stop_after_second_click
+
+        completed = await run_automap_flow(
+            self.page,
+            stop_event,
+            protect_gate_enabled=True,
+            pause_on_boss=False,
+        )
+
+        self.assertFalse(completed)
+        find_boss_health_bar.assert_not_called()
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*PROTECT_CLICK), call(*PROTECT_CONFIRM_CLICK)],
+        )
+
+    @patch(
+        "hauntedroom.flows.automap.find_boss_health_bar",
+        return_value=None,
+    )
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_level_up_can_be_disabled_while_gate_and_boss_pause_stay_enabled(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        _find_template,
+        _load_template,
+        find_boss_health_bar,
+    ):
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+        stop_event = asyncio.Event()
+
+        async def stop_after_second_click(*_args, **_kwargs):
+            if self.page.mouse.click.await_count == 2:
+                stop_event.set()
+
+        self.page.mouse.click.side_effect = stop_after_second_click
+
+        completed = await run_automap_flow(
+            self.page,
+            stop_event,
+            protect_gate_enabled=True,
+            level_up_enabled=False,
+            pause_on_boss=True,
+        )
+
+        self.assertFalse(completed)
+        find_boss_health_bar.assert_called_once()
+        self.assertNotIn(
+            "lv_up.png",
+            [args.args[2] for args in find_template_matches.call_args_list],
+        )
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*PROTECT_CLICK), call(*PROTECT_CONFIRM_CLICK)],
         )
 
     @patch(

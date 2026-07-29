@@ -69,6 +69,9 @@ class AutomapConfig:
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
+    protect_gate_enabled: bool = True
+    level_up_enabled: bool = True
+    pause_on_boss: bool = True
 
 
 class AutomapFlow:
@@ -329,14 +332,17 @@ class AutomapFlow:
     async def run(self) -> bool:
         """Run handlers in priority order until stopped or the map completes."""
         map_end_handler = self.handle_map_end
-        handlers: tuple[SituationHandler, ...] = (
+        handlers: list[SituationHandler] = [
             self.handle_level_spin_interrupt,
             map_end_handler,
-            self.handle_boss_critical,
-            self.handle_build_structure,
-            self.handle_protect_gate,
-            self.handle_level_up,
-        )
+        ]
+        if self.config.pause_on_boss:
+            handlers.append(self.handle_boss_critical)
+        handlers.append(self.handle_build_structure)
+        if self.config.protect_gate_enabled:
+            handlers.append(self.handle_protect_gate)
+        if self.config.level_up_enabled:
+            handlers.append(self.handle_level_up)
 
         while self.stop_event is None or not self.stop_event.is_set():
             frame_bgr = await capture_page_bgr(self.page)
@@ -378,6 +384,9 @@ async def run_automap_flow(
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH,
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
+    protect_gate_enabled: bool = True,
+    level_up_enabled: bool = True,
+    pause_on_boss: bool = True,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -390,5 +399,8 @@ async def run_automap_flow(
         boss_hp_template_path=boss_hp_template_path,
         start_home_template_path=start_home_template_path,
         exit_click_template_path=exit_click_template_path,
+        protect_gate_enabled=protect_gate_enabled,
+        level_up_enabled=level_up_enabled,
+        pause_on_boss=pause_on_boss,
     )
     return await AutomapFlow(page, stop_event, config).run()
