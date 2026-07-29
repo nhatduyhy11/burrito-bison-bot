@@ -15,6 +15,7 @@ Playwright được khai báo trong `pyproject.toml` và khóa phiên bản tron
 
 ```shell
 uv sync
+{"type": "click", "x": 366, "y": 536, "button": "left"}
 ```
 
 Khi cần thêm Playwright vào một project `uv` mới, lệnh tương đương phù hợp với `pip install playwright` là `uv add playwright`; lệnh này cập nhật cả `pyproject.toml` và `uv.lock`. Browser mặc định là Chrome cài trên máy và được Playwright tự tìm theo hệ điều hành, không dùng đường dẫn hardcoded.

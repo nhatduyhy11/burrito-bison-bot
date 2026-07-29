@@ -247,7 +247,7 @@ class AutomapFlow:
             f"clicking exit_click once at {exit_x},{exit_y} and stopping auto-map.",
             flush=True,
         )
-        await _click(self.page, exit_x, exit_y)
+        # await _click(self.page, exit_x, exit_y)
         self.boss_handoff_requested = True
         return True
 
@@ -333,9 +333,9 @@ class AutomapFlow:
             self.handle_level_spin_interrupt,
             map_end_handler,
             self.handle_boss_critical,
+            self.handle_build_structure,
             self.handle_protect_gate,
             self.handle_level_up,
-            self.handle_build_structure,
         )
 
         while self.stop_event is None or not self.stop_event.is_set():
