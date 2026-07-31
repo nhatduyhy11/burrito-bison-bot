@@ -76,10 +76,11 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
 - `Shift+2`: chạy riêng flow auto-map sau khi đã vào map và bấm `start_battle` thủ công. Priority là interrupt `automap/lv_spin.png` trước, sau đó check terminal `automap/map_end.png` tối đa mỗi 5 giây, phát hiện thanh HP boss trong vùng critical, rồi bảo vệ cửa, `automap/lv_up.png`, và `automap/built.png`. Boss được nhận diện bằng các cạnh sọc dọc của `boss/boss_hp_bar.png` ở đúng kích thước boss, không phụ thuộc màu. Khi boss vào vùng, bot click `exit_click.png` đúng một lần rồi dừng auto-map để người dùng xử lý boss thủ công. Với công trình, bot chọn marker có x lớn nhất (nếu trùng x thì y lớn nhất), rồi chọn từ trên xuống tùy chọn đầu tiên có giá màu trắng và bỏ qua giá màu đỏ. Nếu thấy `lv_spin` thì click lệch trái 70 px từ tâm match; `lv_spin` cũng được check lại ngay sau khi click `lv_up` và trước confirm. Bấm `Shift+0` để dừng flow trong phase hiện tại.
+- `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
-- `Shift+3` đến `Shift+7`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
+- `Shift+3` đến `Shift+6`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
 Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`; riêng `Shift+8` chỉ chụp screenshot nên không bị chặn.

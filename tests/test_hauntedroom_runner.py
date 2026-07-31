@@ -42,6 +42,11 @@ from hauntedroom.flows.boss_action import (
     activate_boss_spell,
     deploy_boss_pet,
 )
+from hauntedroom.flows.click_loop import (
+    CLICK_INTERVAL_MS,
+    CLICK_POSITION,
+    run_click_loop,
+)
 from hauntedroom.flows.research import run_research_flow
 from hauntedroom.flows.map_vision_helper import (
     BOSS_CRITICAL_REGION,
@@ -248,6 +253,35 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
             await run_standby_controller(page, [], dev_reload=False)
 
         save_live_screenshot.assert_awaited_once_with(page)
+
+    async def test_shift_7_clicks_fixed_position_every_second_until_stopped(self):
+        page = Mock()
+        page.mouse = Mock()
+        page.mouse.click = AsyncMock()
+        stop_event = asyncio.Event()
+
+        async def stop_after_second_click(*_args):
+            if page.mouse.click.await_count == 2:
+                stop_event.set()
+
+        page.mouse.click.side_effect = stop_after_second_click
+
+        async def finish_interval(awaitable, **_kwargs):
+            awaitable.close()
+            raise asyncio.TimeoutError
+
+        with patch("hauntedroom.flows.click_loop.asyncio.wait_for") as wait_for:
+            wait_for.side_effect = finish_interval
+            await run_click_loop(page, stop_event)
+
+        self.assertEqual(CLICK_POSITION, (440, 500))
+        self.assertEqual(CLICK_INTERVAL_MS, 1000)
+        self.assertEqual(
+            page.mouse.click.await_args_list,
+            [call(440, 500), call(440, 500)],
+        )
+        self.assertEqual(wait_for.await_count, 1)
+        self.assertEqual(wait_for.await_args.kwargs["timeout"], 1)
 
     async def test_stop_event_ends_flow_without_clicking(self):
         page = Mock()

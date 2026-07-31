@@ -15,6 +15,7 @@ from hauntedroom.core.runtime import (
     wait_for_ctrl_c,
 )
 from hauntedroom.flows import automap, boss_action, map_vision_helper
+from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.research import run_research_flow
 
 
@@ -44,11 +45,13 @@ async def run_standby_controller(
     command_names = {
         "1": "enter-exit room",
         "2": "auto-map battle",
+        "7": "fixed-position click loop",
         "9": "research",
     }
     print(
         "Runner idle. Shift+1: enter-exit room; Shift+2: auto-map battle; "
-        "Shift+8: capture screenshot; Shift+9: research; "
+        "Shift+7: click 440,500 every 1s; Shift+8: capture screenshot; "
+        "Shift+9: research; "
         "Shift+0: stop current flow; Ctrl+C in terminal: close runner.",
         flush=True,
     )
@@ -122,6 +125,8 @@ async def run_standby_controller(
                 )
             elif command == "2":
                 flow_task = asyncio.create_task(automap_flow(page, stop_event))
+            elif command == "7":
+                flow_task = asyncio.create_task(run_click_loop(page, stop_event))
             else:
                 flow_task = asyncio.create_task(run_research_flow(page, stop_event))
     finally:
