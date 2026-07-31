@@ -5,7 +5,7 @@ from typing import Awaitable, Callable, Optional
 
 import numpy as np
 
-from hauntedroom.core.runtime import wait_with_countdown
+from hauntedroom.core.runtime import save_screenshot, wait_with_countdown
 from hauntedroom.core.vision import (
     capture_page_bgr,
     find_template,
@@ -50,15 +50,17 @@ LV_SPIN_TEMPLATE_SCALES = (1.0, 0.8, 0.67)
 LV_SPIN_SEARCH_TOP_RATIO = 0.75
 MAP_END_TEMPLATE_THRESHOLD = 0.90
 MAP_END_CHECK_INTERVAL_SEC = 5.0
-WIN_REWARD_TEMPLATE_THRESHOLD = 0.90
+WIN_REWARD_TEMPLATE_THRESHOLD = 0.85
+WIN_REWARD_RECHECK_MS = 2_000
 START_HOME_TEMPLATE_THRESHOLD = 0.90
 EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
 HERO_LEVELUP_OPEN_CLICK = (320, 640)
+HERO_LEVELUP_OPTION_SETTLE_MS = 1_500
 HERO_LEVELUP_OPTION_POLL_MS = 200
 HERO_LEVELUP_OPTION_MAX_POLLS = 10
 
 UPGRADE_CONFIRM_CLICK = (430, 366)
-WIN_REWARD_CLICK = (320, 433)
+HERO_FALLBACK_SCREENSHOT_DIR = Path(".tmp/hauntedroom-hero-fallbacks")
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -165,31 +167,33 @@ class AutomapFlow:
         return True
 
     async def finish_map_from_home(self) -> bool:
-        reward_clicked = False
         while self.stop_event is None or not self.stop_event.is_set():
             frame_bgr = await capture_page_bgr(self.page)
             frame_gray = to_grayscale(frame_bgr)
 
-            if not reward_clicked:
-                reward_matches = find_template_matches(
-                    frame_gray,
-                    self.win_reward_template,
-                    self.config.win_reward_template_path.name,
-                    threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
-                    scales=(1.0,),
+            reward_matches = find_template_matches(
+                frame_gray,
+                self.win_reward_template,
+                self.config.win_reward_template_path.name,
+                threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
+                scales=(1.0,),
+            )
+            if reward_matches:
+                center_x, center_y, score = reward_matches[0]
+                template_height = self.win_reward_template.shape[0]
+                click_y = center_y - template_height // 2 + min(
+                    1,
+                    template_height - 1,
                 )
-                if reward_matches:
-                    best_score = max(match[2] for match in reward_matches)
-                    print(
-                        f"Win reward found, best score={best_score:.3f}; "
-                        f"clicking fixed position {WIN_REWARD_CLICK[0]},"
-                        f"{WIN_REWARD_CLICK[1]}.",
-                        flush=True,
-                    )
-                    await _click(self.page, *WIN_REWARD_CLICK)
-                    reward_clicked = True
-                    await self.page.wait_for_timeout(AUTOMAP_POLL_MS)
-                    continue
+                print(
+                    f"Win reward found at {center_x},{center_y}, "
+                    f"score={score:.3f}; clicking first match top-middle at "
+                    f"{center_x},{click_y} and checking again in 2s.",
+                    flush=True,
+                )
+                await _click(self.page, center_x, click_y)
+                await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
+                continue
 
             x, y, score = find_template(
                 frame_gray,
@@ -220,14 +224,18 @@ class AutomapFlow:
 
             print("Hero level-up available; opening option picker.", flush=True)
             await _click(self.page, *HERO_LEVELUP_OPEN_CLICK)
+            # The cards flash white while the picker animates in. Waiting for the
+            # animation to settle prevents the saturated-panel fallback from
+            # winning before the prioritized name/art templates become visible.
+            await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_SETTLE_MS)
             for _poll in range(HERO_LEVELUP_OPTION_MAX_POLLS):
                 if self.stop_event is not None and self.stop_event.is_set():
                     return True
-                await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_POLL_MS)
                 option_frame = await capture_page_bgr(self.page)
                 choice = self.hero_levelup_matcher.find_choice(option_frame)
                 if choice is not None:
                     break
+                await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_POLL_MS)
 
         if choice is not None and choice.is_prioritized:
             print(
@@ -240,6 +248,12 @@ class AutomapFlow:
             return True
 
         if choice is not None:
+            await save_screenshot(
+                self.page,
+                "no-prioritized-hero-option",
+                HERO_FALLBACK_SCREENSHOT_DIR,
+                "Hero fallback",
+            )
             print(
                 f"No prioritized hero option matched; clicking visible fallback "
                 f"card at {choice.x},{choice.y}.",
@@ -279,8 +293,9 @@ class AutomapFlow:
             f"clicking exit_click once at {exit_x},{exit_y} and stopping auto-map.",
             flush=True,
         )
+        # pause game and exit loop
         # await _click(self.page, exit_x, exit_y)
-        self.boss_handoff_requested = True
+        # self.boss_handoff_requested = True
         return True
 
     async def handle_level_up(

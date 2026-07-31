@@ -24,17 +24,24 @@ from hauntedroom.core.runtime import (
     LIVE_SCREENSHOT_DIR,
     start_hotkey_listener,
 )
+from hauntedroom.core.vision import find_template_matches as find_real_template_matches
+from hauntedroom.core.vision import load_template as load_real_template
 from hauntedroom.flows.automap import (
     AUTOMAP_POLL_MS,
     AutomapConfig,
     AutomapFlow,
     BOSS_HP_TEMPLATE_PATH,
+    HERO_FALLBACK_SCREENSHOT_DIR,
     HERO_LEVELUP_OPEN_CLICK,
     HERO_LEVELUP_OPTION_POLL_MS,
+    HERO_LEVELUP_OPTION_SETTLE_MS,
     LV_SPIN_CLICK_OFFSET_X,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
     UPGRADE_CONFIRM_CLICK,
+    WIN_REWARD_RECHECK_MS,
+    WIN_REWARD_TEMPLATE_PATH,
+    WIN_REWARD_TEMPLATE_THRESHOLD,
     run_automap_flow,
 )
 from hauntedroom.flows.automap_support.hero_levelup import (
@@ -566,14 +573,21 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.page.wait_for_timeout.assert_not_awaited()
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_hero_levelup_opens_then_polls_until_options_are_visible(
+    async def test_hero_levelup_waits_for_flash_to_settle_before_first_capture(
         self,
         capture_page_bgr,
     ):
         popup = cv2.imread(
             str(HERO_SELECT_FIXTURES_DIR / "test-vps-lubu.png")
         )
-        capture_page_bgr.return_value = popup
+
+        async def capture_after_settle(_page):
+            self.page.wait_for_timeout.assert_awaited_once_with(
+                HERO_LEVELUP_OPTION_SETTLE_MS
+            )
+            return popup
+
+        capture_page_bgr.side_effect = capture_after_settle
         initial_frame = self.make_protect_available(np.zeros_like(popup))
         flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
 
@@ -588,7 +602,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             [call(*HERO_LEVELUP_OPEN_CLICK), call(192, 597)],
         )
         self.page.wait_for_timeout.assert_awaited_once_with(
-            HERO_LEVELUP_OPTION_POLL_MS
+            HERO_LEVELUP_OPTION_SETTLE_MS
         )
         capture_page_bgr.assert_awaited_once_with(self.page)
 
@@ -698,6 +712,30 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.assertEqual((choice.x, choice.y), (319, 632))
         self.assertEqual(find_hero_option_centers(popup), [(319, 632)])
 
+    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    async def test_hero_levelup_fallback_saves_screenshot_before_click(
+        self,
+        save_screenshot,
+    ):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "only_1_option.png")
+        )
+        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        handled = await flow.hero_levelup(
+            popup,
+            cv2.cvtColor(popup, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertTrue(handled)
+        save_screenshot.assert_awaited_once_with(
+            self.page,
+            "no-prioritized-hero-option",
+            HERO_FALLBACK_SCREENSHOT_DIR,
+            "Hero fallback",
+        )
+        self.page.mouse.click.assert_awaited_once_with(319, 632)
+
     @patch(
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
@@ -775,10 +813,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             ],
         )
 
-    @patch(
-        "hauntedroom.flows.automap.load_template",
-        return_value=np.zeros((2, 2), dtype=np.uint8),
-    )
+    @patch("hauntedroom.flows.automap.load_template")
     @patch(
         "hauntedroom.flows.automap.find_template",
         side_effect=[
@@ -789,19 +824,28 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     )
     @patch("hauntedroom.flows.automap.find_template_matches")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_clicks_fixed_reward_position_then_completes_at_home(
+    async def test_map_end_reclicks_first_reward_top_middle_until_no_match(
         self,
         capture_page_bgr,
         find_template_matches,
         find_template,
-        _load_template,
+        load_template,
     ):
+        load_template.side_effect = lambda path: np.zeros(
+            (42, 34) if path.name == "win_reward.png" else (2, 2),
+            dtype=np.uint8,
+        )
         capture_page_bgr.return_value = self.make_protect_available(
             np.zeros((720, 640, 3), dtype=np.uint8)
         )
-        find_template_matches.return_value = [
+        reward_matches = [
             (305, 466, 1.0),
             (341, 466, 0.98),
+        ]
+        find_template_matches.side_effect = [
+            reward_matches,
+            reward_matches,
+            [],
         ]
 
         completed = await run_automap_flow(self.page, asyncio.Event())
@@ -811,13 +855,45 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             self.page.mouse.click.await_args_list,
             [
                 call(300, 400),
-                call(320, 433),
+                call(305, 446),
+                call(305, 446),
             ],
         )
         self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
         reward_call = find_template_matches.call_args_list[0]
         self.assertEqual(reward_call.args[2], "win_reward.png")
-        self.assertEqual(reward_call.kwargs["threshold"], 0.90)
+        self.assertEqual(
+            reward_call.kwargs["threshold"],
+            WIN_REWARD_TEMPLATE_THRESHOLD,
+        )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [call(WIN_REWARD_RECHECK_MS), call(WIN_REWARD_RECHECK_MS)],
+        )
+
+    def test_win_reward_template_matches_dynamic_reward_screens(self):
+        template = load_real_template(WIN_REWARD_TEMPLATE_PATH)
+
+        for fixture_name in ("rewards_v1.png", "rewards_v2.png"):
+            with self.subTest(fixture_name=fixture_name):
+                frame = cv2.imread(
+                    str(
+                        FIXTURES_DIR
+                        / "hauntedroom-captures"
+                        / fixture_name
+                    ),
+                    cv2.IMREAD_GRAYSCALE,
+                )
+                self.assertIsNotNone(frame)
+                matches = find_real_template_matches(
+                    frame,
+                    template,
+                    WIN_REWARD_TEMPLATE_PATH.name,
+                    threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
+                    scales=(1.0,),
+                )
+
+                self.assertTrue(matches)
 
     @patch(
         "hauntedroom.flows.automap.load_template",
