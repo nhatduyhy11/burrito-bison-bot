@@ -12,8 +12,12 @@ from hauntedroom.core.vision import (
     find_template_matches,
     load_template,
 )
-from hauntedroom.flows.boss_action import click as _click
-from hauntedroom.flows.map_vision_helper import (
+from hauntedroom.flows.automap_support.boss_action import click as _click
+from hauntedroom.flows.automap_support.hero_levelup import (
+    HERO_LEVELUP_TEMPLATE_PATHS,
+    HeroLevelupMatcher,
+)
+from hauntedroom.flows.automap_support.detectors import (
     BOSS_CRITICAL_REGION,
     PROTECT_AVAILABLE_REGION,
     find_boss_health_bar,
@@ -49,9 +53,10 @@ MAP_END_CHECK_INTERVAL_SEC = 5.0
 WIN_REWARD_TEMPLATE_THRESHOLD = 0.90
 START_HOME_TEMPLATE_THRESHOLD = 0.90
 EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
+HERO_LEVELUP_OPEN_CLICK = (320, 640)
+HERO_LEVELUP_OPTION_POLL_MS = 200
+HERO_LEVELUP_OPTION_MAX_POLLS = 10
 
-PROTECT_CLICK = (320, 640)
-PROTECT_CONFIRM_CLICK = (357, 623)
 UPGRADE_CONFIRM_CLICK = (430, 366)
 WIN_REWARD_CLICK = (320, 433)
 
@@ -69,6 +74,7 @@ class AutomapConfig:
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
+    hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS
 
 
 class AutomapFlow:
@@ -91,6 +97,9 @@ class AutomapFlow:
         self.boss_hp_template = load_template(config.boss_hp_template_path)
         self.start_home_template = load_template(config.start_home_template_path)
         self.exit_click_template = load_template(config.exit_click_template_path)
+        self.hero_levelup_matcher = HeroLevelupMatcher(
+            config.hero_levelup_template_paths
+        )
         self.loop = asyncio.get_running_loop()
         self.last_map_end_check: Optional[float] = None
         self.map_completed = False
@@ -199,24 +208,47 @@ class AutomapFlow:
         print("Auto-map flow stopped while waiting for home reward.", flush=True)
         return False
 
-    async def handle_protect_gate(
+    async def hero_levelup(
         self,
         frame_bgr: np.ndarray,
         _frame_gray: np.ndarray,
     ) -> bool:
-        if not region_has_enough_white(frame_bgr):
-            return False
+        choice = self.hero_levelup_matcher.find_choice(frame_bgr)
+        if choice is None:
+            if not region_has_enough_white(frame_bgr):
+                return False
 
-        print("Protect gate available; clicking twice with 800ms delay.", flush=True)
-        await _click(self.page, *PROTECT_CLICK)
-        if not await wait_with_countdown(
-            self.page,
-            AUTOMAP_ACTION_DELAY_MS,
-            "Protect gate",
-            self.stop_event,
-        ):
+            print("Hero level-up available; opening option picker.", flush=True)
+            await _click(self.page, *HERO_LEVELUP_OPEN_CLICK)
+            for _poll in range(HERO_LEVELUP_OPTION_MAX_POLLS):
+                if self.stop_event is not None and self.stop_event.is_set():
+                    return True
+                await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_POLL_MS)
+                option_frame = await capture_page_bgr(self.page)
+                choice = self.hero_levelup_matcher.find_choice(option_frame)
+                if choice is not None:
+                    break
+
+        if choice is not None and choice.is_prioritized:
+            print(
+                f"Hero level-up option {choice.template_name!r} matched at "
+                f"{choice.x},{choice.y}, score={choice.score:.3f}; "
+                "clicking by priority.",
+                flush=True,
+            )
+            await _click(self.page, choice.x, choice.y)
             return True
-        await _click(self.page, *PROTECT_CONFIRM_CLICK)
+
+        if choice is not None:
+            print(
+                f"No prioritized hero option matched; clicking visible fallback "
+                f"card at {choice.x},{choice.y}.",
+                flush=True,
+            )
+            await _click(self.page, choice.x, choice.y)
+            return True
+
+        print("No visible hero level-up option found; skipping.", flush=True)
         return True
 
     async def handle_boss_critical(
@@ -333,9 +365,9 @@ class AutomapFlow:
             self.handle_level_spin_interrupt,
             map_end_handler,
             self.handle_boss_critical,
+            self.handle_level_up, # gate, bed
             self.handle_build_structure,
-            self.handle_protect_gate,
-            self.handle_level_up,
+            self.hero_levelup,
         )
 
         while self.stop_event is None or not self.stop_event.is_set():
@@ -378,6 +410,7 @@ async def run_automap_flow(
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH,
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
+    hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -390,5 +423,6 @@ async def run_automap_flow(
         boss_hp_template_path=boss_hp_template_path,
         start_home_template_path=start_home_template_path,
         exit_click_template_path=exit_click_template_path,
+        hero_levelup_template_paths=hero_levelup_template_paths,
     )
     return await AutomapFlow(page, stop_event, config).run()

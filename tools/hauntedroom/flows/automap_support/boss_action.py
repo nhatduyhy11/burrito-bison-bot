@@ -7,7 +7,7 @@ from typing import Optional
 import numpy as np
 
 from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.flows.map_vision_helper import (
+from hauntedroom.flows.automap_support.detectors import (
     PET_READY_REGION,
     SPELL_READY_REGION,
     boss_action_has_ready_glow,
@@ -15,7 +15,7 @@ from hauntedroom.flows.map_vision_helper import (
 )
 
 
-ROOM_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms"
+ROOM_TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "rooms"
 BOSS_TEMPLATE_DIR = ROOM_TEMPLATE_DIR / "boss"
 PET_READY_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "pet_ready.png"
 SPELL_READY_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "spell_ready.png"

@@ -14,7 +14,12 @@ from hauntedroom.core.runtime import (
     start_user_click_logger,
     wait_for_ctrl_c,
 )
-from hauntedroom.flows import automap, boss_action, map_vision_helper
+from hauntedroom.flows import automap
+from hauntedroom.flows.automap_support import (
+    boss_action,
+    detectors as automap_detectors,
+    hero_levelup,
+)
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.research import run_research_flow
 
@@ -25,8 +30,9 @@ def get_automap_flow(dev_reload: bool = False):
 
     importlib.invalidate_caches()
     importlib.reload(vision)
-    importlib.reload(map_vision_helper)
+    importlib.reload(automap_detectors)
     importlib.reload(boss_action)
+    importlib.reload(hero_levelup)
     reloaded_automap = importlib.reload(automap)
     print("Auto-map support modules reloaded.", flush=True)
     return reloaded_automap.run_automap_flow

@@ -43,10 +43,10 @@ class HauntedRoomDependencyTest(TestCase):
     def test_flows_are_independent_from_actions_and_each_other(self):
         allowed_support_imports = {
             "automap.py": {
-                "hauntedroom.flows.boss_action",
-                "hauntedroom.flows.map_vision_helper",
+                "hauntedroom.flows.automap_support.boss_action",
+                "hauntedroom.flows.automap_support.hero_levelup",
+                "hauntedroom.flows.automap_support.detectors",
             },
-            "boss_action.py": {"hauntedroom.flows.map_vision_helper"},
         }
         for path in (PACKAGE_DIR / "flows").glob("*.py"):
             forbidden = {

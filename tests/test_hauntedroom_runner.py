@@ -9,6 +9,9 @@ import numpy as np
 
 TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+HERO_SELECT_FIXTURES_DIR = (
+    FIXTURES_DIR / "hauntedroom-captures" / "hero_select"
+)
 sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.actions.runner import (
@@ -26,15 +29,21 @@ from hauntedroom.flows.automap import (
     AutomapConfig,
     AutomapFlow,
     BOSS_HP_TEMPLATE_PATH,
+    HERO_LEVELUP_OPEN_CLICK,
+    HERO_LEVELUP_OPTION_POLL_MS,
     LV_SPIN_CLICK_OFFSET_X,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
-    PROTECT_CLICK,
-    PROTECT_CONFIRM_CLICK,
     UPGRADE_CONFIRM_CLICK,
     run_automap_flow,
 )
-from hauntedroom.flows.boss_action import (
+from hauntedroom.flows.automap_support.hero_levelup import (
+    HERO_LEVELUP_SEARCH_TOP,
+    HERO_LEVELUP_TEMPLATE_PATHS,
+    HeroLevelupMatcher,
+    find_hero_option_centers,
+)
+from hauntedroom.flows.automap_support.boss_action import (
     PET_ACTION_POSITION,
     PET_READY_TEMPLATE_PATH,
     SPELL_ACTION_POSITION,
@@ -48,7 +57,7 @@ from hauntedroom.flows.click_loop import (
     run_click_loop,
 )
 from hauntedroom.flows.research import run_research_flow
-from hauntedroom.flows.map_vision_helper import (
+from hauntedroom.flows.automap_support.detectors import (
     BOSS_CRITICAL_REGION,
     PET_READY_REGION,
     PROTECT_AVAILABLE_REGION,
@@ -191,14 +200,20 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
         self, invalidate_caches, reload_module
     ):
         from hauntedroom.core import vision
-        from hauntedroom.flows import automap, boss_action, map_vision_helper
+        from hauntedroom.flows import automap
+        from hauntedroom.flows.automap_support import (
+            boss_action,
+            detectors as automap_detectors,
+            hero_levelup,
+        )
 
         refreshed_flow = Mock()
         refreshed_automap = Mock(run_automap_flow=refreshed_flow)
         reload_module.side_effect = [
             vision,
-            map_vision_helper,
+            automap_detectors,
             boss_action,
+            hero_levelup,
             refreshed_automap,
         ]
 
@@ -210,8 +225,9 @@ class HauntedRoomRunnerHotkeyTest(IsolatedAsyncioTestCase):
             reload_module.call_args_list,
             [
                 call(vision),
-                call(map_vision_helper),
+                call(automap_detectors),
                 call(boss_action),
+                call(hero_levelup),
                 call(automap),
             ],
         )
@@ -428,7 +444,10 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             )
         )
 
-    @patch("hauntedroom.flows.boss_action.capture_page_bgr", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
     async def test_activate_boss_spell_clicks_ready_spell_then_boss(
         self,
         capture_page_bgr,
@@ -446,7 +465,10 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             [call(*SPELL_ACTION_POSITION), call(*boss_position)],
         )
 
-    @patch("hauntedroom.flows.boss_action.capture_page_bgr", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
     async def test_deploy_boss_pet_drags_ready_pet_to_boss(
         self,
         capture_page_bgr,
@@ -508,42 +530,173 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         capture_page_bgr.assert_awaited_once_with(self.page)
         self.page.mouse.click.assert_awaited_once_with(612, 35)
 
-    @patch(
-        "hauntedroom.flows.automap.load_template",
-        return_value=np.zeros((2, 2), dtype=np.uint8),
-    )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
-    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
+    async def test_hero_levelup_uses_priority_2_hanuman_from_lower_region(
+        self,
+    ):
+        popup = cv2.imread(
+            str(
+                HERO_SELECT_FIXTURES_DIR
+                / "3_option_hanu_xlubu.png"
+            )
+        )
+        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        handled = await flow.hero_levelup(
+            popup,
+            cv2.cvtColor(popup, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertTrue(handled)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(347, 597)],
+        )
+        self.assertEqual(HERO_LEVELUP_SEARCH_TOP, 460)
+        self.assertEqual(
+            [path.name for path in HERO_LEVELUP_TEMPLATE_PATHS],
+            [
+                "00_mage_king.png",
+                "01_dark_lubu.png",
+                "02_hanuman.png",
+                "03_soul_spear.png",
+                "04_thunder_trident.png",
+                "99_mage_king.png",
+            ],
+        )
+        self.page.wait_for_timeout.assert_not_awaited()
+
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_available_protect_gate_clicks_twice_then_stops(
+    async def test_hero_levelup_opens_then_polls_until_options_are_visible(
         self,
         capture_page_bgr,
-        _find_template_matches,
+    ):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "test-vps-lubu.png")
+        )
+        capture_page_bgr.return_value = popup
+        initial_frame = self.make_protect_available(np.zeros_like(popup))
+        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        handled = await flow.hero_levelup(
+            initial_frame,
+            cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertTrue(handled)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*HERO_LEVELUP_OPEN_CLICK), call(192, 597)],
+        )
+        self.page.wait_for_timeout.assert_awaited_once_with(
+            HERO_LEVELUP_OPTION_POLL_MS
+        )
+        capture_page_bgr.assert_awaited_once_with(self.page)
+
+    def test_hero_levelup_priority_1_dark_lubu_wins(self):
+        popup = cv2.imread(
+            str(
+                HERO_SELECT_FIXTURES_DIR
+                / "3_option_2lubu.png"
+            )
+        )
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "01_dark_lubu.png")
+        self.assertEqual((choice.x, choice.y), (473, 597))
+
+    def test_hero_levelup_name_only_dark_lubu_beats_hanuman(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "lubu and hanu.png")
+        )
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "01_dark_lubu.png")
+        self.assertEqual(choice.priority, 1.0)
+        self.assertEqual((choice.x, choice.y), (447, 597))
+
+    def test_hero_levelup_new_mage_king_overrides_priorities_1_and_2(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "start_with_vps.png")
+        )
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "00_mage_king.png")
+        self.assertEqual(choice.priority, 0.0)
+        self.assertEqual((choice.x, choice.y), (192, 597))
+
+    def test_hero_levelup_vps_lubu_fixture_selects_mage_king(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "test-vps-lubu.png")
+        )
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "00_mage_king.png")
+        self.assertEqual(choice.priority, 0.0)
+        self.assertEqual((choice.x, choice.y), (192, 597))
+
+    @patch(
+        "hauntedroom.flows.automap_support.hero_levelup.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch(
+        "hauntedroom.flows.automap_support.hero_levelup.find_template",
+        side_effect=[(0, 0, 0.1), (252, 137, 0.95)],
+    )
+    def test_hero_levelup_priority_99_is_excluded_from_fallback(
+        self,
         _find_template,
         _load_template,
     ):
-        capture_page_bgr.return_value = self.make_protect_available(
-            np.zeros((720, 640, 3), dtype=np.uint8)
+        popup = np.zeros((720, 640, 3), dtype=np.uint8)
+        popup[610:655, 196:309] = (0, 0, 180)
+        popup[610:655, 331:444] = (0, 0, 180)
+        matcher = HeroLevelupMatcher(
+            (
+                Path("01_other.png"),
+                Path("99_mage_king_upgrade.png"),
+            )
         )
-        stop_event = asyncio.Event()
 
-        async def stop_after_second_click(*_args, **_kwargs):
-            if self.page.mouse.click.await_count == 2:
-                stop_event.set()
+        choice = matcher.find_choice(popup)
 
-        self.page.mouse.click.side_effect = stop_after_second_click
+        self.assertIsNotNone(choice)
+        self.assertFalse(choice.is_prioritized)
+        self.assertEqual((choice.x, choice.y), (387, 632))
 
-        completed = await run_automap_flow(self.page, stop_event)
+    def test_hero_levelup_fallback_finds_two_visible_options(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "only_2_option.png")
+        )
 
-        self.assertFalse(completed)
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertFalse(choice.is_prioritized)
+        self.assertEqual((choice.x, choice.y), (252, 632))
         self.assertEqual(
-            self.page.mouse.click.await_args_list,
-            [call(*PROTECT_CLICK), call(*PROTECT_CONFIRM_CLICK)],
+            find_hero_option_centers(popup),
+            [(252, 632), (387, 632)],
         )
-        self.assertEqual(
-            self.page.wait_for_timeout.await_args_list,
-            [call(250), call(250), call(250), call(50)],
+
+    def test_hero_levelup_fallback_finds_only_visible_option(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "only_1_option.png")
         )
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertFalse(choice.is_prioritized)
+        self.assertEqual((choice.x, choice.y), (319, 632))
+        self.assertEqual(find_hero_option_centers(popup), [(319, 632)])
 
     @patch(
         "hauntedroom.flows.automap.load_template",
@@ -756,19 +909,32 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         _load_template,
     ):
         unavailable = np.zeros((720, 640, 3), dtype=np.uint8)
-        available = self.make_protect_available(np.zeros_like(unavailable))
-        capture_page_bgr.side_effect = [unavailable, unavailable, available]
-        find_template_matches.return_value = [
-            (100, 200, 0.99),
-            (120, 500, 0.91),
+        available = cv2.imread(
+            str(
+                HERO_SELECT_FIXTURES_DIR
+                / "3_option_hanu_xlubu.png"
+            )
+        )
+        capture_page_bgr.side_effect = [
+            unavailable,
+            unavailable,
+            available,
+        ]
+        find_template_matches.side_effect = [
+            [
+                (100, 200, 0.99),
+                (120, 500, 0.91),
+            ],
+            [],
+            [],
         ]
         stop_event = asyncio.Event()
 
-        async def stop_after_protect_clicks(*_args, **_kwargs):
-            if self.page.mouse.click.await_count == 4:
+        async def stop_after_hero_levelup_select(*_args, **_kwargs):
+            if self.page.mouse.click.await_count == 3:
                 stop_event.set()
 
-        self.page.mouse.click.side_effect = stop_after_protect_clicks
+        self.page.mouse.click.side_effect = stop_after_hero_levelup_select
 
         completed = await run_automap_flow(self.page, stop_event)
 
@@ -778,8 +944,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             [
                 call(120, 500),
                 call(*UPGRADE_CONFIRM_CLICK),
-                call(*PROTECT_CLICK),
-                call(*PROTECT_CONFIRM_CLICK),
+                call(347, 597),
             ],
         )
         self.assertEqual(capture_page_bgr.await_count, 3)

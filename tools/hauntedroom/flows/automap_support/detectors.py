@@ -1,4 +1,4 @@
-"""OpenCV helpers used by the auto-map battle flow."""
+"""Domain-specific OpenCV detectors used by the auto-map battle flow."""
 
 from pathlib import Path
 from typing import Optional
