@@ -52,6 +52,8 @@ MAP_END_TEMPLATE_THRESHOLD = 0.90
 MAP_END_CHECK_INTERVAL_SEC = 5.0
 WIN_REWARD_TEMPLATE_THRESHOLD = 0.85
 WIN_REWARD_RECHECK_MS = 2_000
+WIN_REWARD_EMPTY_DELAY_MS = 3_000
+WIN_REWARD_FOLLOWUP_CLICK = (220, 560)
 START_HOME_TEMPLATE_THRESHOLD = 0.90
 EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
 HERO_LEVELUP_OPEN_CLICK = (320, 640)
@@ -167,6 +169,7 @@ class AutomapFlow:
         return True
 
     async def finish_map_from_home(self) -> bool:
+        reward_followup_clicked = False
         while self.stop_event is None or not self.stop_event.is_set():
             frame_bgr = await capture_page_bgr(self.page)
             frame_gray = to_grayscale(frame_bgr)
@@ -193,6 +196,18 @@ class AutomapFlow:
                 )
                 await _click(self.page, center_x, click_y)
                 await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
+                continue
+
+            if not reward_followup_clicked:
+                print(
+                    "No win reward remains; waiting 1s then clicking "
+                    f"{WIN_REWARD_FOLLOWUP_CLICK[0]},"
+                    f"{WIN_REWARD_FOLLOWUP_CLICK[1]} once before rechecking.",
+                    flush=True,
+                )
+                await self.page.wait_for_timeout(WIN_REWARD_EMPTY_DELAY_MS)
+                await _click(self.page, *WIN_REWARD_FOLLOWUP_CLICK)
+                reward_followup_clicked = True
                 continue
 
             x, y, score = find_template(

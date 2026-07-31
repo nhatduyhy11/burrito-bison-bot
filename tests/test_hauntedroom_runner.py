@@ -39,6 +39,8 @@ from hauntedroom.flows.automap import (
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
     UPGRADE_CONFIRM_CLICK,
+    WIN_REWARD_EMPTY_DELAY_MS,
+    WIN_REWARD_FOLLOWUP_CLICK,
     WIN_REWARD_RECHECK_MS,
     WIN_REWARD_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_THRESHOLD,
@@ -846,6 +848,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             reward_matches,
             reward_matches,
             [],
+            [],
         ]
 
         completed = await run_automap_flow(self.page, asyncio.Event())
@@ -857,6 +860,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
                 call(300, 400),
                 call(305, 446),
                 call(305, 446),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
             ],
         )
         self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
@@ -868,7 +872,11 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         )
         self.assertEqual(
             self.page.wait_for_timeout.await_args_list,
-            [call(WIN_REWARD_RECHECK_MS), call(WIN_REWARD_RECHECK_MS)],
+            [
+                call(WIN_REWARD_RECHECK_MS),
+                call(WIN_REWARD_RECHECK_MS),
+                call(WIN_REWARD_EMPTY_DELAY_MS),
+            ],
         )
 
     def test_win_reward_template_matches_dynamic_reward_screens(self):
@@ -909,7 +917,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
     )
     @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_completes_when_home_ready_without_reward(
+    async def test_map_end_clicks_followup_once_before_checking_home(
         self,
         capture_page_bgr,
         find_template_matches,
@@ -923,9 +931,15 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         completed = await run_automap_flow(self.page, asyncio.Event())
 
         self.assertTrue(completed)
-        self.page.mouse.click.assert_awaited_once_with(300, 400)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(300, 400), call(*WIN_REWARD_FOLLOWUP_CLICK)],
+        )
         self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
-        find_template_matches.assert_called_once()
+        self.assertEqual(find_template_matches.call_count, 2)
+        self.page.wait_for_timeout.assert_awaited_once_with(
+            WIN_REWARD_EMPTY_DELAY_MS
+        )
 
     @patch(
         "hauntedroom.flows.automap.load_template",
