@@ -2,7 +2,7 @@
 
 ## Current Status
 
-The click/wait automation runner is implemented and documented in the root `README.md`.
+The click/wait automation runner is implemented and documented in `docs/README.md`.
 
 Current implementation files:
 

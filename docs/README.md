@@ -1,9 +1,16 @@
 # Haunted Room Runner
 
 Mã nguồn Burrito Bison cũ được giữ làm tài liệu tham khảo độc lập tại
-[`ref_cv/`](ref_cv/README.md); runner và test ở root hiện chỉ dành cho Haunted Room.
+[`ref_cv/`](../ref_cv/README.md); runner và test ở root hiện chỉ dành cho Haunted Room.
 
 Runner Playwright dùng OpenCV template matching để tìm và click các nút trong Haunted Room. Script dùng browser context của Playwright, không điều khiển chuột ở cấp hệ điều hành.
+
+Tài liệu liên quan:
+
+- [Business core: logic flow `Shift+2`](SHIFT2_AUTOMAP_FLOW.md)
+- [Testing](TESTING.md)
+- [ADR cấu trúc `core / actions / flows`](ADR_bot.md)
+- [Refactor review](REFACTOR.md)
 
 ## Yêu cầu
 
@@ -75,7 +82,7 @@ File action là một JSON array. Runner chạy tuần tự toàn bộ array r�
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
-- `Shift+2`: chạy riêng flow auto-map sau khi đã vào map và bấm `start_battle` thủ công. Priority là interrupt `automap/lv_spin.png` trước, sau đó check terminal `automap/map_end.png` tối đa mỗi 5 giây, phát hiện thanh HP boss trong vùng critical, rồi `automap/lv_up.png`, `automap/built.png`, và hero level-up. Hero level-up mở popup, chụp vùng từ `y=460` trở xuống, rồi chọn template đầu tiên match theo tiền tố priority trong `automap/hero_levelup` (số nhỏ hơn được ưu tiên). Vua Pháp Sư mới là priority 0 override; Hắc Lữ Bố và Hanuman dùng template chỉ chứa tên, lần lượt là priority 1 và 2; Cây Giáo Hút Hồn và Đinh Ba Sấm Sét là priority 3 và 4. Template `99_*.png` đánh dấu card có thể bỏ qua, ví dụ `Tăng sao Vua Pháp Sư`, và card đó bị loại khỏi fallback khi còn lựa chọn khác. Nếu không option ưu tiên nào match, module `flows/automap_support/hero_levelup.py` nhận diện các card đang hiển thị và click card đầu tiên, gồm cả layout 3, 2 hoặc 1 option. Các thao tác boss riêng của auto-map nằm cùng package tại `flows/automap_support/boss_action.py`. Boss được nhận diện bằng các cạnh sọc dọc của `boss/boss_hp_bar.png` ở đúng kích thước boss, không phụ thuộc màu. Khi boss vào vùng, bot click `exit_click.png` đúng một lần rồi dừng auto-map để người dùng xử lý boss thủ công. Với công trình, bot chọn marker có x lớn nhất (nếu trùng x thì y lớn nhất), rồi chọn từ trên xuống tùy chọn đầu tiên có giá màu trắng và bỏ qua giá màu đỏ. Nếu thấy `lv_spin` thì click lệch trái 70 px từ tâm match; `lv_spin` cũng được check lại ngay sau khi click `lv_up` và trước confirm. Bấm `Shift+0` để dừng flow trong phase hiện tại.
+- `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [logic flow `Shift+2`](SHIFT2_AUTOMAP_FLOW.md) để biết priority, điều kiện và hành vi của từng phase.
 - `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
@@ -149,7 +156,11 @@ Các thao tác click thủ công trong browser được in ra terminal dưới d
 
 Wait dài có countdown; ngưỡng countdown và số vòng lặp được cấu hình trong `tools/hauntedroom/core/runtime.py`.
 
-## Test fixtures
+## Testing
+
+Xem [TESTING.md](TESTING.md) để biết cách chạy test suite, chạy từng nhóm test và quản lý fixture.
+
+### Test fixtures
 
 Các screenshot PNG dùng làm testcase nằm trong `tests/fixtures/`. `Shift+8` lưu ảnh
 chụp trực tiếp vào `tests/fixtures/hauntedroom-captures/`; ảnh đã chọn từ các lần

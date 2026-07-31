@@ -50,7 +50,7 @@ config và mutable state; sau đó chuyển từng handler thành function hoặ
 - `hauntedroom_runner.py` đóng vai trò composition root đúng chỗ.
 - `core` không import ngược lên feature.
 - `actions` và `flows` không phụ thuộc lẫn nhau.
-- `ADR_bot.md` giải thích rõ ý nghĩa của `core`, tránh hiểu nhầm đây là Clean
+- [`ADR_bot.md`](ADR_bot.md) giải thích rõ ý nghĩa của `core`, tránh hiểu nhầm đây là Clean
   Architecture domain layer.
 - `tests/test_hauntedroom_architecture.py` bảo vệ dependency rules.
 - Test coverage hiện có tập trung khá tốt vào behavior của runner, vision,
@@ -164,7 +164,7 @@ này có thể đúng chủ ý, nhưng nên đặt tên hoặc document rõ.
 
 ## Nguyên tắc khi refactor
 
-- Giữ nguyên dependency rule đã ghi trong `ADR_bot.md`.
+- Giữ nguyên dependency rule đã ghi trong [`ADR_bot.md`](ADR_bot.md).
 - Refactor theo behavior hiện tại và giữ test xanh sau từng bước.
 - Không tạo registry hoặc abstraction tổng quát khi mới chỉ có một consumer.
 - Ưu tiên typed boundary và state rõ ràng hơn là chỉ chuyển code sang nhiều file.
