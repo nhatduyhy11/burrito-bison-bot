@@ -78,6 +78,10 @@ def find_template(
 
     score, top_left, template_width, template_height = best_match
     center_x = top_left[0] + template_width // 2
+    if click_position == "mid_left":
+        click_x = top_left[0] + min(1, template_width - 1)
+        click_y = top_left[1] + template_height // 2
+        return click_x, click_y, score
     if click_position == "bottom_left":
         click_x = top_left[0] + min(1, template_width - 1)
         click_y = top_left[1] + max(template_height - 2, 0)

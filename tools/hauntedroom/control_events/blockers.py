@@ -5,7 +5,11 @@ from typing import Optional
 import numpy as np
 
 from hauntedroom.core.runtime import save_timeout_screenshot
-from hauntedroom.core.vision import capture_page_grayscale, find_template
+from hauntedroom.core.vision import (
+    TEMPLATE_SCALES,
+    capture_page_grayscale,
+    find_template,
+)
 
 
 async def clear_blockers(
@@ -20,6 +24,7 @@ async def clear_blockers(
     click_positions: dict[str, str],
     label: str,
     stop_event: Optional[asyncio.Event] = None,
+    until_template_scales: tuple[float, ...] = TEMPLATE_SCALES,
 ) -> bool:
     loop = asyncio.get_running_loop()
     deadline = loop.time() + timeout_ms / 1000
@@ -64,6 +69,7 @@ async def clear_blockers(
             screenshot,
             templates[until_template_path],
             until_template_path.name,
+            scales=until_template_scales,
         )
         best_until_score = max(best_until_score, until_score)
         if until_score >= threshold:

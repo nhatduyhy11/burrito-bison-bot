@@ -15,6 +15,15 @@ The runner uses Playwright browser channels rather than hardcoded executable pat
 
 Per-loop start/finish logging is implemented and flushed immediately.
 
+## Investigation Notes
+
+- `Shift+1` uses the default action file `tools/hauntedroom_actions.sample.json`.
+- The `Start HOME` action currently sets `click_count` to `3`, so one detected
+  `rooms/start_home.png` step clicks three times before moving on.
+- Runner behavior matches that config: `click_template` reads `click_count` and
+  loops `page.mouse.click(...)` once per count. This was detected only; no flow
+  logic has been changed yet.
+
 ## Constraints
 
 - Keep the automation limited to browser-context input.

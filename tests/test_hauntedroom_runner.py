@@ -166,15 +166,59 @@ class HauntedRoomRunnerTimeoutTest(IsolatedAsyncioTestCase):
     ):
         skip_path = Path("home.png")
         self.actions[0]["_skip_if_template_path"] = skip_path
+        self.actions[0]["click_position"] = "mid_left"
+        self.actions[0]["_template_scales"] = (1.0, 0.67, 0.5)
+        self.actions[0]["_skip_template_scales"] = (0.5,)
         wait_for_template.return_value = SKIP_TEMPLATE_MATCHED
 
         await run_actions(self.page, self.actions, loop_count=1)
 
         self.assertEqual(load_template.call_count, 2)
         wait_for_template.assert_awaited_once()
-        self.assertIs(wait_for_template.await_args.args[-2], load_template.return_value)
-        self.assertEqual(wait_for_template.await_args.args[-1], skip_path.name)
+        self.assertIs(
+            wait_for_template.await_args.kwargs["skip_template"],
+            load_template.return_value,
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["skip_template_name"],
+            skip_path.name,
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["click_position"],
+            "mid_left",
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["template_scales"],
+            (1.0, 0.67, 0.5),
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["skip_template_scales"],
+            (0.5,),
+        )
         self.page.mouse.click.assert_awaited_once_with(10, 20, button="left")
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.clear_blockers", new_callable=AsyncMock)
+    async def test_clear_blockers_receives_until_template_scales(
+        self,
+        clear_blockers,
+        _load_template,
+    ):
+        action = {
+            "type": "clear_blockers",
+            "_blocker_paths": [Path("overlay.png")],
+            "_until_template_path": Path("start_home.png"),
+            "_until_template_scales": (1.0,),
+        }
+        clear_blockers.return_value = True
+
+        await run_actions(self.page, [action], loop_count=1)
+
+        clear_blockers.assert_awaited_once()
+        self.assertEqual(clear_blockers.await_args.args[-1], (1.0,))
 
     @patch(
         "hauntedroom.actions.runner.capture_page_grayscale",

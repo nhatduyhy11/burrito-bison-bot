@@ -12,6 +12,7 @@ from hauntedroom.core.runtime import (
 )
 from hauntedroom.core.vision import (
     DEFAULT_TEMPLATE_THRESHOLD,
+    TEMPLATE_SCALES,
     capture_page_grayscale,
     find_template,
     load_template,
@@ -34,6 +35,9 @@ async def wait_for_template(
     stop_event: Optional[asyncio.Event] = None,
     skip_template: Optional[np.ndarray] = None,
     skip_template_name: Optional[str] = None,
+    click_position: str = "center",
+    template_scales: tuple[float, ...] = TEMPLATE_SCALES,
+    skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES,
 ) -> object:
     loop = asyncio.get_running_loop()
     deadline = loop.time() + timeout_ms / 1000
@@ -48,6 +52,8 @@ async def wait_for_template(
             screenshot,
             template,
             template_name,
+            click_position,
+            scales=template_scales,
         )
         best_score = max(best_score, score)
 
@@ -59,6 +65,7 @@ async def wait_for_template(
                 screenshot,
                 skip_template,
                 skip_template_name,
+                scales=skip_template_scales,
             )
             best_skip_score = max(best_skip_score, skip_score)
             if skip_score >= threshold:
@@ -147,6 +154,7 @@ async def run_actions(
                         action.get("click_positions", {}),
                         label,
                         stop_event,
+                        action.get("_until_template_scales", TEMPLATE_SCALES),
                     )
                 except TimeoutError as error:
                     timeout_count += 1
@@ -198,9 +206,26 @@ async def run_actions(
                         threshold,
                         timeout_ms,
                         poll_ms,
-                        stop_event,
-                        templates[skip_template_path] if skip_template_path else None,
-                        skip_template_path.name if skip_template_path else None,
+                        stop_event=stop_event,
+                        skip_template=(
+                            templates[skip_template_path]
+                            if skip_template_path
+                            else None
+                        ),
+                        skip_template_name=(
+                            skip_template_path.name
+                            if skip_template_path
+                            else None
+                        ),
+                        click_position=action.get("click_position", "center"),
+                        template_scales=action.get(
+                            "_template_scales",
+                            TEMPLATE_SCALES,
+                        ),
+                        skip_template_scales=action.get(
+                            "_skip_template_scales",
+                            TEMPLATE_SCALES,
+                        ),
                     )
                 except TimeoutError as error:
                     timeout_count += 1

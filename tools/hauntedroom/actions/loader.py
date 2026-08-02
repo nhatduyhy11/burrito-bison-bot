@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from hauntedroom.core.vision import DEFAULT_TEMPLATE_THRESHOLD
+from hauntedroom.core.vision import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES
 
 
-SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "top_middle"}
+SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "mid_left", "top_middle"}
 
 
 def validate_threshold(action: dict, index: int) -> None:
@@ -19,6 +19,19 @@ def validate_timing_fields(action: dict, index: int) -> None:
     for field in ("timeout_ms", "poll_ms", "delay_ms"):
         if field in action and int(action[field]) < 0:
             raise ValueError(f"Action #{index} {field} cannot be negative.")
+
+
+def load_scales(action: dict, index: int, field: str) -> tuple[float, ...]:
+    raw_scales = action.get(field)
+    if raw_scales is None:
+        return TEMPLATE_SCALES
+    if not isinstance(raw_scales, list) or not raw_scales:
+        raise ValueError(f"Action #{index} {field} must be a non-empty array.")
+
+    scales = tuple(float(scale) for scale in raw_scales)
+    if any(scale <= 0 for scale in scales):
+        raise ValueError(f"Action #{index} {field} must contain positive numbers.")
+    return scales
 
 
 def load_actions(path: Path) -> list[dict]:
@@ -64,9 +77,21 @@ def load_actions(path: Path) -> list[dict]:
 
             validate_threshold(action, index)
             validate_timing_fields(action, index)
+            action["_template_scales"] = load_scales(action, index, "scales")
+            action["_skip_template_scales"] = load_scales(
+                action,
+                index,
+                "skip_template_scales",
+            )
             click_count = int(action.get("click_count", 1))
             if click_count < 1:
                 raise ValueError(f"Action #{index} click_count must be at least 1.")
+            click_position = action.get("click_position", "center")
+            if click_position not in SUPPORTED_CLICK_POSITIONS:
+                raise ValueError(
+                    f"Action #{index} unsupported click position: "
+                    f"{click_position!r}."
+                )
         elif kind == "clear_blockers":
             templates_dir = action.get("templates_dir")
             until_template = action.get("until_template")
@@ -146,6 +171,11 @@ def load_actions(path: Path) -> list[dict]:
                     )
             validate_threshold(action, index)
             validate_timing_fields(action, index)
+            action["_until_template_scales"] = load_scales(
+                action,
+                index,
+                "until_template_scales",
+            )
         elif kind == "wait":
             if "ms" not in action:
                 raise ValueError(f"Action #{index} wait requires ms.")

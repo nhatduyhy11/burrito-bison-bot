@@ -109,6 +109,18 @@ class AutomapFlow:
         self.map_completed = False
         self.boss_handoff_requested = False
 
+    def find_start_home(
+        self,
+        frame_gray: np.ndarray,
+    ) -> tuple[int, int, float, Path]:
+        x, y, score = find_template(
+            frame_gray,
+            self.start_home_template,
+            self.config.start_home_template_path.name,
+            scales=(1.0,),
+        )
+        return x, y, score, self.config.start_home_template_path
+
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
         search_top = int(frame_gray.shape[0] * LV_SPIN_SEARCH_TOP_RATIO)
         search_frame = frame_gray[search_top:, :]
@@ -210,14 +222,11 @@ class AutomapFlow:
                 reward_followup_clicked = True
                 continue
 
-            x, y, score = find_template(
-                frame_gray,
-                self.start_home_template,
-                self.config.start_home_template_path.name,
-            )
+            x, y, score, template_path = self.find_start_home(frame_gray)
             if score >= START_HOME_TEMPLATE_THRESHOLD:
                 print(
-                    f"Home ready at {x},{y}, score={score:.3f}; auto-map complete.",
+                    f"Home ready at {x},{y}, score={score:.3f}, "
+                    f"template={template_path.name}; auto-map complete.",
                     flush=True,
                 )
                 return True
@@ -309,8 +318,8 @@ class AutomapFlow:
             flush=True,
         )
         # pause game and exit loop
-        # await _click(self.page, exit_x, exit_y)
-        # self.boss_handoff_requested = True
+        await _click(self.page, exit_x, exit_y)
+        self.boss_handoff_requested = True
         return True
 
     async def handle_level_up(

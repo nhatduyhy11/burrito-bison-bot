@@ -60,3 +60,21 @@ Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
 
 Khi sửa template hoặc detector, nên thêm fixture cho cả trường hợp match và
 không match, rồi chạy toàn bộ suite để phát hiện ảnh hưởng chéo giữa các detector.
+
+## Kiểm tra match thủ công
+
+Không đưa ảnh preview vào test suite. Khi cần xem nhanh template match và điểm
+click, chạy script thủ công; mặc định script chỉ in JSON, chỉ ghi ảnh vào `.tmp/`
+khi thêm `--annotate`.
+
+```shell
+uv run python tools/debug_template_match.py \
+  tests/fixtures/start_home_clean.png \
+  tools/rooms/start_home.png \
+  --click-position mid_left \
+  --scales 1.0 \
+  --annotate
+```
+
+Ảnh preview có viền đỏ cho vùng match và chấm xanh cho điểm click, nằm trong
+`.tmp/template-match/` và không cần cleanup trước khi commit.
