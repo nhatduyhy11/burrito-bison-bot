@@ -82,6 +82,31 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 - Logic nhận diện và action boss hỗ trợ nằm trong
   `flows/automap_support/detectors.py` và `boss_action.py`.
 
+#### Final-boss pet activation
+
+```mermaid
+flowchart TD
+    A[Final boss được nhận diện] --> B{Đã deploy pet<br/>trong flow này?}
+    B -- Có --> Z[Bỏ qua pet đến hết flow]
+    B -- Chưa --> C{Match pet_ready?}
+    C -- Không --> R[Trả về automap] --> A
+    C -- Có --> D[Click pet_ready]
+    D --> E[Chờ 300 ms<br/>chụp lại viewport]
+    E --> F{Match pet_active<br/>score >= 0.90?}
+    F -- Chưa --> S{stop_event đã set?}
+    S -- Chưa --> D
+    S -- Có / Shift+0 --> X[Dừng retry]
+    F -- Có --> G[Click pet_active đúng 1 lần]
+    G --> H[Popup tự đóng<br/>vùng ready màu vàng biến mất]
+    H --> I[final_boss_pet_deployed = True]
+    I --> Z
+```
+
+Contract: chỉ final boss dùng nhánh này; mini-boss bỏ qua. Hai template là
+`boss/pet_ready.png` và `boss/pet_active.png`; cờ deployed thuộc từng auto-map
+flow. Retry mở menu không có timeout/max-attempt riêng và chỉ dừng khi summon
+thành công hoặc nhận `stop_event`.
+
 ### 4. Level up
 
 - Nếu có nhiều match `automap/lv_up.png`, chọn match có `y` lớn nhất.
