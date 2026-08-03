@@ -104,7 +104,9 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 - Chỉ tìm template hero từ `y=460` trở xuống.
 - Tên file trong `rooms/automap/hero_levelup/` bắt đầu bằng số priority; số nhỏ
   hơn được ưu tiên:
-  - `00`: Vua Pháp Sư mới, override các priority sau.
+  - `00_hero_ascend.png`: viền phát sáng trên đầu card Thần Khí; luôn ưu tiên
+    card chứa pattern này và click tại vùng option phía dưới của cùng card.
+  - `00_mage_king.png`: Vua Pháp Sư mới, override các priority sau.
   - `01`: Hắc Lữ Bố.
   - `02`: Hanuman.
   - `03`: Cây Giáo Hút Hồn.

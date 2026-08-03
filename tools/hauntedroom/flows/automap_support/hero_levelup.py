@@ -21,6 +21,7 @@ HERO_OPTION_MIN_SATURATION = 80
 HERO_OPTION_MIN_VALUE = 40
 HERO_OPTION_COLUMN_COVERAGE = 0.75
 HERO_OPTION_MIN_WIDTH = 80
+HERO_ASCEND_TEMPLATE_NAME = "00_hero_ascend.png"
 
 HERO_LEVELUP_TEMPLATE_DIR = (
     Path(__file__).resolve().parents[3] / "rooms" / "automap" / "hero_levelup"
@@ -127,6 +128,15 @@ class HeroLevelupMatcher:
             )
             if score < required_score:
                 continue
+
+            if template_path.name == HERO_ASCEND_TEMPLATE_NAME:
+                return HeroLevelupChoice(
+                    x=x,
+                    y=(HERO_OPTION_PANEL_TOP + HERO_OPTION_PANEL_BOTTOM) // 2,
+                    template_name=template_path.name,
+                    score=score,
+                    priority=priority,
+                )
 
             if priority >= HERO_IGNORED_PRIORITY and option_centers:
                 ignored_centers.add(

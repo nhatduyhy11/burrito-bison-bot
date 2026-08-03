@@ -57,6 +57,7 @@ from hauntedroom.flows.automap import (
     run_automap_flow,
 )
 from hauntedroom.flows.automap_support.hero_levelup import (
+    HERO_ASCEND_TEMPLATE_NAME,
     HERO_LEVELUP_SEARCH_TOP,
     HERO_LEVELUP_TEMPLATE_PATHS,
     HeroLevelupMatcher,
@@ -832,6 +833,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             [path.name for path in HERO_LEVELUP_TEMPLATE_PATHS],
             [
+                "00_hero_ascend.png",
                 "00_mage_king.png",
                 "01_dark_lubu.png",
                 "02_hanuman.png",
@@ -841,6 +843,18 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             ],
         )
         self.page.wait_for_timeout.assert_not_awaited()
+
+    def test_hero_ascend_pattern_always_uses_priority_zero(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "hero_ascend_option.png")
+        )
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, HERO_ASCEND_TEMPLATE_NAME)
+        self.assertEqual(choice.priority, 0.0)
+        self.assertEqual((choice.x, choice.y), (192, 632))
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     async def test_hero_levelup_waits_for_flash_to_settle_before_first_capture(
