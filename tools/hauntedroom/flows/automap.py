@@ -12,7 +12,10 @@ from hauntedroom.core.vision import (
     find_template_matches,
     load_template,
 )
-from hauntedroom.flows.automap_support.boss_action import click as _click
+from hauntedroom.flows.automap_support.boss_action import (
+    click as _click,
+    deploy_boss_pet,
+)
 from hauntedroom.flows.automap_support.hero_levelup import (
     HERO_LEVELUP_TEMPLATE_PATHS,
     HeroLevelupMatcher,
@@ -115,6 +118,7 @@ class AutomapFlow:
         self.last_map_end_check: Optional[float] = None
         self.map_completed = False
         self.boss_handoff_requested = False
+        self.final_boss_pet_deployed = False
 
     def find_start_home(
         self,
@@ -340,9 +344,17 @@ class AutomapFlow:
             return False
 
         x, y, score = match
-        boss_kind = (
-            "Final boss" if boss_progress_is_full(frame_bgr) else "Mini-boss"
-        )
+        is_final_boss = boss_progress_is_full(frame_bgr)
+        boss_kind = "Final boss" if is_final_boss else "Mini-boss"
+        if is_final_boss and not self.final_boss_pet_deployed:
+            self.final_boss_pet_deployed = await deploy_boss_pet(
+                self.page,
+                boss_position=(x, y),
+                frame_bgr=frame_bgr,
+                stop_event=self.stop_event,
+            )
+            return True
+
         exit_x, exit_y, exit_score = find_template(
             frame_gray,
             self.exit_click_template,

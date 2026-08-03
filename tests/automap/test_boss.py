@@ -18,6 +18,7 @@ from hauntedroom.flows.automap import (
     BOSS_HP_TEMPLATE_PATH,
 )
 from hauntedroom.flows.automap_support.boss_action import (
+    PET_ACTIVE_TEMPLATE_PATH,
     PET_ACTION_POSITION,
     PET_READY_TEMPLATE_PATH,
     SPELL_ACTION_POSITION,
@@ -326,11 +327,11 @@ class BossTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
         new_callable=AsyncMock,
     )
-    async def test_deploy_boss_pet_drags_ready_pet_to_boss(
+    async def test_deploy_boss_pet_opens_menu_and_clicks_active_summon(
         self,
         capture_page_bgr,
     ):
-        capture_page_bgr.return_value = cv2.imread(
+        ready_frame = cv2.imread(
             str(
                 FIXTURES_DIR
                 / "hauntedroom-captures"
@@ -338,16 +339,84 @@ class BossTest(IsolatedAsyncioTestCase):
                 / "pet-spell-ready.png"
             )
         )
-        boss_position = (250, 300)
+        capture_page_bgr.return_value = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet_menu_open.png"
+            )
+        )
 
-        deployed = await deploy_boss_pet(self.page, boss_position)
+        deployed = await deploy_boss_pet(self.page, frame_bgr=ready_frame)
 
         self.assertTrue(deployed)
-        self.page.mouse.move.assert_has_awaits(
-            [call(*PET_ACTION_POSITION), call(*boss_position, steps=10)]
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*PET_ACTION_POSITION), call(463, 455)],
         )
-        self.page.mouse.down.assert_awaited_once_with()
-        self.page.mouse.up.assert_awaited_once_with()
+
+    @patch(
+        "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_deploy_boss_pet_retries_ready_until_active_appears(
+        self,
+        capture_page_bgr,
+    ):
+        ready_frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet-spell-ready.png"
+            )
+        )
+        popup_frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet_menu_open.png"
+            )
+        )
+        capture_page_bgr.side_effect = [ready_frame, popup_frame]
+
+        deployed = await deploy_boss_pet(self.page, frame_bgr=ready_frame)
+
+        self.assertTrue(deployed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(*PET_ACTION_POSITION),
+                call(*PET_ACTION_POSITION),
+                call(463, 455),
+            ],
+        )
+
+    def test_pet_active_template_matches_open_menu_fixture(self):
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet_menu_open.png"
+            ),
+            cv2.IMREAD_GRAYSCALE,
+        )
+        template = cv2.imread(str(PET_ACTIVE_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+
+        from hauntedroom.core.vision import find_template
+
+        x, y, score = find_template(
+            frame,
+            template,
+            PET_ACTIVE_TEMPLATE_PATH.name,
+            scales=(1.0,),
+        )
+
+        self.assertEqual((x, y), (463, 455))
+        self.assertGreaterEqual(score, 0.99)
 
     @patch(
         "hauntedroom.flows.automap.load_template",
@@ -371,6 +440,11 @@ class BossTest(IsolatedAsyncioTestCase):
                 "hauntedroom.flows.automap.find_template",
                 return_value=(612, 35, 0.95),
             ),
+            patch(
+                "hauntedroom.flows.automap.deploy_boss_pet",
+                new_callable=AsyncMock,
+                return_value=True,
+            ) as deploy_pet,
         ):
             handled = await flow.handle_boss_critical(
                 np.zeros((720, 640, 3), dtype=np.uint8),
@@ -379,3 +453,5 @@ class BossTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(handled)
         classify_progress.assert_called_once()
+        deploy_pet.assert_awaited_once()
+        self.assertTrue(flow.final_boss_pet_deployed)
