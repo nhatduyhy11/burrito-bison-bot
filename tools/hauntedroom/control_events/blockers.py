@@ -4,6 +4,7 @@ from typing import Optional
 
 import numpy as np
 
+from hauntedroom.control_events.new_tab_blocker import close_profile_popup_tabs
 from hauntedroom.core.runtime import save_timeout_screenshot
 from hauntedroom.core.vision import (
     TEMPLATE_SCALES,
@@ -33,6 +34,7 @@ async def clear_blockers(
     while True:
         if stop_event is not None and stop_event.is_set():
             return False
+        await close_profile_popup_tabs(page, label)
         screenshot = await capture_page_grayscale(page)
 
         blocker_match = None

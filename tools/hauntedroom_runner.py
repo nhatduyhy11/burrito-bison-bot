@@ -5,6 +5,7 @@ from playwright.async_api import async_playwright
 
 from hauntedroom.actions.loader import load_actions
 from hauntedroom.actions.runner import run_actions
+from hauntedroom.control_events.new_tab_blocker import install_profile_popup_guard
 from hauntedroom.core import vision
 from hauntedroom.core.cli import prepare_runner
 from hauntedroom.core.runtime import (
@@ -160,6 +161,7 @@ async def main() -> None:
 
         try:
             page = context.pages[0] if context.pages else await context.new_page()
+            await install_profile_popup_guard(page)
             await page.goto(args.url, wait_until="domcontentloaded")
             await start_user_click_logger(page)
 

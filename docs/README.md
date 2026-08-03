@@ -107,6 +107,36 @@ Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các 
 - `click`: bắt buộc có `x`, `y`; `button` và `note` là tùy chọn.
 - `wait`: bắt buộc có `ms`; `note` là tùy chọn.
 
+### Profile popup guard
+
+Game đôi khi mở một tab mới có URL dạng
+`https://cp.hhgame.vn/v2/user/profile/...`. Đây là sự kiện hiếm nên runner không
+chạy một polling loop riêng cho nó. Khi khởi động, entrypoint gọi
+`install_profile_popup_guard(page)` đúng một lần, trước khi load URL game:
+
+1. `page.add_init_script(...)` đăng ký guard cho mọi document/frame được tạo
+   hoặc navigate về sau.
+2. Runner đồng thời evaluate guard trên các frame đang tồn tại để bảo vệ cả
+   document hiện tại.
+3. Guard chỉ nhận URL có protocol `https`, host chính xác `cp.hhgame.vn` và path
+   bắt đầu bằng `/v2/user/profile/`.
+4. Guard chặn ba đường mở phổ biến: `window.open(...)`, click vào link và submit
+   form trỏ tới URL trên. Các URL khác vẫn dùng hành vi browser bình thường.
+
+Guard chỉ ngăn tab profile được tạo; nó **không inject CSS**. Nếu website mở tab
+bằng một cơ chế vượt qua guard, mỗi vòng quét của `clear_blockers` có fallback
+kiểm tra `page.context.pages`. Chỉ khi Playwright thực sự thấy một tab profile,
+runner mới thực hiện lần lượt:
+
+1. Đóng tab profile đó.
+2. Chạy script tạo style
+   `#hwssH5GameCoreframe{visibility:hidden!important}` trên tab game gốc.
+3. Đưa tab game gốc về foreground và tiếp tục logic blocker bình thường.
+
+Vì vậy, nếu tab profile không hề được mở hoặc đã bị guard chặn từ đầu,
+`#hwssH5GameCoreframe` không bị thay đổi. Việc kiểm tra fallback chỉ diễn ra khi
+action `clear_blockers` đang chạy.
+
 Đường dẫn `template` được tính tương đối từ file action JSON. Các tùy chọn của `click_template`:
 
 - `threshold`: mặc định `0.9`.

@@ -34,7 +34,8 @@ tools/hauntedroom/
 │   └── runner.py
 ├── control_events/
 │   ├── __init__.py
-│   └── blockers.py
+│   ├── blockers.py
+│   └── new_tab_blocker.py
 └── flows/
     ├── __init__.py
     ├── automap.py
@@ -56,6 +57,8 @@ import `actions`, `flows` hay entrypoint.
 - `actions/runner.py`: thực thi action, retry và stop mềm.
 - `control_events/blockers.py`: kiểm tra và xử lý blocker có quyền tạm thời
   preempt normal flow.
+- `control_events/new_tab_blocker.py`: chặn tab profile từ trang game và xử lý
+  fallback đóng tab, ẩn iframe nguồn khi tab đã thực sự xuất hiện.
 - `flows/automap.py`: flow battle priority của `Shift+2`.
 - `flows/research.py`: flow research của `Shift+9`.
 - `hauntedroom_runner.py`: composition root, browser bootstrap, hotkey controller
