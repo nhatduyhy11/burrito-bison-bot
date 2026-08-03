@@ -16,7 +16,7 @@ def validate_threshold(action: dict, index: int) -> None:
 
 
 def validate_timing_fields(action: dict, index: int) -> None:
-    for field in ("timeout_ms", "poll_ms", "delay_ms"):
+    for field in ("timeout_ms", "poll_ms", "delay_ms", "repeat_delay_ms"):
         if field in action and int(action[field]) < 0:
             raise ValueError(f"Action #{index} {field} cannot be negative.")
 
@@ -86,6 +86,11 @@ def load_actions(path: Path) -> list[dict]:
             click_count = int(action.get("click_count", 1))
             if click_count < 1:
                 raise ValueError(f"Action #{index} click_count must be at least 1.")
+            recheck_before_repeat = action.get("recheck_before_repeat", False)
+            if not isinstance(recheck_before_repeat, bool):
+                raise ValueError(
+                    f"Action #{index} recheck_before_repeat must be a boolean."
+                )
             click_position = action.get("click_position", "center")
             if click_position not in SUPPORTED_CLICK_POSITIONS:
                 raise ValueError(

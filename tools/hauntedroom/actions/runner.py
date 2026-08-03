@@ -187,7 +187,11 @@ async def run_actions(
                 )
                 poll_ms = int(action.get("poll_ms", DEFAULT_TEMPLATE_POLL_MS))
                 delay_ms = int(action.get("delay_ms", DEFAULT_CLICK_DELAY_MS))
+                repeat_delay_ms = int(action.get("repeat_delay_ms", delay_ms))
                 click_count = int(action.get("click_count", 1))
+                recheck_before_repeat = bool(
+                    action.get("recheck_before_repeat", False)
+                )
                 button = action.get("button", "left")
                 note = action.get("note")
                 note_suffix = f" ({note})" if note else ""
@@ -255,17 +259,50 @@ async def run_actions(
                     print("Flow stopped; runner is idle.", flush=True)
                     return False
                 x, y, score = match
+                repeat_summary = (
+                    f"; up to {click_count - 1} repeat(s), recheck after "
+                    f"{repeat_delay_ms}ms"
+                    if recheck_before_repeat and click_count > 1
+                    else f"; click {click_count} time(s)"
+                )
                 print(
                     f"{loop_index}.{action_index}: detected "
                     f"{template_path.name} at {x},{y}, score={score:.3f}; "
-                    f"click {click_count} time(s), wait {delay_ms}ms before each",
+                    f"first click after {delay_ms}ms{repeat_summary}",
                     flush=True,
                 )
-                for _ in range(click_count):
-                    await page.wait_for_timeout(delay_ms)
+                for click_index in range(click_count):
+                    wait_ms = delay_ms if click_index == 0 else repeat_delay_ms
+                    await page.wait_for_timeout(wait_ms)
                     if stop_event is not None and stop_event.is_set():
                         print("Flow stopped; runner is idle.", flush=True)
                         return False
+
+                    if click_index > 0 and recheck_before_repeat:
+                        screenshot = await capture_page_grayscale(page)
+                        x, y, score = find_template(
+                            screenshot,
+                            templates[template_path],
+                            template_path.name,
+                            action.get("click_position", "center"),
+                            scales=action.get("_template_scales", TEMPLATE_SCALES),
+                        )
+                        if score < threshold:
+                            print(
+                                f"{loop_index}.{action_index}: "
+                                f"{template_path.name} disappeared after "
+                                f"{click_index} click(s), score={score:.3f}; "
+                                "skip remaining repeat clicks",
+                                flush=True,
+                            )
+                            break
+                        print(
+                            f"{loop_index}.{action_index}: "
+                            f"{template_path.name} still present at {x},{y}, "
+                            f"score={score:.3f}; repeat click",
+                            flush=True,
+                        )
+
                     await page.evaluate(
                         "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
                     )

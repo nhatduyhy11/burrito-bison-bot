@@ -18,17 +18,17 @@ Per-loop start/finish logging is implemented and flushed immediately.
 ## Investigation Notes
 
 - `Shift+1` uses the default action file `tools/hauntedroom_actions.sample.json`.
-- The `Start HOME` action currently sets `click_count` to `3`, so one detected
-  `rooms/start_home.png` step clicks three times before moving on.
-- Runner behavior matches that config: `click_template` reads `click_count` and
-  loops `page.mouse.click(...)` once per count. This was detected only; no flow
-  logic has been changed yet.
+- The `Start HOME` action allows at most three clicks. After the first click,
+  the runner waits one second and detects `rooms/start_home.png` again before
+  each retry. It stops retrying as soon as HOME disappears, and a successful
+  recheck supplies fresh click coordinates instead of reusing stale ones.
 
 ## Constraints
 
 - Keep the automation limited to browser-context input.
 - Do not add server request replay, memory patching, anti-cheat bypass, or game protocol manipulation.
-- Template matching and image recognition are not implemented yet.
+- Template matching and image recognition are implemented with OpenCV; see the
+  current flow documentation linked from `docs/README.md`.
 
 ## Validation
 

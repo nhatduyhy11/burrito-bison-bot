@@ -99,6 +99,43 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         save_live_screenshot.assert_awaited_once_with(page)
 
+    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.run_start_automap_loop", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.get_automap_flow")
+    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    async def test_shift_3_starts_combined_loop_with_automap(
+        self,
+        start_hotkey_listener,
+        get_automap_flow,
+        run_start_automap_loop,
+        save_live_screenshot,
+    ):
+        page = Mock()
+        actions = [{"type": "test-action"}]
+        automap_flow = AsyncMock()
+        get_automap_flow.return_value = automap_flow
+
+        async def enqueue_commands(_page, command_queue):
+            command_queue.put_nowait("3")
+            command_queue.put_nowait("8")
+
+        async def wait_until_controller_stops(_page, _actions, _automap, stop_event):
+            await stop_event.wait()
+            return False
+
+        start_hotkey_listener.side_effect = enqueue_commands
+        run_start_automap_loop.side_effect = wait_until_controller_stops
+        save_live_screenshot.side_effect = RuntimeError("stop test loop")
+
+        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+            await run_standby_controller(page, actions, dev_reload=True)
+
+        get_automap_flow.assert_called_once_with(True)
+        run_start_automap_loop.assert_awaited_once()
+        self.assertIs(run_start_automap_loop.await_args.args[0], page)
+        self.assertIs(run_start_automap_loop.await_args.args[1], actions)
+        self.assertIs(run_start_automap_loop.await_args.args[2], automap_flow)
+
     async def test_shift_7_clicks_fixed_position_every_second_until_stopped(self):
         page = Mock()
         page.mouse = Mock()

@@ -1,5 +1,6 @@
 import asyncio
 import importlib
+from pathlib import Path
 
 from playwright.async_api import async_playwright
 
@@ -13,6 +14,7 @@ from hauntedroom.core.runtime import (
     save_live_screenshot,
     start_hotkey_listener,
     start_user_click_logger,
+    wait_with_countdown,
     wait_for_ctrl_c,
 )
 from hauntedroom.flows import automap
@@ -23,6 +25,74 @@ from hauntedroom.flows.automap_support import (
 )
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.research import run_research_flow
+
+
+START_BATTLE_TEMPLATE_NAME = "start_battle.png"
+BETWEEN_MAPS_WAIT_MS = 2_000
+
+
+def get_start_battle_actions(actions: list[dict]) -> list[dict]:
+    """Return the shared start-room prefix, including the Start Battle click."""
+    for index, action in enumerate(actions):
+        template_path = action.get("_template_path")
+        if (
+            action.get("type") == "click_template"
+            and isinstance(template_path, Path)
+            and template_path.name == START_BATTLE_TEMPLATE_NAME
+        ):
+            return actions[: index + 1]
+
+    raise ValueError(
+        f"Actions do not contain a click_template for {START_BATTLE_TEMPLATE_NAME}."
+    )
+
+
+async def map_was_lost(page) -> bool:
+    """Placeholder for the future map-loss detector."""
+    return False
+
+
+async def run_start_automap_loop(
+    page,
+    actions: list[dict],
+    automap_flow,
+    stop_event: asyncio.Event,
+) -> bool:
+    """Loop start-room -> auto-map -> loss check -> two-second cooldown."""
+    start_actions = get_start_battle_actions(actions)
+    loop_index = 0
+
+    while not stop_event.is_set():
+        loop_index += 1
+        print(f"Start-auto loop {loop_index} start.", flush=True)
+
+        started = await run_actions(
+            page,
+            start_actions,
+            loop_count=1,
+            stop_event=stop_event,
+        )
+        if not started:
+            return False
+
+        map_completed = await automap_flow(page, stop_event)
+        if not map_completed:
+            return False
+
+        if await map_was_lost(page):
+            print("Map loss detected; stopping start-auto loop.", flush=True)
+            return True
+
+        waited = await wait_with_countdown(
+            page,
+            BETWEEN_MAPS_WAIT_MS,
+            f"Start-auto loop {loop_index} cooldown",
+            stop_event,
+        )
+        if not waited:
+            return False
+
+    return False
 
 
 def get_automap_flow(dev_reload: bool = False):
@@ -52,11 +122,13 @@ async def run_standby_controller(
     command_names = {
         "1": "enter-exit room",
         "2": "auto-map battle",
+        "3": "start-auto loop",
         "7": "fixed-position click loop",
         "9": "research",
     }
     print(
         "Runner idle. Shift+1: enter-exit room; Shift+2: auto-map battle; "
+        "Shift+3: start-auto loop; "
         "Shift+7: click 440,500 every 1s; Shift+8: capture screenshot; "
         "Shift+9: research; "
         "Shift+0: stop current flow; Ctrl+C in terminal: close runner.",
@@ -114,7 +186,7 @@ async def run_standby_controller(
                 continue
 
             automap_flow = None
-            if command == "2":
+            if command in {"2", "3"}:
                 try:
                     automap_flow = get_automap_flow(dev_reload)
                 except Exception as error:
@@ -132,6 +204,15 @@ async def run_standby_controller(
                 )
             elif command == "2":
                 flow_task = asyncio.create_task(automap_flow(page, stop_event))
+            elif command == "3":
+                flow_task = asyncio.create_task(
+                    run_start_automap_loop(
+                        page,
+                        actions,
+                        automap_flow,
+                        stop_event,
+                    )
+                )
             elif command == "7":
                 flow_task = asyncio.create_task(run_click_loop(page, stop_event))
             else:

@@ -8,6 +8,7 @@ Runner Playwright dùng OpenCV template matching để tìm và click các nút 
 Tài liệu liên quan:
 
 - [Business core: logic flow `Shift+2`](SHIFT2_AUTOMAP_FLOW.md)
+- [Flow `Shift+3`: start-auto loop](SHIFT3_START_AUTOMAP_LOOP.md)
 - [Testing](TESTING.md)
 - [ADR cấu trúc `core / actions / flows`](ADR_bot.md)
 - [Refactor review](REFACTOR.md)
@@ -41,7 +42,7 @@ Khi đang phát triển auto-map, bật hot-reload để giữ nguyên browser v
 uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 
-Sau khi sửa `hauntedroom/flows/automap.py`, module trong `hauntedroom/flows/automap_support/`, `hauntedroom/core/vision.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
+Sau khi sửa `hauntedroom/flows/automap.py`, module trong `hauntedroom/flows/automap_support/`, `hauntedroom/core/vision.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` hoặc `Shift+3` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
 
 Với `ACTION_LOOP_COUNT = 0`, standby đã tự giữ browser mở cho tới khi bấm `Ctrl+C`, vì vậy không cần thêm `--keep-open` vào lệnh hot-reload. `--keep-open` chỉ có tác dụng khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`.
 
@@ -66,7 +67,7 @@ Các tùy chọn thường dùng:
 - `--width` và `--height`: thay đổi viewport; mặc định hiện tại là `640x720`.
 - `--profile`: thay đổi thư mục browser profile.
 - `--url`: thay đổi URL đích.
-- `--dev-reload`: reload module auto-map và vision mỗi lần bắt đầu `Shift+2`; dùng cho vòng lặp debug `Shift+0` → sửa code/template → `Shift+2`.
+- `--dev-reload`: reload module auto-map và vision mỗi lần bắt đầu `Shift+2` hoặc `Shift+3`; dùng cho vòng lặp debug `Shift+0` → sửa code/template → bắt đầu lại flow.
 - `--keep-open`: chỉ giữ browser sau khi action hoàn tất khi `ACTION_LOOP_COUNT > 0`; không cần trong standby mặc định.
 
 Xem toàn bộ tùy chọn:
@@ -83,11 +84,12 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
 - `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [logic flow `Shift+2`](SHIFT2_AUTOMAP_FLOW.md) để biết priority, điều kiện và hành vi của từng phase.
+- `Shift+3`: chạy loop start room → auto-map → chờ 2 giây → start map tiếp theo. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [flow `Shift+3`](SHIFT3_START_AUTOMAP_LOOP.md).
 - `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
-- `Shift+3` đến `Shift+6`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
+- `Shift+4` đến `Shift+6`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
 Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`; riêng `Shift+8` chỉ chụp screenshot nên không bị chặn.
@@ -143,7 +145,11 @@ action `clear_blockers` đang chạy.
 - `timeout_ms`: thời gian tối đa chờ ảnh, mặc định `30000`.
 - `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `600`.
 - `delay_ms`: thời gian chờ trước mỗi click, gồm cả click đầu sau detect và các click liên tiếp; mặc định `500`.
-- `click_count`: số lần click template sau khi detect, mặc định `1`.
+- `click_count`: số lần click template tối đa sau khi detect, mặc định `1`.
+- `recheck_before_repeat`: khi là `true`, chụp và detect lại template trước mỗi
+  click lặp; dừng các click còn lại ngay khi template biến mất.
+- `repeat_delay_ms`: thời gian chờ trước mỗi lần detect/click lặp; mặc định dùng
+  giá trị `delay_ms`.
 - `button`: mặc định `left`.
 - `skip_if_template`: template báo action hiện tại đã không còn cần thiết; nếu template này đạt cùng `threshold`, runner bỏ qua click hiện tại và chuyển sang action kế tiếp.
 

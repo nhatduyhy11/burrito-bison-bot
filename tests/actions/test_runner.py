@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, call, patch
 
 import numpy as np
 
@@ -133,6 +133,53 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             (0.5,),
         )
         self.page.mouse.click.assert_awaited_once_with(10, 20, button="left")
+
+    @patch(
+        "hauntedroom.actions.runner.capture_page_grayscale",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.actions.runner.find_template")
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
+    async def test_repeat_click_rechecks_template_and_stops_when_it_disappears(
+        self,
+        wait_for_template,
+        _load_template,
+        find_template,
+        capture_page_grayscale,
+    ):
+        action = {
+            "type": "click_template",
+            "_template_path": Path("start_home.png"),
+            "_template_scales": (1.0,),
+            "click_position": "mid_left",
+            "click_count": 3,
+            "delay_ms": 0,
+            "repeat_delay_ms": 1000,
+            "recheck_before_repeat": True,
+        }
+        wait_for_template.return_value = (10, 20, 0.95)
+        capture_page_grayscale.return_value = np.zeros((10, 10), dtype=np.uint8)
+        find_template.side_effect = [(30, 40, 0.96), (0, 0, 0.40)]
+
+        completed = await run_actions(self.page, [action], loop_count=1)
+
+        self.assertTrue(completed)
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [call(0), call(1000), call(1000)],
+        )
+        self.assertEqual(capture_page_grayscale.await_count, 2)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(10, 20, button="left"),
+                call(30, 40, button="left"),
+            ],
+        )
 
     @patch(
         "hauntedroom.actions.runner.load_template",
