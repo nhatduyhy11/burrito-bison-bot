@@ -24,6 +24,7 @@ from hauntedroom.core.runtime import (
     LIVE_SCREENSHOT_DIR,
     start_hotkey_listener,
 )
+from hauntedroom.core.vision import find_template as find_real_template
 from hauntedroom.core.vision import find_template_matches as find_real_template_matches
 from hauntedroom.core.vision import load_template as load_real_template
 from hauntedroom.flows.automap import (
@@ -38,6 +39,8 @@ from hauntedroom.flows.automap import (
     LV_SPIN_CLICK_OFFSET_X,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
+    REWARD_LIST_TITLE_TEMPLATE_PATH,
+    REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     UPGRADE_CONFIRM_CLICK,
     WIN_REWARD_EMPTY_DELAY_MS,
     WIN_REWARD_FOLLOWUP_CLICK,
@@ -546,7 +549,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
 
         AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
 
-        self.assertEqual(load_template.call_count, 8)
+        self.assertEqual(load_template.call_count, 9)
 
     @patch(
         "hauntedroom.flows.automap.find_boss_health_bar",
@@ -865,6 +868,8 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         side_effect=[
             (0, 0, 0.0),
             (300, 400, 0.91),
+            (0, 0, 0.0),
+            (0, 0, 0.0),
             (50, 600, 0.95),
         ],
     )
@@ -947,6 +952,28 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
 
                 self.assertTrue(matches)
 
+    def test_reward_list_title_template_matches_reward_list_screen(self):
+        template = load_real_template(REWARD_LIST_TITLE_TEMPLATE_PATH)
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "reward_list_screen.png"
+            ),
+            cv2.IMREAD_GRAYSCALE,
+        )
+        self.assertIsNotNone(frame)
+
+        x, y, score = find_real_template(
+            frame,
+            template,
+            REWARD_LIST_TITLE_TEMPLATE_PATH.name,
+            scales=(1.0,),
+        )
+
+        self.assertGreaterEqual(score, REWARD_LIST_TITLE_TEMPLATE_THRESHOLD)
+        self.assertEqual((x, y), (318, 247))
+
     @patch(
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
@@ -956,6 +983,8 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         side_effect=[
             (0, 0, 0.0),
             (300, 400, 0.91),
+            (0, 0, 0.0),
+            (0, 0, 0.0),
             (50, 600, 0.95),
         ],
     )
@@ -983,6 +1012,57 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.assertEqual(find_template_matches.call_count, 2)
         self.page.wait_for_timeout.assert_awaited_once_with(
             WIN_REWARD_EMPTY_DELAY_MS
+        )
+
+    @patch("hauntedroom.flows.automap.load_template")
+    @patch(
+        "hauntedroom.flows.automap.find_template",
+        side_effect=[
+            (0, 0, 0.0),
+            (300, 400, 0.91),
+            (138, 47, 0.99),
+            (50, 600, 0.95),
+        ],
+    )
+    @patch("hauntedroom.flows.automap.find_template_matches")
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_map_end_clicks_reward_list_title_after_reward_icon(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        _find_template,
+        load_template,
+    ):
+        load_template.side_effect = lambda path: np.zeros(
+            (42, 34) if path.name == "win_reward.png" else (2, 2),
+            dtype=np.uint8,
+        )
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+        find_template_matches.side_effect = [
+            [(305, 466, 1.0)],
+            [],
+            [],
+        ]
+
+        completed = await run_automap_flow(self.page, asyncio.Event())
+
+        self.assertTrue(completed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(300, 400),
+                call(305, 446),
+                call(318, 247),
+            ],
+        )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [
+                call(WIN_REWARD_RECHECK_MS),
+                call(WIN_REWARD_RECHECK_MS),
+            ],
         )
 
     @patch(

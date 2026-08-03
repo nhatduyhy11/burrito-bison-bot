@@ -35,6 +35,7 @@ BUILT_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "built.png"
 LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
 MAP_END_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "map_end.png"
 WIN_REWARD_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "win_reward.png"
+REWARD_LIST_TITLE_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "reward_list_title.png"
 BOSS_HP_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "boss_hp_bar.png"
 START_HOME_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "start_home.png"
 EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
@@ -54,6 +55,8 @@ WIN_REWARD_TEMPLATE_THRESHOLD = 0.85
 WIN_REWARD_RECHECK_MS = 2_000
 WIN_REWARD_EMPTY_DELAY_MS = 3_000
 WIN_REWARD_FOLLOWUP_CLICK = (220, 560)
+REWARD_LIST_TITLE_TEMPLATE_THRESHOLD = 0.90
+REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
 START_HOME_TEMPLATE_THRESHOLD = 0.90
 EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
 HERO_LEVELUP_OPEN_CLICK = (320, 640)
@@ -75,6 +78,7 @@ class AutomapConfig:
     lv_spin_template_path: Path = LV_SPIN_TEMPLATE_PATH
     map_end_template_path: Path = MAP_END_TEMPLATE_PATH
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH
+    reward_list_title_template_path: Path = REWARD_LIST_TITLE_TEMPLATE_PATH
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
@@ -98,6 +102,9 @@ class AutomapFlow:
         self.lv_spin_template = load_template(config.lv_spin_template_path)
         self.map_end_template = load_template(config.map_end_template_path)
         self.win_reward_template = load_template(config.win_reward_template_path)
+        self.reward_list_title_template = load_template(
+            config.reward_list_title_template_path
+        )
         self.boss_hp_template = load_template(config.boss_hp_template_path)
         self.start_home_template = load_template(config.start_home_template_path)
         self.exit_click_template = load_template(config.exit_click_template_path)
@@ -182,6 +189,7 @@ class AutomapFlow:
 
     async def finish_map_from_home(self) -> bool:
         reward_followup_clicked = False
+        reward_list_title_clicked = False
         while self.stop_event is None or not self.stop_event.is_set():
             frame_bgr = await capture_page_bgr(self.page)
             frame_gray = to_grayscale(frame_bgr)
@@ -209,6 +217,38 @@ class AutomapFlow:
                 await _click(self.page, center_x, click_y)
                 await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
                 continue
+
+            if not reward_list_title_clicked:
+                left, top, right, bottom = REWARD_LIST_TITLE_SEARCH_REGION
+                title_frame = frame_gray[top:bottom, left:right]
+                title_x, title_y, title_score = find_template(
+                    title_frame,
+                    self.reward_list_title_template,
+                    self.config.reward_list_title_template_path.name,
+                    scales=(1.0,),
+                )
+                if title_score >= REWARD_LIST_TITLE_TEMPLATE_THRESHOLD:
+                    click_x = left + title_x
+                    click_y = top + title_y
+                    print(
+                        f"Reward list title found at {click_x},{click_y}, "
+                        f"score={title_score:.3f}; clicking it once.",
+                        flush=True,
+                    )
+                    await _click(self.page, click_x, click_y)
+                    reward_list_title_clicked = True
+                    await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
+                    continue
+
+            if reward_list_title_clicked:
+                x, y, score, template_path = self.find_start_home(frame_gray)
+                if score >= START_HOME_TEMPLATE_THRESHOLD:
+                    print(
+                        f"Home ready at {x},{y}, score={score:.3f}, "
+                        f"template={template_path.name}; auto-map complete.",
+                        flush=True,
+                    )
+                    return True
 
             if not reward_followup_clicked:
                 print(
@@ -446,6 +486,7 @@ async def run_automap_flow(
     lv_spin_template_path: Path = LV_SPIN_TEMPLATE_PATH,
     map_end_template_path: Path = MAP_END_TEMPLATE_PATH,
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH,
+    reward_list_title_template_path: Path = REWARD_LIST_TITLE_TEMPLATE_PATH,
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH,
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
@@ -459,6 +500,7 @@ async def run_automap_flow(
         lv_spin_template_path=lv_spin_template_path,
         map_end_template_path=map_end_template_path,
         win_reward_template_path=win_reward_template_path,
+        reward_list_title_template_path=reward_list_title_template_path,
         boss_hp_template_path=boss_hp_template_path,
         start_home_template_path=start_home_template_path,
         exit_click_template_path=exit_click_template_path,
