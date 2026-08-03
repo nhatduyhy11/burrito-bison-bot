@@ -462,7 +462,12 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
 
     def test_ready_glow_detector_accepts_supplied_live_capture(self):
         capture = cv2.imread(
-            str(FIXTURES_DIR / "hauntedroom-captures" / "pet-spell-ready.png")
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet-spell-ready.png"
+            )
         )
         pet_reference = cv2.imread(str(PET_READY_TEMPLATE_PATH))
         spell_reference = cv2.imread(str(SPELL_READY_TEMPLATE_PATH))
@@ -509,7 +514,12 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         capture_page_bgr,
     ):
         capture_page_bgr.return_value = cv2.imread(
-            str(FIXTURES_DIR / "hauntedroom-captures" / "pet-spell-ready.png")
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet-spell-ready.png"
+            )
         )
         boss_position = (250, 300)
 
@@ -530,7 +540,12 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         capture_page_bgr,
     ):
         capture_page_bgr.return_value = cv2.imread(
-            str(FIXTURES_DIR / "hauntedroom-captures" / "pet-spell-ready.png")
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet-spell-ready.png"
+            )
         )
         boss_position = (250, 300)
 
