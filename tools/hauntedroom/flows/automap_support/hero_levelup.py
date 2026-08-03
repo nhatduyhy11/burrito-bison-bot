@@ -7,7 +7,11 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.vision import find_template, load_template
+from hauntedroom.core.vision import (
+    find_template,
+    find_template_matches,
+    load_template,
+)
 
 
 HERO_LEVELUP_SEARCH_TOP = 460
@@ -22,6 +26,10 @@ HERO_OPTION_MIN_VALUE = 40
 HERO_OPTION_COLUMN_COVERAGE = 0.75
 HERO_OPTION_MIN_WIDTH = 80
 HERO_ASCEND_TEMPLATE_NAME = "00_hero_ascend.png"
+HERO_ASCEND_TEMPLATE_THRESHOLD = 0.90
+# 00_hero_ascend.png is the 25x23 bottom-right cyan corner of an ascend
+# card. Its match center sits 47 pixels to the right of the card center.
+HERO_ASCEND_MATCH_CENTER_OFFSET_X = -47
 
 HERO_LEVELUP_TEMPLATE_DIR = (
     Path(__file__).resolve().parents[3] / "rooms" / "automap" / "hero_levelup"
@@ -92,6 +100,32 @@ def find_hero_option_centers(frame_bgr: np.ndarray) -> list[tuple[int, int]]:
     return [((left + right - 1) // 2, click_y) for left, right in runs]
 
 
+def find_hero_ascend_options(
+    frame_gray: np.ndarray,
+    template: np.ndarray,
+    threshold: float = HERO_ASCEND_TEMPLATE_THRESHOLD,
+) -> list[tuple[int, int, float]]:
+    """Return all ascend-card centers found from their stable cyan corner."""
+    if frame_gray.ndim != 2 or frame_gray.shape[0] <= HERO_LEVELUP_SEARCH_TOP:
+        return []
+
+    matches = find_template_matches(
+        frame_gray[HERO_LEVELUP_SEARCH_TOP:, :],
+        template,
+        HERO_ASCEND_TEMPLATE_NAME,
+        threshold=threshold,
+        scales=(1.0,),
+    )
+    click_y = (HERO_OPTION_PANEL_TOP + HERO_OPTION_PANEL_BOTTOM) // 2
+    return sorted(
+        (
+            (x + HERO_ASCEND_MATCH_CENTER_OFFSET_X, click_y, score)
+            for x, _local_y, score in matches
+        ),
+        key=lambda match: match[0],
+    )
+
+
 class HeroLevelupMatcher:
     """Select a prioritized template, or any card when none is recognized."""
 
@@ -115,6 +149,23 @@ class HeroLevelupMatcher:
         ignored_centers: set[tuple[int, int]] = set()
         for template_path, template in self.templates:
             priority = _template_priority(template_path)[0]
+            if template_path.name == HERO_ASCEND_TEMPLATE_NAME:
+                ascend_options = find_hero_ascend_options(
+                    frame_gray,
+                    template,
+                    threshold=max(self.threshold, HERO_ASCEND_TEMPLATE_THRESHOLD),
+                )
+                if ascend_options:
+                    x, y, score = ascend_options[0]
+                    return HeroLevelupChoice(
+                        x=x,
+                        y=y,
+                        template_name=template_path.name,
+                        score=score,
+                        priority=priority,
+                    )
+                continue
+
             x, local_y, score = find_template(
                 option_region,
                 template,
@@ -128,15 +179,6 @@ class HeroLevelupMatcher:
             )
             if score < required_score:
                 continue
-
-            if template_path.name == HERO_ASCEND_TEMPLATE_NAME:
-                return HeroLevelupChoice(
-                    x=x,
-                    y=(HERO_OPTION_PANEL_TOP + HERO_OPTION_PANEL_BOTTOM) // 2,
-                    template_name=template_path.name,
-                    score=score,
-                    priority=priority,
-                )
 
             if priority >= HERO_IGNORED_PRIORITY and option_centers:
                 ignored_centers.add(

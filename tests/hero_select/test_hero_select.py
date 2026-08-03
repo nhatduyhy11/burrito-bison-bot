@@ -31,6 +31,7 @@ from hauntedroom.flows.automap_support.hero_levelup import (
     HERO_LEVELUP_SEARCH_TOP,
     HERO_LEVELUP_TEMPLATE_PATHS,
     HeroLevelupMatcher,
+    find_hero_ascend_options,
     find_hero_option_centers,
 )
 
@@ -87,7 +88,43 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, HERO_ASCEND_TEMPLATE_NAME)
         self.assertEqual(choice.priority, 0.0)
-        self.assertEqual((choice.x, choice.y), (192, 632))
+        self.assertEqual((choice.x, choice.y), (194, 632))
+
+    def test_hero_ascend_crop_matches_both_new_options(self):
+        popup = cv2.imread(
+            str(
+                PROJECT_ROOT
+                / "tests"
+                / "fixtures"
+                / "hauntedroom-captures"
+                / "ascend_2_option.png"
+            )
+        )
+        template = cv2.imread(
+            str(
+                TOOLS_DIR
+                / "rooms"
+                / "automap"
+                / "hero_levelup"
+                / HERO_ASCEND_TEMPLATE_NAME
+            ),
+            cv2.IMREAD_GRAYSCALE,
+        )
+
+        options = find_hero_ascend_options(
+            cv2.cvtColor(popup, cv2.COLOR_BGR2GRAY),
+            template,
+        )
+
+        self.assertEqual(
+            [(x, y) for x, y, _score in options],
+            [(320, 632), (447, 632)],
+        )
+        self.assertGreaterEqual(min(score for _x, _y, score in options), 0.97)
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+        self.assertEqual(choice.template_name, HERO_ASCEND_TEMPLATE_NAME)
+        self.assertEqual((choice.x, choice.y), (320, 632))
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     async def test_hero_levelup_waits_for_flash_to_settle_before_first_capture(
