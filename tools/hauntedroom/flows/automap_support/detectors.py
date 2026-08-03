@@ -9,15 +9,21 @@ import numpy as np
 from hauntedroom.core.vision import find_template
 
 
-# Rectangle drawn in spell_region_detect.png, expressed as an exclusive x2/y2
-# viewport region. A boss action is armed only while the whole HP signature is
-# inside this area.
-BOSS_CRITICAL_REGION = (163, 248, 367, 411)
+# Upper battlefield above the room entrance, expressed with exclusive x2/y2
+# viewport coordinates. Bosses enter from the top or right, so their complete
+# HP bar crosses this area before approaching the door. Keeping y2 above the
+# doorway prevents the fixed door HP bar from becoming a candidate.
+BOSS_HP_SEARCH_REGION = (117, 120, 522, 308)
 BOSS_HP_TEMPLATE_THRESHOLD = 0.65
 BOSS_HP_MIN_WIDTH = 55
 BOSS_HP_MAX_WIDTH = 70
 BOSS_HP_MIN_HEIGHT = 8
 BOSS_HP_MAX_HEIGHT = 14
+# A high whole-template score can still be produced by roughly the first
+# three-quarters of the striped bar. Require matching evidence at both ends so
+# only the complete, fixed-width HP signature is accepted.
+BOSS_HP_EDGE_ANCHOR_WIDTH = 16
+BOSS_HP_EDGE_ANCHOR_THRESHOLD = 0.60
 
 # Both controls have an animated electric outline, so their ready state is
 # detected by the amount of connected bright yellow/orange glow in their fixed
@@ -63,17 +69,60 @@ def _vertical_edge_signature(image: np.ndarray) -> np.ndarray:
     )
 
 
+def _has_full_width_hp_signature(
+    search_signature: np.ndarray,
+    template_signature: np.ndarray,
+    center_x: int,
+    center_y: int,
+) -> bool:
+    """Require the matched bar's left and right edge anchors to be present."""
+    template_height, template_width = template_signature.shape
+    left = center_x - template_width // 2
+    top = center_y - template_height // 2
+    candidate = search_signature[
+        top : top + template_height,
+        left : left + template_width,
+    ]
+    if candidate.shape != template_signature.shape:
+        return False
+
+    anchor_width = min(BOSS_HP_EDGE_ANCHOR_WIDTH, template_width // 2)
+    for anchor_slice in (
+        slice(0, anchor_width),
+        slice(template_width - anchor_width, template_width),
+    ):
+        candidate_anchor = candidate[:, anchor_slice]
+        template_anchor = template_signature[:, anchor_slice]
+        score = float(
+            cv2.matchTemplate(
+                candidate_anchor,
+                template_anchor,
+                cv2.TM_CCOEFF_NORMED,
+            )[0, 0]
+        )
+        if not np.isfinite(score) or score < BOSS_HP_EDGE_ANCHOR_THRESHOLD:
+            return False
+    return True
+
+
 def find_boss_health_bar(
     frame_gray: np.ndarray,
     template: np.ndarray,
-    region: tuple[int, int, int, int] = BOSS_CRITICAL_REGION,
+    region: tuple[int, int, int, int] = BOSS_HP_SEARCH_REGION,
     threshold: float = BOSS_HP_TEMPLATE_THRESHOLD,
 ) -> Optional[tuple[int, int, float]]:
-    """Find a boss-sized striped HP bar wholly inside the critical region.
+    """Find a complete, fixed-width boss HP bar in the upper battlefield.
 
     Matching the x-gradient makes red, orange, and green fills equivalent. The
-    template is deliberately matched only at its native size: mini-boss bars
-    are smaller and must not activate boss actions.
+    template is matched only at its native size, and both ends must match so a
+    partial striped bar cannot pass on its left-side similarity alone. Boss and
+    mini-boss bars with identical geometry cannot be distinguished from the HP
+    pixels alone. Distinguishing them later will require a separate stage signal;
+    it is intentionally outside this detector's current scope.
+
+    A fully depleted final HP layer may render black and is intentionally not
+    handled as a special case: the normal handoff happens while a filled layer
+    is still visible.
     """
     if frame_gray.ndim != 2 or template.ndim != 2:
         return None
@@ -110,7 +159,12 @@ def find_boss_health_bar(
         "boss_hp_bar.png",
         scales=(1.0,),
     )
-    if score < threshold:
+    if score < threshold or not _has_full_width_hp_signature(
+        search_signature,
+        template_signature,
+        x,
+        y,
+    ):
         return None
     return x1 + x, y1 + y, score
 

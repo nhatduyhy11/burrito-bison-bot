@@ -18,7 +18,6 @@ from hauntedroom.flows.automap_support.hero_levelup import (
     HeroLevelupMatcher,
 )
 from hauntedroom.flows.automap_support.detectors import (
-    BOSS_CRITICAL_REGION,
     PROTECT_AVAILABLE_REGION,
     find_boss_health_bar,
     find_first_available_build_option,
@@ -347,14 +346,14 @@ class AutomapFlow:
         )
         if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
             print(
-                f"Boss HP entered critical region at {x},{y}, score={score:.3f}; "
+                f"Boss HP entered upper search region at {x},{y}, score={score:.3f}; "
                 f"exit_click not found (score={exit_score:.3f}).",
                 flush=True,
             )
             return False
 
         print(
-            f"Boss HP entered critical region at {x},{y}, score={score:.3f}; "
+            f"Boss HP entered upper search region at {x},{y}, score={score:.3f}; "
             f"clicking exit_click once at {exit_x},{exit_y} and stopping auto-map.",
             flush=True,
         )

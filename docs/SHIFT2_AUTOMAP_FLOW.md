@@ -60,9 +60,18 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 
 ### 3. Boss critical handoff
 
-- Nhận diện các cạnh sọc dọc của `boss/boss_hp_bar.png` ở đúng kích thước boss,
-  không phụ thuộc màu thanh HP.
-- Chỉ handoff khi thanh HP nằm trong critical region đã cấu hình.
+- Nhận diện các cạnh sọc dọc của `boss/boss_hp_bar.png` ở đúng kích thước
+  cố định `61x11`, không phụ thuộc màu thanh HP.
+- Candidate chỉ hợp lệ khi cả anchor trái và phải của toàn thanh đều match;
+  prefix hoặc thanh bị che mất phần cuối sẽ bị loại.
+- Chỉ tìm thanh HP trong upper battlefield region `(117, 120, 522, 308)`.
+  Boss đi từ trên hoặc bên phải sẽ đưa toàn thanh HP qua region này trước
+  khi tiến tới cửa. Giới hạn dưới `y2=308` loại HP của cửa ở khu vực phòng.
+- Boss và mini-boss có thể dùng cùng hình học thanh HP, nên detector không
+  phân loại chúng chỉ từ pixel của thanh. Scope hiện tại chấp nhận
+  limitation này; nếu cần phân loại sau này phải thêm stage signal riêng.
+- Không xử lý riêng khoảnh khắc thanh máu cuối cạn và chuyển đen; flow
+  chấp nhận edge case này và handoff trong trạng thái boss thông thường còn thanh máu.
 - Khi `rooms/exit_click.png` sẵn sàng, click đúng một lần rồi dừng auto-map để
   người dùng xử lý boss thủ công.
 - Logic nhận diện và action boss hỗ trợ nằm trong

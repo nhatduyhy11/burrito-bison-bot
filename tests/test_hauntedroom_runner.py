@@ -70,7 +70,7 @@ from hauntedroom.flows.click_loop import (
 )
 from hauntedroom.flows.research import run_research_flow
 from hauntedroom.flows.automap_support.detectors import (
-    BOSS_CRITICAL_REGION,
+    BOSS_HP_SEARCH_REGION,
     PET_READY_REGION,
     PROTECT_AVAILABLE_REGION,
     SPELL_READY_REGION,
@@ -425,11 +425,11 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             region_has_enough_white(unavailable, region=(90, 8, 140, 30))
         )
 
-    def test_finds_boss_sized_hp_bar_in_critical_region_without_color(self):
+    def test_finds_boss_sized_hp_bar_in_upper_region_without_color(self):
         template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
         self.assertIsNotNone(template)
         frame = np.full((720, 640), 80, dtype=np.uint8)
-        x, y = 220, 300
+        x, y = 220, 280
         height, width = template.shape
         # Inversion changes every source color/intensity while preserving the
         # narrow vertical stripe geometry used by the detector.
@@ -442,20 +442,65 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         self.assertEqual((match_x, match_y), (x + width // 2, y + height // 2))
         self.assertGreaterEqual(score, 0.85)
 
-    def test_rejects_miniboss_sized_hp_bar(self):
+    def test_rejects_short_hp_signature(self):
         template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
         frame = np.full((720, 640), 80, dtype=np.uint8)
         mini = cv2.resize(template, (40, template.shape[0]), interpolation=cv2.INTER_AREA)
-        frame[300 : 300 + mini.shape[0], 220 : 220 + mini.shape[1]] = mini
+        frame[280 : 280 + mini.shape[0], 220 : 220 + mini.shape[1]] = mini
 
         self.assertIsNone(find_boss_health_bar(frame, template))
 
-    def test_rejects_boss_bar_outside_critical_region(self):
+    def test_rejects_partial_bar_even_when_whole_template_score_is_high(self):
+        template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+        frame = np.full((720, 640), 80, dtype=np.uint8)
+        x, y = 220, 280
+        # The old whole-template-only check scored this 45/61-pixel prefix at
+        # about 0.71, above the 0.65 acceptance threshold.
+        visible_width = 45
+        frame[
+            y : y + template.shape[0],
+            x : x + visible_width,
+        ] = 255 - template[:, :visible_width]
+
+        self.assertIsNone(find_boss_health_bar(frame, template))
+
+    def test_accepts_live_full_boss_bar_when_region_contains_it(self):
+        template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "boss_full_bar.png"
+            ),
+            cv2.IMREAD_GRAYSCALE,
+        )
+
+        match = find_boss_health_bar(frame, template)
+
+        self.assertIsNotNone(match)
+        self.assertEqual(match[:2], (438, 268))
+
+    def test_rejects_live_frame_after_boss_bar_disappears(self):
+        template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "boss_empty_bar.png"
+            ),
+            cv2.IMREAD_GRAYSCALE,
+        )
+
+        self.assertIsNone(find_boss_health_bar(frame, template))
+
+    def test_rejects_boss_bar_below_upper_search_region(self):
         template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
         frame = np.full((720, 640), 80, dtype=np.uint8)
         height, width = template.shape
-        x = BOSS_CRITICAL_REGION[0] - width
-        y = BOSS_CRITICAL_REGION[1]
+        x = BOSS_HP_SEARCH_REGION[0]
+        y = BOSS_HP_SEARCH_REGION[3]
         frame[y : y + height, x : x + width] = template
 
         self.assertIsNone(find_boss_health_bar(frame, template))
