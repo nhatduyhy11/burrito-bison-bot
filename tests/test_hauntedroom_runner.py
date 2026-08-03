@@ -75,6 +75,7 @@ from hauntedroom.flows.automap_support.detectors import (
     PROTECT_AVAILABLE_REGION,
     SPELL_READY_REGION,
     boss_action_has_ready_glow,
+    boss_progress_is_full,
     find_boss_health_bar,
     find_first_available_build_option,
     region_has_enough_white,
@@ -505,6 +506,96 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
 
         self.assertIsNone(find_boss_health_bar(frame, template))
 
+    def test_final_boss_progress_endpoint_is_yellow_in_live_capture(self):
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "boss_full_bar.png"
+            )
+        )
+
+        self.assertTrue(boss_progress_is_full(frame))
+
+    def test_mini_boss_progress_endpoint_is_not_yellow(self):
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "mini_boss_bar.png"
+            )
+        )
+
+        self.assertFalse(boss_progress_is_full(frame))
+
+    def test_approaching_progress_endpoint_is_not_yellow(self):
+        approaching = cv2.imread(
+            str(TOOLS_DIR / "rooms" / "boss" / "boss_approaching.png")
+        )
+
+        # boss_approaching.png is the global (378, 46)-(430, 89) crop.
+        self.assertFalse(
+            boss_progress_is_full(
+                approaching,
+                region=(22, 15, 31, 26),
+            )
+        )
+
+    async def test_mini_boss_progress_does_not_block_hp_handoff(self):
+        with patch(
+            "hauntedroom.flows.automap.load_template",
+            return_value=np.zeros((2, 2), dtype=np.uint8),
+        ):
+            flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        with (
+            patch(
+                "hauntedroom.flows.automap.find_boss_health_bar",
+                return_value=(250, 280, 0.90),
+            ),
+            patch(
+                "hauntedroom.flows.automap.boss_progress_is_full",
+                return_value=False,
+            ) as classify_progress,
+            patch(
+                "hauntedroom.flows.automap.find_template",
+                return_value=(612, 35, 0.95),
+            ),
+        ):
+            handled = await flow.handle_boss_critical(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertTrue(handled)
+        classify_progress.assert_called_once()
+
+    async def test_progress_is_not_classified_without_an_hp_match(self):
+        with patch(
+            "hauntedroom.flows.automap.load_template",
+            return_value=np.zeros((2, 2), dtype=np.uint8),
+        ):
+            flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        with (
+            patch(
+                "hauntedroom.flows.automap.find_boss_health_bar",
+                return_value=None,
+            ),
+            patch(
+                "hauntedroom.flows.automap.boss_progress_is_full",
+            ) as classify_progress,
+        ):
+            handled = await flow.handle_boss_critical(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertFalse(handled)
+        classify_progress.assert_not_called()
+
     def test_ready_glow_detector_accepts_supplied_live_capture(self):
         capture = cv2.imread(
             str(
@@ -616,6 +707,10 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         return_value=(250, 300, 0.90),
     )
     @patch(
+        "hauntedroom.flows.automap.boss_progress_is_full",
+        return_value=True,
+    )
+    @patch(
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
@@ -635,6 +730,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         _find_template_matches,
         _find_template,
         _load_template,
+        _boss_progress_is_full,
         _find_boss_health_bar,
     ):
         capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)

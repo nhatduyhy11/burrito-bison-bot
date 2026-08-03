@@ -19,6 +19,7 @@ from hauntedroom.flows.automap_support.hero_levelup import (
 )
 from hauntedroom.flows.automap_support.detectors import (
     PROTECT_AVAILABLE_REGION,
+    boss_progress_is_full,
     find_boss_health_bar,
     find_first_available_build_option,
     region_has_enough_white,
@@ -331,7 +332,7 @@ class AutomapFlow:
 
     async def handle_boss_critical(
         self,
-        _frame_bgr: np.ndarray,
+        frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
         match = find_boss_health_bar(frame_gray, self.boss_hp_template)
@@ -339,6 +340,9 @@ class AutomapFlow:
             return False
 
         x, y, score = match
+        boss_kind = (
+            "Final boss" if boss_progress_is_full(frame_bgr) else "Mini-boss"
+        )
         exit_x, exit_y, exit_score = find_template(
             frame_gray,
             self.exit_click_template,
@@ -346,14 +350,16 @@ class AutomapFlow:
         )
         if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
             print(
-                f"Boss HP entered upper search region at {x},{y}, score={score:.3f}; "
+                f"{boss_kind} HP entered upper search region at {x},{y}, "
+                f"score={score:.3f}; "
                 f"exit_click not found (score={exit_score:.3f}).",
                 flush=True,
             )
             return False
 
         print(
-            f"Boss HP entered upper search region at {x},{y}, score={score:.3f}; "
+            f"{boss_kind} HP entered upper search region at {x},{y}, "
+            f"score={score:.3f}; "
             f"clicking exit_click once at {exit_x},{exit_y} and stopping auto-map.",
             flush=True,
         )

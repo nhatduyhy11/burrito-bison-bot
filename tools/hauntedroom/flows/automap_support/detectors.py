@@ -25,6 +25,16 @@ BOSS_HP_MAX_HEIGHT = 14
 BOSS_HP_EDGE_ANCHOR_WIDTH = 16
 BOSS_HP_EDGE_ANCHOR_THRESHOLD = 0.60
 
+# The final boss is unlocked when the fixed top progress bar reaches its last
+# pixels beside the boss icon. Checking only this stable endpoint is enough to
+# distinguish the final-boss stage from earlier mini-boss stages.
+BOSS_PROGRESS_END_REGION = (400, 61, 409, 72)
+BOSS_PROGRESS_MIN_HUE = 10
+BOSS_PROGRESS_MAX_HUE = 35
+BOSS_PROGRESS_MIN_SATURATION = 100
+BOSS_PROGRESS_MIN_VALUE = 120
+BOSS_PROGRESS_MIN_YELLOW_RATIO = 0.85
+
 # Both controls have an animated electric outline, so their ready state is
 # detected by the amount of connected bright yellow/orange glow in their fixed
 # UI slots rather than by requiring the pixels to match a single animation
@@ -66,6 +76,38 @@ def _vertical_edge_signature(image: np.ndarray) -> np.ndarray:
     """Describe narrow vertical stripes without depending on their color."""
     return cv2.convertScaleAbs(
         cv2.Sobel(image, cv2.CV_16S, 1, 0, ksize=3)
+    )
+
+
+def boss_progress_is_full(
+    frame_bgr: np.ndarray,
+    region: tuple[int, int, int, int] = BOSS_PROGRESS_END_REGION,
+) -> bool:
+    """Return whether the fixed endpoint of the top progress bar is yellow."""
+    if frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
+        return False
+
+    x1, y1, x2, y2 = region
+    height, width = frame_bgr.shape[:2]
+    if (
+        x1 < 0
+        or y1 < 0
+        or x2 > width
+        or y2 > height
+        or x1 >= x2
+        or y1 >= y2
+    ):
+        return False
+
+    hsv = cv2.cvtColor(frame_bgr[y1:y2, x1:x2], cv2.COLOR_BGR2HSV)
+    yellow = (
+        (hsv[:, :, 0] >= BOSS_PROGRESS_MIN_HUE)
+        & (hsv[:, :, 0] <= BOSS_PROGRESS_MAX_HUE)
+        & (hsv[:, :, 1] >= BOSS_PROGRESS_MIN_SATURATION)
+        & (hsv[:, :, 2] >= BOSS_PROGRESS_MIN_VALUE)
+    )
+    return float(np.count_nonzero(yellow)) / yellow.size >= (
+        BOSS_PROGRESS_MIN_YELLOW_RATIO
     )
 
 

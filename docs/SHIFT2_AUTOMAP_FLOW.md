@@ -60,6 +60,11 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 
 ### 3. Boss critical handoff
 
+- Tìm HP bar trước để phát hiện cả mini-boss lẫn final boss cần handoff.
+- Sau khi HP match, phân loại bằng endpoint cố định `(400, 61, 409, 72)`
+  của thanh progress trên cùng: ít nhất `85%` pixel vàng là final boss;
+  progress chưa tới endpoint là mini-boss. Classifier không được dùng để
+  short-circuit HP detection.
 - Nhận diện các cạnh sọc dọc của `boss/boss_hp_bar.png` ở đúng kích thước
   cố định `61x11`, không phụ thuộc màu thanh HP.
 - Candidate chỉ hợp lệ khi cả anchor trái và phải của toàn thanh đều match;
