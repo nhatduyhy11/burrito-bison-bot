@@ -1,0 +1,165 @@
+import asyncio
+import sys
+from pathlib import Path
+from unittest import IsolatedAsyncioTestCase
+from unittest.mock import AsyncMock, Mock, call, patch
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT / "tools"))
+
+from hauntedroom.actions.runner import run_actions
+from hauntedroom.core.runtime import (
+    HOTKEY_SCRIPT,
+    LIVE_SCREENSHOT_DIR,
+    start_hotkey_listener,
+)
+from hauntedroom.flows.click_loop import (
+    CLICK_INTERVAL_MS,
+    CLICK_POSITION,
+    run_click_loop,
+)
+from hauntedroom_runner import get_automap_flow, run_standby_controller
+
+
+class StandbyControllerTest(IsolatedAsyncioTestCase):
+
+    @patch("hauntedroom_runner.importlib.reload")
+    @patch("hauntedroom_runner.importlib.invalidate_caches")
+    def test_dev_reload_refreshes_vision_before_automap(
+        self, invalidate_caches, reload_module
+    ):
+        from hauntedroom.core import vision
+        from hauntedroom.flows import automap
+        from hauntedroom.flows.automap_support import (
+            boss_action,
+            detectors as automap_detectors,
+            hero_levelup,
+        )
+
+        refreshed_flow = Mock()
+        refreshed_automap = Mock(run_automap_flow=refreshed_flow)
+        reload_module.side_effect = [
+            vision,
+            automap_detectors,
+            boss_action,
+            hero_levelup,
+            refreshed_automap,
+        ]
+
+        result = get_automap_flow(dev_reload=True)
+
+        self.assertIs(result, refreshed_flow)
+        invalidate_caches.assert_called_once_with()
+        self.assertEqual(
+            reload_module.call_args_list,
+            [
+                call(vision),
+                call(automap_detectors),
+                call(boss_action),
+                call(hero_levelup),
+                call(automap),
+            ],
+        )
+
+    @patch("hauntedroom_runner.importlib.reload", side_effect=AssertionError)
+    def test_normal_mode_does_not_reload(self, _reload_module):
+        from hauntedroom.flows import automap
+
+        self.assertIs(get_automap_flow(), automap.run_automap_flow)
+
+    def test_hotkey_script_accepts_shift_8(self):
+        self.assertIn("!/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
+
+    def test_shift_8_capture_directory_is_inside_test_fixtures(self):
+        self.assertEqual(
+            LIVE_SCREENSHOT_DIR,
+            Path("tests/fixtures/hauntedroom-captures"),
+        )
+
+    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    async def test_shift_8_saves_live_screenshot_and_stays_idle(
+        self,
+        start_hotkey_listener,
+        save_live_screenshot,
+    ):
+        page = Mock()
+
+        async def enqueue_capture(_page, command_queue):
+            command_queue.put_nowait("8")
+
+        async def stop_after_capture(_page):
+            raise RuntimeError("stop test loop")
+
+        start_hotkey_listener.side_effect = enqueue_capture
+        save_live_screenshot.side_effect = stop_after_capture
+
+        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+            await run_standby_controller(page, [], dev_reload=False)
+
+        save_live_screenshot.assert_awaited_once_with(page)
+
+    async def test_shift_7_clicks_fixed_position_every_second_until_stopped(self):
+        page = Mock()
+        page.mouse = Mock()
+        page.mouse.click = AsyncMock()
+        stop_event = asyncio.Event()
+
+        async def stop_after_second_click(*_args):
+            if page.mouse.click.await_count == 2:
+                stop_event.set()
+
+        page.mouse.click.side_effect = stop_after_second_click
+
+        async def finish_interval(awaitable, **_kwargs):
+            awaitable.close()
+            raise asyncio.TimeoutError
+
+        with patch("hauntedroom.flows.click_loop.asyncio.wait_for") as wait_for:
+            wait_for.side_effect = finish_interval
+            await run_click_loop(page, stop_event)
+
+        self.assertEqual(CLICK_POSITION, (440, 500))
+        self.assertEqual(CLICK_INTERVAL_MS, 1000)
+        self.assertEqual(
+            page.mouse.click.await_args_list,
+            [call(440, 500), call(440, 500)],
+        )
+        self.assertEqual(wait_for.await_count, 1)
+        self.assertEqual(wait_for.await_args.kwargs["timeout"], 1)
+
+    async def test_stop_event_ends_flow_without_clicking(self):
+        page = Mock()
+        page.evaluate = AsyncMock()
+        page.wait_for_timeout = AsyncMock()
+        page.mouse = Mock()
+        page.mouse.click = AsyncMock()
+        stop_event = asyncio.Event()
+        stop_event.set()
+
+        completed = await run_actions(
+            page,
+            [{"type": "click", "x": 10, "y": 20}],
+            loop_count=None,
+            stop_event=stop_event,
+        )
+
+        self.assertFalse(completed)
+        page.mouse.click.assert_not_awaited()
+
+    async def test_hotkey_listener_is_installed_for_current_and_future_frames(self):
+        page = Mock()
+        page.expose_binding = AsyncMock()
+        page.add_init_script = AsyncMock()
+        frame_one = Mock()
+        frame_one.evaluate = AsyncMock()
+        frame_two = Mock()
+        frame_two.evaluate = AsyncMock()
+        page.frames = [frame_one, frame_two]
+
+        await start_hotkey_listener(page, asyncio.Queue())
+
+        page.expose_binding.assert_awaited_once()
+        page.add_init_script.assert_awaited_once_with(HOTKEY_SCRIPT)
+        frame_one.evaluate.assert_awaited_once_with(HOTKEY_SCRIPT)
+        frame_two.evaluate.assert_awaited_once_with(HOTKEY_SCRIPT)

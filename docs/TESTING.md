@@ -28,13 +28,16 @@ Chạy một module:
 ```shell
 uv run python -m unittest tests.test_hauntedroom_architecture -v
 uv run python -m unittest tests.test_hauntedroom_vision -v
-uv run python -m unittest tests.test_hauntedroom_runner -v
+uv run python -m unittest tests.actions.test_runner -v
+uv run python -m unittest tests.automap.test_boss -v
+uv run python -m unittest tests.hero_select.test_hero_select -v
+uv run python -m unittest tests.research.test_research_flow -v
 ```
 
 Chạy một test cụ thể:
 
 ```shell
-uv run python -m unittest tests.test_hauntedroom_runner.HauntedRoomAutoMapTest.test_map_end_completes_when_home_ready_without_reward -v
+uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_clicks_followup_once_before_checking_home -v
 ```
 
 ## Phạm vi
@@ -42,8 +45,13 @@ uv run python -m unittest tests.test_hauntedroom_runner.HauntedRoomAutoMapTest.t
 - `test_hauntedroom_architecture.py`: dependency rule giữa `core`, `actions`,
   `control_events` và `flows`.
 - `test_hauntedroom_vision.py`: template matching, multi-scale và vị trí click.
-- `test_hauntedroom_runner.py`: action runner, timeout/retry, hotkey, research và
-  business flow auto-map `Shift+2`.
+- `actions/`: action runner, timeout/retry và template wait/skip.
+- `automap/`: boss, build, level-up, map-end và orchestration của `Shift+2`.
+- `control_events/`: blocker ngoài normal flow, hiện gồm profile new-tab guard.
+- `hero_select/test_hero_select.py`: nhận diện, priority, fallback và interaction
+  của popup chọn hero.
+- `research/`: polling và interaction của flow research.
+- `runner/`: standby controller, hotkey, live capture và dev reload.
 - `tests/fixtures/`: screenshot cố định cho các test nhận diện ảnh.
 
 Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong

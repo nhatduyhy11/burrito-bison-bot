@@ -1,0 +1,1 @@
+"""Hero selection tests."""

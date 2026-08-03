@@ -134,7 +134,7 @@ trạng thái idle để có thể sửa và thử lại.
 - Orchestrator: `tools/hauntedroom/flows/automap.py`.
 - Detector và rule hỗ trợ: `tools/hauntedroom/flows/automap_support/`.
 - Template: `tools/rooms/automap/` và `tools/rooms/boss/`.
-- Regression test: `tests/test_hauntedroom_runner.py` và fixture trong
+- Regression test: `tests/automap/`, `tests/hero_select/` và fixture trong
   `tests/fixtures/`.
 
 Xem [TESTING.md](TESTING.md) để biết lệnh chạy test.

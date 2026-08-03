@@ -111,13 +111,10 @@ Chưa nên dựng Clean Architecture đầy đủ cho quy mô hiện tại.
 
 ### 5. Test file quá lớn
 
-`tests/test_hauntedroom_runner.py` có 811 dòng. Test function riêng lẻ không quá
-lớn, nhưng navigation khó. Có thể tách thành:
-
-- `test_actions_runner.py`
-- `test_standby_controller.py`
-- `test_automap_flow.py`
-- `test_research_flow.py`
+Đã xử lý. File monolith `tests/test_hauntedroom_runner.py` được thay bằng các
+package theo feature: `actions/`, `automap/`, `control_events/`, `hero_select/`,
+`research/` và `runner/`. Nhóm auto-map tiếp tục được chia theo boss, build,
+level-up, map-end và orchestration chung.
 
 ### 6. Packaging vẫn mang tính script
 

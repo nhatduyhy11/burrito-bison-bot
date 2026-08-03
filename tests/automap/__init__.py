@@ -1,0 +1,1 @@
+"""Auto-map tests."""

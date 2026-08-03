@@ -31,12 +31,14 @@ class HauntedRoomDependencyTest(TestCase):
             }
             self.assertEqual(forbidden, set(), path.name)
 
-    def test_control_events_only_depend_on_core(self):
+    def test_control_events_only_depend_on_core_or_sibling_modules(self):
         for path in (PACKAGE_DIR / "control_events").glob("*.py"):
             forbidden = {
                 module
                 for module in internal_imports(path)
-                if not module.startswith("hauntedroom.core")
+                if not module.startswith(
+                    ("hauntedroom.core", "hauntedroom.control_events")
+                )
             }
             self.assertEqual(forbidden, set(), path.name)
 

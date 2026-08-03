@@ -1,0 +1,183 @@
+import sys
+from pathlib import Path
+from unittest import IsolatedAsyncioTestCase
+from unittest.mock import AsyncMock, Mock, patch
+
+import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT / "tools"))
+
+from hauntedroom.actions.runner import (
+    SKIP_TEMPLATE_MATCHED,
+    run_actions,
+    wait_for_template,
+)
+
+
+class ActionRunnerTest(IsolatedAsyncioTestCase):
+
+    def setUp(self):
+        self.page = Mock()
+        self.page.evaluate = AsyncMock()
+        self.page.wait_for_timeout = AsyncMock()
+        self.page.mouse = Mock()
+        self.page.mouse.click = AsyncMock()
+
+        self.template_path = Path("start.png")
+        self.actions = [
+            {
+                "type": "click_template",
+                "_template_path": self.template_path,
+                "note": "Start",
+                "delay_ms": 0,
+            },
+            {"type": "click", "x": 10, "y": 20},
+        ]
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
+    async def test_first_timeout_skips_rest_of_loop_then_retries(
+        self, wait_for_template, _load_template
+    ):
+        wait_for_template.side_effect = [
+            TimeoutError("first timeout"),
+            (30, 40, 0.95),
+        ]
+
+        await run_actions(self.page, self.actions, loop_count=2)
+
+        self.assertEqual(wait_for_template.await_count, 2)
+        self.assertEqual(self.page.mouse.click.await_count, 2)
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
+    async def test_second_timeout_stops_runner(
+        self, wait_for_template, _load_template
+    ):
+        wait_for_template.side_effect = [
+            TimeoutError("first timeout"),
+            TimeoutError("second timeout"),
+        ]
+
+        with self.assertRaisesRegex(TimeoutError, "second timeout"):
+            await run_actions(self.page, self.actions, loop_count=3)
+
+        self.assertEqual(wait_for_template.await_count, 2)
+        self.page.mouse.click.assert_not_awaited()
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
+    async def test_successful_loop_resets_timeout_count(
+        self, wait_for_template, _load_template
+    ):
+        wait_for_template.side_effect = [
+            TimeoutError("first timeout"),
+            (30, 40, 0.95),
+            TimeoutError("timeout after recovery"),
+            TimeoutError("consecutive timeout"),
+        ]
+
+        with self.assertRaisesRegex(TimeoutError, "consecutive timeout"):
+            await run_actions(self.page, self.actions, loop_count=4)
+
+        self.assertEqual(wait_for_template.await_count, 4)
+        self.assertEqual(self.page.mouse.click.await_count, 2)
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
+    async def test_click_template_skip_if_template_avoids_clicking_stale_step(
+        self, wait_for_template, load_template
+    ):
+        skip_path = Path("home.png")
+        self.actions[0]["_skip_if_template_path"] = skip_path
+        self.actions[0]["click_position"] = "mid_left"
+        self.actions[0]["_template_scales"] = (1.0, 0.67, 0.5)
+        self.actions[0]["_skip_template_scales"] = (0.5,)
+        wait_for_template.return_value = SKIP_TEMPLATE_MATCHED
+
+        await run_actions(self.page, self.actions, loop_count=1)
+
+        self.assertEqual(load_template.call_count, 2)
+        wait_for_template.assert_awaited_once()
+        self.assertIs(
+            wait_for_template.await_args.kwargs["skip_template"],
+            load_template.return_value,
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["skip_template_name"],
+            skip_path.name,
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["click_position"],
+            "mid_left",
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["template_scales"],
+            (1.0, 0.67, 0.5),
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["skip_template_scales"],
+            (0.5,),
+        )
+        self.page.mouse.click.assert_awaited_once_with(10, 20, button="left")
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.clear_blockers", new_callable=AsyncMock)
+    async def test_clear_blockers_receives_until_template_scales(
+        self,
+        clear_blockers,
+        _load_template,
+    ):
+        action = {
+            "type": "clear_blockers",
+            "_blocker_paths": [Path("overlay.png")],
+            "_until_template_path": Path("start_home.png"),
+            "_until_template_scales": (1.0,),
+        }
+        clear_blockers.return_value = True
+
+        await run_actions(self.page, [action], loop_count=1)
+
+        clear_blockers.assert_awaited_once()
+        self.assertEqual(clear_blockers.await_args.args[-1], (1.0,))
+
+    @patch(
+        "hauntedroom.actions.runner.capture_page_grayscale",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.actions.runner.find_template")
+    async def test_wait_for_template_returns_skip_when_skip_template_matches(
+        self, find_template, capture_page_grayscale
+    ):
+        capture_page_grayscale.return_value = np.zeros((10, 10), dtype=np.uint8)
+        find_template.side_effect = [(0, 0, 0.4), (20, 30, 0.95)]
+
+        result = await wait_for_template(
+            self.page,
+            np.zeros((1, 1), dtype=np.uint8),
+            "exit_back.png",
+            0.75,
+            1000,
+            400,
+            skip_template=np.zeros((1, 1), dtype=np.uint8),
+            skip_template_name="start_home.png",
+        )
+
+        self.assertIs(result, SKIP_TEMPLATE_MATCHED)
+        self.page.wait_for_timeout.assert_not_awaited()

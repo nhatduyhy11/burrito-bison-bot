@@ -101,7 +101,8 @@ flowchart TD
 Các rule cụ thể:
 
 1. `core` không import module nào từ `actions` hoặc `flows`.
-2. `control_events` chỉ phụ thuộc `core`, không import `actions` hoặc `flows`.
+2. Module trong `control_events` được import ngang hàng trong cùng package và
+   phụ thuộc `core`, nhưng không import `actions` hoặc `flows`.
 3. `actions` và `flows` không import lẫn nhau.
 4. Flow trong `flows` không import flow khác.
 5. Entrypoint là nơi nối hotkey với flow; module tầng dưới không import ngược
