@@ -37,7 +37,7 @@ uv run python tools/hauntedroom_runner.py
 
 Khi đang phát triển auto-map, bật hot-reload để giữ nguyên browser và session:
 
-```powershell
+```shell
 uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 

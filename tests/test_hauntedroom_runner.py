@@ -968,11 +968,12 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             frame,
             template,
             REWARD_LIST_TITLE_TEMPLATE_PATH.name,
+            click_position="top_middle",
             scales=(1.0,),
         )
 
         self.assertGreaterEqual(score, REWARD_LIST_TITLE_TEMPLATE_THRESHOLD)
-        self.assertEqual((x, y), (318, 247))
+        self.assertEqual((x, y), (318, 237))
 
     @patch(
         "hauntedroom.flows.automap.load_template",
@@ -1020,13 +1021,15 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
         side_effect=[
             (0, 0, 0.0),
             (300, 400, 0.91),
-            (138, 47, 0.99),
+            (138, 37, 0.99),
+            (138, 37, 0.98),
+            (0, 0, 0.20),
             (50, 600, 0.95),
         ],
     )
     @patch("hauntedroom.flows.automap.find_template_matches")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_clicks_reward_list_title_after_reward_icon(
+    async def test_map_end_reclicks_reward_list_title_until_it_disappears(
         self,
         capture_page_bgr,
         find_template_matches,
@@ -1044,6 +1047,7 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             [(305, 466, 1.0)],
             [],
             [],
+            [],
         ]
 
         completed = await run_automap_flow(self.page, asyncio.Event())
@@ -1054,12 +1058,14 @@ class HauntedRoomAutoMapTest(IsolatedAsyncioTestCase):
             [
                 call(300, 400),
                 call(305, 446),
-                call(318, 247),
+                call(318, 237),
+                call(318, 237),
             ],
         )
         self.assertEqual(
             self.page.wait_for_timeout.await_args_list,
             [
+                call(WIN_REWARD_RECHECK_MS),
                 call(WIN_REWARD_RECHECK_MS),
                 call(WIN_REWARD_RECHECK_MS),
             ],

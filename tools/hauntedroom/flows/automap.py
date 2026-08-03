@@ -189,7 +189,7 @@ class AutomapFlow:
 
     async def finish_map_from_home(self) -> bool:
         reward_followup_clicked = False
-        reward_list_title_clicked = False
+        reward_list_title_seen = False
         while self.stop_event is None or not self.stop_event.is_set():
             frame_bgr = await capture_page_bgr(self.page)
             frame_gray = to_grayscale(frame_bgr)
@@ -218,29 +218,30 @@ class AutomapFlow:
                 await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
                 continue
 
-            if not reward_list_title_clicked:
-                left, top, right, bottom = REWARD_LIST_TITLE_SEARCH_REGION
-                title_frame = frame_gray[top:bottom, left:right]
-                title_x, title_y, title_score = find_template(
-                    title_frame,
-                    self.reward_list_title_template,
-                    self.config.reward_list_title_template_path.name,
-                    scales=(1.0,),
+            left, top, right, bottom = REWARD_LIST_TITLE_SEARCH_REGION
+            title_frame = frame_gray[top:bottom, left:right]
+            title_x, title_y, title_score = find_template(
+                title_frame,
+                self.reward_list_title_template,
+                self.config.reward_list_title_template_path.name,
+                click_position="top_middle",
+                scales=(1.0,),
+            )
+            if title_score >= REWARD_LIST_TITLE_TEMPLATE_THRESHOLD:
+                click_x = left + title_x
+                click_y = top + title_y
+                print(
+                    f"Reward list title found at {click_x},{click_y}, "
+                    f"score={title_score:.3f}; clicking top-middle and "
+                    "checking again in 2s.",
+                    flush=True,
                 )
-                if title_score >= REWARD_LIST_TITLE_TEMPLATE_THRESHOLD:
-                    click_x = left + title_x
-                    click_y = top + title_y
-                    print(
-                        f"Reward list title found at {click_x},{click_y}, "
-                        f"score={title_score:.3f}; clicking it once.",
-                        flush=True,
-                    )
-                    await _click(self.page, click_x, click_y)
-                    reward_list_title_clicked = True
-                    await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
-                    continue
+                await _click(self.page, click_x, click_y)
+                reward_list_title_seen = True
+                await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
+                continue
 
-            if reward_list_title_clicked:
+            if reward_list_title_seen:
                 x, y, score, template_path = self.find_start_home(frame_gray)
                 if score >= START_HOME_TEMPLATE_THRESHOLD:
                     print(
@@ -358,8 +359,8 @@ class AutomapFlow:
             flush=True,
         )
         # pause game and exit loop
-        await _click(self.page, exit_x, exit_y)
-        self.boss_handoff_requested = True
+        # await _click(self.page, exit_x, exit_y)
+        # self.boss_handoff_requested = True
         return True
 
     async def handle_level_up(
