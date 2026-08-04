@@ -134,14 +134,17 @@ Entrypoint đồng thời gọi `install_game_core_frame_guard(page)` trước k
 game. Guard này không dùng hotkey và hoạt động độc lập với việc tab profile có
 xuất hiện hay không:
 
-1. `page.add_init_script(...)` cài watcher cho các document/frame được tạo hoặc
-   navigate về sau; runner cũng evaluate watcher trên các frame hiện tại.
+1. `page.add_init_script(...)` cài watcher cho các document được tạo hoặc
+   navigate về sau; watcher chỉ hoạt động trong top-level document.
 2. `MutationObserver` theo dõi node được thêm/xóa và thay đổi thuộc tính
    `id`, `class`, `style`.
-3. Khi thấy `#hwssH5GameCoreframe`, watcher enforce inline
-   `display:none!important` và `pointer-events:none!important`.
-4. Nếu website override style hoặc tạo lại iframe, mutation mới kích hoạt watcher
-   và hai thuộc tính trên được áp lại. Không còn hotkey riêng để hide iframe.
+3. Khi thấy `#hwssH5GameCoreframe`, watcher chờ event `load` và chỉ xử lý sau khi
+   `getBoundingClientRect()` trả về cả width và height lớn hơn `0`.
+4. Watcher dùng `visibility:hidden!important`, giữ nguyên layout/kích thước của
+   iframe và không đặt `display` hoặc `pointer-events`.
+5. `ResizeObserver` theo dõi kích thước. Nếu website override style hoặc tạo lại
+   iframe, guard sẽ kiểm tra và áp lại `visibility`. Không còn hotkey riêng để
+   hide iframe.
 
 Đường dẫn `template` được tính tương đối từ file action JSON. Các tùy chọn của `click_template`:
 

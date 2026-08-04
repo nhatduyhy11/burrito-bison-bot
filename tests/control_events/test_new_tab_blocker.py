@@ -87,7 +87,16 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         first_frame.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
         second_frame.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
 
-    def test_game_core_guard_reapplies_important_inline_styles(self):
+    def test_game_core_guard_waits_for_loaded_nonzero_frame(self):
         self.assertIn("MutationObserver", GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertIn('setProperty("display", "none", "important")', GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertIn('attributeFilter: ["id", "class", "style"]', GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn("window !== window.top", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn('addEventListener("load"', GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn("getBoundingClientRect()", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn("bounds.width <= 0", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn("ResizeObserver", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn(
+            'setProperty("visibility", "hidden", "important")',
+            GAME_CORE_FRAME_GUARD_SCRIPT,
+        )
+        self.assertNotIn("pointer-events", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertNotIn('setProperty("display"', GAME_CORE_FRAME_GUARD_SCRIPT)

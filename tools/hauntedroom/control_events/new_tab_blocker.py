@@ -4,24 +4,43 @@ from urllib.parse import urlsplit
 PROFILE_POPUP_HOST = "cp.hhgame.vn"
 PROFILE_POPUP_PATH_PREFIX = "/v2/user/profile/"
 GAME_CORE_FRAME_GUARD_SCRIPT = """(() => {
-    if (window.__hauntedRoomGameCoreFrameGuard) return;
+    if (window !== window.top || window.__hauntedRoomGameCoreFrameGuard) return;
 
-    const hideFrame = () => {
+    const guardedFrames = new WeakMap();
+
+    const armFrame = (frame) => {
+        const existingGuard = guardedFrames.get(frame);
+        if (existingGuard) {
+            existingGuard();
+            return;
+        }
+
+        let loaded = false;
+        const hideIfReady = () => {
+            if (!loaded || !frame.isConnected) return;
+            const bounds = frame.getBoundingClientRect();
+            if (bounds.width <= 0 || bounds.height <= 0) return;
+
+            if (
+                frame.style.getPropertyValue("visibility") !== "hidden" ||
+                frame.style.getPropertyPriority("visibility") !== "important"
+            ) {
+                frame.style.setProperty("visibility", "hidden", "important");
+            }
+        };
+
+        guardedFrames.set(frame, hideIfReady);
+        frame.addEventListener("load", () => {
+            loaded = true;
+            hideIfReady();
+        });
+        new ResizeObserver(hideIfReady).observe(frame);
+    };
+
+    const scan = () => {
         const frame = document.getElementById("hwssH5GameCoreframe");
         if (!frame) return;
-
-        if (
-            frame.style.getPropertyValue("display") !== "none" ||
-            frame.style.getPropertyPriority("display") !== "important"
-        ) {
-            frame.style.setProperty("display", "none", "important");
-        }
-        if (
-            frame.style.getPropertyValue("pointer-events") !== "none" ||
-            frame.style.getPropertyPriority("pointer-events") !== "important"
-        ) {
-            frame.style.setProperty("pointer-events", "none", "important");
-        }
+        armFrame(frame);
     };
 
     const install = () => {
@@ -31,14 +50,14 @@ GAME_CORE_FRAME_GUARD_SCRIPT = """(() => {
             return;
         }
 
-        window.__hauntedRoomGameCoreFrameGuard = new MutationObserver(hideFrame);
+        window.__hauntedRoomGameCoreFrameGuard = new MutationObserver(scan);
         window.__hauntedRoomGameCoreFrameGuard.observe(document.documentElement, {
             subtree: true,
             childList: true,
             attributes: true,
             attributeFilter: ["id", "class", "style"],
         });
-        hideFrame();
+        scan();
     };
 
     install();
