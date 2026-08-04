@@ -72,6 +72,11 @@ async def install_profile_popup_guard(page) -> None:
             continue
 
 
+async def hide_game_core_frame(page) -> None:
+    """Hide the game-core iframe overlay without adding duplicate styles."""
+    await page.evaluate(HIDE_GAME_CORE_FRAME_SCRIPT)
+
+
 async def close_profile_popup_tabs(page, label: str = "blocker") -> int:
     """Close profile tabs, restore the game tab, and hide their source overlay."""
     popup_pages = [
@@ -89,7 +94,7 @@ async def close_profile_popup_tabs(page, label: str = "blocker") -> int:
             # The popup may already have been closed by the browser/user.
             pass
 
-    await page.evaluate(HIDE_GAME_CORE_FRAME_SCRIPT)
+    await hide_game_core_frame(page)
     await page.bring_to_front()
     print(
         f"{label}: closed {len(popup_pages)} hhgame profile popup tab(s); "

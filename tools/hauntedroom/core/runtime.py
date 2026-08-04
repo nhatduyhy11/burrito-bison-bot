@@ -21,20 +21,25 @@ HOTKEY_SCRIPT = """
     window.addEventListener(
         "keydown",
         (event) => {
+            const command = /^Digit[0-9]$/.test(event.code)
+                ? event.code.slice(-1)
+                : event.code === "Minus"
+                    ? "-"
+                    : null;
             if (
                 !event.shiftKey ||
                 event.ctrlKey ||
                 event.altKey ||
                 event.metaKey ||
                 event.repeat ||
-                !/^Digit[0-9]$/.test(event.code)
+                command === null
             ) {
                 return;
             }
 
             event.preventDefault();
             event.stopImmediatePropagation();
-            window.sendHauntedRoomCommand(event.code.slice(-1));
+            window.sendHauntedRoomCommand(command);
         },
         true
     );
