@@ -9,6 +9,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.actions.runner import run_actions
 from hauntedroom.core.runtime import (
+    FlowControl,
     HOTKEY_SCRIPT,
     LIVE_SCREENSHOT_DIR,
     start_hotkey_listener,
@@ -22,6 +23,26 @@ from hauntedroom_runner import get_automap_flow, run_standby_controller
 
 
 class StandbyControllerTest(IsolatedAsyncioTestCase):
+
+    async def test_flow_control_pauses_resumes_and_stops_while_paused(self):
+        control = FlowControl()
+
+        self.assertTrue(control.pause())
+        blocked_checkpoint = asyncio.create_task(control.checkpoint())
+        await asyncio.sleep(0)
+        self.assertFalse(blocked_checkpoint.done())
+
+        self.assertTrue(control.resume())
+        self.assertTrue(await blocked_checkpoint)
+
+        self.assertTrue(control.pause())
+        blocked_checkpoint = asyncio.create_task(control.checkpoint())
+        await asyncio.sleep(0)
+        control.set()
+
+        self.assertFalse(await blocked_checkpoint)
+        self.assertTrue(control.is_set())
+        self.assertFalse(control.is_paused)
 
     @patch("hauntedroom_runner.importlib.reload")
     @patch("hauntedroom_runner.importlib.invalidate_caches")
@@ -162,6 +183,61 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertIs(run_start_automap_loop.await_args.args[0], page)
         self.assertIs(run_start_automap_loop.await_args.args[1], actions)
         self.assertIs(run_start_automap_loop.await_args.args[2], automap_flow)
+
+    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.run_start_automap_loop", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.get_automap_flow")
+    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    async def test_shift_3_toggles_pause_and_resume_then_shift_0_stops(
+        self,
+        start_hotkey_listener,
+        get_automap_flow,
+        run_start_automap_loop,
+        save_live_screenshot,
+    ):
+        page = Mock()
+        started = asyncio.Event()
+        resumed = asyncio.Event()
+        observed_control = None
+
+        async def controllable_flow(
+            _page, _actions, _automap, flow_control, _debug
+        ):
+            nonlocal observed_control
+            observed_control = flow_control
+            started.set()
+            while await flow_control.checkpoint():
+                if not flow_control.is_paused:
+                    resumed.set()
+                await asyncio.sleep(0)
+            return False
+
+        async def enqueue_commands(_page, command_queue):
+            async def produce_commands():
+                command_queue.put_nowait("3")
+                await started.wait()
+                resumed.clear()
+                command_queue.put_nowait("3")
+                while not observed_control.is_paused:
+                    await asyncio.sleep(0)
+                command_queue.put_nowait("3")
+                await resumed.wait()
+                command_queue.put_nowait("0")
+                await observed_control.wait()
+                command_queue.put_nowait("8")
+
+            asyncio.create_task(produce_commands())
+
+        start_hotkey_listener.side_effect = enqueue_commands
+        run_start_automap_loop.side_effect = controllable_flow
+        save_live_screenshot.side_effect = RuntimeError("stop test loop")
+
+        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+            await run_standby_controller(page, [])
+
+        self.assertIsInstance(observed_control, FlowControl)
+        self.assertTrue(observed_control.is_set())
+        run_start_automap_loop.assert_awaited_once()
 
     async def test_shift_7_clicks_fixed_position_every_second_until_stopped(self):
         page = Mock()

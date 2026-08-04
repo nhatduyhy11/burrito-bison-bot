@@ -5,7 +5,12 @@ from typing import Awaitable, Callable, Optional
 
 import numpy as np
 
-from hauntedroom.core.runtime import save_screenshot, wait_with_countdown
+from hauntedroom.core.runtime import (
+    flow_checkpoint,
+    save_screenshot,
+    wait_for_flow_timeout,
+    wait_with_countdown,
+)
 from hauntedroom.core.vision import (
     capture_page_bgr,
     find_template,
@@ -165,7 +170,7 @@ class AutomapFlow:
             flush=True,
         )
         await _click(self.page, click_x, y)
-        await self.page.wait_for_timeout(AUTOMAP_POLL_MS)
+        await wait_for_flow_timeout(self.page, AUTOMAP_POLL_MS, self.stop_event)
         return True
 
     async def handle_level_spin_interrupt(
@@ -207,7 +212,7 @@ class AutomapFlow:
     async def finish_map_from_home(self) -> bool:
         reward_followup_clicked = False
         reward_list_title_seen = False
-        while self.stop_event is None or not self.stop_event.is_set():
+        while await flow_checkpoint(self.stop_event):
             frame_bgr = await capture_page_bgr(self.page)
             frame_gray = to_grayscale(frame_bgr)
 
@@ -237,7 +242,9 @@ class AutomapFlow:
                     flush=True,
                 )
                 await _click(self.page, center_x, click_y)
-                await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
+                await wait_for_flow_timeout(
+                    self.page, WIN_REWARD_RECHECK_MS, self.stop_event
+                )
                 continue
 
             left, top, right, bottom = REWARD_LIST_TITLE_SEARCH_REGION
@@ -260,7 +267,9 @@ class AutomapFlow:
                 )
                 await _click(self.page, click_x, click_y)
                 reward_list_title_seen = True
-                await self.page.wait_for_timeout(WIN_REWARD_RECHECK_MS)
+                await wait_for_flow_timeout(
+                    self.page, WIN_REWARD_RECHECK_MS, self.stop_event
+                )
                 continue
 
             if reward_list_title_seen:
@@ -280,7 +289,10 @@ class AutomapFlow:
                     f"{WIN_REWARD_FOLLOWUP_CLICK[1]} once before rechecking.",
                     flush=True,
                 )
-                await self.page.wait_for_timeout(WIN_REWARD_EMPTY_DELAY_MS)
+                if not await wait_for_flow_timeout(
+                    self.page, WIN_REWARD_EMPTY_DELAY_MS, self.stop_event
+                ):
+                    break
                 await _click(self.page, *WIN_REWARD_FOLLOWUP_CLICK)
                 reward_followup_clicked = True
                 continue
@@ -294,7 +306,9 @@ class AutomapFlow:
                 )
                 return True
 
-            await self.page.wait_for_timeout(AUTOMAP_POLL_MS)
+            await wait_for_flow_timeout(
+                self.page, AUTOMAP_POLL_MS, self.stop_event
+            )
 
         print("Auto-map flow stopped while waiting for home reward.", flush=True)
         return False
@@ -317,16 +331,21 @@ class AutomapFlow:
         # The cards flash white while the picker animates in. Waiting for the
         # animation to settle prevents the saturated-panel fallback from
         # winning before the prioritized name/art templates become visible.
-        await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_SETTLE_MS)
+        if not await wait_for_flow_timeout(
+            self.page, HERO_LEVELUP_OPTION_SETTLE_MS, self.stop_event
+        ):
+            return True
         choice = None
         for _poll in range(HERO_LEVELUP_OPTION_MAX_POLLS):
-            if self.stop_event is not None and self.stop_event.is_set():
+            if not await flow_checkpoint(self.stop_event):
                 return True
             option_frame = await capture_page_bgr(self.page)
             choice = self.hero_levelup_matcher.find_choice(option_frame)
             if choice is not None:
                 break
-            await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_POLL_MS)
+            await wait_for_flow_timeout(
+                self.page, HERO_LEVELUP_OPTION_POLL_MS, self.stop_event
+            )
 
         if choice is not None and choice.is_prioritized:
             print(
@@ -336,7 +355,9 @@ class AutomapFlow:
                 flush=True,
             )
             await _click(self.page, choice.x, choice.y)
-            await self.page.wait_for_timeout(HERO_LEVELUP_SELECTION_SETTLE_MS)
+            await wait_for_flow_timeout(
+                self.page, HERO_LEVELUP_SELECTION_SETTLE_MS, self.stop_event
+            )
             self.initial_gear_unlocked = True
             return True
 
@@ -354,7 +375,9 @@ class AutomapFlow:
                 flush=True,
             )
             await _click(self.page, choice.x, choice.y)
-            await self.page.wait_for_timeout(HERO_LEVELUP_SELECTION_SETTLE_MS)
+            await wait_for_flow_timeout(
+                self.page, HERO_LEVELUP_SELECTION_SETTLE_MS, self.stop_event
+            )
             self.initial_gear_unlocked = True
             return True
 
@@ -540,11 +563,11 @@ class AutomapFlow:
             self.hero_levelup,
         )
 
-        while self.stop_event is None or not self.stop_event.is_set():
+        while await flow_checkpoint(self.stop_event):
             frame_bgr = await capture_page_bgr(self.page)
             frame_gray = to_grayscale(frame_bgr)
             for handler in handlers:
-                if self.stop_event is not None and self.stop_event.is_set():
+                if not await flow_checkpoint(self.stop_event):
                     break
                 if await handler(frame_bgr, frame_gray):
                     if self.boss_handoff_requested:
@@ -569,7 +592,9 @@ class AutomapFlow:
                         return self.map_completed
                     break
             else:
-                await self.page.wait_for_timeout(AUTOMAP_POLL_MS)
+                await wait_for_flow_timeout(
+                    self.page, AUTOMAP_POLL_MS, self.stop_event
+                )
 
         print("Auto-map flow stopped; runner is idle.", flush=True)
         return False

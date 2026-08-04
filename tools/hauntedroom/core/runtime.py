@@ -47,6 +47,94 @@ HOTKEY_SCRIPT = """
 """
 
 
+class FlowControl:
+    """Stop signal with an additional cooperative pause/resume gate."""
+
+    def __init__(self) -> None:
+        self._stop_event = asyncio.Event()
+        self._resume_event = asyncio.Event()
+        self._resume_event.set()
+        self._pause_started: Optional[float] = None
+        self._paused_seconds = 0.0
+
+    def is_set(self) -> bool:
+        return self._stop_event.is_set()
+
+    def set(self) -> None:
+        self._stop_event.set()
+        # Release a task blocked in checkpoint() so it can observe the stop.
+        self._resume_event.set()
+
+    async def wait(self) -> None:
+        await self._stop_event.wait()
+
+    @property
+    def is_paused(self) -> bool:
+        return not self._resume_event.is_set() and not self.is_set()
+
+    def pause(self) -> bool:
+        if self.is_set() or self.is_paused:
+            return False
+        self._resume_event.clear()
+        self._pause_started = asyncio.get_running_loop().time()
+        return True
+
+    def resume(self) -> bool:
+        if self.is_set() or not self.is_paused:
+            return False
+        assert self._pause_started is not None
+        self._paused_seconds += asyncio.get_running_loop().time() - self._pause_started
+        self._pause_started = None
+        self._resume_event.set()
+        return True
+
+    def active_time(self) -> float:
+        now = asyncio.get_running_loop().time()
+        current_pause = now - self._pause_started if self._pause_started else 0.0
+        return now - self._paused_seconds - current_pause
+
+    async def checkpoint(self) -> bool:
+        if self.is_set():
+            return False
+        await self._resume_event.wait()
+        return not self.is_set()
+
+
+async def flow_checkpoint(stop_event: Optional[asyncio.Event]) -> bool:
+    """Wait while a pausable flow is paused and report whether it may continue."""
+    if stop_event is None:
+        return True
+    checkpoint = getattr(stop_event, "checkpoint", None)
+    if checkpoint is not None:
+        return await checkpoint()
+    return not stop_event.is_set()
+
+
+def flow_time(stop_event: Optional[asyncio.Event]) -> float:
+    """Monotonic flow time which does not advance while paused."""
+    active_time = getattr(stop_event, "active_time", None)
+    if active_time is not None:
+        return active_time()
+    return asyncio.get_running_loop().time()
+
+
+async def wait_for_flow_timeout(
+    page,
+    ms: int,
+    stop_event: Optional[asyncio.Event] = None,
+) -> bool:
+    """Wait without allowing a paused flow to advance to its next action."""
+    # Keep the original one-shot wait behavior for ordinary stop events. Only
+    # pausable controls need the additional gates.
+    if getattr(stop_event, "checkpoint", None) is None:
+        await page.wait_for_timeout(ms)
+        return stop_event is None or not stop_event.is_set()
+    if not await flow_checkpoint(stop_event):
+        return False
+    await page.wait_for_timeout(ms)
+    return await flow_checkpoint(stop_event)
+
+
 async def save_screenshot(
     page,
     label: str,
@@ -94,7 +182,7 @@ async def wait_with_countdown(
         print(f"{label}: wait {ms}ms")
     remaining_ms = ms
     while remaining_ms > 0:
-        if stop_event is not None and stop_event.is_set():
+        if not await flow_checkpoint(stop_event):
             return False
         if ms > COUNTDOWN_WAIT_THRESHOLD_MS:
             remaining_seconds = (remaining_ms + 999) // 1000
@@ -102,7 +190,7 @@ async def wait_with_countdown(
         step_ms = min(250, remaining_ms)
         await page.wait_for_timeout(step_ms)
         remaining_ms -= step_ms
-    return stop_event is None or not stop_event.is_set()
+    return await flow_checkpoint(stop_event)
 
 
 async def start_hotkey_listener(

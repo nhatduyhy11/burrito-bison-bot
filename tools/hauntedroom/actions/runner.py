@@ -7,7 +7,10 @@ import numpy as np
 from hauntedroom.control_events.blockers import clear_blockers
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
+    flow_checkpoint,
+    flow_time,
     save_timeout_screenshot,
+    wait_for_flow_timeout,
     wait_with_countdown,
 )
 from hauntedroom.core.vision import (
@@ -39,13 +42,12 @@ async def wait_for_template(
     template_scales: tuple[float, ...] = TEMPLATE_SCALES,
     skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES,
 ) -> object:
-    loop = asyncio.get_running_loop()
-    deadline = loop.time() + timeout_ms / 1000
+    deadline = flow_time(stop_event) + timeout_ms / 1000
     best_score = -1.0
     best_skip_score = -1.0
 
     while True:
-        if stop_event is not None and stop_event.is_set():
+        if not await flow_checkpoint(stop_event):
             return None
         screenshot = await capture_page_grayscale(page)
         center_x, center_y, score = find_template(
@@ -71,7 +73,7 @@ async def wait_for_template(
             if skip_score >= threshold:
                 return SKIP_TEMPLATE_MATCHED
 
-        if loop.time() >= deadline:
+        if flow_time(stop_event) >= deadline:
             screenshot_path = await save_timeout_screenshot(page, template_name)
             screenshot_suffix = (
                 f", screenshot={screenshot_path}" if screenshot_path else ""
@@ -87,7 +89,8 @@ async def wait_for_template(
                 f"{skip_suffix}{screenshot_suffix}."
             )
 
-        await page.wait_for_timeout(poll_ms)
+        if not await wait_for_flow_timeout(page, poll_ms, stop_event):
+            return None
 
 
 async def run_actions(
@@ -111,7 +114,7 @@ async def run_actions(
 
     loop_index = 0
     while loop_count is None or loop_index < loop_count:
-        if stop_event is not None and stop_event.is_set():
+        if not await flow_checkpoint(stop_event):
             print("Flow stopped; runner is idle.", flush=True)
             return False
         loop_index += 1
@@ -120,7 +123,7 @@ async def run_actions(
         loop_timed_out = False
 
         for action_index, action in enumerate(actions, start=1):
-            if stop_event is not None and stop_event.is_set():
+            if not await flow_checkpoint(stop_event):
                 print("Flow stopped; runner is idle.", flush=True)
                 return False
             kind = action["type"]
@@ -290,8 +293,7 @@ async def run_actions(
                 )
                 for click_index in range(click_count):
                     wait_ms = delay_ms if click_index == 0 else repeat_delay_ms
-                    await page.wait_for_timeout(wait_ms)
-                    if stop_event is not None and stop_event.is_set():
+                    if not await wait_for_flow_timeout(page, wait_ms, stop_event):
                         print("Flow stopped; runner is idle.", flush=True)
                         return False
 

@@ -5,7 +5,12 @@ from typing import Optional
 import numpy as np
 
 from hauntedroom.control_events.new_tab_blocker import close_profile_popup_tabs
-from hauntedroom.core.runtime import save_timeout_screenshot
+from hauntedroom.core.runtime import (
+    flow_checkpoint,
+    flow_time,
+    save_timeout_screenshot,
+    wait_for_flow_timeout,
+)
 from hauntedroom.core.vision import (
     TEMPLATE_SCALES,
     capture_page_grayscale,
@@ -27,12 +32,11 @@ async def clear_blockers(
     stop_event: Optional[asyncio.Event] = None,
     until_template_scales: tuple[float, ...] = TEMPLATE_SCALES,
 ) -> bool:
-    loop = asyncio.get_running_loop()
-    deadline = loop.time() + timeout_ms / 1000
+    deadline = flow_time(stop_event) + timeout_ms / 1000
     best_until_score = -1.0
 
     while True:
-        if stop_event is not None and stop_event.is_set():
+        if not await flow_checkpoint(stop_event):
             return False
         await close_profile_popup_tabs(page, label)
         screenshot = await capture_page_grayscale(page)
@@ -56,15 +60,15 @@ async def clear_blockers(
                 f"score={score:.3f}; click in {delay_ms}ms",
                 flush=True,
             )
-            await page.wait_for_timeout(delay_ms)
-            if stop_event is not None and stop_event.is_set():
+            if not await wait_for_flow_timeout(page, delay_ms, stop_event):
                 return False
             await page.evaluate(
                 "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
             )
             await page.mouse.click(x, y)
-            await page.wait_for_timeout(poll_ms)
-            deadline = loop.time() + timeout_ms / 1000
+            if not await wait_for_flow_timeout(page, poll_ms, stop_event):
+                return False
+            deadline = flow_time(stop_event) + timeout_ms / 1000
             continue
 
         _, _, until_score = find_template(
@@ -82,7 +86,7 @@ async def clear_blockers(
             )
             return True
 
-        if loop.time() >= deadline:
+        if flow_time(stop_event) >= deadline:
             screenshot_path = await save_timeout_screenshot(page, label)
             screenshot_suffix = (
                 f", screenshot={screenshot_path}" if screenshot_path else ""
@@ -93,4 +97,5 @@ async def clear_blockers(
                 f"threshold={threshold:.3f}{screenshot_suffix}."
             )
 
-        await page.wait_for_timeout(poll_ms)
+        if not await wait_for_flow_timeout(page, poll_ms, stop_event):
+            return False

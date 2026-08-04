@@ -7,6 +7,7 @@ from typing import Optional
 import cv2
 import numpy as np
 
+from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
 from hauntedroom.core.vision import capture_page_bgr, find_template
 from hauntedroom.flows.automap_support.detectors import (
     PET_READY_REGION,
@@ -115,9 +116,10 @@ async def deploy_boss_pet(
         f"score={ready_score:.3f}; opening its menu.",
         flush=True,
     )
-    while stop_event is None or not stop_event.is_set():
+    while await flow_checkpoint(stop_event):
         await click(page, ready_x, ready_y)
-        await page.wait_for_timeout(PET_MENU_RECHECK_MS)
+        if not await wait_for_flow_timeout(page, PET_MENU_RECHECK_MS, stop_event):
+            break
 
         popup_frame = await capture_page_bgr(page)
         active_x, active_y, active_score = find_template(

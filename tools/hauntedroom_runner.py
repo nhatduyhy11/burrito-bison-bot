@@ -14,6 +14,8 @@ from hauntedroom.core import vision
 from hauntedroom.core.cli import prepare_runner
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
+    FlowControl,
+    flow_checkpoint,
     save_live_screenshot,
     start_hotkey_listener,
     start_user_click_logger,
@@ -72,7 +74,7 @@ async def run_start_automap_loop(
         win_count += 1
         return win_count
 
-    while not stop_event.is_set():
+    while await flow_checkpoint(stop_event):
         loop_index += 1
         print("\n" + "=" * 60, flush=True)
         print(f"Start-auto loop {loop_index} start.", flush=True)
@@ -151,6 +153,7 @@ async def run_standby_controller(
 
     flow_task = None
     stop_event = None
+    current_command = None
     command_names = {
         "1": "enter-exit room",
         "2": "auto-map battle",
@@ -164,7 +167,7 @@ async def run_standby_controller(
         "-------------------------\n"
         "  Shift+1    Enter / exit room\n"
         "  Shift+2    Auto-map battle\n"
-        "  Shift+3    Start-auto loop\n"
+        "  Shift+3    Start-auto loop / pause / resume\n"
         "  Shift+7    Click (440, 500) every 1s\n"
         "  Shift+8    Capture screenshot\n"
         "  Shift+9    Research\n"
@@ -192,6 +195,7 @@ async def run_standby_controller(
                     print(f"Flow failed; runner is idle: {error}", flush=True)
                 flow_task = None
                 stop_event = None
+                current_command = None
                 print("Runner idle.", flush=True)
 
             if command_task not in done:
@@ -213,6 +217,19 @@ async def run_standby_controller(
                     print("Runner idle.", flush=True)
                 else:
                     print("Current flow continues.", flush=True)
+                continue
+
+            if command == "3" and current_command == "3" and flow_task is not None:
+                if stop_event.is_paused:
+                    stop_event.resume()
+                    print("Start-auto loop resumed.", flush=True)
+                else:
+                    stop_event.pause()
+                    print(
+                        "Start-auto loop paused. Press Shift+3 to resume or "
+                        "Shift+0 to stop.",
+                        flush=True,
+                    )
                 continue
 
             if command == "-":
@@ -246,7 +263,8 @@ async def run_standby_controller(
                     )
                     continue
 
-            stop_event = asyncio.Event()
+            stop_event = FlowControl() if command == "3" else asyncio.Event()
+            current_command = command
             print(f"Starting {command_names[command]} flow...", flush=True)
             if command == "1":
                 flow_task = asyncio.create_task(
