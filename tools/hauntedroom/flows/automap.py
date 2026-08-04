@@ -92,6 +92,7 @@ class AutomapConfig:
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS
     pause_on_any_boss: bool = False
+    debug: bool = False
     on_win: Optional[Callable[[], int]] = None
 
 
@@ -340,12 +341,13 @@ class AutomapFlow:
             return True
 
         if choice is not None:
-            await save_screenshot(
-                self.page,
-                "no-prioritized-hero-option",
-                HERO_FALLBACK_SCREENSHOT_DIR,
-                "Hero fallback",
-            )
+            if self.config.debug:
+                await save_screenshot(
+                    self.page,
+                    "no-prioritized-hero-option",
+                    HERO_FALLBACK_SCREENSHOT_DIR,
+                    "Hero fallback",
+                )
             print(
                 f"No prioritized hero option matched; clicking visible fallback "
                 f"card at {choice.x},{choice.y}.",
@@ -588,6 +590,7 @@ async def run_automap_flow(
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS,
     pause_on_any_boss: bool = False,
+    debug: bool = False,
     on_win: Optional[Callable[[], int]] = None,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
@@ -604,6 +607,7 @@ async def run_automap_flow(
         exit_click_template_path=exit_click_template_path,
         hero_levelup_template_paths=hero_levelup_template_paths,
         pause_on_any_boss=pause_on_any_boss,
+        debug=debug,
         on_win=on_win,
     )
     return await AutomapFlow(page, stop_event, config).run()

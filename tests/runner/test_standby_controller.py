@@ -119,7 +119,13 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             command_queue.put_nowait("3")
             command_queue.put_nowait("8")
 
-        async def wait_until_controller_stops(_page, _actions, _automap, stop_event):
+        async def wait_until_controller_stops(
+            _page,
+            _actions,
+            _automap,
+            stop_event,
+            _debug,
+        ):
             await stop_event.wait()
             return False
 

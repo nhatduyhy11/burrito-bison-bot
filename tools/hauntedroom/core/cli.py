@@ -59,6 +59,11 @@ def prepare_runner(
             "keeping the current browser session open."
         ),
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug artifacts, including hero fallback screenshots.",
+    )
     args = parser.parse_args()
 
     # Standby mode still needs the actions so a hotkey can start the flow later.

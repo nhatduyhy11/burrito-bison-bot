@@ -306,7 +306,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
-    async def test_hero_levelup_fallback_saves_screenshot_before_click(
+    async def test_hero_levelup_fallback_does_not_save_screenshot_by_default(
         self,
         save_screenshot,
         capture_page_bgr,
@@ -317,6 +317,36 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         capture_page_bgr.return_value = popup
         initial_frame = self.make_protect_available(np.zeros_like(popup))
         flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        handled = await flow.hero_levelup(
+            initial_frame,
+            cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertTrue(handled)
+        save_screenshot.assert_not_awaited()
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*HERO_LEVELUP_OPEN_CLICK), call(319, 632)],
+        )
+
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    async def test_debug_hero_levelup_fallback_saves_screenshot_before_click(
+        self,
+        save_screenshot,
+        capture_page_bgr,
+    ):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "only_1_option.png")
+        )
+        capture_page_bgr.return_value = popup
+        initial_frame = self.make_protect_available(np.zeros_like(popup))
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(debug=True),
+        )
 
         handled = await flow.hero_levelup(
             initial_frame,

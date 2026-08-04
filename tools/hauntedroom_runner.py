@@ -57,6 +57,7 @@ async def run_start_automap_loop(
     actions: list[dict],
     automap_flow,
     stop_event: asyncio.Event,
+    debug: bool = False,
 ) -> bool:
     """Loop start-room -> auto-map -> loss check -> two-second cooldown."""
     start_actions = get_start_battle_actions(actions)
@@ -99,6 +100,7 @@ async def run_start_automap_loop(
             page,
             stop_event,
             pause_on_any_boss=pause_on_any_boss,
+            debug=debug,
             on_win=record_win,
         )
         if not map_completed:
@@ -139,6 +141,7 @@ async def run_standby_controller(
     page,
     actions: list[dict],
     dev_reload: bool = False,
+    debug: bool = False,
 ) -> None:
     command_queue: asyncio.Queue[str] = asyncio.Queue()
     await start_hotkey_listener(page, command_queue)
@@ -237,7 +240,13 @@ async def run_standby_controller(
                     run_actions(page, actions, loop_count=None, stop_event=stop_event)
                 )
             elif command == "2":
-                flow_task = asyncio.create_task(automap_flow(page, stop_event))
+                flow_task = asyncio.create_task(
+                    automap_flow(
+                        page,
+                        stop_event,
+                        debug=debug,
+                    )
+                )
             elif command == "3":
                 flow_task = asyncio.create_task(
                     run_start_automap_loop(
@@ -245,6 +254,7 @@ async def run_standby_controller(
                         actions,
                         automap_flow,
                         stop_event,
+                        debug,
                     )
                 )
             elif command == "7":
@@ -281,7 +291,12 @@ async def main() -> None:
             await start_user_click_logger(page)
 
             if ACTION_LOOP_COUNT == 0:
-                await run_standby_controller(page, actions, args.dev_reload)
+                await run_standby_controller(
+                    page,
+                    actions,
+                    args.dev_reload,
+                    args.debug,
+                )
             else:
                 await run_actions(page, actions)
                 if args.keep_open:
