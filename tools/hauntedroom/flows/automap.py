@@ -66,6 +66,7 @@ HERO_LEVELUP_OPEN_CLICK = (320, 640)
 HERO_LEVELUP_OPTION_SETTLE_MS = 1_500
 HERO_LEVELUP_OPTION_POLL_MS = 200
 HERO_LEVELUP_OPTION_MAX_POLLS = 10
+HERO_LEVELUP_SELECTION_SETTLE_MS = 600
 
 UPGRADE_CONFIRM_CLICK = (430, 366)
 HERO_FALLBACK_SCREENSHOT_DIR = Path(".tmp/hauntedroom-hero-fallbacks")
@@ -286,25 +287,29 @@ class AutomapFlow:
         frame_bgr: np.ndarray,
         _frame_gray: np.ndarray,
     ) -> bool:
-        choice = self.hero_levelup_matcher.find_choice(frame_bgr)
-        if choice is None:
-            if not region_has_enough_white(frame_bgr):
-                return False
+        # Option fallback matching intentionally uses a broad saturated-panel
+        # heuristic. Never run it on the battle frame: other open panels can
+        # resemble a card and cause an endless click loop. Only inspect options
+        # after the fixed price region proves that level-up is available and we
+        # have opened the picker ourselves.
+        if not region_has_enough_white(frame_bgr):
+            return False
 
-            print("Hero level-up available; opening option picker.", flush=True)
-            await _click(self.page, *HERO_LEVELUP_OPEN_CLICK)
-            # The cards flash white while the picker animates in. Waiting for the
-            # animation to settle prevents the saturated-panel fallback from
-            # winning before the prioritized name/art templates become visible.
-            await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_SETTLE_MS)
-            for _poll in range(HERO_LEVELUP_OPTION_MAX_POLLS):
-                if self.stop_event is not None and self.stop_event.is_set():
-                    return True
-                option_frame = await capture_page_bgr(self.page)
-                choice = self.hero_levelup_matcher.find_choice(option_frame)
-                if choice is not None:
-                    break
-                await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_POLL_MS)
+        print("Hero level-up available; opening option picker.", flush=True)
+        await _click(self.page, *HERO_LEVELUP_OPEN_CLICK)
+        # The cards flash white while the picker animates in. Waiting for the
+        # animation to settle prevents the saturated-panel fallback from
+        # winning before the prioritized name/art templates become visible.
+        await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_SETTLE_MS)
+        choice = None
+        for _poll in range(HERO_LEVELUP_OPTION_MAX_POLLS):
+            if self.stop_event is not None and self.stop_event.is_set():
+                return True
+            option_frame = await capture_page_bgr(self.page)
+            choice = self.hero_levelup_matcher.find_choice(option_frame)
+            if choice is not None:
+                break
+            await self.page.wait_for_timeout(HERO_LEVELUP_OPTION_POLL_MS)
 
         if choice is not None and choice.is_prioritized:
             print(
@@ -314,6 +319,7 @@ class AutomapFlow:
                 flush=True,
             )
             await _click(self.page, choice.x, choice.y)
+            await self.page.wait_for_timeout(HERO_LEVELUP_SELECTION_SETTLE_MS)
             return True
 
         if choice is not None:
@@ -329,6 +335,7 @@ class AutomapFlow:
                 flush=True,
             )
             await _click(self.page, choice.x, choice.y)
+            await self.page.wait_for_timeout(HERO_LEVELUP_SELECTION_SETTLE_MS)
             return True
 
         print("No visible hero level-up option found; skipping.", flush=True)

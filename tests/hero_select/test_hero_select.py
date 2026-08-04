@@ -24,6 +24,7 @@ from hauntedroom.flows.automap import (
     HERO_FALLBACK_SCREENSHOT_DIR,
     HERO_LEVELUP_OPEN_CLICK,
     HERO_LEVELUP_OPTION_SETTLE_MS,
+    HERO_LEVELUP_SELECTION_SETTLE_MS,
 )
 from hauntedroom.flows.automap_support.detectors import PROTECT_AVAILABLE_REGION
 from hauntedroom.flows.automap_support.hero_levelup import (
@@ -50,19 +51,28 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
 
-    async def test_hero_levelup_uses_priority_2_hanuman_from_lower_region(self):
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_hero_levelup_uses_priority_2_hanuman_from_lower_region(
+        self,
+        capture_page_bgr,
+    ):
         popup = cv2.imread(
             str(HERO_SELECT_FIXTURES_DIR / "3_option_hanu_xlubu.png")
         )
+        capture_page_bgr.return_value = popup
+        initial_frame = self.make_protect_available(np.zeros_like(popup))
         flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
 
         handled = await flow.hero_levelup(
-            popup,
-            cv2.cvtColor(popup, cv2.COLOR_BGR2GRAY),
+            initial_frame,
+            cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY),
         )
 
         self.assertTrue(handled)
-        self.assertEqual(self.page.mouse.click.await_args_list, [call(347, 597)])
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*HERO_LEVELUP_OPEN_CLICK), call(347, 597)],
+        )
         self.assertEqual(HERO_LEVELUP_SEARCH_TOP, 460)
         self.assertEqual(
             [path.name for path in HERO_LEVELUP_TEMPLATE_PATHS],
@@ -76,6 +86,32 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
                 "99_mage_king.png",
             ],
         )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [
+                call(HERO_LEVELUP_OPTION_SETTLE_MS),
+                call(HERO_LEVELUP_SELECTION_SETTLE_MS),
+            ],
+        )
+
+    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    async def test_hero_levelup_does_not_fallback_before_opening_picker(
+        self,
+        save_screenshot,
+    ):
+        battle_frame = np.zeros((720, 640, 3), dtype=np.uint8)
+        battle_frame[610:655, 120:520] = (80, 20, 60)
+        self.assertIsNotNone(HeroLevelupMatcher().find_choice(battle_frame))
+        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        handled = await flow.hero_levelup(
+            battle_frame,
+            cv2.cvtColor(battle_frame, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertFalse(handled)
+        save_screenshot.assert_not_awaited()
+        self.page.mouse.click.assert_not_awaited()
         self.page.wait_for_timeout.assert_not_awaited()
 
     def test_hero_ascend_pattern_always_uses_priority_zero(self):
@@ -136,8 +172,9 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         )
 
         async def capture_after_settle(_page):
-            self.page.wait_for_timeout.assert_awaited_once_with(
-                HERO_LEVELUP_OPTION_SETTLE_MS
+            self.assertEqual(
+                self.page.wait_for_timeout.await_args_list,
+                [call(HERO_LEVELUP_OPTION_SETTLE_MS)],
             )
             return popup
 
@@ -155,8 +192,12 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(192, 597)],
         )
-        self.page.wait_for_timeout.assert_awaited_once_with(
-            HERO_LEVELUP_OPTION_SETTLE_MS
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [
+                call(HERO_LEVELUP_OPTION_SETTLE_MS),
+                call(HERO_LEVELUP_SELECTION_SETTLE_MS),
+            ],
         )
         capture_page_bgr.assert_awaited_once_with(self.page)
 
@@ -263,19 +304,23 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         self.assertEqual((choice.x, choice.y), (319, 632))
         self.assertEqual(find_hero_option_centers(popup), [(319, 632)])
 
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
     async def test_hero_levelup_fallback_saves_screenshot_before_click(
         self,
         save_screenshot,
+        capture_page_bgr,
     ):
         popup = cv2.imread(
             str(HERO_SELECT_FIXTURES_DIR / "only_1_option.png")
         )
+        capture_page_bgr.return_value = popup
+        initial_frame = self.make_protect_available(np.zeros_like(popup))
         flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
 
         handled = await flow.hero_levelup(
-            popup,
-            cv2.cvtColor(popup, cv2.COLOR_BGR2GRAY),
+            initial_frame,
+            cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY),
         )
 
         self.assertTrue(handled)
@@ -285,4 +330,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             HERO_FALLBACK_SCREENSHOT_DIR,
             "Hero fallback",
         )
-        self.page.mouse.click.assert_awaited_once_with(319, 632)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*HERO_LEVELUP_OPEN_CLICK), call(319, 632)],
+        )

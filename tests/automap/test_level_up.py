@@ -168,16 +168,20 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         _load_template,
     ):
         unavailable = np.zeros((720, 640, 3), dtype=np.uint8)
-        available = cv2.imread(
+        option_popup = cv2.imread(
             str(
                 HERO_SELECT_FIXTURES_DIR
                 / "3_option_hanu_xlubu.png"
             )
         )
+        hero_levelup_available = self.make_protect_available(
+            np.zeros_like(option_popup)
+        )
         capture_page_bgr.side_effect = [
             unavailable,
             unavailable,
-            available,
+            hero_levelup_available,
+            option_popup,
         ]
         find_template_matches.side_effect = [
             [
@@ -190,7 +194,7 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         stop_event = asyncio.Event()
 
         async def stop_after_hero_levelup_select(*_args, **_kwargs):
-            if self.page.mouse.click.await_count == 3:
+            if self.page.mouse.click.await_count == 4:
                 stop_event.set()
 
         self.page.mouse.click.side_effect = stop_after_hero_levelup_select
@@ -203,10 +207,11 @@ class LevelUpTest(IsolatedAsyncioTestCase):
             [
                 call(120, 500),
                 call(*UPGRADE_CONFIRM_CLICK),
+                call(320, 640),
                 call(347, 597),
             ],
         )
-        self.assertEqual(capture_page_bgr.await_count, 3)
+        self.assertEqual(capture_page_bgr.await_count, 4)
         level_up_call = find_template_matches.call_args_list[0]
         matched_frame = level_up_call.args[0]
         self.assertEqual(matched_frame.shape, (720, 640))
