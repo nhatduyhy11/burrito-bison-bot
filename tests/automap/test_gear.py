@@ -1,0 +1,120 @@
+import asyncio
+import sys
+from pathlib import Path
+from unittest import IsolatedAsyncioTestCase
+from unittest.mock import AsyncMock, Mock, call, patch
+
+import cv2
+import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+TOOLS_DIR = PROJECT_ROOT / "tools"
+FIXTURES_DIR = (
+    PROJECT_ROOT
+    / "tests"
+    / "fixtures"
+    / "hauntedroom-captures"
+    / "gear_placement"
+)
+sys.path.insert(0, str(TOOLS_DIR))
+
+from hauntedroom.flows.automap import AutomapConfig, AutomapFlow
+from hauntedroom.flows.automap_support.gear_action import (
+    GEAR_DRAG_HOLD_MS,
+    GEAR_DRAG_STEP_DELAY_MS,
+    GEAR_DRAG_STEPS,
+    GEAR_DROP_HOLD_MS,
+    GEAR_DROP_SETTLE_MS,
+    GEAR_ITEM_POSITION,
+    GEAR_MENU_SETTLE_MS,
+    deploy_initial_gear,
+    find_gear_button,
+    find_gear_drop_position,
+    gear_menu_is_open,
+)
+
+
+class GearDetectorTest(IsolatedAsyncioTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.gear_open = cv2.imread(str(FIXTURES_DIR / "gear_open.png"))
+        cls.gear_place = cv2.imread(str(FIXTURES_DIR / "gear_place.png"))
+
+    def setUp(self):
+        self.page = Mock()
+        self.page.evaluate = AsyncMock()
+        self.page.wait_for_timeout = AsyncMock()
+        self.page.mouse = Mock()
+        self.page.mouse.click = AsyncMock()
+        self.page.mouse.move = AsyncMock()
+        self.page.mouse.down = AsyncMock()
+        self.page.mouse.up = AsyncMock()
+
+    def test_detects_available_plus_only_before_placement(self):
+        self.assertEqual(find_gear_button(self.gear_open), (162, 661))
+        self.assertIsNone(find_gear_button(self.gear_place))
+
+    def test_derives_drop_point_from_door_hp_bar(self):
+        self.assertEqual(find_gear_drop_position(self.gear_open), (250, 370))
+        self.assertEqual(find_gear_drop_position(self.gear_place), (250, 370))
+
+    def test_detects_menu_open_and_closed_states(self):
+        self.assertTrue(gear_menu_is_open(self.gear_open))
+        self.assertFalse(gear_menu_is_open(self.gear_place))
+
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_deploy_drags_and_verifies_both_success_signals(self, capture):
+        capture.side_effect = [self.gear_open, self.gear_place]
+
+        placed = await deploy_initial_gear(self.page, self.gear_open)
+
+        self.assertTrue(placed)
+        self.page.mouse.click.assert_awaited_once_with(162, 661)
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [
+                call(GEAR_MENU_SETTLE_MS),
+                call(GEAR_DRAG_HOLD_MS),
+                *[call(GEAR_DRAG_STEP_DELAY_MS)] * GEAR_DRAG_STEPS,
+                call(GEAR_DROP_HOLD_MS),
+                call(GEAR_DROP_SETTLE_MS),
+            ],
+        )
+        move_calls = self.page.mouse.move.await_args_list
+        self.assertEqual(move_calls[0], call(*GEAR_ITEM_POSITION))
+        self.assertEqual(move_calls[-1], call(250, 370))
+        self.assertEqual(len(move_calls), GEAR_DRAG_STEPS + 1)
+        self.assertTrue(
+            all(
+                previous.args[1] > current.args[1]
+                for previous, current in zip(move_calls, move_calls[1:])
+            )
+        )
+        self.page.mouse.down.assert_awaited_once_with()
+        self.page.mouse.up.assert_awaited_once_with()
+
+    @patch("hauntedroom.flows.automap.load_template")
+    @patch("hauntedroom.flows.automap.deploy_initial_gear", new_callable=AsyncMock)
+    async def test_flow_attempts_gear_only_once_after_unlock(
+        self,
+        deploy_initial_gear,
+        load_template,
+    ):
+        load_template.return_value = np.zeros((2, 2), dtype=np.uint8)
+        deploy_initial_gear.return_value = True
+        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        self.assertFalse(
+            await flow.handle_initial_gear(self.gear_open, np.empty((0, 0)))
+        )
+        flow.initial_gear_unlocked = True
+        self.assertTrue(
+            await flow.handle_initial_gear(self.gear_open, np.empty((0, 0)))
+        )
+        self.assertFalse(
+            await flow.handle_initial_gear(self.gear_open, np.empty((0, 0)))
+        )
+        deploy_initial_gear.assert_awaited_once()

@@ -20,6 +20,10 @@ from hauntedroom.flows.automap_support.hero_levelup import (
     HERO_LEVELUP_TEMPLATE_PATHS,
     HeroLevelupMatcher,
 )
+from hauntedroom.flows.automap_support.gear_action import (
+    deploy_initial_gear,
+    find_gear_button,
+)
 from hauntedroom.flows.automap_support.detectors import (
     PROTECT_AVAILABLE_REGION,
     boss_progress_is_full,
@@ -124,6 +128,9 @@ class AutomapFlow:
         self.total_win: Optional[int] = None
         self.boss_handoff_requested = False
         self.final_boss_pet_deployed = False
+        self.initial_gear_unlocked = False
+        self.initial_gear_attempted = False
+        self.initial_gear_placed = False
 
     def find_start_home(
         self,
@@ -329,6 +336,7 @@ class AutomapFlow:
             )
             await _click(self.page, choice.x, choice.y)
             await self.page.wait_for_timeout(HERO_LEVELUP_SELECTION_SETTLE_MS)
+            self.initial_gear_unlocked = True
             return True
 
         if choice is not None:
@@ -345,9 +353,30 @@ class AutomapFlow:
             )
             await _click(self.page, choice.x, choice.y)
             await self.page.wait_for_timeout(HERO_LEVELUP_SELECTION_SETTLE_MS)
+            self.initial_gear_unlocked = True
             return True
 
         print("No visible hero level-up option found; skipping.", flush=True)
+        return True
+
+    async def handle_initial_gear(
+        self,
+        frame_bgr: np.ndarray,
+        _frame_gray: np.ndarray,
+    ) -> bool:
+        """Place the first gear once, after the first stable upgrade milestone."""
+        if not self.initial_gear_unlocked or self.initial_gear_attempted:
+            return False
+        if find_gear_button(frame_bgr) is None:
+            return False
+
+        # Mark before interacting: a failed drag must not loop forever or move
+        # another control on a later animated frame.
+        self.initial_gear_attempted = True
+        self.initial_gear_placed = await deploy_initial_gear(
+            self.page,
+            frame_bgr,
+        )
         return True
 
     async def handle_boss_critical(
@@ -453,6 +482,7 @@ class AutomapFlow:
         if await self.click_level_spin_if_present(frame_gray):
             return True
         await _click(self.page, *UPGRADE_CONFIRM_CLICK)
+        self.initial_gear_unlocked = True
         return True
 
     async def handle_build_structure(
@@ -501,6 +531,7 @@ class AutomapFlow:
         handlers: tuple[SituationHandler, ...] = (
             self.handle_level_spin_interrupt,
             map_end_handler,
+            self.handle_initial_gear,
             self.handle_boss_critical,
             self.handle_level_up, # gate, bed
             self.handle_build_structure,

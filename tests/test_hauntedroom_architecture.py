@@ -46,6 +46,7 @@ class HauntedRoomDependencyTest(TestCase):
         allowed_support_imports = {
             "automap.py": {
                 "hauntedroom.flows.automap_support.boss_action",
+                "hauntedroom.flows.automap_support.gear_action",
                 "hauntedroom.flows.automap_support.hero_levelup",
                 "hauntedroom.flows.automap_support.detectors",
             },
