@@ -1,7 +1,9 @@
 # Flow `Shift+3`: start-auto loop
 
-`Shift+3` chạy nhiều map liên tiếp cho tới khi người dùng bấm `Shift+0` hoặc
-detector xác định map thất bại.
+Khi runner idle, `Shift+3` bắt đầu chạy nhiều map liên tiếp. Trong lúc flow đang
+chạy, bấm lại `Shift+3` để pause và bấm lần nữa để resume đúng state hiện tại;
+flow không restart từ đầu. Khi đang chạy hoặc pause, `Shift+0` dừng hẳn flow.
+Ngoài ra flow kết thúc khi detector xác định map thất bại.
 
 Mỗi vòng chạy theo thứ tự:
 

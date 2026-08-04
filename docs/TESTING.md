@@ -47,7 +47,8 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
 - `test_hauntedroom_vision.py`: template matching, multi-scale và vị trí click.
 - `actions/`: action runner, timeout/retry và template wait/skip.
 - `automap/`: boss, build, level-up, map-end và orchestration của `Shift+2`.
-- `control_events/`: blocker ngoài normal flow, hiện gồm profile new-tab guard.
+- `control_events/`: blocker ngoài normal flow, gồm profile new-tab guard và
+  game-core iframe mutation guard.
 - `hero_select/test_hero_select.py`: nhận diện, priority, fallback và interaction
   của popup chọn hero.
 - `research/`: polling và interaction của flow research.

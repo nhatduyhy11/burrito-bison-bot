@@ -7,9 +7,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.control_events.new_tab_blocker import (
-    HIDE_GAME_CORE_FRAME_SCRIPT,
+    GAME_CORE_FRAME_GUARD_SCRIPT,
     PROFILE_POPUP_GUARD_SCRIPT,
     close_profile_popup_tabs,
+    install_game_core_frame_guard,
     install_profile_popup_guard,
     is_profile_popup_url,
 )
@@ -57,7 +58,7 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
 
         self.assertEqual(closed, 1)
         profile_page.close.assert_awaited_once_with()
-        game_page.evaluate.assert_awaited_once_with(HIDE_GAME_CORE_FRAME_SCRIPT)
+        game_page.evaluate.assert_not_awaited()
         game_page.bring_to_front.assert_awaited_once_with()
 
     async def test_install_guard_covers_current_and_future_documents(self):
@@ -73,3 +74,20 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         first_frame.evaluate.assert_awaited_once_with(PROFILE_POPUP_GUARD_SCRIPT)
         second_frame.evaluate.assert_awaited_once_with(PROFILE_POPUP_GUARD_SCRIPT)
 
+    async def test_install_game_core_guard_covers_current_and_future_documents(self):
+        page = Mock()
+        page.add_init_script = AsyncMock()
+        first_frame = Mock(evaluate=AsyncMock())
+        second_frame = Mock(evaluate=AsyncMock())
+        page.frames = [first_frame, second_frame]
+
+        await install_game_core_frame_guard(page)
+
+        page.add_init_script.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
+        first_frame.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
+        second_frame.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
+
+    def test_game_core_guard_reapplies_important_inline_styles(self):
+        self.assertIn("MutationObserver", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn('setProperty("display", "none", "important")', GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertIn('attributeFilter: ["id", "class", "style"]', GAME_CORE_FRAME_GUARD_SCRIPT)

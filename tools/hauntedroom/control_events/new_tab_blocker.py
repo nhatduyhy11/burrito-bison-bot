@@ -3,14 +3,46 @@ from urllib.parse import urlsplit
 
 PROFILE_POPUP_HOST = "cp.hhgame.vn"
 PROFILE_POPUP_PATH_PREFIX = "/v2/user/profile/"
-HIDE_GAME_CORE_FRAME_SCRIPT = """() => {
-    const id = "haunted-room-hide-hwss-frame";
-    if (document.getElementById(id)) return;
-    document.head.appendChild(Object.assign(document.createElement("style"), {
-        id,
-        textContent: "#hwssH5GameCoreframe{visibility:hidden!important}",
-    }));
-}"""
+GAME_CORE_FRAME_GUARD_SCRIPT = """(() => {
+    if (window.__hauntedRoomGameCoreFrameGuard) return;
+
+    const hideFrame = () => {
+        const frame = document.getElementById("hwssH5GameCoreframe");
+        if (!frame) return;
+
+        if (
+            frame.style.getPropertyValue("display") !== "none" ||
+            frame.style.getPropertyPriority("display") !== "important"
+        ) {
+            frame.style.setProperty("display", "none", "important");
+        }
+        if (
+            frame.style.getPropertyValue("pointer-events") !== "none" ||
+            frame.style.getPropertyPriority("pointer-events") !== "important"
+        ) {
+            frame.style.setProperty("pointer-events", "none", "important");
+        }
+    };
+
+    const install = () => {
+        if (window.__hauntedRoomGameCoreFrameGuard) return;
+        if (!document.documentElement) {
+            queueMicrotask(install);
+            return;
+        }
+
+        window.__hauntedRoomGameCoreFrameGuard = new MutationObserver(hideFrame);
+        window.__hauntedRoomGameCoreFrameGuard.observe(document.documentElement, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ["id", "class", "style"],
+        });
+        hideFrame();
+    };
+
+    install();
+})()"""
 PROFILE_POPUP_GUARD_SCRIPT = """(() => {
     if (window.__hauntedRoomProfilePopupGuard) return;
     window.__hauntedRoomProfilePopupGuard = true;
@@ -72,9 +104,15 @@ async def install_profile_popup_guard(page) -> None:
             continue
 
 
-async def hide_game_core_frame(page) -> None:
-    """Hide the game-core iframe overlay without adding duplicate styles."""
-    await page.evaluate(HIDE_GAME_CORE_FRAME_SCRIPT)
+async def install_game_core_frame_guard(page) -> None:
+    """Continuously hide the known non-game iframe in current and future pages."""
+    await page.add_init_script(GAME_CORE_FRAME_GUARD_SCRIPT)
+    for frame in page.frames:
+        try:
+            await frame.evaluate(GAME_CORE_FRAME_GUARD_SCRIPT)
+        except Exception:
+            # A frame can navigate or detach while the guard is being installed.
+            continue
 
 
 async def close_profile_popup_tabs(page, label: str = "blocker") -> int:
@@ -94,11 +132,10 @@ async def close_profile_popup_tabs(page, label: str = "blocker") -> int:
             # The popup may already have been closed by the browser/user.
             pass
 
-    await hide_game_core_frame(page)
     await page.bring_to_front()
     print(
         f"{label}: closed {len(popup_pages)} hhgame profile popup tab(s); "
-        "hid #hwssH5GameCoreframe",
+        "game-core iframe guard remains active",
         flush=True,
     )
     return len(popup_pages)

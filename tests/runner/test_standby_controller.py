@@ -88,9 +88,9 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         self.assertIs(get_automap_flow(), automap.run_automap_flow)
 
-    def test_hotkey_script_accepts_digits_and_minus(self):
+    def test_hotkey_script_accepts_digits_only(self):
         self.assertIn("/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
-        self.assertIn('event.code === "Minus"', HOTKEY_SCRIPT)
+        self.assertNotIn('event.code === "Minus"', HOTKEY_SCRIPT)
 
     def test_shift_8_capture_directory_is_inside_test_fixtures(self):
         self.assertEqual(
@@ -120,26 +120,6 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             await run_standby_controller(page, [], dev_reload=False)
 
         save_live_screenshot.assert_awaited_once_with(page)
-
-    @patch("hauntedroom_runner.hide_game_core_frame", new_callable=AsyncMock)
-    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
-    async def test_shift_minus_hides_game_core_frame(
-        self,
-        start_hotkey_listener,
-        hide_game_core_frame,
-    ):
-        page = Mock()
-
-        async def enqueue_hide(_page, command_queue):
-            command_queue.put_nowait("-")
-
-        start_hotkey_listener.side_effect = enqueue_hide
-        hide_game_core_frame.side_effect = RuntimeError("stop test loop")
-
-        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
-            await run_standby_controller(page, [])
-
-        hide_game_core_frame.assert_awaited_once_with(page)
 
     @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom_runner.run_start_automap_loop", new_callable=AsyncMock)

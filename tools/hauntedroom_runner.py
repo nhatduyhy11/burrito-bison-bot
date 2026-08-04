@@ -7,7 +7,7 @@ from playwright.async_api import async_playwright
 from hauntedroom.actions.loader import load_actions
 from hauntedroom.actions.runner import run_actions
 from hauntedroom.control_events.new_tab_blocker import (
-    hide_game_core_frame,
+    install_game_core_frame_guard,
     install_profile_popup_guard,
 )
 from hauntedroom.core import vision
@@ -172,7 +172,6 @@ async def run_standby_controller(
         "  Shift+8    Capture screenshot\n"
         "  Shift+9    Research\n"
         "  Shift+0    Stop current flow\n"
-        "  Shift+-    Hide game-core iframe\n"
         "  Ctrl+C     Close runner\n"
         "-------------------------\n"
         "Runner idle.",
@@ -230,15 +229,6 @@ async def run_standby_controller(
                         "Shift+0 to stop.",
                         flush=True,
                     )
-                continue
-
-            if command == "-":
-                await hide_game_core_frame(page)
-                print("Game-core iframe hidden.", flush=True)
-                if flow_task is None:
-                    print("Runner idle.", flush=True)
-                else:
-                    print("Current flow continues.", flush=True)
                 continue
 
             if command not in command_names:
@@ -318,6 +308,7 @@ async def main() -> None:
         try:
             page = context.pages[0] if context.pages else await context.new_page()
             await install_profile_popup_guard(page)
+            await install_game_core_frame_guard(page)
             await page.goto(args.url, wait_until="domcontentloaded")
             await start_user_click_logger(page)
 

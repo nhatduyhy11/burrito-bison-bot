@@ -84,7 +84,7 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
 - `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [logic flow `Shift+2`](SHIFT2_AUTOMAP_FLOW.md) để biết priority, điều kiện và hành vi của từng phase.
-- `Shift+3`: chạy loop start room → auto-map → chờ 2 giây → start map tiếp theo. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [flow `Shift+3`](SHIFT3_START_AUTOMAP_LOOP.md).
+- `Shift+3`: khi idle, bắt đầu loop start room → auto-map → chờ 2 giây → start map tiếp theo. Khi loop đang chạy, bấm lại để pause; bấm lần nữa để resume đúng state hiện tại. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [flow `Shift+3`](SHIFT3_START_AUTOMAP_LOOP.md).
 - `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
@@ -92,7 +92,7 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 - `Shift+4` đến `Shift+6`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
-Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`; riêng `Shift+8` chỉ chụp screenshot nên không bị chặn.
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`; riêng `Shift+3` toggle pause/resume cho chính start-auto loop và `Shift+8` chỉ chụp screenshot nên không bị chặn. `Shift+0` vẫn dừng hẳn được flow `Shift+3` khi flow đang pause.
 
 Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các checkpoint có thể xuất hiện popup:
 
@@ -109,7 +109,7 @@ Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các 
 - `click`: bắt buộc có `x`, `y`; `button` và `note` là tùy chọn.
 - `wait`: bắt buộc có `ms`; `note` là tùy chọn.
 
-### Profile popup guard
+### Profile popup và game-core iframe guard
 
 Game đôi khi mở một tab mới có URL dạng
 `https://cp.hhgame.vn/v2/user/profile/...`. Đây là sự kiện hiếm nên runner không
@@ -125,19 +125,23 @@ chạy một polling loop riêng cho nó. Khi khởi động, entrypoint gọi
 4. Guard chặn ba đường mở phổ biến: `window.open(...)`, click vào link và submit
    form trỏ tới URL trên. Các URL khác vẫn dùng hành vi browser bình thường.
 
-Guard chỉ ngăn tab profile được tạo; nó **không inject CSS**. Nếu website mở tab
-bằng một cơ chế vượt qua guard, mỗi vòng quét của `clear_blockers` có fallback
-kiểm tra `page.context.pages`. Chỉ khi Playwright thực sự thấy một tab profile,
-runner mới thực hiện lần lượt:
+Nếu website mở tab bằng một cơ chế vượt qua profile guard, mỗi vòng quét của
+`clear_blockers` có fallback kiểm tra `page.context.pages`. Khi Playwright thực
+sự thấy một tab profile, runner đóng tab đó, đưa tab game gốc về foreground và
+tiếp tục logic blocker bình thường.
 
-1. Đóng tab profile đó.
-2. Chạy script tạo style
-   `#hwssH5GameCoreframe{visibility:hidden!important}` trên tab game gốc.
-3. Đưa tab game gốc về foreground và tiếp tục logic blocker bình thường.
+Entrypoint đồng thời gọi `install_game_core_frame_guard(page)` trước khi load URL
+game. Guard này không dùng hotkey và hoạt động độc lập với việc tab profile có
+xuất hiện hay không:
 
-Vì vậy, nếu tab profile không hề được mở hoặc đã bị guard chặn từ đầu,
-`#hwssH5GameCoreframe` không bị thay đổi. Việc kiểm tra fallback chỉ diễn ra khi
-action `clear_blockers` đang chạy.
+1. `page.add_init_script(...)` cài watcher cho các document/frame được tạo hoặc
+   navigate về sau; runner cũng evaluate watcher trên các frame hiện tại.
+2. `MutationObserver` theo dõi node được thêm/xóa và thay đổi thuộc tính
+   `id`, `class`, `style`.
+3. Khi thấy `#hwssH5GameCoreframe`, watcher enforce inline
+   `display:none!important` và `pointer-events:none!important`.
+4. Nếu website override style hoặc tạo lại iframe, mutation mới kích hoạt watcher
+   và hai thuộc tính trên được áp lại. Không còn hotkey riêng để hide iframe.
 
 Đường dẫn `template` được tính tương đối từ file action JSON. Các tùy chọn của `click_template`:
 
