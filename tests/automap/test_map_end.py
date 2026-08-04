@@ -87,9 +87,21 @@ class MapEndTest(IsolatedAsyncioTestCase):
             [],
         ]
 
-        completed = await run_automap_flow(self.page, asyncio.Event())
+        on_win = Mock(return_value=1)
+        with patch("builtins.print") as print_mock:
+            completed = await run_automap_flow(
+                self.page,
+                asyncio.Event(),
+                on_win=on_win,
+            )
 
         self.assertTrue(completed)
+        on_win.assert_called_once_with()
+        messages = [print_call.args[0] for print_call in print_mock.call_args_list]
+        self.assertLess(
+            messages.index(">>> [1] win"),
+            messages.index("Auto-map flow completed; runner is idle."),
+        )
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [
@@ -300,4 +312,3 @@ class MapEndTest(IsolatedAsyncioTestCase):
         ]
         self.assertEqual(matched_template_names.count("lv_up.png"), 2)
         self.assertEqual(matched_template_names.count("built.png"), 2)
-

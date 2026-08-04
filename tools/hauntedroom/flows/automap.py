@@ -87,6 +87,8 @@ class AutomapConfig:
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS
+    pause_on_any_boss: bool = False
+    on_win: Optional[Callable[[], int]] = None
 
 
 class AutomapFlow:
@@ -118,6 +120,8 @@ class AutomapFlow:
         self.loop = asyncio.get_running_loop()
         self.last_map_end_check: Optional[float] = None
         self.map_completed = False
+        self.win_recorded = False
+        self.total_win: Optional[int] = None
         self.boss_handoff_requested = False
         self.final_boss_pet_deployed = False
 
@@ -207,6 +211,11 @@ class AutomapFlow:
                 scales=(1.0,),
             )
             if reward_matches:
+                if not self.win_recorded:
+                    self.win_recorded = True
+                    if self.config.on_win is not None:
+                        self.total_win = self.config.on_win()
+                    print("Win reward detected; win recorded.", flush=True)
                 center_x, center_y, score = reward_matches[0]
                 template_height = self.win_reward_template.shape[0]
                 click_y = center_y - template_height // 2 + min(
@@ -353,6 +362,30 @@ class AutomapFlow:
         x, y, score = match
         is_final_boss = boss_progress_is_full(frame_bgr)
         boss_kind = "Final boss" if is_final_boss else "Mini-boss"
+        if self.config.pause_on_any_boss:
+            exit_x, exit_y, exit_score = find_template(
+                frame_gray,
+                self.exit_click_template,
+                self.config.exit_click_template_path.name,
+            )
+            if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
+                print(
+                    f"{boss_kind} detected at {x},{y}, score={score:.3f}; "
+                    f"pause button not found yet (score={exit_score:.3f}).",
+                    flush=True,
+                )
+                return False
+
+            print(
+                f"{boss_kind} detected at {x},{y}, score={score:.3f}; "
+                f"clicking pause at {exit_x},{exit_y} and stopping for "
+                "manual control.",
+                flush=True,
+            )
+            await _click(self.page, exit_x, exit_y)
+            self.boss_handoff_requested = True
+            return True
+
         if is_final_boss and not self.final_boss_pet_deployed:
             self.final_boss_pet_deployed = await deploy_boss_pet(
                 self.page,
@@ -489,6 +522,13 @@ class AutomapFlow:
                         return False
                     if handler is map_end_handler:
                         if self.map_completed:
+                            if self.win_recorded:
+                                displayed_win = (
+                                    self.total_win
+                                    if self.total_win is not None
+                                    else 1
+                                )
+                                print(f">>> [{displayed_win}] win", flush=True)
                             print(
                                 "Auto-map flow completed; runner is idle.",
                                 flush=True,
@@ -516,6 +556,8 @@ async def run_automap_flow(
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS,
+    pause_on_any_boss: bool = False,
+    on_win: Optional[Callable[[], int]] = None,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -530,5 +572,7 @@ async def run_automap_flow(
         start_home_template_path=start_home_template_path,
         exit_click_template_path=exit_click_template_path,
         hero_levelup_template_paths=hero_levelup_template_paths,
+        pause_on_any_boss=pause_on_any_boss,
+        on_win=on_win,
     )
     return await AutomapFlow(page, stop_event, config).run()

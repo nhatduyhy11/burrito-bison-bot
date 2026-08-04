@@ -61,21 +61,46 @@ async def run_start_automap_loop(
     """Loop start-room -> auto-map -> loss check -> two-second cooldown."""
     start_actions = get_start_battle_actions(actions)
     loop_index = 0
+    win_count = 0
+
+    def record_win() -> int:
+        nonlocal win_count
+        win_count += 1
+        return win_count
 
     while not stop_event.is_set():
         loop_index += 1
+        print("\n" + "=" * 60, flush=True)
         print(f"Start-auto loop {loop_index} start.", flush=True)
 
         started = await run_actions(
             page,
             start_actions,
-            loop_count=1,
+            loop_count=2,
             stop_event=stop_event,
+            stop_after_success=True,
         )
         if not started:
             return False
 
-        map_completed = await automap_flow(page, stop_event)
+        print(
+            f"Start-auto loop {loop_index}: entry actions finished; "
+            "auto-map start.",
+            flush=True,
+        )
+        pause_on_any_boss = loop_index >= 3 and win_count == 0
+        if pause_on_any_boss:
+            print(
+                "No win recorded in the first two loops; the next boss "
+                "will pause the game and stop the flow.",
+                flush=True,
+            )
+        map_completed = await automap_flow(
+            page,
+            stop_event,
+            pause_on_any_boss=pause_on_any_boss,
+            on_win=record_win,
+        )
         if not map_completed:
             return False
 
@@ -83,6 +108,7 @@ async def run_start_automap_loop(
             print("Map loss detected; stopping start-auto loop.", flush=True)
             return True
 
+        print("-" * 60, flush=True)
         waited = await wait_with_countdown(
             page,
             BETWEEN_MAPS_WAIT_MS,
@@ -127,11 +153,19 @@ async def run_standby_controller(
         "9": "research",
     }
     print(
-        "Runner idle. Shift+1: enter-exit room; Shift+2: auto-map battle; "
-        "Shift+3: start-auto loop; "
-        "Shift+7: click 440,500 every 1s; Shift+8: capture screenshot; "
-        "Shift+9: research; "
-        "Shift+0: stop current flow; Ctrl+C in terminal: close runner.",
+        "\n"
+        "Haunted Room runner ready\n"
+        "-------------------------\n"
+        "  Shift+1    Enter / exit room\n"
+        "  Shift+2    Auto-map battle\n"
+        "  Shift+3    Start-auto loop\n"
+        "  Shift+7    Click (440, 500) every 1s\n"
+        "  Shift+8    Capture screenshot\n"
+        "  Shift+9    Research\n"
+        "  Shift+0    Stop current flow\n"
+        "  Ctrl+C     Close runner\n"
+        "-------------------------\n"
+        "Runner idle.",
         flush=True,
     )
 

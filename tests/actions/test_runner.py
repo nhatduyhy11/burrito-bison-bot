@@ -58,6 +58,43 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         return_value=np.zeros((1, 1), dtype=np.uint8),
     )
     @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
+    async def test_finite_loop_returns_false_when_final_attempt_times_out(
+        self, wait_for_template, _load_template
+    ):
+        wait_for_template.side_effect = TimeoutError("only timeout")
+
+        completed = await run_actions(self.page, self.actions, loop_count=1)
+
+        self.assertFalse(completed)
+        wait_for_template.assert_awaited_once()
+        self.page.mouse.click.assert_not_awaited()
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
+    async def test_stop_after_success_does_not_repeat_successful_actions(
+        self, wait_for_template, _load_template
+    ):
+        wait_for_template.return_value = (30, 40, 0.95)
+
+        completed = await run_actions(
+            self.page,
+            self.actions,
+            loop_count=2,
+            stop_after_success=True,
+        )
+
+        self.assertTrue(completed)
+        wait_for_template.assert_awaited_once()
+        self.assertEqual(self.page.mouse.click.await_count, 2)
+
+    @patch(
+        "hauntedroom.actions.runner.load_template",
+        return_value=np.zeros((1, 1), dtype=np.uint8),
+    )
+    @patch("hauntedroom.actions.runner.wait_for_template", new_callable=AsyncMock)
     async def test_second_timeout_stops_runner(
         self, wait_for_template, _load_template
     ):

@@ -95,6 +95,7 @@ async def run_actions(
     actions: list[dict],
     loop_count: Optional[int] = ACTION_LOOP_COUNT,
     stop_event: Optional[asyncio.Event] = None,
+    stop_after_success: bool = False,
 ) -> bool:
     template_paths: set[Path] = set()
     for action in actions:
@@ -115,7 +116,7 @@ async def run_actions(
             return False
         loop_index += 1
         loop_total = "infinite" if loop_count is None else str(loop_count)
-        print(f"loop {loop_index}/{loop_total} start", flush=True)
+        print(f"Action loop {loop_index}/{loop_total} start", flush=True)
         loop_timed_out = False
 
         for action_index, action in enumerate(actions, start=1):
@@ -165,11 +166,19 @@ async def run_actions(
                     if timeout_count >= 2:
                         print("Second timeout; stopping runner.", flush=True)
                         raise
-                    print(
-                        f"Skipping the rest of loop {loop_index}/{loop_total}; "
-                        "retrying from the first action on the next loop.",
-                        flush=True,
-                    )
+                    if loop_count is not None and loop_index >= loop_count:
+                        print(
+                            "Skipping the rest of the final action attempt; "
+                            "no retry remains.",
+                            flush=True,
+                        )
+                    else:
+                        print(
+                            "Skipping the rest of action loop "
+                            f"{loop_index}/{loop_total}; retrying from the "
+                            "first action on the next loop.",
+                            flush=True,
+                        )
                     loop_timed_out = True
                     break
                 if not completed:
@@ -241,11 +250,19 @@ async def run_actions(
                     if timeout_count >= 2:
                         print("Second timeout; stopping runner.", flush=True)
                         raise
-                    print(
-                        f"Skipping the rest of loop {loop_index}/{loop_total}; "
-                        "retrying from the first action on the next loop.",
-                        flush=True,
-                    )
+                    if loop_count is not None and loop_index >= loop_count:
+                        print(
+                            "Skipping the rest of the final action attempt; "
+                            "no retry remains.",
+                            flush=True,
+                        )
+                    else:
+                        print(
+                            "Skipping the rest of action loop "
+                            f"{loop_index}/{loop_total}; retrying from the "
+                            "first action on the next loop.",
+                            flush=True,
+                        )
                     loop_timed_out = True
                     break
                 if match is SKIP_TEMPLATE_MATCHED:
@@ -323,16 +340,25 @@ async def run_actions(
                 return False
 
         if loop_timed_out:
+            if loop_count is not None and loop_index >= loop_count:
+                print(
+                    f"Action loop {loop_index}/{loop_total} exhausted after "
+                    "a timeout; returning failure.",
+                    flush=True,
+                )
+                return False
             continue
 
         if timeout_count:
             print(
-                f"loop {loop_index}/{loop_total} completed successfully; "
+                f"Action loop {loop_index}/{loop_total} completed successfully; "
                 "resetting timeout count to 0.",
                 flush=True,
             )
             timeout_count = 0
 
-        print(f"loop {loop_index}/{loop_total} finish", flush=True)
+        print(f"Action loop {loop_index}/{loop_total} finish", flush=True)
+        if stop_after_success:
+            return True
 
     return True

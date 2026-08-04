@@ -194,6 +194,42 @@ class BossTest(IsolatedAsyncioTestCase):
         self.assertTrue(handled)
         classify_progress.assert_called_once()
 
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    async def test_pause_on_any_boss_clicks_pause_and_requests_handoff(
+        self,
+        _load_template,
+    ):
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(pause_on_any_boss=True),
+        )
+        with (
+            patch(
+                "hauntedroom.flows.automap.find_boss_health_bar",
+                return_value=(250, 280, 0.90),
+            ),
+            patch(
+                "hauntedroom.flows.automap.boss_progress_is_full",
+                return_value=False,
+            ),
+            patch(
+                "hauntedroom.flows.automap.find_template",
+                return_value=(612, 35, 0.95),
+            ),
+        ):
+            handled = await flow.handle_boss_critical(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertTrue(handled)
+        self.page.mouse.click.assert_awaited_once_with(612, 35)
+        self.assertTrue(flow.boss_handoff_requested)
+
     @expectedFailure
     @patch(
         "hauntedroom.flows.automap.load_template",
