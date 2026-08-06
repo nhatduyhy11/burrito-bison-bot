@@ -130,21 +130,14 @@ Nếu website mở tab bằng một cơ chế vượt qua profile guard, mỗi v
 sự thấy một tab profile, runner đóng tab đó, đưa tab game gốc về foreground và
 tiếp tục logic blocker bình thường.
 
-Entrypoint đồng thời gọi `install_game_core_frame_guard(page)` trước khi load URL
-game. Guard này không dùng hotkey và hoạt động độc lập với việc tab profile có
-xuất hiện hay không:
-
-1. `page.add_init_script(...)` cài watcher cho các document được tạo hoặc
-   navigate về sau; watcher chỉ hoạt động trong top-level document.
-2. `MutationObserver` theo dõi node được thêm/xóa và thay đổi thuộc tính
-   `id`, `class`, `style`.
-3. Khi thấy `#hwssH5GameCoreframe`, watcher chờ event `load` và chỉ xử lý sau khi
-   `getBoundingClientRect()` trả về cả width và height lớn hơn `0`.
-4. Watcher dùng `visibility:hidden!important`, giữ nguyên layout/kích thước của
-   iframe và không đặt `display` hoặc `pointer-events`.
-5. `ResizeObserver` theo dõi kích thước. Nếu website override style hoặc tạo lại
-   iframe, guard sẽ kiểm tra và áp lại `visibility`. Không còn hotkey riêng để
-   hide iframe.
+Sau khi URL game hoàn tất `domcontentloaded`, entrypoint chờ nền 30 giây rồi mới
+gọi `install_game_core_frame_guard(page)`. Khoảng chờ không khóa hotkey/controller
+và để game hoàn tất startup trước khi CSS được inject. Sau khoảng chờ, guard thêm
+một style idempotent vào top document để đặt
+`#hwssH5GameCoreframe{visibility:hidden!important}`. Guard không đọc `#document`
+bên trong iframe, không dùng `MutationObserver`/`postMessage`, và không thay đổi
+`display` hoặc `pointer-events`. Sau khi inject thành công, runner ghi một dòng
+`iframe guard: injected CSS after 30000ms; #hwssH5GameCoreframe hidden` ra log.
 
 Đường dẫn `template` được tính tương đối từ file action JSON. Các tùy chọn của `click_template`:
 

@@ -58,8 +58,7 @@ import `actions`, `flows` hay entrypoint.
 - `control_events/blockers.py`: kiểm tra và xử lý blocker có quyền tạm thời
   preempt normal flow.
 - `control_events/new_tab_blocker.py`: chặn tab profile từ trang game, xử lý
-  fallback đóng tab và duy trì watcher tự động ẩn game-core iframe khi node hoặc
-  style của nó bị tạo lại/override.
+  fallback đóng tab và inject CSS ẩn game-core iframe sau startup delay 30 giây.
 - `flows/automap.py`: flow battle priority của `Shift+2`.
 - `flows/research.py`: flow research của `Shift+9`.
 - `hauntedroom_runner.py`: composition root, browser bootstrap, hotkey controller

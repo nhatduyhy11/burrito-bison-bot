@@ -1,16 +1,18 @@
 import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock, Mock, patch
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.control_events.new_tab_blocker import (
+    GAME_CORE_FRAME_GUARD_DELAY_MS,
     GAME_CORE_FRAME_GUARD_SCRIPT,
     PROFILE_POPUP_GUARD_SCRIPT,
     close_profile_popup_tabs,
     install_game_core_frame_guard,
+    install_game_core_frame_guard_after_delay,
     install_profile_popup_guard,
     is_profile_popup_url,
 )
@@ -74,29 +76,40 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         first_frame.evaluate.assert_awaited_once_with(PROFILE_POPUP_GUARD_SCRIPT)
         second_frame.evaluate.assert_awaited_once_with(PROFILE_POPUP_GUARD_SCRIPT)
 
-    async def test_install_game_core_guard_covers_current_and_future_documents(self):
+    async def test_install_game_core_guard_injects_css_into_top_document(self):
         page = Mock()
-        page.add_init_script = AsyncMock()
-        first_frame = Mock(evaluate=AsyncMock())
-        second_frame = Mock(evaluate=AsyncMock())
-        page.frames = [first_frame, second_frame]
+        page.evaluate = AsyncMock()
 
         await install_game_core_frame_guard(page)
 
-        page.add_init_script.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
-        first_frame.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
-        second_frame.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
+        page.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
 
-    def test_game_core_guard_waits_for_loaded_nonzero_frame(self):
-        self.assertIn("MutationObserver", GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertIn("window !== window.top", GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertIn('addEventListener("load"', GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertIn("getBoundingClientRect()", GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertIn("bounds.width <= 0", GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertIn("ResizeObserver", GAME_CORE_FRAME_GUARD_SCRIPT)
+    async def test_game_core_guard_is_injected_after_startup_delay(self):
+        page = Mock()
+        page.wait_for_timeout = AsyncMock()
+        page.evaluate = AsyncMock()
+
+        with patch("builtins.print") as print_mock:
+            await install_game_core_frame_guard_after_delay(page)
+
+        page.wait_for_timeout.assert_awaited_once_with(
+            GAME_CORE_FRAME_GUARD_DELAY_MS
+        )
+        page.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
+        print_mock.assert_called_once_with(
+            "iframe guard: injected CSS after 30000ms; "
+            "#hwssH5GameCoreframe hidden",
+            flush=True,
+        )
+
+    def test_game_core_guard_uses_idempotent_visibility_css(self):
+        self.assertIn("haunted-room-hide-hwss-frame", GAME_CORE_FRAME_GUARD_SCRIPT)
         self.assertIn(
-            'setProperty("visibility", "hidden", "important")',
+            "#hwssH5GameCoreframe{visibility:hidden!important}",
             GAME_CORE_FRAME_GUARD_SCRIPT,
         )
+        self.assertNotIn("MutationObserver", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertNotIn("postMessage", GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertNotIn("van-overflow-hidden", GAME_CORE_FRAME_GUARD_SCRIPT)
         self.assertNotIn("pointer-events", GAME_CORE_FRAME_GUARD_SCRIPT)
-        self.assertNotIn('setProperty("display"', GAME_CORE_FRAME_GUARD_SCRIPT)
+        self.assertNotIn("display", GAME_CORE_FRAME_GUARD_SCRIPT)

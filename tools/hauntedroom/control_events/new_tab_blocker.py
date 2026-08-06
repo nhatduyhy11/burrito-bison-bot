@@ -3,65 +3,15 @@ from urllib.parse import urlsplit
 
 PROFILE_POPUP_HOST = "cp.hhgame.vn"
 PROFILE_POPUP_PATH_PREFIX = "/v2/user/profile/"
-GAME_CORE_FRAME_GUARD_SCRIPT = """(() => {
-    if (window !== window.top || window.__hauntedRoomGameCoreFrameGuard) return;
-
-    const guardedFrames = new WeakMap();
-
-    const armFrame = (frame) => {
-        const existingGuard = guardedFrames.get(frame);
-        if (existingGuard) {
-            existingGuard();
-            return;
-        }
-
-        let loaded = false;
-        const hideIfReady = () => {
-            if (!loaded || !frame.isConnected) return;
-            const bounds = frame.getBoundingClientRect();
-            if (bounds.width <= 0 || bounds.height <= 0) return;
-
-            if (
-                frame.style.getPropertyValue("visibility") !== "hidden" ||
-                frame.style.getPropertyPriority("visibility") !== "important"
-            ) {
-                frame.style.setProperty("visibility", "hidden", "important");
-            }
-        };
-
-        guardedFrames.set(frame, hideIfReady);
-        frame.addEventListener("load", () => {
-            loaded = true;
-            hideIfReady();
-        });
-        new ResizeObserver(hideIfReady).observe(frame);
-    };
-
-    const scan = () => {
-        const frame = document.getElementById("hwssH5GameCoreframe");
-        if (!frame) return;
-        armFrame(frame);
-    };
-
-    const install = () => {
-        if (window.__hauntedRoomGameCoreFrameGuard) return;
-        if (!document.documentElement) {
-            queueMicrotask(install);
-            return;
-        }
-
-        window.__hauntedRoomGameCoreFrameGuard = new MutationObserver(scan);
-        window.__hauntedRoomGameCoreFrameGuard.observe(document.documentElement, {
-            subtree: true,
-            childList: true,
-            attributes: true,
-            attributeFilter: ["id", "class", "style"],
-        });
-        scan();
-    };
-
-    install();
-})()"""
+GAME_CORE_FRAME_GUARD_DELAY_MS = 30_000
+GAME_CORE_FRAME_GUARD_SCRIPT = """() => {
+    const id = "haunted-room-hide-hwss-frame";
+    if (document.getElementById(id)) return;
+    document.head.appendChild(Object.assign(document.createElement("style"), {
+        id,
+        textContent: "#hwssH5GameCoreframe{visibility:hidden!important}",
+    }));
+}"""
 PROFILE_POPUP_GUARD_SCRIPT = """(() => {
     if (window.__hauntedRoomProfilePopupGuard) return;
     window.__hauntedRoomProfilePopupGuard = true;
@@ -124,14 +74,19 @@ async def install_profile_popup_guard(page) -> None:
 
 
 async def install_game_core_frame_guard(page) -> None:
-    """Continuously hide the known non-game iframe in current and future pages."""
-    await page.add_init_script(GAME_CORE_FRAME_GUARD_SCRIPT)
-    for frame in page.frames:
-        try:
-            await frame.evaluate(GAME_CORE_FRAME_GUARD_SCRIPT)
-        except Exception:
-            # A frame can navigate or detach while the guard is being installed.
-            continue
+    """Hide the H5 SDK iframe in the current top-level document."""
+    await page.evaluate(GAME_CORE_FRAME_GUARD_SCRIPT)
+
+
+async def install_game_core_frame_guard_after_delay(page) -> None:
+    """Let the game initialize before injecting the H5 SDK iframe guard."""
+    await page.wait_for_timeout(GAME_CORE_FRAME_GUARD_DELAY_MS)
+    await install_game_core_frame_guard(page)
+    print(
+        f"iframe guard: injected CSS after {GAME_CORE_FRAME_GUARD_DELAY_MS}ms; "
+        "#hwssH5GameCoreframe hidden",
+        flush=True,
+    )
 
 
 async def close_profile_popup_tabs(page, label: str = "blocker") -> int:

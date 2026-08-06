@@ -7,7 +7,7 @@ from playwright.async_api import async_playwright
 from hauntedroom.actions.loader import load_actions
 from hauntedroom.actions.runner import run_actions
 from hauntedroom.control_events.new_tab_blocker import (
-    install_game_core_frame_guard,
+    install_game_core_frame_guard_after_delay,
     install_profile_popup_guard,
 )
 from hauntedroom.core import vision
@@ -292,6 +292,7 @@ async def run_standby_controller(
 
 async def main() -> None:
     args, actions, profile_dir = prepare_runner(load_actions)
+    game_core_guard_task = None
 
     async with async_playwright() as playwright:
         launch_options = {
@@ -308,8 +309,10 @@ async def main() -> None:
         try:
             page = context.pages[0] if context.pages else await context.new_page()
             await install_profile_popup_guard(page)
-            await install_game_core_frame_guard(page)
             await page.goto(args.url, wait_until="domcontentloaded")
+            game_core_guard_task = asyncio.create_task(
+                install_game_core_frame_guard_after_delay(page)
+            )
             await start_user_click_logger(page)
 
             if ACTION_LOOP_COUNT == 0:
@@ -327,6 +330,9 @@ async def main() -> None:
                         "Actions done. Press Ctrl+C to close this runner.",
                     )
         finally:
+            if game_core_guard_task is not None:
+                game_core_guard_task.cancel()
+                await asyncio.gather(game_core_guard_task, return_exceptions=True)
             await context.close()
 
 
