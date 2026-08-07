@@ -67,6 +67,9 @@ class HeroLevelupChoice:
     template_name: Optional[str] = None
     score: Optional[float] = None
     priority: Optional[float] = None
+    # TEMP FALLBACK TRACKING: remove this field together with the temporary
+    # screenshot branch in AutomapFlow.hero_levelup after fallback is verified.
+    fallback_color: Optional[str] = None
 
     @property
     def is_prioritized(self) -> bool:
@@ -241,4 +244,7 @@ class HeroLevelupMatcher:
             if hero_option_is_purple(frame_bgr, center)
         ]
         x, y = (purple_centers or eligible_centers)[0]
-        return HeroLevelupChoice(x=x, y=y)
+        # TEMP FALLBACK TRACKING: expose whether purple detection succeeded so
+        # the flow can capture only the no-priority + no-purple cases.
+        fallback_color = "purple" if purple_centers else "other"
+        return HeroLevelupChoice(x=x, y=y, fallback_color=fallback_color)

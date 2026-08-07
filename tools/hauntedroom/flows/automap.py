@@ -362,7 +362,17 @@ class AutomapFlow:
             return True
 
         if choice is not None:
-            if self.config.debug:
+            # TEMP FALLBACK TRACKING: remove this first branch once the purple
+            # fallback has enough live evidence. Screenshot failure is already
+            # non-fatal, and selection continues normally below.
+            if choice.fallback_color == "other":
+                await save_screenshot(
+                    self.page,
+                    "no-priority-no-purple-hero-option",
+                    HERO_FALLBACK_SCREENSHOT_DIR,
+                    "Hero fallback tracking",
+                )
+            elif self.config.debug:
                 await save_screenshot(
                     self.page,
                     "no-prioritized-hero-option",
