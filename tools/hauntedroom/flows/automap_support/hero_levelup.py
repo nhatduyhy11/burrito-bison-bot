@@ -25,6 +25,12 @@ HERO_OPTION_MIN_SATURATION = 80
 HERO_OPTION_MIN_VALUE = 40
 HERO_OPTION_COLUMN_COVERAGE = 0.75
 HERO_OPTION_MIN_WIDTH = 80
+HERO_OPTION_COLOR_TOP = 610
+HERO_OPTION_COLOR_BOTTOM = 655
+HERO_OPTION_COLOR_LEFT_OFFSET = -55
+HERO_OPTION_COLOR_RIGHT_OFFSET = -43
+HERO_OPTION_PURPLE_HUE_MIN = 130
+HERO_OPTION_PURPLE_HUE_MAX = 150
 HERO_ASCEND_TEMPLATE_NAME = "00_hero_ascend.png"
 HERO_ASCEND_TEMPLATE_THRESHOLD = 0.90
 # 00_hero_ascend.png is the 25x23 bottom-right cyan corner of an ascend
@@ -98,6 +104,35 @@ def find_hero_option_centers(frame_bgr: np.ndarray) -> list[tuple[int, int]]:
 
     click_y = (HERO_OPTION_PANEL_TOP + HERO_OPTION_PANEL_BOTTOM) // 2
     return [((left + right - 1) // 2, click_y) for left, right in runs]
+
+
+def hero_option_is_purple(
+    frame_bgr: np.ndarray,
+    center: tuple[int, int],
+) -> bool:
+    """Classify a card from the stable solid strip on its lower-left edge."""
+    if frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
+        return False
+
+    x, _y = center
+    strip = frame_bgr[
+        HERO_OPTION_COLOR_TOP:HERO_OPTION_COLOR_BOTTOM,
+        max(0, x + HERO_OPTION_COLOR_LEFT_OFFSET):
+        min(frame_bgr.shape[1], x + HERO_OPTION_COLOR_RIGHT_OFFSET),
+    ]
+    if strip.size == 0:
+        return False
+
+    hsv = cv2.cvtColor(strip, cv2.COLOR_BGR2HSV)
+    colored = (
+        (hsv[:, :, 1] >= HERO_OPTION_MIN_SATURATION)
+        & (hsv[:, :, 2] >= HERO_OPTION_MIN_VALUE)
+    )
+    hues = hsv[:, :, 0][colored]
+    if hues.size == 0:
+        return False
+    median_hue = float(np.median(hues))
+    return HERO_OPTION_PURPLE_HUE_MIN <= median_hue <= HERO_OPTION_PURPLE_HUE_MAX
 
 
 def find_hero_ascend_options(
@@ -199,5 +234,11 @@ class HeroLevelupMatcher:
         fallback_centers = [
             center for center in option_centers if center not in ignored_centers
         ]
-        x, y = (fallback_centers or option_centers)[0]
+        eligible_centers = fallback_centers or option_centers
+        purple_centers = [
+            center
+            for center in eligible_centers
+            if hero_option_is_purple(frame_bgr, center)
+        ]
+        x, y = (purple_centers or eligible_centers)[0]
         return HeroLevelupChoice(x=x, y=y)

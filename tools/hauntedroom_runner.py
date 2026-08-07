@@ -309,7 +309,11 @@ async def main() -> None:
         try:
             page = context.pages[0] if context.pages else await context.new_page()
             await install_profile_popup_guard(page)
-            await page.goto(args.url, wait_until="domcontentloaded")
+            # The game can keep a parser-blocking resource pending long enough for
+            # DOMContentLoaded to exceed Playwright's default 30-second timeout.
+            # The automation uses visual polling, so it only needs the navigation
+            # to be committed before its guards and controllers are started.
+            await page.goto(args.url, wait_until="commit")
             game_core_guard_task = asyncio.create_task(
                 install_game_core_frame_guard_after_delay(page)
             )
