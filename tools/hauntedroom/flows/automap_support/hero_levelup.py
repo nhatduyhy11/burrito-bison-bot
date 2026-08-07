@@ -25,10 +25,11 @@ HERO_OPTION_MIN_SATURATION = 80
 HERO_OPTION_MIN_VALUE = 40
 HERO_OPTION_COLUMN_COVERAGE = 0.75
 HERO_OPTION_MIN_WIDTH = 80
+HERO_OPTION_MAX_COLUMN_GAP = 3
 HERO_OPTION_COLOR_TOP = 610
 HERO_OPTION_COLOR_BOTTOM = 655
-HERO_OPTION_COLOR_LEFT_OFFSET = -55
-HERO_OPTION_COLOR_RIGHT_OFFSET = -43
+HERO_OPTION_COLOR_LEFT_OFFSET = 43
+HERO_OPTION_COLOR_RIGHT_OFFSET = 55
 HERO_OPTION_PURPLE_HUE_MIN = 130
 HERO_OPTION_PURPLE_HUE_MAX = 150
 HERO_ASCEND_TEMPLATE_NAME = "00_hero_ascend.png"
@@ -70,6 +71,7 @@ class HeroLevelupChoice:
     # TEMP FALLBACK TRACKING: remove this field together with the temporary
     # screenshot branch in AutomapFlow.hero_levelup after fallback is verified.
     fallback_color: Optional[str] = None
+    fallback_option_count: Optional[int] = None
 
     @property
     def is_prioritized(self) -> bool:
@@ -95,6 +97,20 @@ def find_hero_option_centers(frame_bgr: np.ndarray) -> list[tuple[int, int]]:
         np.mean(saturated, axis=0) >= HERO_OPTION_COLUMN_COVERAGE
     )
 
+    # Text/effects can cut a very narrow vertical gap through an otherwise
+    # solid card panel. Bridge those gaps before measuring the minimum card
+    # width, while leaving the much wider spacing between cards untouched.
+    inactive = ~active_columns
+    gap_start: Optional[int] = None
+    for x, is_inactive in enumerate(np.append(inactive, False)):
+        if is_inactive and gap_start is None:
+            gap_start = x
+        elif not is_inactive and gap_start is not None:
+            is_bounded = gap_start > 0 and x < active_columns.size
+            if is_bounded and x - gap_start <= HERO_OPTION_MAX_COLUMN_GAP:
+                active_columns[gap_start:x] = True
+            gap_start = None
+
     runs: list[tuple[int, int]] = []
     run_start: Optional[int] = None
     for x, active in enumerate(np.append(active_columns, False)):
@@ -113,7 +129,7 @@ def hero_option_is_purple(
     frame_bgr: np.ndarray,
     center: tuple[int, int],
 ) -> bool:
-    """Classify a card from the stable solid strip on its lower-left edge."""
+    """Classify a card from the stable solid strip on its lower-right edge."""
     if frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
         return False
 
@@ -247,4 +263,9 @@ class HeroLevelupMatcher:
         # TEMP FALLBACK TRACKING: expose whether purple detection succeeded so
         # the flow can capture only the no-priority + no-purple cases.
         fallback_color = "purple" if purple_centers else "other"
-        return HeroLevelupChoice(x=x, y=y, fallback_color=fallback_color)
+        return HeroLevelupChoice(
+            x=x,
+            y=y,
+            fallback_color=fallback_color,
+            fallback_option_count=len(option_centers),
+        )

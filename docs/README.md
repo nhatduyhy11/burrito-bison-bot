@@ -7,8 +7,8 @@ Runner Playwright dùng OpenCV template matching để tìm và click các nút 
 
 Tài liệu liên quan:
 
-- [Business core: logic flow `Shift+2`](SHIFT2_AUTOMAP_FLOW.md)
-- [Flow `Shift+3`: start-auto loop](SHIFT3_START_AUTOMAP_LOOP.md)
+- [Auto-map flows: `Shift+2` và `Shift+3`](AUTOMAP_FLOWS.md)
+- [Hero level-up selection assets](../tools/rooms/automap/hero_levelup/README.md)
 - [Testing](TESTING.md)
 - [ADR cấu trúc `core / actions / flows`](ADR_bot.md)
 - [Refactor review](REFACTOR.md)
@@ -83,8 +83,8 @@ File action là một JSON array. Runner chạy tuần tự toàn bộ array r�
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
-- `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [logic flow `Shift+2`](SHIFT2_AUTOMAP_FLOW.md) để biết priority, điều kiện và hành vi của từng phase.
-- `Shift+3`: khi idle, bắt đầu loop start room → auto-map → chờ 2 giây → start map tiếp theo. Khi loop đang chạy, bấm lại để pause; bấm lần nữa để resume đúng state hiện tại. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [flow `Shift+3`](SHIFT3_START_AUTOMAP_LOOP.md).
+- `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [tài liệu auto-map](AUTOMAP_FLOWS.md) để biết priority, điều kiện và hành vi của từng phase.
+- `Shift+3`: khi idle, bắt đầu loop start room → auto-map → chờ 2 giây → start map tiếp theo. Khi loop đang chạy, bấm lại để pause; bấm lần nữa để resume đúng state hiện tại. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [tài liệu auto-map](AUTOMAP_FLOWS.md).
 - `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.

@@ -37,16 +37,19 @@ nguy cơ không match trên phiên bản server Trung Quốc dù bố cục game
   `tools/hauntedroom/flows/automap.py`.
 - Các template hero được tự động load từ
   `tools/rooms/automap/hero_levelup/` bởi
-  `tools/hauntedroom/flows/automap_support/hero_levelup.py`.
+  `tools/hauntedroom/flows/automap_support/hero_levelup.py`. Xem
+  [hero level-up selection](../tools/rooms/automap/hero_levelup/README.md) để
+  biết thứ tự priority, threshold và fallback hiện hành.
 - Hai trạng thái research được khai báo trong
   `tools/hauntedroom/flows/research.py`.
 
 ## Ghi chú riêng cho hero level-up
 
 Đây là khu vực phụ thuộc chữ nhiều nhất, nhưng nếu tên hero/item không match thì
-flow hiện tại không bị treo ngay. Code fallback sang card nhìn thấy đầu tiên dựa
-trên vùng panel màu. Vì vậy bản Trung Quốc vẫn có khả năng chọn được một option,
-nhưng mất toàn bộ thứ tự ưu tiên hero/item.
+flow hiện tại không bị treo ngay. Code fallback tìm card từ panel màu, ưu tiên
+card tím rồi mới chọn card hợp lệ đầu tiên. Vì vậy bản Trung Quốc vẫn có khả
+năng chọn được một option, nhưng mất thứ tự ưu tiên chi tiết từ các template
+hero/item.
 
 `00_hero_ascend.png` không bắt chữ. Template này bắt góc cyan ổn định của card
 nên có khả năng dùng xuyên ngôn ngữ.

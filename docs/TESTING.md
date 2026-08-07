@@ -31,6 +31,7 @@ uv run python -m unittest tests.test_hauntedroom_vision -v
 uv run python -m unittest tests.actions.test_runner -v
 uv run python -m unittest tests.automap.test_boss -v
 uv run python -m unittest tests.hero_select.test_hero_select -v
+uv run python -m unittest tests.hero_select.test_hero_fallback -v
 uv run python -m unittest tests.research.test_research_flow -v
 ```
 
@@ -49,14 +50,18 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
 - `automap/`: boss, build, level-up, map-end và orchestration của `Shift+2`.
 - `control_events/`: blocker ngoài normal flow, gồm profile new-tab guard và
   game-core iframe CSS guard có startup delay.
-- `hero_select/test_hero_select.py`: nhận diện, priority, fallback và interaction
-  của popup chọn hero.
+- `hero_select/test_hero_select.py`: template priority, ascend và interaction
+  mở/chọn option của popup hero level-up.
+- `hero_select/test_hero_fallback.py`: nhận diện layout 1/2/3 card, màu tím,
+  priority `99`, regression ảnh từng fallback sai và điều kiện capture tracking.
+  Asset và selection contract được mô tả tại
+  [`tools/rooms/automap/hero_levelup/README.md`](../tools/rooms/automap/hero_levelup/README.md).
 - `research/`: polling và interaction của flow research.
 - `runner/`: standby controller, hotkey, live capture và dev reload.
 - `tests/fixtures/`: screenshot cố định cho các test nhận diện ảnh.
 
 Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
-[`SHIFT2_AUTOMAP_FLOW.md`](SHIFT2_AUTOMAP_FLOW.md).
+[`AUTOMAP_FLOWS.md`](AUTOMAP_FLOWS.md).
 
 ## Fixture ảnh
 

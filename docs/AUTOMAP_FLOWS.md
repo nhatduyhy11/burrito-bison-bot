@@ -1,22 +1,33 @@
-# Business core: logic flow `Shift+2`
+# Auto-map flows: `Shift+2` và `Shift+3`
 
-`Shift+2` kích hoạt auto-map battle và là business core của Haunted Room runner.
-Tài liệu này là nguồn mô tả chính cho thứ tự ưu tiên, điều kiện và kết quả của
-flow; README chỉ giới thiệu và dẫn tới đây.
+`Shift+2` chạy business core auto-map cho một trận. `Shift+3` không có một
+implementation auto-map riêng; nó là wrapper tự vào trận, gọi cùng business
+core, chờ cooldown rồi lặp sang map tiếp theo. Tài liệu này là nguồn mô tả chính
+cho thứ tự ưu tiên, điều kiện và kết quả của cả hai flow.
 
-## Điều kiện bắt đầu và kết thúc
+| Hành vi | `Shift+2` | `Shift+3` |
+|---|---|---|
+| Vào room và bắt đầu trận | Người dùng thực hiện trước | Tự chạy prefix action của `Shift+1` |
+| Auto-map trong trận | Chạy `run_automap_flow()` một lần | Gọi cùng `run_automap_flow()` trong mỗi loop |
+| Pause/resume bằng `Shift+3` | Không | Có |
+| Cooldown giữa map | Không | 2 giây |
+| Đếm win xuyên nhiều map | Không | Có |
+| Handoff đặc biệt ở loop 3 | Không | Có nếu hai loop đầu chưa ghi nhận win |
 
-Trước khi bấm `Shift+2`, người dùng đã vào map và bấm `start_battle` thủ công.
-Flow chụp viewport liên tục, chạy các handler theo priority và chỉ xử lý tình
-huống đầu tiên match trong mỗi vòng quét.
+## Business core dùng chung
 
-Flow kết thúc khi:
+Trước khi core bắt đầu, trận đã được khởi động: người dùng làm thủ công khi dùng
+`Shift+2`, còn wrapper của `Shift+3` tự chạy các entry action. Core chụp viewport
+liên tục, chạy các handler theo priority và chỉ xử lý tình huống đầu tiên match
+trong mỗi vòng quét.
+
+Core kết thúc khi:
 
 - map hoàn tất và màn hình home đã sẵn sàng;
 - boss vào vùng critical, bot handoff để người dùng xử lý thủ công; hoặc
 - người dùng bấm `Shift+0` để dừng mềm và đưa runner về idle.
 
-## Priority loop
+### Priority loop
 
 ```text
 capture viewport
@@ -35,8 +46,6 @@ capture viewport
 
 Priority là contract của flow. Handler ở trên được quyền preempt handler ở dưới;
 khi thêm tình huống mới phải xác định rõ vị trí của nó trong danh sách này.
-
-## Business rule theo phase
 
 ### 1. Level-spin interrupt
 
@@ -124,6 +133,9 @@ thành công hoặc nhận `stop_event`.
 
 ### 6. Hero level-up
 
+Danh sách asset, thứ tự sort, threshold và chi tiết fallback được giữ tại
+[`tools/rooms/automap/hero_levelup/README.md`](../tools/rooms/automap/hero_levelup/README.md).
+
 - Nếu popup chưa mở nhưng detector thấy vùng level-up sẵn sàng, click
   `(320, 640)` và poll tối đa 10 lần, mỗi lần `200 ms`.
 - Chỉ tìm template hero từ `y=460` trở xuống.
@@ -138,8 +150,48 @@ thành công hoặc nhận `stop_event`.
   - `04`: Đinh Ba Sấm Sét.
 - Template `99_*.png` đánh dấu card nên bỏ qua, ví dụ card tăng sao. Card này bị
   loại khỏi fallback khi còn lựa chọn khác.
-- Nếu không template ưu tiên nào match, detector tìm layout 3, 2 hoặc 1 card và
-  click card visible đầu tiên còn hợp lệ.
+- Nếu không template ưu tiên nào match, detector tìm layout 3, 2 hoặc 1 card từ
+  panel màu phía dưới. Các khe nhiễu dọc rộng tối đa `3 px` được nối trước khi
+  đo chiều rộng để không làm mất card.
+- Detector đọc hue từ strip background sạch ở cạnh phải phía dưới mỗi card.
+  Card có median hue trong khoảng `130..150` được phân loại là tím.
+- Fallback chọn card tím hợp lệ đầu tiên; nếu không có card tím mới chọn card
+  hợp lệ đầu tiên. Card priority `99` chỉ được dùng khi không còn lựa chọn khác.
+
+## `Shift+2`: chạy một map
+
+`Shift+2` gọi thẳng `run_automap_flow()`. Người dùng phải vào map và bấm
+`start_battle` trước khi kích hoạt hotkey. Khi core hoàn tất hoặc dừng, runner
+trở về idle và không tự bắt đầu map tiếp theo.
+
+## `Shift+3`: start-auto loop
+
+Khi runner idle, `Shift+3` bắt đầu chạy nhiều map liên tiếp. Trong lúc flow đang
+chạy, bấm lại `Shift+3` để pause và bấm lần nữa để resume đúng state hiện tại;
+flow không restart từ đầu. Khi đang chạy hoặc pause, `Shift+0` dừng hẳn flow.
+
+Mỗi vòng chạy theo thứ tự:
+
+1. Tái sử dụng các action của flow `Shift+1` từ đầu tới hết action click
+   `start_battle.png`; các action exit không được chạy. Entry actions được thử
+   tối đa 2 lần khi timeout và dừng ngay sau lần đầu tiên hoàn thành thành công.
+2. Gọi `run_automap_flow()` để chạy trọn một lượt business core giống `Shift+2`.
+3. Kiểm tra map có thất bại hay không.
+4. Nếu chưa thất bại, chờ 2 giây rồi bắt đầu vòng tiếp theo.
+
+Flow giữ `win_count` trong suốt một lần chạy `Shift+3`. Khi auto-map nhận diện
+`win_reward.png` lần đầu tiên trong màn reward của một map, `win_count` tăng 1;
+các reward còn lại trong cùng màn không làm tăng thêm count. Ngay trước log hoàn
+thành auto-map, flow in tổng hiện tại theo format `>>> [total_win] win`.
+
+Nếu hai loop đầu tiên kết thúc mà `win_count` vẫn bằng 0, loop thứ 3 bật chế độ
+handoff. Ngay khi detector thấy thanh HP của bất kỳ boss nào, bot click nút
+pause, dừng start-auto loop và trả quyền xử lý cho người dùng. Nếu đã có ít nhất
+một win thì loop thứ 3 tiếp tục auto-map bình thường.
+
+Trước log cooldown giữa hai map có một dòng gạch ngang để phân cách log. Detector
+thất bại hiện là placeholder `map_was_lost()` và luôn trả về `False`; vì vậy flow
+hiện chỉ kết thúc khi bị dừng, auto-map không hoàn tất hoặc có lỗi.
 
 ## Hot-reload khi phát triển
 
@@ -149,17 +201,18 @@ Chạy runner với:
 uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 
-Vòng lặp phát triển là `Shift+0` → sửa code/template → `Shift+2`. Runner reload
-`core.vision`, các module `flows.automap_support`, rồi `flows.automap` trong khi
-giữ nguyên browser và session. Nếu reload lỗi syntax/import, runner vẫn mở ở
-trạng thái idle để có thể sửa và thử lại.
+Vòng lặp phát triển là `Shift+0` → sửa code/template → `Shift+2` hoặc `Shift+3`.
+Runner reload `core.vision`, các module `flows.automap_support`, rồi
+`flows.automap` trong khi giữ nguyên browser và session. Nếu reload lỗi
+syntax/import, runner vẫn mở ở trạng thái idle để có thể sửa và thử lại.
 
 ## Vị trí code và test
 
-- Orchestrator: `tools/hauntedroom/flows/automap.py`.
+- Auto-map core: `tools/hauntedroom/flows/automap.py`.
+- Wrapper `Shift+3` và hotkey controller: `tools/hauntedroom_runner.py`.
 - Detector và rule hỗ trợ: `tools/hauntedroom/flows/automap_support/`.
 - Template: `tools/rooms/automap/` và `tools/rooms/boss/`.
-- Regression test: `tests/automap/`, `tests/hero_select/` và fixture trong
-  `tests/fixtures/`.
+- Regression test: `tests/automap/`, `tests/hero_select/`, `tests/runner/` và
+  fixture trong `tests/fixtures/`.
 
 Xem [TESTING.md](TESTING.md) để biết lệnh chạy test.

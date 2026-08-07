@@ -67,8 +67,8 @@ import `actions`, `flows` hay entrypoint.
 Validation liên quan schema action, bao gồm `validate_threshold`, nằm trong
 `actions/loader.py`; `core/vision.py` không biết raw action dictionary.
 
-Chi tiết business rule và thứ tự xử lý của auto-map được giữ riêng tại
-[`SHIFT2_AUTOMAP_FLOW.md`](SHIFT2_AUTOMAP_FLOW.md).
+Chi tiết business rule và thứ tự xử lý của `Shift+2`/`Shift+3` được giữ riêng
+tại [`AUTOMAP_FLOWS.md`](AUTOMAP_FLOWS.md).
 
 ## Dependency rule
 

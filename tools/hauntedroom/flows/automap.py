@@ -362,22 +362,18 @@ class AutomapFlow:
             return True
 
         if choice is not None:
-            # TEMP FALLBACK TRACKING: remove this first branch once the purple
-            # fallback has enough live evidence. Screenshot failure is already
-            # non-fatal, and selection continues normally below.
-            if choice.fallback_color == "other":
+            # TEMP FALLBACK TRACKING: capture only a complete three-card layout
+            # with no purple option. Partial layouts are expected while cards
+            # animate in and are not useful tracking evidence.
+            if (
+                choice.fallback_color == "other"
+                and choice.fallback_option_count == 3
+            ):
                 await save_screenshot(
                     self.page,
                     "no-priority-no-purple-hero-option",
                     HERO_FALLBACK_SCREENSHOT_DIR,
                     "Hero fallback tracking",
-                )
-            elif self.config.debug:
-                await save_screenshot(
-                    self.page,
-                    "no-prioritized-hero-option",
-                    HERO_FALLBACK_SCREENSHOT_DIR,
-                    "Hero fallback",
                 )
             print(
                 f"No prioritized hero option matched; clicking visible fallback "
