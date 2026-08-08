@@ -44,25 +44,25 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertTrue(control.is_set())
         self.assertFalse(control.is_paused)
 
+    @patch("hauntedroom_runner.reload_action_modules")
     @patch("hauntedroom_runner.importlib.reload")
-    @patch("hauntedroom_runner.importlib.invalidate_caches")
-    def test_dev_reload_refreshes_vision_before_automap(
-        self, invalidate_caches, reload_module
+    def test_dev_reload_refreshes_support_modules_before_automap(
+        self, reload_module, reload_action_modules
     ):
-        from hauntedroom.core import vision
         from hauntedroom.flows import automap
         from hauntedroom.flows.automap_support import (
             boss_action,
             detectors as automap_detectors,
+            gear_action,
             hero_levelup,
         )
 
         refreshed_flow = Mock()
         refreshed_automap = Mock(run_automap_flow=refreshed_flow)
         reload_module.side_effect = [
-            vision,
             automap_detectors,
             boss_action,
+            gear_action,
             hero_levelup,
             refreshed_automap,
         ]
@@ -70,13 +70,13 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         result = get_automap_flow(dev_reload=True)
 
         self.assertIs(result, refreshed_flow)
-        invalidate_caches.assert_called_once_with()
+        reload_action_modules.assert_called_once_with()
         self.assertEqual(
             reload_module.call_args_list,
             [
-                call(vision),
                 call(automap_detectors),
                 call(boss_action),
+                call(gear_action),
                 call(hero_levelup),
                 call(automap),
             ],
@@ -120,6 +120,48 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             await run_standby_controller(page, [], dev_reload=False)
 
         save_live_screenshot.assert_awaited_once_with(page)
+
+    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom_runner.load_actions")
+    @patch("hauntedroom_runner.get_action_runner")
+    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    async def test_dev_reload_reloads_actions_file_before_shift_1(
+        self,
+        start_hotkey_listener,
+        get_action_runner,
+        load_actions,
+        save_live_screenshot,
+    ):
+        page = Mock()
+        original_actions = [{"type": "old-action"}]
+        reloaded_actions = [{"type": "new-action"}]
+        action_runner = AsyncMock(return_value=True)
+        get_action_runner.return_value = action_runner
+        load_actions.return_value = reloaded_actions
+
+        async def enqueue_commands(_page, command_queue):
+            command_queue.put_nowait("1")
+            command_queue.put_nowait("8")
+
+        start_hotkey_listener.side_effect = enqueue_commands
+        save_live_screenshot.side_effect = RuntimeError("stop test loop")
+
+        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+            await run_standby_controller(
+                page,
+                original_actions,
+                dev_reload=True,
+                actions_path=Path("tools/hauntedroom_actions.sample.json"),
+            )
+
+        get_action_runner.assert_called_once_with(True)
+        load_actions.assert_called_once_with(Path("tools/hauntedroom_actions.sample.json"))
+        action_runner.assert_awaited_once_with(
+            page,
+            reloaded_actions,
+            loop_count=None,
+            stop_event=action_runner.await_args.kwargs["stop_event"],
+        )
 
     @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom_runner.run_start_automap_loop", new_callable=AsyncMock)

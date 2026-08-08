@@ -42,7 +42,7 @@ Khi đang phát triển auto-map, bật hot-reload để giữ nguyên browser v
 uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 
-Sau khi sửa `hauntedroom/flows/automap.py`, module trong `hauntedroom/flows/automap_support/`, `hauntedroom/core/vision.py` hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi `Shift+2` hoặc `Shift+3` để reload và chạy code mới. Nếu reload lỗi syntax/import, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
+Sau khi sửa code flow/action, action JSON hoặc template PNG, bấm `Shift+0` để dừng flow cũ rồi bấm hotkey bắt đầu lại. Dev reload giữ nguyên browser/session, nhưng reload module Python liên quan tới flow mới và reload action JSON trước `Shift+1` hoặc `Shift+3`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở và ở trạng thái idle để sửa file rồi thử lại.
 
 Với `ACTION_LOOP_COUNT = 0`, standby đã tự giữ browser mở cho tới khi bấm `Ctrl+C`, vì vậy không cần thêm `--keep-open` vào lệnh hot-reload. `--keep-open` chỉ có tác dụng khi cấu hình `ACTION_LOOP_COUNT` lớn hơn `0`.
 
@@ -67,7 +67,7 @@ Các tùy chọn thường dùng:
 - `--width` và `--height`: thay đổi viewport; mặc định hiện tại là `640x720`.
 - `--profile`: thay đổi thư mục browser profile.
 - `--url`: thay đổi URL đích.
-- `--dev-reload`: reload module auto-map và vision mỗi lần bắt đầu `Shift+2` hoặc `Shift+3`; dùng cho vòng lặp debug `Shift+0` → sửa code/template → bắt đầu lại flow.
+- `--dev-reload`: reload module Python liên quan mỗi lần bắt đầu flow (`Shift+1`, `Shift+2`, `Shift+3`, `Shift+7`, `Shift+9`); với `Shift+1` và `Shift+3` cũng reload action JSON. Dùng cho vòng lặp debug `Shift+0` → sửa code/template/action → bắt đầu lại flow.
 - `--keep-open`: chỉ giữ browser sau khi action hoàn tất khi `ACTION_LOOP_COUNT > 0`; không cần trong standby mặc định.
 
 Xem toàn bộ tùy chọn:
@@ -144,7 +144,7 @@ bên trong iframe, không dùng `MutationObserver`/`postMessage`, và không tha
 - `threshold`: mặc định `0.9`.
 - `timeout_ms`: thời gian tối đa chờ ảnh, mặc định `30000`.
 - `poll_ms`: khoảng nghỉ giữa các lần detect, mặc định `600`.
-- `delay_ms`: thời gian chờ trước mỗi click, gồm cả click đầu sau detect và các click liên tiếp; mặc định `500`.
+- `delay_ms`: thời gian chờ trước mỗi click, gồm cả click đầu sau detect và các click liên tiếp; mặc định `400`.
 - `click_count`: số lần click template tối đa sau khi detect, mặc định `1`.
 - `recheck_before_repeat`: khi là `true`, chụp và detect lại template trước mỗi
   click lặp; dừng các click còn lại ngay khi template biến mất.

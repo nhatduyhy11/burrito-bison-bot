@@ -1,11 +1,16 @@
 import asyncio
 import importlib
 from pathlib import Path
+from typing import Optional
 
 from playwright.async_api import async_playwright
 
+from hauntedroom.actions import loader as actions_loader
+from hauntedroom.actions import runner as actions_runner
 from hauntedroom.actions.loader import load_actions
 from hauntedroom.actions.runner import run_actions
+from hauntedroom.control_events import blockers as control_blockers
+from hauntedroom.control_events import new_tab_blocker
 from hauntedroom.control_events.new_tab_blocker import (
     install_game_core_frame_guard_after_delay,
     install_profile_popup_guard,
@@ -23,9 +28,12 @@ from hauntedroom.core.runtime import (
     wait_for_ctrl_c,
 )
 from hauntedroom.flows import automap
+from hauntedroom.flows import click_loop
+from hauntedroom.flows import research
 from hauntedroom.flows.automap_support import (
     boss_action,
     detectors as automap_detectors,
+    gear_action,
     hero_levelup,
 )
 from hauntedroom.flows.click_loop import run_click_loop
@@ -55,6 +63,55 @@ def get_start_battle_actions(actions: list[dict]) -> list[dict]:
 async def map_was_lost(page) -> bool:
     """Placeholder for the future map-loss detector."""
     return False
+
+
+def reload_action_modules():
+    """Reload modules used by JSON action flows and refresh imported callables."""
+    global load_actions, run_actions
+
+    importlib.invalidate_caches()
+    importlib.reload(vision)
+    importlib.reload(new_tab_blocker)
+    importlib.reload(control_blockers)
+    reloaded_loader = importlib.reload(actions_loader)
+    reloaded_runner = importlib.reload(actions_runner)
+    load_actions = reloaded_loader.load_actions
+    run_actions = reloaded_runner.run_actions
+    print("Action support modules reloaded.", flush=True)
+    return run_actions
+
+
+def get_action_runner(dev_reload: bool = False):
+    if not dev_reload:
+        return run_actions
+    return reload_action_modules()
+
+
+def get_click_loop_flow(dev_reload: bool = False):
+    global run_click_loop
+
+    if not dev_reload:
+        return run_click_loop
+
+    importlib.invalidate_caches()
+    reloaded_click_loop = importlib.reload(click_loop)
+    run_click_loop = reloaded_click_loop.run_click_loop
+    print("Click-loop module reloaded.", flush=True)
+    return run_click_loop
+
+
+def get_research_flow(dev_reload: bool = False):
+    global run_research_flow
+
+    if not dev_reload:
+        return run_research_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(vision)
+    reloaded_research = importlib.reload(research)
+    run_research_flow = reloaded_research.run_research_flow
+    print("Research modules reloaded.", flush=True)
+    return run_research_flow
 
 
 async def run_start_automap_loop(
@@ -132,10 +189,10 @@ def get_automap_flow(dev_reload: bool = False):
     if not dev_reload:
         return automap.run_automap_flow
 
-    importlib.invalidate_caches()
-    importlib.reload(vision)
+    reload_action_modules()
     importlib.reload(automap_detectors)
     importlib.reload(boss_action)
+    importlib.reload(gear_action)
     importlib.reload(hero_levelup)
     reloaded_automap = importlib.reload(automap)
     print("Auto-map support modules reloaded.", flush=True)
@@ -147,6 +204,7 @@ async def run_standby_controller(
     actions: list[dict],
     dev_reload: bool = False,
     debug: bool = False,
+    actions_path: Optional[Path] = None,
 ) -> None:
     command_queue: asyncio.Queue[str] = asyncio.Queue()
     await start_hotkey_listener(page, command_queue)
@@ -242,23 +300,38 @@ async def run_standby_controller(
                 )
                 continue
 
+            action_runner = run_actions
             automap_flow = None
-            if command in {"2", "3"}:
-                try:
+            click_loop_flow = run_click_loop
+            research_flow = run_research_flow
+            try:
+                if command == "1":
+                    action_runner = get_action_runner(dev_reload)
+                elif command in {"2", "3"}:
                     automap_flow = get_automap_flow(dev_reload)
-                except Exception as error:
-                    print(
-                        f"Auto-map reload failed; runner remains idle: {error}",
-                        flush=True,
-                    )
-                    continue
+                elif command == "7":
+                    click_loop_flow = get_click_loop_flow(dev_reload)
+                elif command == "9":
+                    research_flow = get_research_flow(dev_reload)
+
+                if dev_reload and command in {"1", "3"} and actions_path is not None:
+                    actions = load_actions(actions_path)
+                    print(f"Actions reloaded from {actions_path}.", flush=True)
+            except Exception as error:
+                print(f"Dev reload failed; runner remains idle: {error}", flush=True)
+                continue
 
             stop_event = FlowControl() if command == "3" else asyncio.Event()
             current_command = command
             print(f"Starting {command_names[command]} flow...", flush=True)
             if command == "1":
                 flow_task = asyncio.create_task(
-                    run_actions(page, actions, loop_count=None, stop_event=stop_event)
+                    action_runner(
+                        page,
+                        actions,
+                        loop_count=None,
+                        stop_event=stop_event,
+                    )
                 )
             elif command == "2":
                 flow_task = asyncio.create_task(
@@ -279,9 +352,9 @@ async def run_standby_controller(
                     )
                 )
             elif command == "7":
-                flow_task = asyncio.create_task(run_click_loop(page, stop_event))
+                flow_task = asyncio.create_task(click_loop_flow(page, stop_event))
             else:
-                flow_task = asyncio.create_task(run_research_flow(page, stop_event))
+                flow_task = asyncio.create_task(research_flow(page, stop_event))
     finally:
         command_task.cancel()
         await asyncio.gather(command_task, return_exceptions=True)
@@ -325,6 +398,7 @@ async def main() -> None:
                     actions,
                     args.dev_reload,
                     args.debug,
+                    Path(args.actions),
                 )
             else:
                 await run_actions(page, actions)

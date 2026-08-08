@@ -136,9 +136,11 @@ dùng action JSON và chạy độc lập trong `flows`.
 
 ## Hot-reload
 
-`Shift+2` trong dev mode reload `core.vision` trước, sau đó reload
-`flows.automap`. Reload theo thứ tự này giúp automap bind các function vision mới
-trong khi browser và session hiện tại vẫn được giữ nguyên.
+Dev mode reload module Python trước khi bắt đầu flow mới, trong khi browser và
+session hiện tại vẫn được giữ nguyên. `Shift+2`/`Shift+3` reload `core.vision`,
+action support, `flows.automap_support` rồi `flows.automap` để các import
+by-value bind lại function/constant mới. `Shift+1`/`Shift+3` cũng load lại action
+JSON trước khi chạy.
 
 ## Hệ quả
 
