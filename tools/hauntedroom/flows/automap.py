@@ -65,7 +65,6 @@ from hauntedroom.flows.automap_support.map_completion import (
     WIN_REWARD_FOLLOWUP_CLICK,
     WIN_REWARD_RECHECK_MS,
     WIN_REWARD_TEMPLATE_THRESHOLD,
-    find_start_home as _find_start_home,
     finish_map_from_home as _finish_map_from_home,
 )
 from hauntedroom.flows.automap_support.upgrade_action import (
@@ -162,17 +161,6 @@ class AutomapFlow:
         self.initial_gear_unlocked = False
         self.initial_gear_attempted = False
         self.initial_gear_placed = False
-
-    def find_start_home(
-        self,
-        frame_gray: np.ndarray,
-    ) -> tuple[int, int, float, Path]:
-        return _find_start_home(
-            frame_gray,
-            self.start_home_template,
-            self.config.start_home_template_path,
-            find_template,
-        )
 
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
         return await _click_level_spin_if_present(

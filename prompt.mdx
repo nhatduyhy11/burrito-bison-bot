@@ -30,3 +30,32 @@ document.head.appendChild(
 ```
 
 https://h5sdk.joynetgame.com/index.html
+
+## Python line-count audit
+
+List top 10 test Python files over 100 lines:
+
+```bash
+find ./tests -type f -name '*.py' \
+  ! -path '*/__pycache__/*' \
+  -exec wc -l {} + |
+  sort -nr |
+  awk '$1 > 100 && $2 != "total" { printf "%4d %s\n", $1, $2 }' |
+  head -10
+```
+
+List top 15 non-test Python files over 100 lines:
+
+```bash
+find . -type f -name '*.py' \
+  ! -path './.git/*' \
+  ! -path './.venv/*' \
+  ! -path './__pycache__/*' \
+  ! -path '*/__pycache__/*' \
+  ! -path './tests/*' \
+  ! -path './ref_cv/tests/*' \
+  -exec wc -l {} + |
+  sort -nr |
+  awk '$1 > 100 && $2 != "total" { printf "%4d %s\n", $1, $2 }' |
+  head -15
+```

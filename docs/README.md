@@ -211,7 +211,14 @@ Wait dài có countdown; ngưỡng countdown và số vòng lặp được cấu
 
 ## Testing
 
-Xem [TESTING.md](TESTING.md) để biết cách chạy test suite, chạy từng nhóm test và quản lý fixture.
+Project root chạy test bằng `unittest` trong Python standard library, qua môi
+trường `uv`; không dùng pytest cho lệnh test chính.
+
+```shell
+uv run python -m unittest discover -s tests -v
+```
+
+Xem [TESTING.md](TESTING.md) để biết cách chạy từng nhóm test và quản lý fixture.
 
 ### Test fixtures
 
