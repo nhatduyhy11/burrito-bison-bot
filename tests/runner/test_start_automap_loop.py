@@ -104,14 +104,12 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
                 call(
                     page,
                     stop_event,
-                    pause_on_any_boss=False,
                     debug=False,
                     on_win=ANY,
                 ),
                 call(
                     page,
                     stop_event,
-                    pause_on_any_boss=False,
                     debug=False,
                     on_win=ANY,
                 ),
@@ -165,7 +163,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         new_callable=AsyncMock,
         return_value=True,
     )
-    async def test_third_loop_pauses_on_any_boss_when_no_win_was_recorded(
+    async def test_start_loop_does_not_override_click_exit_on_boss_setting(
         self,
         _run_actions,
         _map_was_lost,
@@ -181,10 +179,9 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(completed)
-        self.assertEqual(
-            [call_args.kwargs["pause_on_any_boss"] for call_args in automap_flow.await_args_list],
-            [False, False, True],
-        )
+        self.assertNotIn("click_exit_on_boss", automap_flow.await_args_list[0].kwargs)
+        self.assertNotIn("click_exit_on_boss", automap_flow.await_args_list[1].kwargs)
+        self.assertNotIn("click_exit_on_boss", automap_flow.await_args_list[2].kwargs)
 
     @patch(
         "hauntedroom_runner.wait_with_countdown",
@@ -224,7 +221,6 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(completed)
-        self.assertEqual(
-            [call_args.kwargs["pause_on_any_boss"] for call_args in automap_flow.await_args_list],
-            [False, False, False],
-        )
+        self.assertEqual(automap_flow.await_count, 3)
+        for call_args in automap_flow.await_args_list:
+            self.assertNotIn("click_exit_on_boss", call_args.kwargs)

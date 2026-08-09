@@ -32,6 +32,7 @@ async def handle_hero_levelup(
     click_fn,
     wait_for_flow_timeout_fn,
     flow_checkpoint_fn,
+    capture_fallback_screenshots: bool,
 ) -> HeroLevelupOutcome:
     # Option fallback matching intentionally uses a broad saturated-panel
     # heuristic. Never run it on the battle frame: other open panels can
@@ -81,7 +82,8 @@ async def handle_hero_levelup(
         # with no purple option. Partial layouts are expected while cards
         # animate in and are not useful tracking evidence.
         if (
-            choice.fallback_color == "other"
+            capture_fallback_screenshots
+            and choice.fallback_color == "other"
             and choice.fallback_option_count == 3
         ):
             await save_screenshot_fn(

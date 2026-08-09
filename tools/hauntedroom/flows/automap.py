@@ -18,6 +18,10 @@ from hauntedroom.core.template import (
     load_template,
 )
 from hauntedroom.core.vision import capture_page_bgr
+from hauntedroom.settings import (
+    CAPTURE_HERO_FALLBACK_SCREENSHOTS,
+    CLICK_EXIT_ON_BOSS,
+)
 from hauntedroom.flows.automap_support.boss_action import (
     click as _click,
     deploy_boss_pet,
@@ -115,7 +119,8 @@ class AutomapConfig:
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS
-    pause_on_any_boss: bool = False
+    capture_hero_fallback_screenshots: bool = CAPTURE_HERO_FALLBACK_SCREENSHOTS
+    click_exit_on_boss: bool = CLICK_EXIT_ON_BOSS
     debug: bool = False
     on_win: Optional[Callable[[], int]] = None
 
@@ -153,6 +158,7 @@ class AutomapFlow:
         self.total_win: Optional[int] = None
         self.boss_handoff_requested = False
         self.final_boss_pet_deployed = False
+        self.boss_detection_logged = False
         self.initial_gear_unlocked = False
         self.initial_gear_attempted = False
         self.initial_gear_placed = False
@@ -258,6 +264,9 @@ class AutomapFlow:
             click_fn=_click,
             wait_for_flow_timeout_fn=wait_for_flow_timeout,
             flow_checkpoint_fn=flow_checkpoint,
+            capture_fallback_screenshots=(
+                self.config.capture_hero_fallback_screenshots
+            ),
         )
         if outcome.initial_gear_unlocked:
             self.initial_gear_unlocked = True
@@ -296,8 +305,9 @@ class AutomapFlow:
             boss_hp_template=self.boss_hp_template,
             exit_click_template=self.exit_click_template,
             exit_click_template_name=self.config.exit_click_template_path.name,
-            pause_on_any_boss=self.config.pause_on_any_boss,
+            click_exit_on_boss=self.config.click_exit_on_boss,
             final_boss_pet_deployed=self.final_boss_pet_deployed,
+            boss_detection_logged=self.boss_detection_logged,
             find_boss_health_bar_fn=find_boss_health_bar,
             boss_progress_is_full_fn=boss_progress_is_full,
             find_template_fn=find_template,
@@ -308,6 +318,7 @@ class AutomapFlow:
             self.boss_handoff_requested = True
         if outcome.final_boss_pet_deployed is not None:
             self.final_boss_pet_deployed = outcome.final_boss_pet_deployed
+        self.boss_detection_logged = outcome.boss_detection_logged
         return outcome.handled
 
     async def handle_level_up(
@@ -415,7 +426,8 @@ async def run_automap_flow(
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS,
-    pause_on_any_boss: bool = False,
+    capture_hero_fallback_screenshots: bool = CAPTURE_HERO_FALLBACK_SCREENSHOTS,
+    click_exit_on_boss: bool = CLICK_EXIT_ON_BOSS,
     debug: bool = False,
     on_win: Optional[Callable[[], int]] = None,
 ) -> bool:
@@ -432,7 +444,8 @@ async def run_automap_flow(
         start_home_template_path=start_home_template_path,
         exit_click_template_path=exit_click_template_path,
         hero_levelup_template_paths=hero_levelup_template_paths,
-        pause_on_any_boss=pause_on_any_boss,
+        capture_hero_fallback_screenshots=capture_hero_fallback_screenshots,
+        click_exit_on_boss=click_exit_on_boss,
         debug=debug,
         on_win=on_win,
     )

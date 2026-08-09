@@ -61,10 +61,12 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             map_completion,
             upgrade_action,
         )
+        from hauntedroom import settings
 
         refreshed_flow = Mock()
         refreshed_automap = Mock(run_automap_flow=refreshed_flow)
         reload_module.side_effect = [
+            settings,
             boss_detector,
             detectors,
             boss_action,
@@ -84,6 +86,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             reload_module.call_args_list,
             [
+                call(settings),
                 call(boss_detector),
                 call(detectors),
                 call(boss_action),

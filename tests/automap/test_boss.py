@@ -1,7 +1,7 @@
 import asyncio
 import sys
 from pathlib import Path
-from unittest import IsolatedAsyncioTestCase, expectedFailure
+from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock, call, patch
 
 import cv2
@@ -194,7 +194,11 @@ class BossTest(IsolatedAsyncioTestCase):
             "hauntedroom.flows.automap.load_template",
             return_value=np.zeros((2, 2), dtype=np.uint8),
         ):
-            flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+            flow = AutomapFlow(
+                self.page,
+                asyncio.Event(),
+                AutomapConfig(click_exit_on_boss=True),
+            )
 
         with (
             patch(
@@ -222,14 +226,14 @@ class BossTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    async def test_pause_on_any_boss_clicks_pause_and_requests_handoff(
+    async def test_click_exit_on_boss_clicks_pause_and_requests_handoff(
         self,
         _load_template,
     ):
         flow = AutomapFlow(
             self.page,
             asyncio.Event(),
-            AutomapConfig(pause_on_any_boss=True),
+            AutomapConfig(click_exit_on_boss=True),
         )
         with (
             patch(
@@ -254,17 +258,19 @@ class BossTest(IsolatedAsyncioTestCase):
         self.page.mouse.click.assert_awaited_once_with(612, 35)
         self.assertTrue(flow.boss_handoff_requested)
 
-    @expectedFailure
     @patch(
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    async def test_final_boss_clicks_exit_and_requests_flow_handoff(
+    async def test_click_exit_on_boss_pauses_final_boss_before_pet_deploy(
         self,
         _load_template,
     ):
-        """Pending contract while boss click/handoff is disabled in production."""
-        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(click_exit_on_boss=True),
+        )
         with (
             patch(
                 "hauntedroom.flows.automap.find_boss_health_bar",
@@ -278,6 +284,10 @@ class BossTest(IsolatedAsyncioTestCase):
                 "hauntedroom.flows.automap.find_template",
                 return_value=(612, 35, 0.95),
             ),
+            patch(
+                "hauntedroom.flows.automap.deploy_boss_pet",
+                new_callable=AsyncMock,
+            ) as deploy_pet,
         ):
             handled = await flow.handle_boss_critical(
                 np.zeros((720, 640, 3), dtype=np.uint8),
@@ -286,7 +296,53 @@ class BossTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(handled)
         self.page.mouse.click.assert_awaited_once_with(612, 35)
+        deploy_pet.assert_not_awaited()
         self.assertTrue(flow.boss_handoff_requested)
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    async def test_boss_exit_click_can_be_disabled(
+        self,
+        _load_template,
+    ):
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(click_exit_on_boss=False),
+        )
+        with (
+            patch(
+                "hauntedroom.flows.automap.find_boss_health_bar",
+                return_value=(250, 280, 0.90),
+            ),
+            patch(
+                "hauntedroom.flows.automap.boss_progress_is_full",
+                return_value=False,
+            ),
+            patch("hauntedroom.flows.automap.find_template") as find_exit,
+            patch("builtins.print") as print_mock,
+        ):
+            first_handled = await flow.handle_boss_critical(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+            second_handled = await flow.handle_boss_critical(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertFalse(first_handled)
+        self.assertFalse(second_handled)
+        find_exit.assert_not_called()
+        self.page.mouse.click.assert_not_awaited()
+        self.assertFalse(flow.boss_handoff_requested)
+        print_mock.assert_called_once_with(
+            "Mini-boss HP entered upper search region at 250,280, "
+            "score=0.900; click_exit_on_boss=False.",
+            flush=True,
+        )
 
     async def test_progress_is_not_classified_without_an_hp_match(self):
         with patch(

@@ -61,7 +61,7 @@ def prepare_runner(
     parser.add_argument(
         "--debug",
         action="store_true",
-        help="Enable debug artifacts, including hero fallback screenshots.",
+        help="Enable flow debug mode for development.",
     )
     args = parser.parse_args()
 

@@ -238,6 +238,39 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    async def test_hero_fallback_capture_can_be_disabled(
+        self,
+        save_screenshot,
+        capture_page_bgr,
+    ):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "lubu and hanu.png")
+        )
+        capture_page_bgr.return_value = popup
+        initial_frame = self.make_protect_available(np.zeros_like(popup))
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(
+                hero_levelup_template_paths=(),
+                capture_hero_fallback_screenshots=False,
+            ),
+        )
+
+        handled = await flow.hero_levelup(
+            initial_frame,
+            cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertTrue(handled)
+        save_screenshot.assert_not_awaited()
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*HERO_LEVELUP_OPEN_CLICK), call(193, 632)],
+        )
+
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
     async def test_purple_fallback_does_not_save_tracking_screenshot(
         self,
         save_screenshot,

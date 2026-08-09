@@ -16,6 +16,7 @@ from hauntedroom.control_events.new_tab_blocker import (
     install_profile_popup_guard,
 )
 from hauntedroom.core import template, vision
+from hauntedroom import settings
 from hauntedroom.core.cli import prepare_runner
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
@@ -158,17 +159,9 @@ async def run_start_automap_loop(
             "auto-map start.",
             flush=True,
         )
-        pause_on_any_boss = loop_index >= 3 and win_count == 0
-        if pause_on_any_boss:
-            print(
-                "No win recorded in the first two loops; the next boss "
-                "will pause the game and stop the flow.",
-                flush=True,
-            )
         map_completed = await automap_flow(
             page,
             stop_event,
-            pause_on_any_boss=pause_on_any_boss,
             debug=debug,
             on_win=record_win,
         )
@@ -197,6 +190,7 @@ def get_automap_flow(dev_reload: bool = False):
         return automap.run_automap_flow
 
     reload_action_modules()
+    importlib.reload(settings)
     importlib.reload(boss_detector)
     importlib.reload(detectors)
     importlib.reload(boss_action)

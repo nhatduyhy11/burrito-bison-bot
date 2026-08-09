@@ -103,8 +103,14 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
   limitation này; nếu cần phân loại sau này phải thêm stage signal riêng.
 - Không xử lý riêng khoảnh khắc thanh máu cuối cạn và chuyển đen; flow
   chấp nhận edge case này và handoff trong trạng thái boss thông thường còn thanh máu.
-- Khi `rooms/exit_click.png` sẵn sàng, click đúng một lần rồi dừng auto-map để
-  người dùng xử lý boss thủ công.
+- Khi `CLICK_EXIT_ON_BOSS=True` trong `tools/hauntedroom/settings.py` và
+  `rooms/exit_click.png` sẵn sàng, click đúng một lần rồi dừng auto-map để
+  người dùng xử lý boss thủ công. Click này chỉ pause game; flow không bấm
+  `exit_confirm`.
+- Boss detection log loại boss, vị trí và score một lần khi thanh HP đi vào vùng
+  search; log này không lặp theo từng frame trong cùng một lần HP hiện diện. Khi
+  `CLICK_EXIT_ON_BOSS=False`, mini-boss chỉ log/no-op; final boss vẫn đi qua
+  nhánh deploy pet nếu pet chưa được deploy trong flow hiện tại.
 - Logic nhận diện và action boss hỗ trợ nằm trong
   `flows/automap_support/boss_detector.py` và `boss_action.py`.
 
@@ -200,11 +206,8 @@ Flow giữ `win_count` trong suốt một lần chạy `Shift+3`. Khi auto-map n
 `win_reward.png` lần đầu tiên trong màn reward của một map, `win_count` tăng 1;
 các reward còn lại trong cùng màn không làm tăng thêm count. Ngay trước log hoàn
 thành auto-map, flow in tổng hiện tại theo format `>>> [total_win] win`.
-
-Nếu hai loop đầu tiên kết thúc mà `win_count` vẫn bằng 0, loop thứ 3 bật chế độ
-handoff. Ngay khi detector thấy thanh HP của bất kỳ boss nào, bot click nút
-pause, dừng start-auto loop và trả quyền xử lý cho người dùng. Nếu đã có ít nhất
-một win thì loop thứ 3 tiếp tục auto-map bình thường.
+Boss handoff không bị runner tự override theo số loop; muốn click nút pause/menu
+khi gặp boss thì bật `CLICK_EXIT_ON_BOSS` trong `tools/hauntedroom/settings.py`.
 
 Trước log cooldown giữa hai map có một dòng gạch ngang để phân cách log. Detector
 thất bại hiện là placeholder `map_was_lost()` và luôn trả về `False`; vì vậy flow

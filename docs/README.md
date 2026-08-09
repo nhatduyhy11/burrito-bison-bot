@@ -76,6 +76,23 @@ Xem toàn bộ tùy chọn:
 uv run python tools/hauntedroom_runner.py --help
 ```
 
+## Runtime settings
+
+Các switch vận hành cấp cao nằm trong `tools/hauntedroom/settings.py`, không phải
+CLI args:
+
+- `CAPTURE_HERO_FALLBACK_SCREENSHOTS`: bật/tắt lưu ảnh tracking khi hero selection
+  rơi vào fallback 3 card không có card tím. Khi chạy `--dev-reload`, sửa flag này
+  rồi dừng/bắt đầu lại `Shift+2` hoặc `Shift+3` sẽ có hiệu lực.
+- `ENABLE_SCRIPT_INJECTION`: bật/tắt inject guard JavaScript/CSS cho profile popup
+  và iframe `#hwssH5GameCoreframe`. Flag này chỉ đọc lúc runner startup; đổi giá trị
+  cần restart browser runner.
+- `CLICK_EXIT_ON_BOSS`: khi bật, auto-map click `rooms/exit_click.png` đúng một lần
+  khi boss HP đi vào upper search region, nhờ đó game pause và flow dừng trước
+  `exit_confirm`. Khi tắt, mini-boss chỉ được detect/no-op; final boss vẫn có thể
+  deploy pet theo logic riêng rồi tiếp tục flow. Flag này hot-reload theo `Shift+2`
+  hoặc `Shift+3` khi chạy `--dev-reload`.
+
 ## Action file
 
 File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/core/runtime.py`.
@@ -130,7 +147,7 @@ Nếu website mở tab bằng một cơ chế vượt qua profile guard, mỗi v
 sự thấy một tab profile, runner đóng tab đó, đưa tab game gốc về foreground và
 tiếp tục logic blocker bình thường.
 
-Sau khi URL game hoàn tất `domcontentloaded`, entrypoint chờ nền 30 giây rồi mới
+Sau khi URL game được commit, entrypoint chờ nền 30 giây rồi mới
 gọi `install_game_core_frame_guard(page)`. Khoảng chờ không khóa hotkey/controller
 và để game hoàn tất startup trước khi CSS được inject. Sau khoảng chờ, guard thêm
 một style idempotent vào top document để đặt

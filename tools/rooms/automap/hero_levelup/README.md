@@ -80,8 +80,9 @@ không có tím thì chọn card hợp lệ đầu tiên. Nếu mọi card đề
 
 Flow chỉ lưu screenshot tracking vào `.tmp/hauntedroom-hero-fallbacks/` khi
 detector thấy đủ đúng 3 card và không card nào là tím. Layout chỉ có 1/2 card,
-hoặc layout 3 card có tím, đều không được capture; rule này giữ nguyên cả khi
-bật `--debug`.
+hoặc layout 3 card có tím, đều không được capture. Có thể tắt/bật capture này
+bằng `CAPTURE_HERO_FALLBACK_SCREENSHOTS` trong `tools/hauntedroom/settings.py`;
+flag được đọc lại cho flow mới khi runner chạy `--dev-reload`.
 
 ## Quy ước khi thay đổi asset
 

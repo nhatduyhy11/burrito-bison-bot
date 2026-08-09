@@ -79,6 +79,7 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Blocker fallback Python code | `tools/hauntedroom/control_events/*.py` | blocker fallback behavior, popup host/path used by Python fallback | Reloaded for action flows. Already injected JavaScript guards are not re-injected. |
 | Research flow | `tools/hauntedroom/flows/research.py` | research templates, threshold, scale, poll/miss counts | Reloaded when `Shift+9` starts. |
 | Fixed click loop | `tools/hauntedroom/flows/click_loop.py` | `CLICK_POSITION`, `CLICK_INTERVAL_MS` | Reloaded when `Shift+7` starts. |
+| Top-level auto-map settings | `tools/hauntedroom/settings.py` | `CAPTURE_HERO_FALLBACK_SCREENSHOTS`, `CLICK_EXIT_ON_BOSS` | Reloaded before auto-map support modules when `Shift+2`/`Shift+3` starts with `--dev-reload`. |
 
 ## Boot-Only / Env-Like Runtime Config
 
@@ -92,7 +93,7 @@ noted.
 | CLI args | command line | `--actions`, `--profile`, `--url`, `--headless`, `--browser`, `--width`, `--height`, `--keep-open`, `--dev-reload`, `--debug` | `argparse` runs once. Browser/context choices cannot be changed without relaunch. |
 | Browser launch | `tools/hauntedroom_runner.py` | `launch_options`, persistent context | Created once in `main()`. Viewport, channel, profile, headless are fixed for that context. |
 | Action file path | command line | `--actions` | The selected file path is parsed once. In dev reload mode, that same file is re-read before `Shift+1` and `Shift+3`. |
-| Injected page guards | `tools/hauntedroom/control_events/new_tab_blocker.py` | profile popup guard script, iframe guard script and delay | Python modules can reload, but scripts already injected into the page are not replaced without explicit reinjection or page restart. |
+| Injected page guards | `tools/hauntedroom/settings.py`, `tools/hauntedroom/control_events/new_tab_blocker.py` | `ENABLE_SCRIPT_INJECTION`, profile popup guard script, iframe guard script and delay | `ENABLE_SCRIPT_INJECTION` is effectively startup-only because scripts already injected into the page are not replaced without explicit reinjection or page restart. |
 | Runtime globals | `tools/hauntedroom/core/runtime.py` | `ACTION_LOOP_COUNT`, `COUNTDOWN_WAIT_THRESHOLD_MS`, screenshot dirs, `HOTKEY_SCRIPT` | Imported at process startup; hotkey script is injected once. |
 | Runner-level constants | `tools/hauntedroom_runner.py` | `START_BATTLE_TEMPLATE_NAME`, `BETWEEN_MAPS_WAIT_MS`, command mapping | Entrypoint module is not reloaded. |
 

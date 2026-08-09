@@ -37,7 +37,11 @@ class HauntedRoomDependencyTest(TestCase):
                 module
                 for module in internal_imports(path)
                 if not module.startswith(
-                    ("hauntedroom.core", "hauntedroom.control_events")
+                    (
+                        "hauntedroom.core",
+                        "hauntedroom.control_events",
+                        "hauntedroom.settings",
+                    )
                 )
             }
             self.assertEqual(forbidden, set(), path.name)

@@ -1,9 +1,10 @@
 from urllib.parse import urlsplit
 
+from hauntedroom.settings import ENABLE_SCRIPT_INJECTION
+
 
 PROFILE_POPUP_HOST = "cp.hhgame.vn"
 PROFILE_POPUP_PATH_PREFIX = "/v2/user/profile/"
-ENABLE_SCRIPT_INJECTION = True
 GAME_CORE_FRAME_GUARD_DELAY_MS = 300_000
 GAME_CORE_FRAME_GUARD_SCRIPT = """() => {
     const id = "haunted-room-hide-hwss-frame";
