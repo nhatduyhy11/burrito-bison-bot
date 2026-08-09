@@ -54,9 +54,8 @@ def prepare_runner(
         "--dev-reload",
         action="store_true",
         help=(
-            "Reload auto-map and vision modules whenever Shift+2 or Shift+3 "
-            "starts, while "
-            "keeping the current browser session open."
+            "Reload auto-map, template, and vision modules whenever Shift+2 "
+            "or Shift+3 starts, while keeping the current browser session open."
         ),
     )
     parser.add_argument(

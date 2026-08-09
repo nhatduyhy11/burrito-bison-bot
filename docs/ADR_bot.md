@@ -52,7 +52,8 @@ import `actions`, `flows` hay entrypoint.
 - `core/cli.py`: argparse, default launch config, profile và chuẩn bị actions.
 - `core/runtime.py`: hotkey, wait/countdown, screenshot lỗi, click logger và
   runtime lifecycle.
-- `core/vision.py`: load/capture ảnh và template matching.
+- `core/template.py`: load template và template matching.
+- `core/vision.py`: capture ảnh và OpenCV helper thuần không gắn business rule.
 - `actions/loader.py`: parse, validate và resolve action JSON.
 - `actions/runner.py`: thực thi action, retry và stop mềm.
 - `control_events/blockers.py`: kiểm tra và xử lý blocker có quyền tạm thời
@@ -82,17 +83,21 @@ flowchart TD
     controlEvents[hauntedroom.control_events]
     cli[hauntedroom.core.cli]
     runtime[hauntedroom.core.runtime]
+    template[hauntedroom.core.template]
     vision[hauntedroom.core.vision]
 
     entry --> actions
     entry --> flows
     entry --> cli
     entry --> runtime
+    entry --> template
     entry --> vision
     actions --> runtime
+    actions --> template
     actions --> vision
     actions --> controlEvents
     flows --> runtime
+    flows --> template
     flows --> vision
     controlEvents --> runtime
     controlEvents --> vision
@@ -155,9 +160,8 @@ JSON trước khi chạy.
 ### Trade-off
 
 - Import path dài hơn, ví dụ `hauntedroom.core.vision`.
-- `core/vision.py` hiện vẫn chứa cả pure matching và Playwright page capture.
-  Chỉ tách tiếp khi hai phần có lifecycle hoặc consumer khác nhau; chưa tạo thêm
-  package chỉ để giảm số dòng.
+- Template matching đã được tách sang `core/template.py`; `core/vision.py` giữ
+  capture và primitive OpenCV chung.
 - Action vẫn dùng raw dictionary cùng metadata key nội bộ. Có thể chuyển sang
   `TypedDict` hoặc dataclass khi schema tiếp tục lớn, nhưng không thuộc refactor
   cấu trúc này.

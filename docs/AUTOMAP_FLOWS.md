@@ -76,11 +76,12 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
   short-circuit HP detection.
 - Nhận diện các cạnh sọc dọc của `boss/boss_hp_bar.png` ở đúng kích thước
   cố định `61x11`, không phụ thuộc màu thanh HP.
-- Candidate chỉ hợp lệ khi cả anchor trái và phải của toàn thanh đều match;
-  prefix hoặc thanh bị che mất phần cuối sẽ bị loại.
-- Chỉ tìm thanh HP trong upper battlefield region `(117, 120, 522, 308)`.
+- Candidate rõ chỉ hợp lệ khi cả anchor trái và phải của toàn thanh đều match;
+  nếu thanh bị chữ/effect che một phần, detector chỉ nhận khi template score
+  còn gần ngưỡng và crop grayscale đó có khung tối dạng thanh HP đủ rộng.
+- Chỉ tìm thanh HP trong upper battlefield region `(117, 120, 522, 318)`.
   Boss đi từ trên hoặc bên phải sẽ đưa toàn thanh HP qua region này trước
-  khi tiến tới cửa. Giới hạn dưới `y2=308` loại HP của cửa ở khu vực phòng.
+  khi tiến tới cửa. Giới hạn dưới `y2=318` loại HP của cửa ở khu vực phòng.
 - Boss và mini-boss có thể dùng cùng hình học thanh HP, nên detector không
   phân loại chúng chỉ từ pixel của thanh. Scope hiện tại chấp nhận
   limitation này; nếu cần phân loại sau này phải thêm stage signal riêng.
@@ -89,7 +90,7 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 - Khi `rooms/exit_click.png` sẵn sàng, click đúng một lần rồi dừng auto-map để
   người dùng xử lý boss thủ công.
 - Logic nhận diện và action boss hỗ trợ nằm trong
-  `flows/automap_support/detectors.py` và `boss_action.py`.
+  `flows/automap_support/boss_detector.py` và `boss_action.py`.
 
 #### Final-boss pet activation
 

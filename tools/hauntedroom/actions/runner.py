@@ -13,13 +13,13 @@ from hauntedroom.core.runtime import (
     wait_for_flow_timeout,
     wait_with_countdown,
 )
-from hauntedroom.core.vision import (
+from hauntedroom.core.template import (
     DEFAULT_TEMPLATE_THRESHOLD,
     TEMPLATE_SCALES,
-    capture_page_grayscale,
     find_template,
     load_template,
 )
+from hauntedroom.core.vision import capture_page_grayscale
 
 
 DEFAULT_TEMPLATE_TIMEOUT_MS = 30_000

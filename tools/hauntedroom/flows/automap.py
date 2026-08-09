@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Awaitable, Callable, Optional
 
+import cv2
 import numpy as np
 
 from hauntedroom.core.runtime import (
@@ -11,12 +12,12 @@ from hauntedroom.core.runtime import (
     wait_for_flow_timeout,
     wait_with_countdown,
 )
-from hauntedroom.core.vision import (
-    capture_page_bgr,
+from hauntedroom.core.template import (
     find_template,
     find_template_matches,
     load_template,
 )
+from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.boss_action import (
     click as _click,
     deploy_boss_pet,
@@ -29,13 +30,13 @@ from hauntedroom.flows.automap_support.gear_action import (
     deploy_initial_gear,
     find_gear_button,
 )
-from hauntedroom.flows.automap_support.detectors import (
-    PROTECT_AVAILABLE_REGION,
+from hauntedroom.flows.automap_support.boss_detector import (
     boss_progress_is_full,
     find_boss_health_bar,
+)
+from hauntedroom.flows.automap_support.detectors import (
     find_first_available_build_option,
-    region_has_enough_white,
-    to_grayscale,
+    hero_levelup_price_is_available,
 )
 
 
@@ -81,6 +82,10 @@ UPGRADE_CONFIRM_CLICK = (430, 366)
 HERO_FALLBACK_SCREENSHOT_DIR = Path(".tmp/hauntedroom-hero-fallbacks")
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
+
+
+def _to_grayscale(image: np.ndarray) -> np.ndarray:
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 
 @dataclass(frozen=True)
@@ -214,7 +219,7 @@ class AutomapFlow:
         reward_list_title_seen = False
         while await flow_checkpoint(self.stop_event):
             frame_bgr = await capture_page_bgr(self.page)
-            frame_gray = to_grayscale(frame_bgr)
+            frame_gray = _to_grayscale(frame_bgr)
 
             reward_matches = find_template_matches(
                 frame_gray,
@@ -323,7 +328,7 @@ class AutomapFlow:
         # resemble a card and cause an endless click loop. Only inspect options
         # after the fixed price region proves that level-up is available and we
         # have opened the picker ourselves.
-        if not region_has_enough_white(frame_bgr):
+        if not hero_levelup_price_is_available(frame_bgr):
             return False
 
         print("Hero level-up available; opening option picker.", flush=True)
@@ -509,7 +514,7 @@ class AutomapFlow:
         ):
             return True
         frame_bgr = await capture_page_bgr(self.page)
-        frame_gray = to_grayscale(frame_bgr)
+        frame_gray = _to_grayscale(frame_bgr)
         if await self.click_level_spin_if_present(frame_gray):
             return True
         await _click(self.page, *UPGRADE_CONFIRM_CLICK)
@@ -571,7 +576,7 @@ class AutomapFlow:
 
         while await flow_checkpoint(self.stop_event):
             frame_bgr = await capture_page_bgr(self.page)
-            frame_gray = to_grayscale(frame_bgr)
+            frame_gray = _to_grayscale(frame_bgr)
             for handler in handlers:
                 if not await flow_checkpoint(self.stop_event):
                     break

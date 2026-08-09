@@ -3,11 +3,11 @@ from pathlib import Path
 from typing import Optional
 
 from hauntedroom.core.runtime import wait_with_countdown
-from hauntedroom.core.vision import (
-    capture_page_grayscale,
+from hauntedroom.core.template import (
     find_template,
     load_template,
 )
+from hauntedroom.core.vision import capture_page_grayscale
 
 
 MISC_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "misc"

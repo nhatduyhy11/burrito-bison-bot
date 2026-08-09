@@ -8,6 +8,7 @@ Current implementation files:
 
 - `tools/hauntedroom_runner.py`
 - `tools/hauntedroom/core/runtime.py`
+- `tools/hauntedroom/core/template.py`
 - `tools/hauntedroom/core/vision.py`
 - `tools/hauntedroom_actions.sample.json`
 

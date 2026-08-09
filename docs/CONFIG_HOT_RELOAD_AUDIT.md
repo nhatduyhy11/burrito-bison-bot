@@ -11,10 +11,12 @@ With `--dev-reload`, the runner reloads the relevant modules before starting
 For `Shift+2` and `Shift+3`, the runner reloads:
 
 - `hauntedroom.core.vision`
+- `hauntedroom.core.template`
 - `hauntedroom.actions.loader`
 - `hauntedroom.actions.runner`
 - `hauntedroom.control_events.new_tab_blocker`
 - `hauntedroom.control_events.blockers`
+- `hauntedroom.flows.automap_support.boss_detector`
 - `hauntedroom.flows.automap_support.detectors`
 - `hauntedroom.flows.automap_support.boss_action`
 - `hauntedroom.flows.automap_support.gear_action`
@@ -60,11 +62,13 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Auto-map templates | `tools/hauntedroom/flows/automap.py` | `*_TEMPLATE_PATH`, `AUTOMAP_TEMPLATE_DIR`, `ROOM_TEMPLATE_DIR`, `BOSS_TEMPLATE_DIR` | New flow loads templates in `AutomapFlow.__init__`. Running flow keeps old loaded images. |
 | Auto-map thresholds and timings | `tools/hauntedroom/flows/automap.py` | `AUTOMAP_TEMPLATE_THRESHOLD`, `BUILT_TEMPLATE_THRESHOLD`, `AUTOMAP_POLL_MS`, `AUTOMAP_ACTION_DELAY_MS`, map-end/reward/home thresholds | Reloaded with `automap`. Running flow keeps old module values for code already executing. |
 | Auto-map fixed clicks / regions | `tools/hauntedroom/flows/automap.py` | `LV_SPIN_CLICK_OFFSET_X`, `WIN_REWARD_FOLLOWUP_CLICK`, `REWARD_LIST_TITLE_SEARCH_REGION`, `HERO_LEVELUP_OPEN_CLICK`, `UPGRADE_CONFIRM_CLICK` | Reloadable for newly started auto-map flow. |
-| Boss/build/protect detectors | `tools/hauntedroom/flows/automap_support/detectors.py` | `BOSS_HP_*`, `BOSS_PROGRESS_*`, `PET_READY_REGION`, `SPELL_READY_REGION`, `WHITE_*`, `BUILD_BUTTON_*` | Explicitly reloaded before `automap`. |
+| Boss detectors | `tools/hauntedroom/flows/automap_support/boss_detector.py` | `BOSS_HP_*`, `BOSS_PROGRESS_*`, `PET_READY_REGION`, `SPELL_READY_REGION` | Explicitly reloaded before `automap`. |
+| Small auto-map detectors | `tools/hauntedroom/flows/automap_support/detectors.py` | `BUILD_BUTTON_*`, `HERO_LEVELUP_PRICE_REGION`, `WHITE_*` | Explicitly reloaded before `automap`. |
 | Boss actions | `tools/hauntedroom/flows/automap_support/boss_action.py` | pet/spell template paths, action positions, delays, thresholds | Explicitly reloaded before `automap`. |
 | Hero level-up | `tools/hauntedroom/flows/automap_support/hero_levelup.py` | search regions, thresholds, priorities, template directory/glob | Explicitly reloaded before `automap`. Adding/removing PNGs is picked up on reload because `HERO_LEVELUP_TEMPLATE_PATHS` is rebuilt. |
 | Gear placement | `tools/hauntedroom/flows/automap_support/gear_action.py` | gear regions, HSV thresholds, drag timings, drop offsets | Explicitly reloaded before `automap`. |
-| Core vision for auto-map | `tools/hauntedroom/core/vision.py` | `DEFAULT_TEMPLATE_THRESHOLD`, `TEMPLATE_SCALES`, matching functions | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
+| Core template matching for auto-map | `tools/hauntedroom/core/template.py` | `DEFAULT_TEMPLATE_THRESHOLD`, `TEMPLATE_SCALES`, matching functions | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
+| Core vision for auto-map | `tools/hauntedroom/core/vision.py` | screenshot capture, generic OpenCV region helpers | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
 | Action loader/runner | `tools/hauntedroom/actions/*.py` | action defaults, loader validation, runner behavior | Reloaded for `Shift+1`, and before `Shift+2`/`Shift+3` so entry actions use the new runner. |
 | Blocker fallback Python code | `tools/hauntedroom/control_events/*.py` | blocker fallback behavior, popup host/path used by Python fallback | Reloaded for action flows. Already injected JavaScript guards are not re-injected. |
 | Research flow | `tools/hauntedroom/flows/research.py` | research templates, threshold, scale, poll/miss counts | Reloaded when `Shift+9` starts. |

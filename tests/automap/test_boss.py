@@ -26,7 +26,7 @@ from hauntedroom.flows.automap_support.boss_action import (
     activate_boss_spell,
     deploy_boss_pet,
 )
-from hauntedroom.flows.automap_support.detectors import (
+from hauntedroom.flows.automap_support.boss_detector import (
     BOSS_HP_SEARCH_REGION,
     PET_READY_REGION,
     SPELL_READY_REGION,
@@ -103,6 +103,30 @@ class BossTest(IsolatedAsyncioTestCase):
 
         self.assertIsNotNone(match)
         self.assertEqual(match[:2], (438, 268))
+
+    def test_accepts_occluded_boss_bar_with_geometry_confirmation(self):
+        template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+
+        for fixture_name, expected_position in (
+            ("test_boss_detect.png", (290, 307)),
+            ("test_boss_2.png", (306, 237)),
+        ):
+            with self.subTest(fixture_name=fixture_name):
+                frame_bgr = cv2.imread(
+                    str(
+                        FIXTURES_DIR
+                        / "hauntedroom-captures"
+                        / "boss_screen"
+                        / fixture_name
+                    )
+                )
+                self.assertIsNotNone(frame_bgr)
+                frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
+
+                match = find_boss_health_bar(frame_gray, template)
+
+                self.assertIsNotNone(match)
+                self.assertEqual(match[:2], expected_position)
 
     def test_rejects_live_frame_after_boss_bar_disappears(self):
         template = cv2.imread(str(BOSS_HP_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
@@ -442,7 +466,7 @@ class BossTest(IsolatedAsyncioTestCase):
         )
         template = cv2.imread(str(PET_ACTIVE_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
 
-        from hauntedroom.core.vision import find_template
+        from hauntedroom.core.template import find_template
 
         x, y, score = find_template(
             frame,

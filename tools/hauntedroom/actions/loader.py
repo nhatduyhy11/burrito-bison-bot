@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from hauntedroom.core.vision import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES
+from hauntedroom.core.template import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES
 
 
 SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "mid_left", "top_middle"}

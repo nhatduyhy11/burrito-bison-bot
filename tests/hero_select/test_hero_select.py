@@ -25,7 +25,9 @@ from hauntedroom.flows.automap import (
     HERO_LEVELUP_OPTION_SETTLE_MS,
     HERO_LEVELUP_SELECTION_SETTLE_MS,
 )
-from hauntedroom.flows.automap_support.detectors import PROTECT_AVAILABLE_REGION
+from hauntedroom.flows.automap_support.detectors import (
+    HERO_LEVELUP_PRICE_REGION,
+)
 from hauntedroom.flows.automap_support.hero_levelup import (
     HERO_ASCEND_TEMPLATE_NAME,
     HERO_LEVELUP_SEARCH_TOP,
@@ -45,7 +47,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
 
     @staticmethod
     def make_protect_available(image):
-        x1, y1, _, _ = PROTECT_AVAILABLE_REGION
+        x1, y1, _, _ = HERO_LEVELUP_PRICE_REGION
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
 

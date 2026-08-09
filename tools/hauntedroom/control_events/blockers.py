@@ -11,11 +11,11 @@ from hauntedroom.core.runtime import (
     save_timeout_screenshot,
     wait_for_flow_timeout,
 )
-from hauntedroom.core.vision import (
+from hauntedroom.core.template import (
     TEMPLATE_SCALES,
-    capture_page_grayscale,
     find_template,
 )
+from hauntedroom.core.vision import capture_page_grayscale
 
 
 async def clear_blockers(

@@ -15,7 +15,7 @@ from hauntedroom.control_events.new_tab_blocker import (
     install_game_core_frame_guard_after_delay,
     install_profile_popup_guard,
 )
-from hauntedroom.core import vision
+from hauntedroom.core import template, vision
 from hauntedroom.core.cli import prepare_runner
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
@@ -32,7 +32,8 @@ from hauntedroom.flows import click_loop
 from hauntedroom.flows import research
 from hauntedroom.flows.automap_support import (
     boss_action,
-    detectors as automap_detectors,
+    boss_detector,
+    detectors,
     gear_action,
     hero_levelup,
 )
@@ -70,6 +71,7 @@ def reload_action_modules():
     global load_actions, run_actions
 
     importlib.invalidate_caches()
+    importlib.reload(template)
     importlib.reload(vision)
     importlib.reload(new_tab_blocker)
     importlib.reload(control_blockers)
@@ -107,6 +109,7 @@ def get_research_flow(dev_reload: bool = False):
         return run_research_flow
 
     importlib.invalidate_caches()
+    importlib.reload(template)
     importlib.reload(vision)
     reloaded_research = importlib.reload(research)
     run_research_flow = reloaded_research.run_research_flow
@@ -190,7 +193,8 @@ def get_automap_flow(dev_reload: bool = False):
         return automap.run_automap_flow
 
     reload_action_modules()
-    importlib.reload(automap_detectors)
+    importlib.reload(boss_detector)
+    importlib.reload(detectors)
     importlib.reload(boss_action)
     importlib.reload(gear_action)
     importlib.reload(hero_levelup)

@@ -19,9 +19,13 @@ from hauntedroom.flows.automap import (
     UPGRADE_CONFIRM_CLICK,
     run_automap_flow,
 )
+from hauntedroom.core.vision import region_has_enough_white
 from hauntedroom.flows.automap_support.detectors import (
-    PROTECT_AVAILABLE_REGION,
-    region_has_enough_white,
+    HERO_LEVELUP_PRICE_REGION,
+    WHITE_MAX_SATURATION,
+    WHITE_MIN_PIXELS,
+    WHITE_MIN_VALUE,
+    hero_levelup_price_is_available,
 )
 
 
@@ -39,30 +43,30 @@ class LevelUpTest(IsolatedAsyncioTestCase):
 
     @staticmethod
     def make_protect_available(image):
-        x1, y1, _, _ = PROTECT_AVAILABLE_REGION
+        x1, y1, _, _ = HERO_LEVELUP_PRICE_REGION
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
 
     def test_region_requires_enough_white_inside_configured_rectangle(self):
         image = np.zeros((720, 640, 3), dtype=np.uint8)
-        x1, y1, _, _ = PROTECT_AVAILABLE_REGION
+        x1, y1, _, _ = HERO_LEVELUP_PRICE_REGION
         image[y1 : y1 + 2, x1 : x1 + 3] = (255, 255, 255)
-        self.assertFalse(region_has_enough_white(image))
+        self.assertFalse(hero_levelup_price_is_available(image))
 
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
-        self.assertTrue(region_has_enough_white(image))
+        self.assertTrue(hero_levelup_price_is_available(image))
 
     def test_region_does_not_treat_gold_as_white(self):
         image = np.zeros((720, 640, 3), dtype=np.uint8)
-        x1, y1, x2, y2 = PROTECT_AVAILABLE_REGION
+        x1, y1, x2, y2 = HERO_LEVELUP_PRICE_REGION
         image[y1:y2, x1:x2] = (40, 180, 245)
 
-        self.assertFalse(region_has_enough_white(image))
+        self.assertFalse(hero_levelup_price_is_available(image))
 
     def test_region_outside_image_fails_closed(self):
         image = np.full((100, 100, 3), 255, dtype=np.uint8)
 
-        self.assertFalse(region_has_enough_white(image))
+        self.assertFalse(hero_levelup_price_is_available(image))
 
     def test_available_and_unavailable_reference_colors(self):
         misc_dir = TOOLS_DIR / "rooms" / "misc"
@@ -70,10 +74,22 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         unavailable = cv2.imread(str(misc_dir / "red_unavailable.png"))
 
         self.assertTrue(
-            region_has_enough_white(available, region=(90, 8, 140, 30))
+            region_has_enough_white(
+                available,
+                region=(90, 8, 140, 30),
+                min_pixels=WHITE_MIN_PIXELS,
+                max_saturation=WHITE_MAX_SATURATION,
+                min_value=WHITE_MIN_VALUE,
+            )
         )
         self.assertFalse(
-            region_has_enough_white(unavailable, region=(90, 8, 140, 30))
+            region_has_enough_white(
+                unavailable,
+                region=(90, 8, 140, 30),
+                min_pixels=WHITE_MIN_PIXELS,
+                max_saturation=WHITE_MAX_SATURATION,
+                min_value=WHITE_MIN_VALUE,
+            )
         )
 
     @patch(

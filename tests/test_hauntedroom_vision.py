@@ -9,7 +9,37 @@ TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.core.vision import find_template, find_template_matches
+from hauntedroom.core.template import find_template, find_template_matches
+from hauntedroom.core.vision import region_has_enough_white
+
+
+class WhiteRegionTest(TestCase):
+    def test_counts_low_saturation_high_value_pixels_in_valid_region(self):
+        image = np.zeros((20, 20, 3), dtype=np.uint8)
+        image[5:8, 5:8] = (255, 255, 255)
+
+        self.assertTrue(
+            region_has_enough_white(
+                image,
+                (5, 5, 8, 8),
+                min_pixels=8,
+                max_saturation=50,
+                min_value=180,
+            )
+        )
+
+    def test_rejects_invalid_region(self):
+        image = np.zeros((20, 20, 3), dtype=np.uint8)
+
+        self.assertFalse(
+            region_has_enough_white(
+                image,
+                (10, 10, 30, 30),
+                min_pixels=1,
+                max_saturation=50,
+                min_value=180,
+            )
+        )
 
 
 class FindTemplateScaleTest(TestCase):

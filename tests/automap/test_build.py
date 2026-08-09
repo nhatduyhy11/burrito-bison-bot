@@ -12,7 +12,9 @@ FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.flows.automap import run_automap_flow
-from hauntedroom.flows.automap_support.detectors import find_first_available_build_option
+from hauntedroom.flows.automap_support.detectors import (
+    find_first_available_build_option,
+)
 
 
 class BuildTest(IsolatedAsyncioTestCase):

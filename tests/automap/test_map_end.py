@@ -12,9 +12,9 @@ TOOLS_DIR = PROJECT_ROOT / "tools"
 FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.core.vision import find_template as find_real_template
-from hauntedroom.core.vision import find_template_matches as find_real_template_matches
-from hauntedroom.core.vision import load_template as load_real_template
+from hauntedroom.core.template import find_template as find_real_template
+from hauntedroom.core.template import find_template_matches as find_real_template_matches
+from hauntedroom.core.template import load_template as load_real_template
 from hauntedroom.flows.automap import (
     AUTOMAP_POLL_MS,
     MAP_END_CHECK_INTERVAL_SEC,
@@ -28,7 +28,9 @@ from hauntedroom.flows.automap import (
     WIN_REWARD_TEMPLATE_THRESHOLD,
     run_automap_flow,
 )
-from hauntedroom.flows.automap_support.detectors import PROTECT_AVAILABLE_REGION
+from hauntedroom.flows.automap_support.detectors import (
+    HERO_LEVELUP_PRICE_REGION,
+)
 
 
 class MapEndTest(IsolatedAsyncioTestCase):
@@ -45,7 +47,7 @@ class MapEndTest(IsolatedAsyncioTestCase):
 
     @staticmethod
     def make_protect_available(image):
-        x1, y1, _, _ = PROTECT_AVAILABLE_REGION
+        x1, y1, _, _ = HERO_LEVELUP_PRICE_REGION
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
 
