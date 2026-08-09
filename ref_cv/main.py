@@ -1,5 +1,3 @@
-import cv2
-import numpy as np
 
 from vision import Vision
 from controller import Controller

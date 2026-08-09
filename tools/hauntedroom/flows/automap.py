@@ -39,7 +39,6 @@ from hauntedroom.flows.automap_support.boss_detector import (
     find_boss_health_bar,
 )
 from hauntedroom.flows.automap_support.boss_flow import (
-    EXIT_CLICK_TEMPLATE_THRESHOLD,
     handle_boss_critical as _handle_boss_critical,
 )
 from hauntedroom.flows.automap_support.detectors import (
@@ -47,35 +46,15 @@ from hauntedroom.flows.automap_support.detectors import (
     hero_levelup_price_is_available,
 )
 from hauntedroom.flows.automap_support.hero_action import (
-    HERO_FALLBACK_SCREENSHOT_DIR,
-    HERO_LEVELUP_OPEN_CLICK,
-    HERO_LEVELUP_OPTION_MAX_POLLS,
-    HERO_LEVELUP_OPTION_POLL_MS,
-    HERO_LEVELUP_OPTION_SETTLE_MS,
-    HERO_LEVELUP_SELECTION_SETTLE_MS,
     handle_hero_levelup as _handle_hero_levelup,
 )
 from hauntedroom.flows.automap_support.map_completion import (
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
-    REWARD_LIST_TITLE_SEARCH_REGION,
-    REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
-    START_HOME_TEMPLATE_THRESHOLD,
-    WIN_REWARD_EMPTY_DELAY_MS,
-    WIN_REWARD_FOLLOWUP_CLICK,
-    WIN_REWARD_RECHECK_MS,
-    WIN_REWARD_TEMPLATE_THRESHOLD,
     finish_map_from_home as _finish_map_from_home,
 )
 from hauntedroom.flows.automap_support.upgrade_action import (
-    AUTOMAP_ACTION_DELAY_MS,
     AUTOMAP_POLL_MS,
-    BUILT_TEMPLATE_THRESHOLD,
-    LV_SPIN_CLICK_OFFSET_X,
-    LV_SPIN_SEARCH_TOP_RATIO,
-    LV_SPIN_TEMPLATE_SCALES,
-    LV_SPIN_TEMPLATE_THRESHOLD,
-    UPGRADE_CONFIRM_CLICK,
     click_level_spin_if_present as _click_level_spin_if_present,
     handle_build_structure as _handle_build_structure,
     handle_level_up as _handle_level_up,

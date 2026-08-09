@@ -4,7 +4,6 @@ from typing import NamedTuple
 from hauntedroom import settings
 from hauntedroom.actions import loader as actions_loader
 from hauntedroom.actions import runner as actions_runner
-from hauntedroom.actions.loader import load_actions
 from hauntedroom.actions.runner import run_actions
 from hauntedroom.control_events import blockers as control_blockers
 from hauntedroom.control_events import new_tab_blocker
