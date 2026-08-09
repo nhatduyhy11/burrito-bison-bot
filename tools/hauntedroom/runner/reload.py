@@ -4,13 +4,10 @@ from typing import NamedTuple
 from hauntedroom import settings
 from hauntedroom.actions import loader as actions_loader
 from hauntedroom.actions import runner as actions_runner
-from hauntedroom.actions.runner import run_actions
 from hauntedroom.control_events import blockers as control_blockers
 from hauntedroom.control_events import new_tab_blocker
 from hauntedroom.core import template, vision
-from hauntedroom.flows import automap
-from hauntedroom.flows import click_loop
-from hauntedroom.flows import research
+from hauntedroom.flows import automap, click_loop, research
 from hauntedroom.flows.automap_support import (
     boss_action,
     boss_detector,
@@ -24,6 +21,9 @@ from hauntedroom.flows.automap_support import (
 )
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.research import run_research_flow
+
+load_actions = actions_loader.load_actions
+run_actions = actions_runner.run_actions
 
 
 class AutomapRuntime(NamedTuple):

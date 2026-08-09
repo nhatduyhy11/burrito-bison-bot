@@ -97,6 +97,14 @@ CLI args:
 
 File action là một JSON array. Runner chạy tuần tự toàn bộ array rồi lặp lại theo `ACTION_LOOP_COUNT` trong `tools/hauntedroom/core/runtime.py`.
 
+Mental model: `run_actions()` execute một sequence typed action trên browser.
+Nếu macro được viết bằng JSON, `load_actions()` là adapter đọc JSON, validate
+field, resolve path template và normalize default thành typed action object. Vì
+vậy JSON macro đi qua `load_actions()` trước, còn Python code có thể tạo
+`ClickAction`, `ClickTemplateAction`, `WaitAction` hoặc `ClearBlockersAction` và
+gọi `run_actions()` trực tiếp. Auto-map/research là flow Python riêng, không
+phải macro JSON trực tiếp.
+
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.

@@ -4,6 +4,18 @@ from typing import Optional
 
 import numpy as np
 
+from hauntedroom.actions.models import (
+    Action,
+    ClearBlockersAction,
+    ClickAction,
+    ClickTemplateAction,
+    WaitAction,
+)
+from hauntedroom.actions.defaults import (
+    DEFAULT_CLICK_DELAY_MS,
+    DEFAULT_TEMPLATE_POLL_MS,
+    DEFAULT_TEMPLATE_TIMEOUT_MS,
+)
 from hauntedroom.control_events.blockers import clear_blockers
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
@@ -22,9 +34,6 @@ from hauntedroom.core.template import (
 from hauntedroom.core.vision import capture_page_grayscale
 
 
-DEFAULT_TEMPLATE_TIMEOUT_MS = 30_000
-DEFAULT_TEMPLATE_POLL_MS = 600
-DEFAULT_CLICK_DELAY_MS = 400
 SKIP_TEMPLATE_MATCHED = object()
 
 
@@ -93,22 +102,239 @@ async def wait_for_template(
             return None
 
 
+def note_suffix(note: Optional[str]) -> str:
+    return f" ({note})" if note else ""
+
+
+def action_label(loop_index: int, action_index: int, note: Optional[str]) -> str:
+    return f"{loop_index}.{action_index}{note_suffix(note)}"
+
+
+def collect_template_paths(actions: list[Action]) -> set[Path]:
+    template_paths: set[Path] = set()
+    for action in actions:
+        if isinstance(action, ClickTemplateAction):
+            template_paths.add(action.template_path)
+            if action.skip_if_template_path is not None:
+                template_paths.add(action.skip_if_template_path)
+        elif isinstance(action, ClearBlockersAction):
+            template_paths.update(action.blocker_paths)
+            template_paths.add(action.until_template_path)
+    return template_paths
+
+
+async def execute_click_action(page, action: ClickAction, label: str) -> bool:
+    print(f"{label}: click {action.x},{action.y}", flush=True)
+    await page.evaluate("() => { window.__hauntedRoomSuppressNextClickLog = true; }")
+    await page.mouse.click(action.x, action.y, button=action.button)
+    return True
+
+
+async def execute_clear_blockers_action(
+    page,
+    action: ClearBlockersAction,
+    templates: dict[Path, np.ndarray],
+    label: str,
+    stop_event: Optional[asyncio.Event],
+) -> bool:
+    return await clear_blockers(
+        page,
+        action.blocker_paths,
+        action.until_template_path,
+        templates,
+        action.threshold,
+        action.timeout_ms,
+        action.poll_ms,
+        action.delay_ms,
+        action.click_positions,
+        label,
+        stop_event,
+        action.until_template_scales,
+    )
+
+
+async def execute_click_template_action(
+    page,
+    action: ClickTemplateAction,
+    templates: dict[Path, np.ndarray],
+    loop_index: int,
+    action_index: int,
+    stop_event: Optional[asyncio.Event],
+) -> bool:
+    template_path = action.template_path
+    skip_template_path = action.skip_if_template_path
+    repeat_delay_ms = action.effective_repeat_delay_ms
+
+    print(
+        f"{loop_index}.{action_index}: wait for "
+        f"{template_path.name}{note_suffix(action.note)}",
+        flush=True,
+    )
+    match = await wait_for_template(
+        page,
+        templates[template_path],
+        template_path.name,
+        action.threshold,
+        action.timeout_ms,
+        action.poll_ms,
+        stop_event=stop_event,
+        skip_template=(
+            templates[skip_template_path] if skip_template_path is not None else None
+        ),
+        skip_template_name=(
+            skip_template_path.name if skip_template_path is not None else None
+        ),
+        click_position=action.click_position,
+        template_scales=action.template_scales,
+        skip_template_scales=action.skip_template_scales,
+    )
+    if match is SKIP_TEMPLATE_MATCHED:
+        skip_template_name = (
+            skip_template_path.name
+            if skip_template_path is not None
+            else "skip template"
+        )
+        print(
+            f"{loop_index}.{action_index}: skip {template_path.name}; "
+            f"{skip_template_name} already ready",
+            flush=True,
+        )
+        return True
+    if match is None:
+        return False
+
+    x, y, score = match
+    repeat_summary = (
+        f"; up to {action.click_count - 1} repeat(s), recheck after "
+        f"{repeat_delay_ms}ms"
+        if action.recheck_before_repeat and action.click_count > 1
+        else f"; click {action.click_count} time(s)"
+    )
+    print(
+        f"{loop_index}.{action_index}: detected "
+        f"{template_path.name} at {x},{y}, score={score:.3f}; "
+        f"first click after {action.delay_ms}ms{repeat_summary}",
+        flush=True,
+    )
+
+    for click_index in range(action.click_count):
+        wait_ms = action.delay_ms if click_index == 0 else repeat_delay_ms
+        if not await wait_for_flow_timeout(page, wait_ms, stop_event):
+            return False
+
+        if click_index > 0 and action.recheck_before_repeat:
+            screenshot = await capture_page_grayscale(page)
+            x, y, score = find_template(
+                screenshot,
+                templates[template_path],
+                template_path.name,
+                action.click_position,
+                scales=action.template_scales,
+            )
+            if score < action.threshold:
+                print(
+                    f"{loop_index}.{action_index}: "
+                    f"{template_path.name} disappeared after "
+                    f"{click_index} click(s), score={score:.3f}; "
+                    "skip remaining repeat clicks",
+                    flush=True,
+                )
+                break
+            print(
+                f"{loop_index}.{action_index}: "
+                f"{template_path.name} still present at {x},{y}, "
+                f"score={score:.3f}; repeat click",
+                flush=True,
+            )
+
+        await page.evaluate("() => { window.__hauntedRoomSuppressNextClickLog = true; }")
+        await page.mouse.click(x, y, button=action.button)
+
+    return True
+
+
+async def execute_wait_action(
+    page,
+    action: WaitAction,
+    label: str,
+    stop_event: Optional[asyncio.Event],
+) -> bool:
+    return await wait_with_countdown(page, action.ms, label, stop_event)
+
+
+async def execute_action(
+    page,
+    action: Action,
+    templates: dict[Path, np.ndarray],
+    loop_index: int,
+    action_index: int,
+    stop_event: Optional[asyncio.Event],
+) -> bool:
+    label = action_label(loop_index, action_index, action.note)
+    if isinstance(action, ClickAction):
+        return await execute_click_action(page, action, label)
+    if isinstance(action, ClearBlockersAction):
+        return await execute_clear_blockers_action(
+            page,
+            action,
+            templates,
+            label,
+            stop_event,
+        )
+    if isinstance(action, ClickTemplateAction):
+        return await execute_click_template_action(
+            page,
+            action,
+            templates,
+            loop_index,
+            action_index,
+            stop_event,
+        )
+    if isinstance(action, WaitAction):
+        return await execute_wait_action(page, action, label, stop_event)
+
+    raise TypeError(f"Unsupported action object: {action!r}")
+
+
+def log_action_timeout(
+    error: TimeoutError,
+    loop_index: int,
+    loop_total: str,
+    label: str,
+    timeout_count: int,
+    loop_count: Optional[int],
+) -> bool:
+    print(
+        f"{label}: timeout count={timeout_count}/2: {error}",
+        flush=True,
+    )
+    if timeout_count >= 2:
+        print("Second timeout; stopping runner.", flush=True)
+        raise error
+    if loop_count is not None and loop_index >= loop_count:
+        print(
+            "Skipping the rest of the final action attempt; "
+            "no retry remains.",
+            flush=True,
+        )
+    else:
+        print(
+            "Skipping the rest of action loop "
+            f"{loop_index}/{loop_total}; retrying from the "
+            "first action on the next loop.",
+            flush=True,
+        )
+    return True
+
+
 async def run_actions(
     page,
-    actions: list[dict],
+    actions: list[Action],
     loop_count: Optional[int] = ACTION_LOOP_COUNT,
     stop_event: Optional[asyncio.Event] = None,
     stop_after_success: bool = False,
 ) -> bool:
-    template_paths: set[Path] = set()
-    for action in actions:
-        if action["type"] == "click_template":
-            template_paths.add(action["_template_path"])
-            if "_skip_if_template_path" in action:
-                template_paths.add(action["_skip_if_template_path"])
-        elif action["type"] == "clear_blockers":
-            template_paths.update(action["_blocker_paths"])
-            template_paths.add(action["_until_template_path"])
+    template_paths = collect_template_paths(actions)
     templates = {path: load_template(path) for path in template_paths}
     timeout_count = 0
 
@@ -126,217 +352,28 @@ async def run_actions(
             if not await flow_checkpoint(stop_event):
                 print("Flow stopped; runner is idle.", flush=True)
                 return False
-            kind = action["type"]
 
-            if kind == "click":
-                x = int(action["x"])
-                y = int(action["y"])
-                button = action.get("button", "left")
-                note = action.get("note")
-                note_suffix = f" ({note})" if note else ""
-                print(f"{loop_index}.{action_index}: click {x},{y}{note_suffix}")
-                await page.evaluate(
-                    "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
+            label = action_label(loop_index, action_index, action.note)
+            try:
+                completed = await execute_action(
+                    page,
+                    action,
+                    templates,
+                    loop_index,
+                    action_index,
+                    stop_event,
                 )
-                await page.mouse.click(x, y, button=button)
-                continue
-
-            if kind == "clear_blockers":
-                note = action.get("note")
-                note_suffix = f" ({note})" if note else ""
-                label = f"{loop_index}.{action_index}{note_suffix}"
-                try:
-                    completed = await clear_blockers(
-                        page,
-                        action["_blocker_paths"],
-                        action["_until_template_path"],
-                        templates,
-                        float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD)),
-                        int(action.get("timeout_ms", DEFAULT_TEMPLATE_TIMEOUT_MS)),
-                        int(action.get("poll_ms", DEFAULT_TEMPLATE_POLL_MS)),
-                        int(action.get("delay_ms", DEFAULT_CLICK_DELAY_MS)),
-                        action.get("click_positions", {}),
-                        label,
-                        stop_event,
-                        action.get("_until_template_scales", TEMPLATE_SCALES),
-                    )
-                except TimeoutError as error:
-                    timeout_count += 1
-                    print(
-                        f"{label}: timeout count={timeout_count}/2: {error}",
-                        flush=True,
-                    )
-                    if timeout_count >= 2:
-                        print("Second timeout; stopping runner.", flush=True)
-                        raise
-                    if loop_count is not None and loop_index >= loop_count:
-                        print(
-                            "Skipping the rest of the final action attempt; "
-                            "no retry remains.",
-                            flush=True,
-                        )
-                    else:
-                        print(
-                            "Skipping the rest of action loop "
-                            f"{loop_index}/{loop_total}; retrying from the "
-                            "first action on the next loop.",
-                            flush=True,
-                        )
-                    loop_timed_out = True
-                    break
-                if not completed:
-                    print("Flow stopped; runner is idle.", flush=True)
-                    return False
-                continue
-
-            if kind == "click_template":
-                template_path = action["_template_path"]
-                threshold = float(
-                    action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD)
+            except TimeoutError as error:
+                timeout_count += 1
+                loop_timed_out = log_action_timeout(
+                    error,
+                    loop_index,
+                    loop_total,
+                    label,
+                    timeout_count,
+                    loop_count,
                 )
-                timeout_ms = int(
-                    action.get("timeout_ms", DEFAULT_TEMPLATE_TIMEOUT_MS)
-                )
-                poll_ms = int(action.get("poll_ms", DEFAULT_TEMPLATE_POLL_MS))
-                delay_ms = int(action.get("delay_ms", DEFAULT_CLICK_DELAY_MS))
-                repeat_delay_ms = int(action.get("repeat_delay_ms", delay_ms))
-                click_count = int(action.get("click_count", 1))
-                recheck_before_repeat = bool(
-                    action.get("recheck_before_repeat", False)
-                )
-                button = action.get("button", "left")
-                note = action.get("note")
-                note_suffix = f" ({note})" if note else ""
-                skip_template_path = action.get("_skip_if_template_path")
-
-                print(
-                    f"{loop_index}.{action_index}: wait for "
-                    f"{template_path.name}{note_suffix}",
-                    flush=True,
-                )
-                try:
-                    match = await wait_for_template(
-                        page,
-                        templates[template_path],
-                        template_path.name,
-                        threshold,
-                        timeout_ms,
-                        poll_ms,
-                        stop_event=stop_event,
-                        skip_template=(
-                            templates[skip_template_path]
-                            if skip_template_path
-                            else None
-                        ),
-                        skip_template_name=(
-                            skip_template_path.name
-                            if skip_template_path
-                            else None
-                        ),
-                        click_position=action.get("click_position", "center"),
-                        template_scales=action.get(
-                            "_template_scales",
-                            TEMPLATE_SCALES,
-                        ),
-                        skip_template_scales=action.get(
-                            "_skip_template_scales",
-                            TEMPLATE_SCALES,
-                        ),
-                    )
-                except TimeoutError as error:
-                    timeout_count += 1
-                    print(
-                        f"{loop_index}.{action_index}{note_suffix}: "
-                        f"timeout count={timeout_count}/2: {error}",
-                        flush=True,
-                    )
-                    if timeout_count >= 2:
-                        print("Second timeout; stopping runner.", flush=True)
-                        raise
-                    if loop_count is not None and loop_index >= loop_count:
-                        print(
-                            "Skipping the rest of the final action attempt; "
-                            "no retry remains.",
-                            flush=True,
-                        )
-                    else:
-                        print(
-                            "Skipping the rest of action loop "
-                            f"{loop_index}/{loop_total}; retrying from the "
-                            "first action on the next loop.",
-                            flush=True,
-                        )
-                    loop_timed_out = True
-                    break
-                if match is SKIP_TEMPLATE_MATCHED:
-                    print(
-                        f"{loop_index}.{action_index}: skip {template_path.name}; "
-                        f"{skip_template_path.name} already ready",
-                        flush=True,
-                    )
-                    continue
-                if match is None:
-                    print("Flow stopped; runner is idle.", flush=True)
-                    return False
-                x, y, score = match
-                repeat_summary = (
-                    f"; up to {click_count - 1} repeat(s), recheck after "
-                    f"{repeat_delay_ms}ms"
-                    if recheck_before_repeat and click_count > 1
-                    else f"; click {click_count} time(s)"
-                )
-                print(
-                    f"{loop_index}.{action_index}: detected "
-                    f"{template_path.name} at {x},{y}, score={score:.3f}; "
-                    f"first click after {delay_ms}ms{repeat_summary}",
-                    flush=True,
-                )
-                for click_index in range(click_count):
-                    wait_ms = delay_ms if click_index == 0 else repeat_delay_ms
-                    if not await wait_for_flow_timeout(page, wait_ms, stop_event):
-                        print("Flow stopped; runner is idle.", flush=True)
-                        return False
-
-                    if click_index > 0 and recheck_before_repeat:
-                        screenshot = await capture_page_grayscale(page)
-                        x, y, score = find_template(
-                            screenshot,
-                            templates[template_path],
-                            template_path.name,
-                            action.get("click_position", "center"),
-                            scales=action.get("_template_scales", TEMPLATE_SCALES),
-                        )
-                        if score < threshold:
-                            print(
-                                f"{loop_index}.{action_index}: "
-                                f"{template_path.name} disappeared after "
-                                f"{click_index} click(s), score={score:.3f}; "
-                                "skip remaining repeat clicks",
-                                flush=True,
-                            )
-                            break
-                        print(
-                            f"{loop_index}.{action_index}: "
-                            f"{template_path.name} still present at {x},{y}, "
-                            f"score={score:.3f}; repeat click",
-                            flush=True,
-                        )
-
-                    await page.evaluate(
-                        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-                    )
-                    await page.mouse.click(x, y, button=button)
-                continue
-
-            ms = int(action["ms"])
-            note = action.get("note")
-            note_suffix = f" ({note})" if note else ""
-            completed = await wait_with_countdown(
-                page,
-                ms,
-                f"{loop_index}.{action_index}{note_suffix}",
-                stop_event,
-            )
+                break
             if not completed:
                 print("Flow stopped; runner is idle.", flush=True)
                 return False

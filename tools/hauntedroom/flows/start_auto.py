@@ -1,5 +1,6 @@
 import asyncio
 from pathlib import Path
+from typing import Any
 
 from hauntedroom.core.runtime import flow_checkpoint, wait_with_countdown
 
@@ -8,12 +9,12 @@ START_BATTLE_TEMPLATE_NAME = "start_battle.png"
 BETWEEN_MAPS_WAIT_MS = 2_000
 
 
-def get_start_battle_actions(actions: list[dict]) -> list[dict]:
+def get_start_battle_actions(actions: list[Any]) -> list[Any]:
     """Return the shared start-room prefix, including the Start Battle click."""
     for index, action in enumerate(actions):
-        template_path = action.get("_template_path")
+        template_path = getattr(action, "template_path", None)
         if (
-            action.get("type") == "click_template"
+            getattr(action, "type", None) == "click_template"
             and isinstance(template_path, Path)
             and template_path.name == START_BATTLE_TEMPLATE_NAME
         ):
@@ -31,7 +32,7 @@ async def map_was_lost(page) -> bool:
 
 async def run_start_automap_loop(
     page,
-    actions: list[dict],
+    actions: list[Any],
     automap_flow,
     stop_event: asyncio.Event,
     action_runner,

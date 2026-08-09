@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 from typing import Mapping, Optional
 
+from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
 
 
@@ -65,7 +66,7 @@ def finish_flow_task(flow_task) -> None:
 
 async def run_standby_controller(
     page,
-    actions: list[dict],
+    actions: list[Action],
     flow_commands: Mapping[str, object],
     dev_reload: bool = False,
     debug: bool = False,

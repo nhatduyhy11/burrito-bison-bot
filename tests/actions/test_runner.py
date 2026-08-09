@@ -8,6 +8,11 @@ import numpy as np
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
+from hauntedroom.actions.models import (
+    ClearBlockersAction,
+    ClickAction,
+    ClickTemplateAction,
+)
 from hauntedroom.actions.runner import (
     SKIP_TEMPLATE_MATCHED,
     run_actions,
@@ -26,13 +31,12 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
 
         self.template_path = Path("start.png")
         self.actions = [
-            {
-                "type": "click_template",
-                "_template_path": self.template_path,
-                "note": "Start",
-                "delay_ms": 0,
-            },
-            {"type": "click", "x": 10, "y": 20},
+            ClickTemplateAction(
+                template_path=self.template_path,
+                note="Start",
+                delay_ms=0,
+            ),
+            ClickAction(x=10, y=20),
         ]
 
     @patch(
@@ -139,10 +143,15 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         self, wait_for_template, load_template
     ):
         skip_path = Path("home.png")
-        self.actions[0]["_skip_if_template_path"] = skip_path
-        self.actions[0]["click_position"] = "mid_left"
-        self.actions[0]["_template_scales"] = (1.0, 0.67, 0.5)
-        self.actions[0]["_skip_template_scales"] = (0.5,)
+        self.actions[0] = ClickTemplateAction(
+            template_path=self.template_path,
+            note="Start",
+            delay_ms=0,
+            skip_if_template_path=skip_path,
+            click_position="mid_left",
+            template_scales=(1.0, 0.67, 0.5),
+            skip_template_scales=(0.5,),
+        )
         wait_for_template.return_value = SKIP_TEMPLATE_MATCHED
 
         await run_actions(self.page, self.actions, loop_count=1)
@@ -188,16 +197,15 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         find_template,
         capture_page_grayscale,
     ):
-        action = {
-            "type": "click_template",
-            "_template_path": Path("start_home.png"),
-            "_template_scales": (1.0,),
-            "click_position": "mid_left",
-            "click_count": 3,
-            "delay_ms": 0,
-            "repeat_delay_ms": 1000,
-            "recheck_before_repeat": True,
-        }
+        action = ClickTemplateAction(
+            template_path=Path("start_home.png"),
+            template_scales=(1.0,),
+            click_position="mid_left",
+            click_count=3,
+            delay_ms=0,
+            repeat_delay_ms=1000,
+            recheck_before_repeat=True,
+        )
         wait_for_template.return_value = (10, 20, 0.95)
         capture_page_grayscale.return_value = np.zeros((10, 10), dtype=np.uint8)
         find_template.side_effect = [(30, 40, 0.96), (0, 0, 0.40)]
@@ -228,12 +236,11 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         clear_blockers,
         _load_template,
     ):
-        action = {
-            "type": "clear_blockers",
-            "_blocker_paths": [Path("overlay.png")],
-            "_until_template_path": Path("start_home.png"),
-            "_until_template_scales": (1.0,),
-        }
+        action = ClearBlockersAction(
+            blocker_paths=(Path("overlay.png"),),
+            until_template_path=Path("start_home.png"),
+            until_template_scales=(1.0,),
+        )
         clear_blockers.return_value = True
 
         await run_actions(self.page, [action], loop_count=1)

@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 
 GAME_URL = "https://hauntedroomvnh5.joynetgame.com/"
@@ -11,8 +11,8 @@ DEFAULT_PROFILE_DIR = Path(".tmp/hauntedroom-profile")
 
 
 def prepare_runner(
-    action_loader: Callable[[Path], list[dict]],
-) -> tuple[argparse.Namespace, list[dict], Path]:
+    action_loader: Callable[[Path], list[Any]],
+) -> tuple[argparse.Namespace, list[Any], Path]:
     parser = argparse.ArgumentParser(
         description=(
             "Run template/click/wait automation for Haunted Room in a "

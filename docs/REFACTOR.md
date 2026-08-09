@@ -47,12 +47,13 @@ flow tại `tools/hauntedroom/flows/start_auto.py`.
 
 | Ưu tiên | Điểm nóng | Vị trí | Kích thước hiện tại | Vấn đề chính |
 | --- | --- | --- | ---: | --- |
-| Cao | `run_actions` | `tools/hauntedroom/actions/runner.py:96` | 271 dòng | Dispatch action, retry policy, timeout, logging, template wait và click-repeat nằm chung |
-| Cao | `load_actions` | `tools/hauntedroom/actions/loader.py:37` | 154 dòng | Parse/validate/resolve path/mutate raw dict cùng một pass; thêm action type sẽ tiếp tục phình |
 | Trung bình | `run_research_flow` | `tools/hauntedroom/flows/research.py:23` | 120 dòng | State `available -> active -> available` nằm trong nested loop, khó mở rộng thêm trạng thái |
 | Trung bình | `clear_blockers` | `tools/hauntedroom/control_events/blockers.py:21` | 81 dòng, 12 tham số | Signature dài; timeout semantics là inactivity timeout nhưng tên vẫn dễ hiểu nhầm là total timeout |
 | Thấp | command spec factory | `tools/hauntedroom/runner/commands.py` | 148 dòng | Command spec đã gom switch-case lặp; default wiring nằm riêng trong `default_commands.py` để tránh sibling import ngược |
 | Thấp | `wait_for_template` | `tools/hauntedroom/actions/runner.py:31` | 63 dòng, 11 tham số | Logic còn ổn, nhưng nên gom config nếu tiếp tục thêm option |
+
+Đã xử lý: action loader/runner không còn dùng raw dict làm contract; loader trả
+typed object và runner đã chia executor theo action type.
 
 ## Line-count audit
 
@@ -151,11 +152,11 @@ Audit:
 - `tools/hauntedroom/runner/standby.py`: standby loop hiện cohesive hơn: hotkey
   queue, control command và lifecycle task. Nên theo dõi nếu thêm nhiều control
   command mới.
-- `tools/hauntedroom/actions/runner.py`: over-responsibility rõ. `run_actions`
-  gom dispatch, retry/timeout policy, template matching orchestration, logging và
-  click-repeat behavior.
-- `tools/hauntedroom/actions/loader.py`: đã hiện trong non-test top 15 và là issue
-  architecture liên quan trực tiếp với runner vì contract vẫn là raw dict.
+- `tools/hauntedroom/actions/runner.py`: đã tách executor theo action type;
+  `run_actions` còn giữ orchestration chung như loop, retry/timeout và preload
+  template.
+- `tools/hauntedroom/actions/loader.py`: đã chuyển từ mutate raw dict sang parse
+  JSON thành typed action object.
 - `tools/hauntedroom/flows/automap.py`: dài nhưng chưa phải over-responsibility
   nghiêm trọng. Vai trò hiện là coordinator/state/public API; phase logic đã tách
   sang support modules.
@@ -195,33 +196,35 @@ Audit:
 
 ## Các điểm cần cải thiện
 
-### 1. Raw `dict` vẫn là contract giữa loader và runner
+### 1. Action boundary đã chuyển sang typed object
 
-`load_actions` vẫn trả `list[dict]` và thêm internal key như `_template_path`,
-`_blocker_paths`, `_until_template_path`. `run_actions` giả định các key này tồn
-tại.
-
-Validation đã tốt hơn trước, nhưng contract vẫn yếu:
-
-- type checker không giúp nhiều
-- loader mutate raw dictionary vừa parse từ JSON
-- executor vẫn phải đọc default và ép kiểu ở nhiều nhánh
-- thêm action type vẫn cần sửa cả validate branch và execute branch lớn
-
-Nên chuyển sang dataclass hoặc discriminated union:
+`load_actions` hiện trả `list[Action]` với các dataclass cụ thể trong
+`tools/hauntedroom/actions/models.py`:
 
 - `ClickAction`
 - `ClickTemplateAction`
 - `WaitAction`
 - `ClearBlockersAction`
 
-Nếu muốn bước nhỏ hơn, dùng `TypedDict` trước rồi refactor executor sau.
+Loader resolve path, validate field và normalize default vào object trước khi
+trả về. Runner không còn đọc internal key `_template_path`, `_blocker_paths` hay
+`_until_template_path` từ raw dict.
 
-### 2. Validation đã cải thiện nhưng chưa normalize triệt để
+Executor cũng đã được tách theo action type:
+
+- `execute_click_action`
+- `execute_click_template_action`
+- `execute_wait_action`
+- `execute_clear_blockers_action`
+
+`run_actions` giờ giữ vai trò orchestration chung: preload template, loop,
+soft-stop, timeout retry và reset timeout count sau loop thành công.
+
+### 2. Validation đã normalize ở typed boundary
 
 Không còn đúng khi nói `load_actions` chỉ kiểm tra `wait.ms`. Hiện loader đã
 validate threshold, timing âm, scales, priority, click position, click count và
-boolean field.
+boolean field, đồng thời normalize default/path trước khi runner nhận action.
 
 Phần còn thiếu:
 
@@ -293,20 +296,18 @@ dependency truyền qua helper, không phải tạo handler registry tổng quá
 
 ## Thứ tự refactor đề xuất
 
-1. Chuyển action raw dict thành typed object hoặc `TypedDict`; sau đó chia
-   executor theo action type.
-2. Cập nhật architecture test để quét recursive package con.
-3. Cấu hình test discovery để root pytest không collect nhầm `ref_cv/tests`.
-4. Tách `run_research_flow` thành hai phase nhỏ: available và active.
-5. Đổi `clear_blockers` sang `BlockerConfig` và document/rename timeout theo
+1. Cập nhật architecture test để quét recursive package con.
+2. Cấu hình test discovery để root pytest không collect nhầm `ref_cv/tests`.
+3. Tách `run_research_flow` thành hai phase nhỏ: available và active.
+4. Đổi `clear_blockers` sang `BlockerConfig` và document/rename timeout theo
    inactivity semantics.
 
 ## Không còn là issue chính
 
 - Không cần chia test monolith nữa; việc này đã xong ở mức đủ tốt.
 - README không còn sai default `delay_ms`.
-- Validation action không còn quá sơ sài như snapshot cũ, chỉ còn thiếu normalize
-  typed boundary.
+- Action JSON không còn chạy qua raw dict sau loader; loader trả typed action
+  object và runner đã tách executor theo action type.
 - Auto-map không cần refactor lớn ngay; coordinator khoảng 440 dòng nhưng phase logic đã
   được tách theo feature và hiện chưa phải điểm nóng nhất.
 - Entrypoint/controller mini đã được xử lý: `hauntedroom_runner.py` chỉ còn

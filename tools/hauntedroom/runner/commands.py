@@ -3,17 +3,18 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Awaitable, Callable, Optional
 
+from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import FlowControl
 
 
 FlowStarter = Callable[[object, object, bool], Awaitable[object]]
-FlowResolver = Callable[[list[dict], bool, Optional[Path]], "ResolvedFlow"]
+FlowResolver = Callable[[list[Action], bool, Optional[Path]], "ResolvedFlow"]
 ControlFactory = Callable[[], object]
 
 
 @dataclass(frozen=True)
 class ResolvedFlow:
-    actions: list[dict]
+    actions: list[Action]
     run: FlowStarter
 
 
@@ -28,10 +29,10 @@ class FlowCommand:
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
     def reload_actions_for_dev(
-        actions: list[dict],
+        actions: list[Action],
         dev_reload: bool,
         actions_path: Optional[Path],
-    ) -> list[dict]:
+    ) -> list[Action]:
         if not dev_reload or actions_path is None:
             return actions
 
@@ -40,7 +41,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return reloaded_actions
 
     def resolve_enter_exit(
-        actions: list[dict],
+        actions: list[Action],
         dev_reload: bool,
         actions_path: Optional[Path],
     ) -> ResolvedFlow:
@@ -58,7 +59,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     def resolve_automap(
-        actions: list[dict],
+        actions: list[Action],
         dev_reload: bool,
         _actions_path: Optional[Path],
     ) -> ResolvedFlow:
@@ -70,7 +71,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     def resolve_start_auto(
-        actions: list[dict],
+        actions: list[Action],
         dev_reload: bool,
         actions_path: Optional[Path],
     ) -> ResolvedFlow:
@@ -90,7 +91,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     def resolve_click_loop(
-        actions: list[dict],
+        actions: list[Action],
         dev_reload: bool,
         _actions_path: Optional[Path],
     ) -> ResolvedFlow:
@@ -102,7 +103,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     def resolve_research(
-        actions: list[dict],
+        actions: list[Action],
         dev_reload: bool,
         _actions_path: Optional[Path],
     ) -> ResolvedFlow:

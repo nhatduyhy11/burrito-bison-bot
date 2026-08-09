@@ -8,6 +8,7 @@ from unittest.mock import ANY, AsyncMock, Mock, call, patch
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
+from hauntedroom.actions.models import ClickTemplateAction
 from hauntedroom.flows.start_auto import (
     BETWEEN_MAPS_WAIT_MS,
     get_start_battle_actions,
@@ -18,18 +19,9 @@ from hauntedroom.flows.start_auto import (
 
 class StartAutomapLoopTest(IsolatedAsyncioTestCase):
     def setUp(self):
-        self.start_home = {
-            "type": "click_template",
-            "_template_path": Path("rooms/start_home.png"),
-        }
-        self.start_battle = {
-            "type": "click_template",
-            "_template_path": Path("rooms/start_battle.png"),
-        }
-        self.exit_click = {
-            "type": "click_template",
-            "_template_path": Path("rooms/exit_click.png"),
-        }
+        self.start_home = ClickTemplateAction(Path("rooms/start_home.png"))
+        self.start_battle = ClickTemplateAction(Path("rooms/start_battle.png"))
+        self.exit_click = ClickTemplateAction(Path("rooms/exit_click.png"))
         self.actions = [self.start_home, self.start_battle, self.exit_click]
 
     def test_start_actions_reuse_prefix_and_exclude_exit_actions(self):
