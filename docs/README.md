@@ -111,6 +111,14 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`; riêng `Shift+3` toggle pause/resume cho chính start-auto loop và `Shift+8` chỉ chụp screenshot nên không bị chặn. `Shift+0` vẫn dừng hẳn được flow `Shift+3` khi flow đang pause.
 
+Code runner được chia theo trách nhiệm:
+
+- `tools/hauntedroom_runner.py`: entrypoint, CLI/browser bootstrap và shutdown.
+- `tools/hauntedroom/runner/standby.py`: hotkey queue, control command và lifecycle task.
+- `tools/hauntedroom/runner/commands.py`: map hotkey sang flow resolver/start function.
+- `tools/hauntedroom/runner/reload.py`: dev reload policy.
+- `tools/hauntedroom/flows/start_auto.py`: composite flow/wrapper `Shift+3`.
+
 Bốn action hiện được hỗ trợ. Flow dùng `clear_blockers` tại các checkpoint có thể xuất hiện popup:
 
 ```json

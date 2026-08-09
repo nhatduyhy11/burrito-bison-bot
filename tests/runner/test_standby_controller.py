@@ -19,7 +19,8 @@ from hauntedroom.flows.click_loop import (
     CLICK_POSITION,
     run_click_loop,
 )
-from hauntedroom_runner import get_automap_flow, run_standby_controller
+from hauntedroom.runner.reload import get_automap_flow
+from hauntedroom.runner.standby import run_standby_controller
 
 
 class StandbyControllerTest(IsolatedAsyncioTestCase):
@@ -44,8 +45,8 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertTrue(control.is_set())
         self.assertFalse(control.is_paused)
 
-    @patch("hauntedroom_runner.reload_action_modules")
-    @patch("hauntedroom_runner.importlib.reload")
+    @patch("hauntedroom.runner.reload.reload_action_modules")
+    @patch("hauntedroom.runner.reload.importlib.reload")
     def test_dev_reload_refreshes_support_modules_before_automap(
         self, reload_module, reload_action_modules
     ):
@@ -100,7 +101,54 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             ],
         )
 
-    @patch("hauntedroom_runner.importlib.reload", side_effect=AssertionError)
+    @patch("hauntedroom.runner.reload.importlib.reload")
+    def test_action_reload_refreshes_action_loader_and_runner(self, reload_module):
+        from hauntedroom.actions import loader as actions_loader
+        from hauntedroom.actions import runner as actions_runner
+        from hauntedroom.control_events import blockers as control_blockers
+        from hauntedroom.control_events import new_tab_blocker
+        from hauntedroom.core import template, vision
+        from hauntedroom.runner import reload as reload_policy
+
+        refreshed_load_actions = Mock()
+        refreshed_run_actions = Mock()
+        refreshed_loader = Mock(load_actions=refreshed_load_actions)
+        refreshed_runner = Mock(run_actions=refreshed_run_actions)
+        reload_module.side_effect = [
+            template,
+            vision,
+            new_tab_blocker,
+            control_blockers,
+            refreshed_loader,
+            refreshed_runner,
+        ]
+        original_load_actions = reload_policy.load_actions
+        original_run_actions = reload_policy.run_actions
+
+        try:
+            result = reload_policy.reload_action_modules()
+            observed_load_actions = reload_policy.load_actions
+            observed_run_actions = reload_policy.run_actions
+        finally:
+            reload_policy.load_actions = original_load_actions
+            reload_policy.run_actions = original_run_actions
+
+        self.assertIs(result, refreshed_run_actions)
+        self.assertIs(observed_load_actions, refreshed_load_actions)
+        self.assertIs(observed_run_actions, refreshed_run_actions)
+        self.assertEqual(
+            reload_module.call_args_list,
+            [
+                call(template),
+                call(vision),
+                call(new_tab_blocker),
+                call(control_blockers),
+                call(actions_loader),
+                call(actions_runner),
+            ],
+        )
+
+    @patch("hauntedroom.runner.reload.importlib.reload", side_effect=AssertionError)
     def test_normal_mode_does_not_reload(self, _reload_module):
         from hauntedroom.flows import automap
 
@@ -116,8 +164,8 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             Path("tests/fixtures/hauntedroom-captures"),
         )
 
-    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
-    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
     async def test_shift_8_saves_live_screenshot_and_stays_idle(
         self,
         start_hotkey_listener,
@@ -139,10 +187,10 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         save_live_screenshot.assert_awaited_once_with(page)
 
-    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
-    @patch("hauntedroom_runner.load_actions")
-    @patch("hauntedroom_runner.get_action_runner")
-    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.commands.reload_policy.load_actions")
+    @patch("hauntedroom.runner.commands.reload_policy.get_action_runner")
+    @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
     async def test_dev_reload_reloads_actions_file_before_shift_1(
         self,
         start_hotkey_listener,
@@ -181,21 +229,25 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             stop_event=action_runner.await_args.kwargs["stop_event"],
         )
 
-    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
-    @patch("hauntedroom_runner.run_start_automap_loop", new_callable=AsyncMock)
-    @patch("hauntedroom_runner.get_automap_flow")
-    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.commands.reload_policy.get_action_runner")
+    @patch("hauntedroom.runner.commands.reload_policy.get_automap_flow")
+    @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
     async def test_shift_3_starts_combined_loop_with_automap(
         self,
         start_hotkey_listener,
         get_automap_flow,
+        get_action_runner,
         run_start_automap_loop,
         save_live_screenshot,
     ):
         page = Mock()
         actions = [{"type": "test-action"}]
         automap_flow = AsyncMock()
+        action_runner = AsyncMock()
         get_automap_flow.return_value = automap_flow
+        get_action_runner.return_value = action_runner
 
         async def enqueue_commands(_page, command_queue):
             command_queue.put_nowait("3")
@@ -206,6 +258,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             _actions,
             _automap,
             stop_event,
+            _action_runner,
             _debug,
         ):
             await stop_event.wait()
@@ -219,19 +272,23 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             await run_standby_controller(page, actions, dev_reload=True)
 
         get_automap_flow.assert_called_once_with(True)
+        get_action_runner.assert_called_once_with(False)
         run_start_automap_loop.assert_awaited_once()
         self.assertIs(run_start_automap_loop.await_args.args[0], page)
         self.assertIs(run_start_automap_loop.await_args.args[1], actions)
         self.assertIs(run_start_automap_loop.await_args.args[2], automap_flow)
+        self.assertIs(run_start_automap_loop.await_args.args[4], action_runner)
 
-    @patch("hauntedroom_runner.save_live_screenshot", new_callable=AsyncMock)
-    @patch("hauntedroom_runner.run_start_automap_loop", new_callable=AsyncMock)
-    @patch("hauntedroom_runner.get_automap_flow")
-    @patch("hauntedroom_runner.start_hotkey_listener", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.commands.reload_policy.get_action_runner")
+    @patch("hauntedroom.runner.commands.reload_policy.get_automap_flow")
+    @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
     async def test_shift_3_toggles_pause_and_resume_then_shift_0_stops(
         self,
         start_hotkey_listener,
         get_automap_flow,
+        get_action_runner,
         run_start_automap_loop,
         save_live_screenshot,
     ):
@@ -239,9 +296,10 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         started = asyncio.Event()
         resumed = asyncio.Event()
         observed_control = None
+        get_action_runner.return_value = AsyncMock()
 
         async def controllable_flow(
-            _page, _actions, _automap, flow_control, _debug
+            _page, _actions, _automap, flow_control, _action_runner, _debug
         ):
             nonlocal observed_control
             observed_control = flow_control

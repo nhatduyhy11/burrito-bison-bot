@@ -12,12 +12,25 @@ Chạy từ thư mục gốc của repo:
 uv sync
 ```
 
-Test dùng `unittest` trong Python standard library; các dependency OpenCV và NumPy
-được lấy từ môi trường do `uv` quản lý.
+Test chủ yếu viết bằng `unittest` trong Python standard library nhưng được chạy
+qua `pytest` để có output gọn và hỗ trợ subtests tốt hơn. Các dependency OpenCV
+và NumPy được lấy từ môi trường do `uv` quản lý.
 
 ## Chạy test
 
-Chạy toàn bộ suite:
+Chạy toàn bộ suite chính:
+
+```shell
+uv run --with pytest pytest tests -q
+```
+
+Snapshot hiện tại:
+
+```text
+119 passed, 12 subtests passed
+```
+
+Lệnh `unittest discover` vẫn dùng được khi cần debug theo standard library:
 
 ```shell
 uv run python -m unittest discover -s tests -v
@@ -57,7 +70,9 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
   Asset và selection contract được mô tả tại
   [`tools/rooms/automap/hero_levelup/README.md`](../tools/rooms/automap/hero_levelup/README.md).
 - `research/`: polling và interaction của flow research.
-- `runner/`: standby controller, hotkey, live capture và dev reload.
+- `runner/`: standby controller, command specs, hotkey, live capture và dev reload.
+- `runner/test_start_automap_loop.py`: regression cho composite flow
+  `tools/hauntedroom/flows/start_auto.py`.
 - `tests/fixtures/`: screenshot cố định cho các test nhận diện ảnh.
 
 Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong

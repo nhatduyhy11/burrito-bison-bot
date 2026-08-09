@@ -36,10 +36,16 @@ tools/hauntedroom/
 │   ├── __init__.py
 │   ├── blockers.py
 │   └── new_tab_blocker.py
+├── runner/
+│   ├── __init__.py
+│   ├── commands.py
+│   ├── reload.py
+│   └── standby.py
 └── flows/
     ├── __init__.py
     ├── automap_support/
     ├── automap.py
+    ├── start_auto.py
     └── research.py
 ```
 
@@ -61,13 +67,20 @@ import `actions`, `flows` hay entrypoint.
   preempt normal flow.
 - `control_events/new_tab_blocker.py`: chặn tab profile từ trang game, xử lý
   fallback đóng tab và inject CSS ẩn game-core iframe sau startup delay 30 giây.
+- `runner/commands.py`: command spec cho hotkey flow, gồm tên hiển thị,
+  resolver dev-reload/action JSON và factory stop control.
+- `runner/reload.py`: policy hot-reload module Python cho từng nhóm flow.
+- `runner/standby.py`: hotkey standby loop, control command `Shift+0`/`Shift+8`,
+  pause/resume `Shift+3` và lifecycle task.
 - `flows/automap.py`: coordinator, state và public API của battle priority
   `Shift+2`.
 - `flows/automap_support/`: detector, action và phase orchestration dùng riêng
   bởi auto-map.
+- `flows/start_auto.py`: composite flow của `Shift+3`, tái dùng prefix action
+  `start_battle.png`, gọi auto-map và cooldown giữa map.
 - `flows/research.py`: flow research của `Shift+9`.
-- `hauntedroom_runner.py`: composition root, browser bootstrap, hotkey controller
-  và hot-reload.
+- `hauntedroom_runner.py`: composition root và browser bootstrap. Entrypoint chỉ
+  nối CLI/browser với action runner hoặc standby controller.
 
 Validation liên quan schema action, bao gồm `validate_threshold`, nằm trong
 `actions/loader.py`; `core/vision.py` không biết raw action dictionary.
@@ -89,13 +102,17 @@ flowchart TD
     runtime[hauntedroom.core.runtime]
     template[hauntedroom.core.template]
     vision[hauntedroom.core.vision]
+    runner[hauntedroom.runner]
 
     entry --> actions
-    entry --> flows
+    entry --> runner
     entry --> cli
     entry --> runtime
-    entry --> template
-    entry --> vision
+    entry --> controlEvents
+    runner --> actions
+    runner --> flows
+    runner --> runtime
+    runner --> controlEvents
     actions --> runtime
     actions --> template
     actions --> vision
@@ -114,8 +131,10 @@ Các rule cụ thể:
    phụ thuộc `core`, nhưng không import `actions` hoặc `flows`.
 3. `actions` và `flows` không import lẫn nhau.
 4. Flow trong `flows` không import flow khác.
-5. Entrypoint là nơi nối hotkey với flow; module tầng dưới không import ngược
-   `hauntedroom_runner`.
+5. `runner` là nơi nối hotkey với flow và action runner; module tầng dưới không
+   import ngược `hauntedroom_runner`.
+6. Entrypoint không chứa business flow policy; nó chỉ bootstrap browser và gọi
+   `runner.standby`.
 
 Hiện tại `blockers.py` là control event duy nhất. Chưa tạo enum, registry hay
 contract tổng quát. Khi battle win/lose được implement và xuất hiện nhu cầu dùng
@@ -146,10 +165,13 @@ dùng action JSON và chạy độc lập trong `flows`.
 ## Hot-reload
 
 Dev mode reload module Python trước khi bắt đầu flow mới, trong khi browser và
-session hiện tại vẫn được giữ nguyên. `Shift+2`/`Shift+3` reload `core.vision`,
-action support, `flows.automap_support` rồi `flows.automap` để các import
-by-value bind lại function/constant mới. `Shift+1`/`Shift+3` cũng load lại action
-JSON trước khi chạy.
+session hiện tại vẫn được giữ nguyên. Policy nằm trong `runner/reload.py`.
+`Shift+2`/`Shift+3` reload `core.vision`, action support,
+`flows.automap_support` rồi `flows.automap` để các import by-value bind lại
+function/constant mới. `Shift+1`/`Shift+3` cũng load lại action JSON trước khi
+chạy. `runner.commands.resolve_start_auto()` truyền action runner hiện tại vào
+`flows.start_auto.run_start_automap_loop()`, nên entry actions của `Shift+3`
+dùng runner đã reload mà flow module không cần import `actions`.
 
 ## Hệ quả
 
@@ -157,7 +179,8 @@ JSON trước khi chạy.
 
 - Nhìn tree có thể nhận ra ngay foundational layer và hai nhóm feature.
 - Dependency direction rõ ràng và không có circular import.
-- Thêm flow mới không làm action engine hoặc core biết về flow đó.
+- Thêm flow mới không làm action engine hoặc core biết về flow đó; chỉ cần đăng
+  ký command spec trong `runner/commands.py`.
 - Schema action không rò rỉ vào vision layer.
 - `common.py` không còn là nơi gom helper không giới hạn.
 
@@ -172,7 +195,8 @@ JSON trước khi chạy.
 
 ## Tiêu chí mở rộng
 
-- Thêm hotkey flow: tạo module mới trong `flows/` và đăng ký tại composition root.
+- Thêm hotkey flow: tạo module mới trong `flows/` và đăng ký tại
+  `runner/commands.py`.
 - Thêm action type: cập nhật `actions/loader.py` và `actions/runner.py`.
 - Thêm foundational capability: chỉ đặt trong `core` nếu capability không biết
   feature nào đang sử dụng nó và không import lên `actions`/`flows`.

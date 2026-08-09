@@ -8,7 +8,7 @@ from unittest.mock import ANY, AsyncMock, Mock, call, patch
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom_runner import (
+from hauntedroom.flows.start_auto import (
     BETWEEN_MAPS_WAIT_MS,
     get_start_battle_actions,
     map_was_lost,
@@ -46,27 +46,22 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         self.assertFalse(await map_was_lost(Mock()))
 
     @patch(
-        "hauntedroom_runner.wait_with_countdown",
+        "hauntedroom.flows.start_auto.wait_with_countdown",
         new_callable=AsyncMock,
     )
     @patch(
-        "hauntedroom_runner.map_was_lost",
-        new_callable=AsyncMock,
-    )
-    @patch(
-        "hauntedroom_runner.run_actions",
+        "hauntedroom.flows.start_auto.map_was_lost",
         new_callable=AsyncMock,
     )
     async def test_loops_start_then_automap_until_loss(
         self,
-        run_actions,
         map_was_lost_mock,
         wait_with_countdown_mock,
     ):
         page = Mock()
         stop_event = asyncio.Event()
         automap_flow = AsyncMock(return_value=True)
-        run_actions.return_value = True
+        action_runner = AsyncMock(return_value=True)
         map_was_lost_mock.side_effect = [False, True]
         wait_with_countdown_mock.return_value = True
 
@@ -75,12 +70,13 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             self.actions,
             automap_flow,
             stop_event,
+            action_runner,
         )
 
         self.assertTrue(completed)
-        self.assertEqual(run_actions.await_count, 2)
+        self.assertEqual(action_runner.await_count, 2)
         self.assertEqual(
-            run_actions.await_args_list,
+            action_runner.await_args_list,
             [
                 call(
                     page,
@@ -123,19 +119,14 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         )
 
     @patch(
-        "hauntedroom_runner.map_was_lost",
-        new_callable=AsyncMock,
-    )
-    @patch(
-        "hauntedroom_runner.run_actions",
+        "hauntedroom.flows.start_auto.map_was_lost",
         new_callable=AsyncMock,
     )
     async def test_stops_when_automap_does_not_complete(
         self,
-        run_actions,
         map_was_lost_mock,
     ):
-        run_actions.return_value = True
+        action_runner = AsyncMock(return_value=True)
         automap_flow = AsyncMock(return_value=False)
 
         completed = await run_start_automap_loop(
@@ -143,39 +134,36 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             self.actions,
             automap_flow,
             asyncio.Event(),
+            action_runner,
         )
 
         self.assertFalse(completed)
         map_was_lost_mock.assert_not_awaited()
 
     @patch(
-        "hauntedroom_runner.wait_with_countdown",
+        "hauntedroom.flows.start_auto.wait_with_countdown",
         new_callable=AsyncMock,
         return_value=True,
     )
     @patch(
-        "hauntedroom_runner.map_was_lost",
+        "hauntedroom.flows.start_auto.map_was_lost",
         new_callable=AsyncMock,
         side_effect=[False, False, True],
     )
-    @patch(
-        "hauntedroom_runner.run_actions",
-        new_callable=AsyncMock,
-        return_value=True,
-    )
     async def test_start_loop_does_not_override_click_exit_on_boss_setting(
         self,
-        _run_actions,
         _map_was_lost,
         _wait_with_countdown,
     ):
         automap_flow = AsyncMock(return_value=True)
+        action_runner = AsyncMock(return_value=True)
 
         completed = await run_start_automap_loop(
             Mock(),
             self.actions,
             automap_flow,
             asyncio.Event(),
+            action_runner,
         )
 
         self.assertTrue(completed)
@@ -184,23 +172,17 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         self.assertNotIn("click_exit_on_boss", automap_flow.await_args_list[2].kwargs)
 
     @patch(
-        "hauntedroom_runner.wait_with_countdown",
+        "hauntedroom.flows.start_auto.wait_with_countdown",
         new_callable=AsyncMock,
         return_value=True,
     )
     @patch(
-        "hauntedroom_runner.map_was_lost",
+        "hauntedroom.flows.start_auto.map_was_lost",
         new_callable=AsyncMock,
         side_effect=[False, False, True],
     )
-    @patch(
-        "hauntedroom_runner.run_actions",
-        new_callable=AsyncMock,
-        return_value=True,
-    )
     async def test_recorded_win_keeps_third_loop_in_normal_automap_mode(
         self,
-        _run_actions,
         _map_was_lost,
         _wait_with_countdown,
     ):
@@ -212,12 +194,14 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         complete_map.call_count = 0
         automap_flow = AsyncMock(side_effect=complete_map)
+        action_runner = AsyncMock(return_value=True)
 
         completed = await run_start_automap_loop(
             Mock(),
             self.actions,
             automap_flow,
             asyncio.Event(),
+            action_runner,
         )
 
         self.assertTrue(completed)

@@ -235,7 +235,9 @@ thái idle để có thể sửa và thử lại.
 ## Vị trí code và test
 
 - Auto-map coordinator/public API: `tools/hauntedroom/flows/automap.py`.
-- Wrapper `Shift+3` và hotkey controller: `tools/hauntedroom_runner.py`.
+- Wrapper/composite flow `Shift+3`: `tools/hauntedroom/flows/start_auto.py`.
+- Hotkey standby/controller: `tools/hauntedroom/runner/standby.py`.
+- Command mapping cho `Shift+2`/`Shift+3`: `tools/hauntedroom/runner/commands.py`.
 - Detector, action và phase rule hỗ trợ:
   `tools/hauntedroom/flows/automap_support/`.
 - Template: `tools/rooms/automap/` và `tools/rooms/boss/`.
