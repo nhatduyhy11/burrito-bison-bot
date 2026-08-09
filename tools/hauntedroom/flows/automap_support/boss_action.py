@@ -8,13 +8,12 @@ import cv2
 import numpy as np
 
 from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
-from hauntedroom.core.template import find_template
+from hauntedroom.core.template import find_template, load_bgr_reference
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.boss_detector import (
     PET_READY_REGION,
     SPELL_READY_REGION,
     boss_action_has_ready_glow,
-    load_bgr_reference,
 )
 
 

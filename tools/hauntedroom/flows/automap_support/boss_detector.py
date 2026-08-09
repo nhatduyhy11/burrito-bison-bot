@@ -1,6 +1,5 @@
 """Boss-specific OpenCV detectors used by the auto-map battle flow."""
 
-from pathlib import Path
 from typing import Optional
 
 import cv2
@@ -301,10 +300,3 @@ def boss_action_has_ready_glow(
     )
     return live_component >= required_component
 
-
-def load_bgr_reference(path: Path) -> np.ndarray:
-    """Load a color reference used by an auto-map detector."""
-    reference = cv2.imread(str(path), cv2.IMREAD_COLOR)
-    if reference is None:
-        raise ValueError(f"OpenCV could not read auto-map reference: {path}")
-    return reference

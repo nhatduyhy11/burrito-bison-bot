@@ -35,10 +35,11 @@ capture viewport
       v
 1. level-spin interrupt
 2. map end (throttle tối đa một lần mỗi 5 giây)
-3. boss critical handoff
-4. level up
-5. build structure
-6. hero level-up
+3. initial gear setup
+4. boss critical handoff
+5. level up
+6. build structure
+7. hero level-up
       |
       +-- không handler nào match: chờ 600 ms rồi quét lại
       +-- handler đã xử lý: bắt đầu vòng quét mới từ priority 1
@@ -67,7 +68,22 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
   đợi home.
 - Khi `rooms/start_home.png` xuất hiện, đánh dấu auto-map hoàn tất và về idle.
 
-### 3. Boss critical handoff
+### 3. Initial gear setup
+
+- Gear setup thuộc business core của `Shift+2`; `Shift+3` dùng cùng behavior vì
+  gọi lại `run_automap_flow()` cho từng map.
+- Flow chỉ thử setup gear sau khi đã unlock qua một upgrade milestone ổn định
+  như level-up confirm hoặc chọn hero level-up option.
+- Nếu gear chưa unlock, đã thử setup trong map hiện tại, hoặc không thấy gear
+  button trên frame hiện tại thì handler no-op và priority loop tiếp tục như
+  bình thường.
+- Khi thấy gear button lần đầu sau unlock, flow đánh dấu đã attempt trước khi
+  tương tác để tránh lặp vô hạn trên frame animation hoặc kéo nhầm control ở
+  vòng quét sau.
+- Logic nhận diện button, mở menu và kéo gear nằm trong
+  `flows/automap_support/gear_action.py`.
+
+### 4. Boss critical handoff
 
 - Tìm HP bar trước để phát hiện cả mini-boss lẫn final boss cần handoff.
 - Sau khi HP match, phân loại bằng endpoint cố định `(400, 61, 409, 72)`
@@ -117,13 +133,13 @@ Contract: chỉ final boss dùng nhánh này; mini-boss bỏ qua. Hai template l
 flow. Retry mở menu không có timeout/max-attempt riêng và chỉ dừng khi summon
 thành công hoặc nhận `stop_event`.
 
-### 4. Level up
+### 5. Level up
 
 - Nếu có nhiều match `automap/lv_up.png`, chọn match có `y` lớn nhất.
 - Click level-up, chờ `800 ms`, rồi kiểm tra lại `lv_spin`.
 - Nếu không có interrupt, click confirm tại `(430, 366)`.
 
-### 5. Build structure
+### 6. Build structure
 
 - Nếu có nhiều marker `automap/built.png`, chọn marker có `x` lớn nhất; nếu
   trùng `x`, chọn `y` lớn nhất.
@@ -132,7 +148,7 @@ thành công hoặc nhận `stop_event`.
 - Giá màu đỏ hoặc vàng không được xem là available; nếu không có giá trắng thì
   bỏ qua phase này.
 
-### 6. Hero level-up
+### 7. Hero level-up
 
 Danh sách asset, thứ tự sort, threshold và chi tiết fallback được giữ tại
 [`tools/rooms/automap/hero_levelup/README.md`](../tools/rooms/automap/hero_levelup/README.md).

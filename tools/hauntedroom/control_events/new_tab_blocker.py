@@ -3,7 +3,8 @@ from urllib.parse import urlsplit
 
 PROFILE_POPUP_HOST = "cp.hhgame.vn"
 PROFILE_POPUP_PATH_PREFIX = "/v2/user/profile/"
-GAME_CORE_FRAME_GUARD_DELAY_MS = 30_000
+ENABLE_SCRIPT_INJECTION = True
+GAME_CORE_FRAME_GUARD_DELAY_MS = 300_000
 GAME_CORE_FRAME_GUARD_SCRIPT = """() => {
     const id = "haunted-room-hide-hwss-frame";
     if (document.getElementById(id)) return;
@@ -64,6 +65,9 @@ def is_profile_popup_url(url: str) -> bool:
 
 async def install_profile_popup_guard(page) -> None:
     """Prevent known profile popups initiated by the game page."""
+    if not ENABLE_SCRIPT_INJECTION:
+        return
+
     await page.add_init_script(PROFILE_POPUP_GUARD_SCRIPT)
     for frame in page.frames:
         try:
@@ -75,11 +79,17 @@ async def install_profile_popup_guard(page) -> None:
 
 async def install_game_core_frame_guard(page) -> None:
     """Hide the H5 SDK iframe in the current top-level document."""
+    if not ENABLE_SCRIPT_INJECTION:
+        return
+
     await page.evaluate(GAME_CORE_FRAME_GUARD_SCRIPT)
 
 
 async def install_game_core_frame_guard_after_delay(page) -> None:
     """Let the game initialize before injecting the H5 SDK iframe guard."""
+    if not ENABLE_SCRIPT_INJECTION:
+        return
+
     await page.wait_for_timeout(GAME_CORE_FRAME_GUARD_DELAY_MS)
     await install_game_core_frame_guard(page)
     print(
@@ -109,7 +119,8 @@ async def close_profile_popup_tabs(page, label: str = "blocker") -> int:
     await page.bring_to_front()
     print(
         f"{label}: closed {len(popup_pages)} hhgame profile popup tab(s); "
-        "game-core iframe guard remains active",
+        f"game-core iframe guard "
+        f"{'remains active' if ENABLE_SCRIPT_INJECTION else 'is disabled'}",
         flush=True,
     )
     return len(popup_pages)

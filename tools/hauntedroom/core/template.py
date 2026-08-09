@@ -17,6 +17,14 @@ def load_template(path: Path) -> np.ndarray:
     return template
 
 
+def load_bgr_reference(path: Path) -> np.ndarray:
+    """Load a color reference used by image detectors."""
+    reference = cv2.imread(str(path), cv2.IMREAD_COLOR)
+    if reference is None:
+        raise ValueError(f"OpenCV could not read color reference: {path}")
+    return reference
+
+
 def find_template(
     screenshot: np.ndarray,
     template: np.ndarray,

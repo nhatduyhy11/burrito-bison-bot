@@ -7,6 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.control_events.new_tab_blocker import (
+    ENABLE_SCRIPT_INJECTION,
     GAME_CORE_FRAME_GUARD_DELAY_MS,
     GAME_CORE_FRAME_GUARD_SCRIPT,
     PROFILE_POPUP_GUARD_SCRIPT,
@@ -76,6 +77,20 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         first_frame.evaluate.assert_awaited_once_with(PROFILE_POPUP_GUARD_SCRIPT)
         second_frame.evaluate.assert_awaited_once_with(PROFILE_POPUP_GUARD_SCRIPT)
 
+    async def test_profile_popup_guard_can_skip_script_injection(self):
+        page = Mock()
+        page.add_init_script = AsyncMock()
+        page.frames = [Mock(evaluate=AsyncMock())]
+
+        with patch(
+            "hauntedroom.control_events.new_tab_blocker.ENABLE_SCRIPT_INJECTION",
+            False,
+        ):
+            await install_profile_popup_guard(page)
+
+        page.add_init_script.assert_not_awaited()
+        page.frames[0].evaluate.assert_not_awaited()
+
     async def test_install_game_core_guard_injects_css_into_top_document(self):
         page = Mock()
         page.evaluate = AsyncMock()
@@ -83,6 +98,18 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         await install_game_core_frame_guard(page)
 
         page.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
+
+    async def test_game_core_guard_can_skip_script_injection(self):
+        page = Mock()
+        page.evaluate = AsyncMock()
+
+        with patch(
+            "hauntedroom.control_events.new_tab_blocker.ENABLE_SCRIPT_INJECTION",
+            False,
+        ):
+            await install_game_core_frame_guard(page)
+
+        page.evaluate.assert_not_awaited()
 
     async def test_game_core_guard_is_injected_after_startup_delay(self):
         page = Mock()
@@ -97,10 +124,27 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         )
         page.evaluate.assert_awaited_once_with(GAME_CORE_FRAME_GUARD_SCRIPT)
         print_mock.assert_called_once_with(
-            "iframe guard: injected CSS after 30000ms; "
+            f"iframe guard: injected CSS after {GAME_CORE_FRAME_GUARD_DELAY_MS}ms; "
             "#hwssH5GameCoreframe hidden",
             flush=True,
         )
+
+    async def test_delayed_game_core_guard_can_skip_script_injection(self):
+        page = Mock()
+        page.wait_for_timeout = AsyncMock()
+        page.evaluate = AsyncMock()
+
+        with patch(
+            "hauntedroom.control_events.new_tab_blocker.ENABLE_SCRIPT_INJECTION",
+            False,
+        ):
+            await install_game_core_frame_guard_after_delay(page)
+
+        page.wait_for_timeout.assert_not_awaited()
+        page.evaluate.assert_not_awaited()
+
+    def test_script_injection_is_enabled_by_default(self):
+        self.assertTrue(ENABLE_SCRIPT_INJECTION)
 
     def test_game_core_guard_uses_idempotent_visibility_css(self):
         self.assertIn("haunted-room-hide-hwss-frame", GAME_CORE_FRAME_GUARD_SCRIPT)
