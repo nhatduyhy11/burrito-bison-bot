@@ -114,8 +114,9 @@ Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt độn
 Code runner được chia theo trách nhiệm:
 
 - `tools/hauntedroom_runner.py`: entrypoint, CLI/browser bootstrap và shutdown.
-- `tools/hauntedroom/runner/standby.py`: hotkey queue, control command và lifecycle task.
-- `tools/hauntedroom/runner/commands.py`: map hotkey sang flow resolver/start function.
+- `tools/hauntedroom/runner/standby.py`: hotkey queue, control command và lifecycle task; command table được inject từ entrypoint.
+- `tools/hauntedroom/runner/commands.py`: factory/dataclass thuần cho hotkey command spec.
+- `tools/hauntedroom/runner/default_commands.py`: wiring mặc định tạo `FLOW_COMMANDS`.
 - `tools/hauntedroom/runner/reload.py`: dev reload policy.
 - `tools/hauntedroom/flows/start_auto.py`: composite flow/wrapper `Shift+3`.
 

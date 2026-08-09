@@ -1,4 +1,5 @@
 import importlib
+from typing import NamedTuple
 
 from hauntedroom import settings
 from hauntedroom.actions import loader as actions_loader
@@ -24,6 +25,11 @@ from hauntedroom.flows.automap_support import (
 )
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.research import run_research_flow
+
+
+class AutomapRuntime(NamedTuple):
+    automap_flow: object
+    action_runner: object
 
 
 def reload_action_modules():
@@ -78,10 +84,14 @@ def get_research_flow(dev_reload: bool = False):
 
 
 def get_automap_flow(dev_reload: bool = False):
-    if not dev_reload:
-        return automap.run_automap_flow
+    return get_automap_runtime(dev_reload).automap_flow
 
-    reload_action_modules()
+
+def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
+    if not dev_reload:
+        return AutomapRuntime(automap.run_automap_flow, run_actions)
+
+    action_runner = reload_action_modules()
     importlib.reload(settings)
     importlib.reload(boss_detector)
     importlib.reload(detectors)
@@ -94,4 +104,4 @@ def get_automap_flow(dev_reload: bool = False):
     importlib.reload(boss_flow)
     reloaded_automap = importlib.reload(automap)
     print("Auto-map support modules reloaded.", flush=True)
-    return reloaded_automap.run_automap_flow
+    return AutomapRuntime(reloaded_automap.run_automap_flow, action_runner)

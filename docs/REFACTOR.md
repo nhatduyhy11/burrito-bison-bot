@@ -51,7 +51,7 @@ flow tại `tools/hauntedroom/flows/start_auto.py`.
 | Cao | `load_actions` | `tools/hauntedroom/actions/loader.py:37` | 154 dòng | Parse/validate/resolve path/mutate raw dict cùng một pass; thêm action type sẽ tiếp tục phình |
 | Trung bình | `run_research_flow` | `tools/hauntedroom/flows/research.py:23` | 120 dòng | State `available -> active -> available` nằm trong nested loop, khó mở rộng thêm trạng thái |
 | Trung bình | `clear_blockers` | `tools/hauntedroom/control_events/blockers.py:21` | 81 dòng, 12 tham số | Signature dài; timeout semantics là inactivity timeout nhưng tên vẫn dễ hiểu nhầm là total timeout |
-| Thấp | `FLOW_COMMANDS` và resolver | `tools/hauntedroom/runner/commands.py` | 172 dòng | Command spec đã gom switch-case lặp, nhưng test nên tách thêm theo reload/standby/start-auto nếu file test tiếp tục lớn |
+| Thấp | command spec factory | `tools/hauntedroom/runner/commands.py` | 148 dòng | Command spec đã gom switch-case lặp; default wiring nằm riêng trong `default_commands.py` để tránh sibling import ngược |
 | Thấp | `wait_for_template` | `tools/hauntedroom/actions/runner.py:31` | 63 dòng, 11 tham số | Logic còn ổn, nhưng nên gom config nếu tiếp tục thêm option |
 
 ## Line-count audit
@@ -130,11 +130,11 @@ Snapshot:
  223 ./tools/hauntedroom/flows/automap_support/gear_action.py
  190 ./tools/hauntedroom/actions/loader.py
  174 ./tools/hauntedroom/flows/automap_support/map_completion.py
- 172 ./tools/hauntedroom/runner/commands.py
+ 157 ./tools/hauntedroom/runner/standby.py
  166 ./tools/debug_template_match.py
  162 ./tools/hauntedroom/core/template.py
  150 ./tools/hauntedroom/flows/automap_support/upgrade_action.py
- 149 ./tools/hauntedroom/runner/standby.py
+ 148 ./tools/hauntedroom/runner/commands.py
  146 ./tools/hauntedroom/flows/automap_support/boss_action.py
  143 ./ref_cv/vision.py
  142 ./tools/hauntedroom/flows/research.py
@@ -145,8 +145,9 @@ Audit:
 - `tools/hauntedroom_runner.py`: không còn là over-responsibility chính; file
   hiện khoảng 86 dòng và chỉ giữ composition root/browser lifecycle.
 - `tools/hauntedroom/runner/commands.py`: command mapping đã data-driven thay vì
-  switch-case lặp; kích thước chủ yếu do mỗi hotkey có resolver riêng. Chưa cần
-  abstraction sâu hơn nếu số hotkey vẫn nhỏ.
+  switch-case lặp. Module này là factory thuần, không import `reload`,
+  `start_auto` hay `standby`; default wiring nằm trong `default_commands.py`, và
+  `standby` nhận command table qua injection.
 - `tools/hauntedroom/runner/standby.py`: standby loop hiện cohesive hơn: hotkey
   queue, control command và lifecycle task. Nên theo dõi nếu thêm nhiều control
   command mới.
@@ -184,8 +185,8 @@ Audit:
   hero level-up, boss, detector và gear placement.
 - `hauntedroom_runner.py` đã trở lại đúng vai trò composition root; runner
   runtime nằm trong `hauntedroom/runner/`.
-- Flow command được gom vào `FLOW_COMMANDS`, nên thêm hotkey mới không còn phải
-  sửa nhiều switch-case trong cùng controller.
+- Flow command được gom qua command spec factory và `FLOW_COMMANDS` mặc định,
+  nên thêm hotkey mới không còn phải sửa nhiều switch-case trong cùng controller.
 - Test không còn là một file monolith; hiện đã chia theo `actions/`, `automap/`,
   `control_events/`, `hero_select/`, `research/`, `runner/`.
 - README hiện khớp default `delay_ms = 400`, không còn drift cũ về `500`.

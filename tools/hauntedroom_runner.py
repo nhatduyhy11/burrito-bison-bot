@@ -15,6 +15,7 @@ from hauntedroom.core.runtime import (
     start_user_click_logger,
     wait_for_ctrl_c,
 )
+from hauntedroom.runner.default_commands import FLOW_COMMANDS
 from hauntedroom.runner.reload import (
     get_action_runner,
     get_automap_flow,
@@ -64,6 +65,7 @@ async def main() -> None:
                 await run_standby_controller(
                     page,
                     actions,
+                    FLOW_COMMANDS,
                     args.dev_reload,
                     args.debug,
                     Path(args.actions),

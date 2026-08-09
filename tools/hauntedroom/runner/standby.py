@@ -1,13 +1,20 @@
 import asyncio
 from pathlib import Path
-from typing import Optional
+from typing import Mapping, Optional
 
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
-from hauntedroom.runner.commands import (
-    FLOW_COMMANDS,
-    format_flow_menu,
-    start_resolved_flow,
-)
+
+
+def format_flow_menu(flow_commands: Mapping[str, object]) -> str:
+    return "\n".join(
+        f"  Shift+{command.key}    {command.menu_label}"
+        for command in flow_commands.values()
+    )
+
+
+def start_resolved_flow(command, page, resolved, stop_event, debug: bool):
+    print(f"Starting {command.name} flow...", flush=True)
+    return asyncio.create_task(resolved.run(page, stop_event, debug))
 
 
 async def handle_control_command(
@@ -59,6 +66,7 @@ def finish_flow_task(flow_task) -> None:
 async def run_standby_controller(
     page,
     actions: list[dict],
+    flow_commands: Mapping[str, object],
     dev_reload: bool = False,
     debug: bool = False,
     actions_path: Optional[Path] = None,
@@ -73,7 +81,7 @@ async def run_standby_controller(
         "\n"
         "Haunted Room runner ready\n"
         "-------------------------\n"
-        f"{format_flow_menu()}\n"
+        f"{format_flow_menu(flow_commands)}\n"
         "  Shift+8    Capture screenshot\n"
         "  Shift+0    Stop current flow\n"
         "  Ctrl+C     Close runner\n"
@@ -113,7 +121,7 @@ async def run_standby_controller(
             ):
                 continue
 
-            command = FLOW_COMMANDS.get(command_key)
+            command = flow_commands.get(command_key)
             if command is None:
                 print(f"Shift+{command_key}: no flow configured.", flush=True)
                 continue

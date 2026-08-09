@@ -39,8 +39,8 @@ and no project `.env` file outside `.venv`.
 
 ## Hot Reload Scope
 
-Hot reload is implemented in `tools/hauntedroom/runner/reload.py` and wired by
-`tools/hauntedroom/runner/commands.py`:
+Hot reload is implemented in `tools/hauntedroom/runner/reload.py` and wired into
+the default command table by `tools/hauntedroom/runner/default_commands.py`:
 
 - `get_automap_flow(dev_reload=True)` reloads action support, the auto-map
   support modules, and the auto-map module.
@@ -48,9 +48,10 @@ Hot reload is implemented in `tools/hauntedroom/runner/reload.py` and wired by
   `Shift+1`.
 - `get_click_loop_flow(dev_reload=True)` and `get_research_flow(dev_reload=True)`
   reload their flow modules for `Shift+7` and `Shift+9`.
-- `runner.commands.resolve_start_auto()` passes the current action runner into
-  `flows.start_auto.run_start_automap_loop()`, so `Shift+3` entry actions use
-  the reloaded runner without mutating the flow module.
+- `get_automap_runtime(dev_reload=True)` returns both the refreshed auto-map flow
+  and action runner. The default `Shift+3` command passes that action runner into
+  `flows.start_auto.run_start_automap_loop()`, so entry actions use the reloaded
+  runner without mutating the flow module.
 - Reload functions are called only when a new flow is started.
 - `Shift+0` is still required to stop the old flow before the new code is used.
 
@@ -79,7 +80,7 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Gear placement | `tools/hauntedroom/flows/automap_support/gear_action.py` | gear regions, HSV thresholds, drag timings, drop offsets | Explicitly reloaded before `automap`. |
 | Core template matching for auto-map | `tools/hauntedroom/core/template.py` | `DEFAULT_TEMPLATE_THRESHOLD`, `TEMPLATE_SCALES`, matching functions | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
 | Core vision for auto-map | `tools/hauntedroom/core/vision.py` | screenshot capture, generic OpenCV region helpers | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
-| Action loader/runner | `tools/hauntedroom/actions/*.py` | action defaults, loader validation, runner behavior | Reloaded for `Shift+1`, and before `Shift+2`/`Shift+3`; `runner.commands` injects the current runner into `flows.start_auto` for entry actions. |
+| Action loader/runner | `tools/hauntedroom/actions/*.py` | action defaults, loader validation, runner behavior | Reloaded for `Shift+1`, and before `Shift+2`/`Shift+3`; the default command table injects the current runner into `flows.start_auto` for entry actions. |
 | Blocker fallback Python code | `tools/hauntedroom/control_events/*.py` | blocker fallback behavior, popup host/path used by Python fallback | Reloaded for action flows. Already injected JavaScript guards are not re-injected. |
 | Research flow | `tools/hauntedroom/flows/research.py` | research templates, threshold, scale, poll/miss counts | Reloaded when `Shift+9` starts. |
 | Fixed click loop | `tools/hauntedroom/flows/click_loop.py` | `CLICK_POSITION`, `CLICK_INTERVAL_MS` | Reloaded when `Shift+7` starts. |
@@ -101,7 +102,8 @@ noted.
 | Runtime globals | `tools/hauntedroom/core/runtime.py` | `ACTION_LOOP_COUNT`, `COUNTDOWN_WAIT_THRESHOLD_MS`, screenshot dirs, `HOTKEY_SCRIPT` | Imported at process startup; hotkey script is injected once. |
 | Runner entrypoint | `tools/hauntedroom_runner.py` | browser `launch_options`, composition of standby/action mode | Entrypoint module is not reloaded. |
 | Start-auto wrapper constants | `tools/hauntedroom/flows/start_auto.py` | `START_BATTLE_TEMPLATE_NAME`, `BETWEEN_MAPS_WAIT_MS` | Module is imported once. Changing these requires process restart unless explicit reload support is added. |
-| Standby command mapping | `tools/hauntedroom/runner/commands.py` | `FLOW_COMMANDS`, command resolver functions, menu labels | Module is imported once. Adding/removing hotkeys requires process restart. |
+| Command spec factory | `tools/hauntedroom/runner/commands.py` | `FlowCommand`, resolver factory functions, menu labels | Module is imported once. Adding/removing hotkeys requires process restart. |
+| Default command wiring | `tools/hauntedroom/runner/default_commands.py` | `FLOW_COMMANDS`, default reload/start-auto dependencies | Module is imported once. Adding/removing hotkeys requires process restart. |
 
 Template PNG contents are a partial exception. `run_actions()` loads template
 images at the start of each action-flow run, and `AutomapFlow.__init__` loads
@@ -126,8 +128,8 @@ Findings:
   `tools/hauntedroom/**/*.py` are placed before functions/classes.
 - The only indented imports found are in tests:
   - `tests/runner/test_standby_controller.py`: imports inside tests that patch
-    or assert reload behavior across `runner/reload.py`, `runner/commands.py`
-    and `flows/start_auto.py`.
+    or assert reload behavior across `runner/reload.py`,
+    `runner/default_commands.py` and `flows/start_auto.py`.
   - `tests/automap/test_boss.py`: local import of `find_template` inside one
     test.
 
