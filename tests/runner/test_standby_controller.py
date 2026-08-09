@@ -53,9 +53,13 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         from hauntedroom.flows.automap_support import (
             boss_action,
             boss_detector,
+            boss_flow,
             detectors,
             gear_action,
+            hero_action,
             hero_levelup,
+            map_completion,
+            upgrade_action,
         )
 
         refreshed_flow = Mock()
@@ -66,6 +70,10 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             boss_action,
             gear_action,
             hero_levelup,
+            map_completion,
+            upgrade_action,
+            hero_action,
+            boss_flow,
             refreshed_automap,
         ]
 
@@ -81,6 +89,10 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
                 call(boss_action),
                 call(gear_action),
                 call(hero_levelup),
+                call(map_completion),
+                call(upgrade_action),
+                call(hero_action),
+                call(boss_flow),
                 call(automap),
             ],
         )

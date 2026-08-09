@@ -33,9 +33,13 @@ from hauntedroom.flows import research
 from hauntedroom.flows.automap_support import (
     boss_action,
     boss_detector,
+    boss_flow,
     detectors,
     gear_action,
+    hero_action,
     hero_levelup,
+    map_completion,
+    upgrade_action,
 )
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.research import run_research_flow
@@ -198,6 +202,10 @@ def get_automap_flow(dev_reload: bool = False):
     importlib.reload(boss_action)
     importlib.reload(gear_action)
     importlib.reload(hero_levelup)
+    importlib.reload(map_completion)
+    importlib.reload(upgrade_action)
+    importlib.reload(hero_action)
+    importlib.reload(boss_flow)
     reloaded_automap = importlib.reload(automap)
     print("Auto-map support modules reloaded.", flush=True)
     return reloaded_automap.run_automap_flow

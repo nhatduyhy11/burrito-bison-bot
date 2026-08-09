@@ -47,9 +47,13 @@ class HauntedRoomDependencyTest(TestCase):
             "automap.py": {
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.boss_detector",
+                "hauntedroom.flows.automap_support.boss_flow",
                 "hauntedroom.flows.automap_support.detectors",
                 "hauntedroom.flows.automap_support.gear_action",
+                "hauntedroom.flows.automap_support.hero_action",
                 "hauntedroom.flows.automap_support.hero_levelup",
+                "hauntedroom.flows.automap_support.map_completion",
+                "hauntedroom.flows.automap_support.upgrade_action",
             },
         }
         for path in (PACKAGE_DIR / "flows").glob("*.py"):

@@ -21,6 +21,10 @@ For `Shift+2` and `Shift+3`, the runner reloads:
 - `hauntedroom.flows.automap_support.boss_action`
 - `hauntedroom.flows.automap_support.gear_action`
 - `hauntedroom.flows.automap_support.hero_levelup`
+- `hauntedroom.flows.automap_support.map_completion`
+- `hauntedroom.flows.automap_support.upgrade_action`
+- `hauntedroom.flows.automap_support.hero_action`
+- `hauntedroom.flows.automap_support.boss_flow`
 - `hauntedroom.flows.automap`
 
 The browser process, Playwright context, current page, hotkey bindings, parsed
@@ -59,13 +63,15 @@ hotkey, assuming the runner was started with `--dev-reload`.
 
 | Area | File | Constants / config | Notes |
 | --- | --- | --- | --- |
-| Auto-map templates | `tools/hauntedroom/flows/automap.py` | `*_TEMPLATE_PATH`, `AUTOMAP_TEMPLATE_DIR`, `ROOM_TEMPLATE_DIR`, `BOSS_TEMPLATE_DIR` | New flow loads templates in `AutomapFlow.__init__`. Running flow keeps old loaded images. |
-| Auto-map thresholds and timings | `tools/hauntedroom/flows/automap.py` | `AUTOMAP_TEMPLATE_THRESHOLD`, `BUILT_TEMPLATE_THRESHOLD`, `AUTOMAP_POLL_MS`, `AUTOMAP_ACTION_DELAY_MS`, map-end/reward/home thresholds | Reloaded with `automap`. Running flow keeps old module values for code already executing. |
-| Auto-map fixed clicks / regions | `tools/hauntedroom/flows/automap.py` | `LV_SPIN_CLICK_OFFSET_X`, `WIN_REWARD_FOLLOWUP_CLICK`, `REWARD_LIST_TITLE_SEARCH_REGION`, `HERO_LEVELUP_OPEN_CLICK`, `UPGRADE_CONFIRM_CLICK` | Reloadable for newly started auto-map flow. |
+| Auto-map coordinator/templates | `tools/hauntedroom/flows/automap.py` | `*_TEMPLATE_PATH`, `AUTOMAP_TEMPLATE_DIR`, `ROOM_TEMPLATE_DIR`, `BOSS_TEMPLATE_DIR`, `AUTOMAP_TEMPLATE_THRESHOLD`, `AutomapConfig` | New flow loads templates in `AutomapFlow.__init__`. Running flow keeps old loaded images. Phase constants imported from support modules are re-exported here for compatibility. |
+| Map completion | `tools/hauntedroom/flows/automap_support/map_completion.py` | `MAP_END_*`, `WIN_REWARD_*`, `REWARD_LIST_TITLE_*`, `START_HOME_TEMPLATE_THRESHOLD` | Explicitly reloaded before `automap`; newly started auto-map imports the refreshed constants/functions. |
+| Upgrade/build actions | `tools/hauntedroom/flows/automap_support/upgrade_action.py` | `BUILT_TEMPLATE_THRESHOLD`, `AUTOMAP_POLL_MS`, `AUTOMAP_ACTION_DELAY_MS`, `LV_SPIN_*`, `UPGRADE_CONFIRM_CLICK` | Explicitly reloaded before `automap`; newly started auto-map imports the refreshed constants/functions. |
 | Boss detectors | `tools/hauntedroom/flows/automap_support/boss_detector.py` | `BOSS_HP_*`, `BOSS_PROGRESS_*`, `PET_READY_REGION`, `SPELL_READY_REGION` | Explicitly reloaded before `automap`. |
+| Boss flow policy | `tools/hauntedroom/flows/automap_support/boss_flow.py` | `EXIT_CLICK_TEMPLATE_THRESHOLD`, boss handoff/deploy orchestration | Explicitly reloaded before `automap`. |
 | Small auto-map detectors | `tools/hauntedroom/flows/automap_support/detectors.py` | `BUILD_BUTTON_*`, `HERO_LEVELUP_PRICE_REGION`, `WHITE_*` | Explicitly reloaded before `automap`. |
 | Boss actions | `tools/hauntedroom/flows/automap_support/boss_action.py` | pet/spell template paths, action positions, delays, thresholds | Explicitly reloaded before `automap`. |
 | Hero level-up | `tools/hauntedroom/flows/automap_support/hero_levelup.py` | search regions, thresholds, priorities, template directory/glob | Explicitly reloaded before `automap`. Adding/removing PNGs is picked up on reload because `HERO_LEVELUP_TEMPLATE_PATHS` is rebuilt. |
+| Hero level-up action | `tools/hauntedroom/flows/automap_support/hero_action.py` | `HERO_LEVELUP_OPEN_CLICK`, `HERO_LEVELUP_OPTION_*`, `HERO_LEVELUP_SELECTION_SETTLE_MS`, fallback screenshot path | Explicitly reloaded before `automap`. |
 | Gear placement | `tools/hauntedroom/flows/automap_support/gear_action.py` | gear regions, HSV thresholds, drag timings, drop offsets | Explicitly reloaded before `automap`. |
 | Core template matching for auto-map | `tools/hauntedroom/core/template.py` | `DEFAULT_TEMPLATE_THRESHOLD`, `TEMPLATE_SCALES`, matching functions | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
 | Core vision for auto-map | `tools/hauntedroom/core/vision.py` | screenshot capture, generic OpenCV region helpers | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |

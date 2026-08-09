@@ -6,16 +6,18 @@ Structure hiện tại ổn và phù hợp với quy mô dự án, khoảng **7/
 direction rõ, có ADR và test kiến trúc. Chưa cần thay kiến trúc tổng thể; nên ưu
 tiên refactor bên trong từng feature.
 
-Function lớn nhất, và nhiều khả năng là function cần tìm, là
-`run_automap_flow` trong `tools/hauntedroom/flows/automap.py`.
+Status update: auto-map đã được tách khỏi file monolith ban đầu. Public API vẫn
+nằm ở `tools/hauntedroom/flows/automap.py`, còn phase logic được chuyển sang
+`tools/hauntedroom/flows/automap_support/`.
 
-Tại thời điểm review, toàn bộ **39 test đều pass**.
+Sau refactor auto-map, toàn bộ **116 test đều pass** với **1 expected failure**
+đang ghi nhận contract boss handoff chưa bật trong production.
 
 ## Các function đang quá lớn
 
 | Mức ưu tiên | Function | Vị trí | Kích thước | Nhận xét |
 | --- | --- | --- | ---: | --- |
-| Rất cao | `run_automap_flow` | `tools/hauntedroom/flows/automap.py:245` | 258 dòng | Chứa 8 nested function, load template, giữ state, scheduling và toàn bộ handler |
+| Đã xử lý một phần | `AutomapFlow` / auto-map phases | `tools/hauntedroom/flows/automap.py` + `automap_support/` | `automap.py` còn khoảng 439 dòng | Public API, template loading, mutable state và scheduling ở coordinator; phase logic đã tách sang support module |
 | Cao | `run_actions` | `tools/hauntedroom/actions/runner.py:86` | 191 dòng | Trộn action dispatch, retry policy, timeout, logging và execution |
 | Cao | `load_actions` | `tools/hauntedroom/actions/loader.py:24` | 132 dòng | Parse, validate, resolve path và mutate raw dictionary |
 | Trung bình | `run_research_flow` | `tools/hauntedroom/flows/research.py:23` | 120 dòng | State machine được thể hiện bằng nhiều nested loop |
@@ -23,26 +25,23 @@ Tại thời điểm review, toàn bộ **39 test đều pass**.
 | Trung bình | `clear_blockers` | `tools/hauntedroom/control_events/blockers.py:11` | 78 dòng, 11 tham số | Signature khó dùng và khó test |
 | Thấp | `wait_for_template` | `tools/hauntedroom/actions/runner.py:27` | 57 dòng, 10 tham số | Logic chưa quá tệ nhưng parameter list quá dài |
 
-## Vấn đề lớn nhất: `run_automap_flow`
+## Auto-map sau refactor
 
-`run_automap_flow` có tuple `handlers`, nhìn bên ngoài giống kiến trúc handler
-modular. Tuy nhiên, toàn bộ handler là nested function và capture chung:
+`run_automap_flow` giờ chỉ dựng `AutomapConfig` và chạy `AutomapFlow`. Tuple
+`handlers` nằm trong `AutomapFlow.run()`, còn các phase chính đã được tách ra:
 
-- `page`
-- `stop_event`
-- templates
-- `last_map_end_check`
-- `map_completed`
-- `boss_actions_triggered`
-- các path và config
+- `map_completion.py`: map end, win reward, reward list title và home detection.
+- `upgrade_action.py`: level-spin interrupt, level-up confirm và build menu.
+- `hero_action.py`: orchestration mở/chọn hero level-up option.
+- `boss_flow.py`: boss critical handoff và final-boss pet deployment policy.
 
-Abstraction handler hiện tại giúp scheduling dễ đọc, nhưng chưa thật sự tách
-responsibility hoặc tăng khả năng tái sử dụng. Thêm situation mới vẫn tiếp tục
-làm function này lớn hơn.
+`automap.py` vẫn giữ method wrapper như `handle_level_up()` và `hero_levelup()`
+để tránh đổi public/test surface ngay lập tức. Helper nhận callable dependency từ
+coordinator, nên các test cũ vẫn patch được symbol qua module `automap`.
 
-Hướng refactor phù hợp là tạo `AutomapContext` dataclass chứa page, templates,
-config và mutable state; sau đó chuyển từng handler thành function hoặc object
-độc lập ở module level. Chưa cần framework hoặc registry phức tạp.
+Phần còn có thể cải thiện nếu auto-map tiếp tục lớn: gom page/capture/click/wait
+thành runtime adapter nhỏ, hoặc tạo context dataclass để giảm số tham số truyền
+sang helper. Chưa cần registry handler tổng quát.
 
 ## Phần kiến trúc đang làm tốt
 
@@ -150,7 +149,8 @@ này có thể đúng chủ ý, nhưng nên đặt tên hoặc document rõ.
 
 ## Thứ tự refactor đề xuất
 
-1. Tách `run_automap_flow` bằng `AutomapContext` và các handler độc lập.
+1. Nếu auto-map tiếp tục phình, gom dependency truyền vào phase helper bằng một
+   context dataclass nhỏ.
 2. Chuyển action dictionary thành typed dataclass và chia `run_actions` thành
    executor theo từng action type.
 3. Biến research flow thành state machine nhỏ, hoặc ít nhất tách phase

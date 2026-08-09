@@ -34,9 +34,48 @@ from hauntedroom.flows.automap_support.boss_detector import (
     boss_progress_is_full,
     find_boss_health_bar,
 )
+from hauntedroom.flows.automap_support.boss_flow import (
+    EXIT_CLICK_TEMPLATE_THRESHOLD,
+    handle_boss_critical as _handle_boss_critical,
+)
 from hauntedroom.flows.automap_support.detectors import (
     find_first_available_build_option,
     hero_levelup_price_is_available,
+)
+from hauntedroom.flows.automap_support.hero_action import (
+    HERO_FALLBACK_SCREENSHOT_DIR,
+    HERO_LEVELUP_OPEN_CLICK,
+    HERO_LEVELUP_OPTION_MAX_POLLS,
+    HERO_LEVELUP_OPTION_POLL_MS,
+    HERO_LEVELUP_OPTION_SETTLE_MS,
+    HERO_LEVELUP_SELECTION_SETTLE_MS,
+    handle_hero_levelup as _handle_hero_levelup,
+)
+from hauntedroom.flows.automap_support.map_completion import (
+    MAP_END_CHECK_INTERVAL_SEC,
+    MAP_END_TEMPLATE_THRESHOLD,
+    REWARD_LIST_TITLE_SEARCH_REGION,
+    REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
+    START_HOME_TEMPLATE_THRESHOLD,
+    WIN_REWARD_EMPTY_DELAY_MS,
+    WIN_REWARD_FOLLOWUP_CLICK,
+    WIN_REWARD_RECHECK_MS,
+    WIN_REWARD_TEMPLATE_THRESHOLD,
+    find_start_home as _find_start_home,
+    finish_map_from_home as _finish_map_from_home,
+)
+from hauntedroom.flows.automap_support.upgrade_action import (
+    AUTOMAP_ACTION_DELAY_MS,
+    AUTOMAP_POLL_MS,
+    BUILT_TEMPLATE_THRESHOLD,
+    LV_SPIN_CLICK_OFFSET_X,
+    LV_SPIN_SEARCH_TOP_RATIO,
+    LV_SPIN_TEMPLATE_SCALES,
+    LV_SPIN_TEMPLATE_THRESHOLD,
+    UPGRADE_CONFIRM_CLICK,
+    click_level_spin_if_present as _click_level_spin_if_present,
+    handle_build_structure as _handle_build_structure,
+    handle_level_up as _handle_level_up,
 )
 
 
@@ -55,31 +94,6 @@ EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
-BUILT_TEMPLATE_THRESHOLD = 0.80
-AUTOMAP_POLL_MS = 600
-AUTOMAP_ACTION_DELAY_MS = 800
-LV_SPIN_CLICK_OFFSET_X = -70
-LV_SPIN_TEMPLATE_THRESHOLD = 0.58
-LV_SPIN_TEMPLATE_SCALES = (1.0, 0.8, 0.67)
-LV_SPIN_SEARCH_TOP_RATIO = 0.75
-MAP_END_TEMPLATE_THRESHOLD = 0.90
-MAP_END_CHECK_INTERVAL_SEC = 5.0
-WIN_REWARD_TEMPLATE_THRESHOLD = 0.85
-WIN_REWARD_RECHECK_MS = 2_000
-WIN_REWARD_EMPTY_DELAY_MS = 3_000
-WIN_REWARD_FOLLOWUP_CLICK = (220, 560)
-REWARD_LIST_TITLE_TEMPLATE_THRESHOLD = 0.90
-REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
-START_HOME_TEMPLATE_THRESHOLD = 0.90
-EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
-HERO_LEVELUP_OPEN_CLICK = (320, 640)
-HERO_LEVELUP_OPTION_SETTLE_MS = 1_500
-HERO_LEVELUP_OPTION_POLL_MS = 200
-HERO_LEVELUP_OPTION_MAX_POLLS = 10
-HERO_LEVELUP_SELECTION_SETTLE_MS = 600
-
-UPGRADE_CONFIRM_CLICK = (430, 366)
-HERO_FALLBACK_SCREENSHOT_DIR = Path(".tmp/hauntedroom-hero-fallbacks")
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -147,36 +161,24 @@ class AutomapFlow:
         self,
         frame_gray: np.ndarray,
     ) -> tuple[int, int, float, Path]:
-        x, y, score = find_template(
+        return _find_start_home(
             frame_gray,
             self.start_home_template,
-            self.config.start_home_template_path.name,
-            scales=(1.0,),
+            self.config.start_home_template_path,
+            find_template,
         )
-        return x, y, score, self.config.start_home_template_path
 
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
-        search_top = int(frame_gray.shape[0] * LV_SPIN_SEARCH_TOP_RATIO)
-        search_frame = frame_gray[search_top:, :]
-        x, y, score = find_template(
-            search_frame,
-            self.lv_spin_template,
-            self.config.lv_spin_template_path.name,
-            scales=LV_SPIN_TEMPLATE_SCALES,
+        return await _click_level_spin_if_present(
+            self.page,
+            self.stop_event,
+            frame_gray,
+            lv_spin_template=self.lv_spin_template,
+            lv_spin_template_name=self.config.lv_spin_template_path.name,
+            find_template_fn=find_template,
+            click_fn=_click,
+            wait_for_flow_timeout_fn=wait_for_flow_timeout,
         )
-        if score < LV_SPIN_TEMPLATE_THRESHOLD:
-            return False
-
-        y += search_top
-        click_x = max(0, x + LV_SPIN_CLICK_OFFSET_X)
-        print(
-            f"Level spin interrupt at {x},{y}, score={score:.3f}; "
-            f"clicking {click_x},{y}.",
-            flush=True,
-        )
-        await _click(self.page, click_x, y)
-        await wait_for_flow_timeout(self.page, AUTOMAP_POLL_MS, self.stop_event)
-        return True
 
     async def handle_level_spin_interrupt(
         self,
@@ -215,185 +217,51 @@ class AutomapFlow:
         return True
 
     async def finish_map_from_home(self) -> bool:
-        reward_followup_clicked = False
-        reward_list_title_seen = False
-        while await flow_checkpoint(self.stop_event):
-            frame_bgr = await capture_page_bgr(self.page)
-            frame_gray = _to_grayscale(frame_bgr)
-
-            reward_matches = find_template_matches(
-                frame_gray,
-                self.win_reward_template,
-                self.config.win_reward_template_path.name,
-                threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
-                scales=(1.0,),
-            )
-            if reward_matches:
-                if not self.win_recorded:
-                    self.win_recorded = True
-                    if self.config.on_win is not None:
-                        self.total_win = self.config.on_win()
-                    print("Win reward detected; win recorded.", flush=True)
-                center_x, center_y, score = reward_matches[0]
-                template_height = self.win_reward_template.shape[0]
-                click_y = center_y - template_height // 2 + min(
-                    1,
-                    template_height - 1,
-                )
-                print(
-                    f"Win reward found at {center_x},{center_y}, "
-                    f"score={score:.3f}; clicking first match top-middle at "
-                    f"{center_x},{click_y} and checking again in 2s.",
-                    flush=True,
-                )
-                await _click(self.page, center_x, click_y)
-                await wait_for_flow_timeout(
-                    self.page, WIN_REWARD_RECHECK_MS, self.stop_event
-                )
-                continue
-
-            left, top, right, bottom = REWARD_LIST_TITLE_SEARCH_REGION
-            title_frame = frame_gray[top:bottom, left:right]
-            title_x, title_y, title_score = find_template(
-                title_frame,
-                self.reward_list_title_template,
-                self.config.reward_list_title_template_path.name,
-                click_position="top_middle",
-                scales=(1.0,),
-            )
-            if title_score >= REWARD_LIST_TITLE_TEMPLATE_THRESHOLD:
-                click_x = left + title_x
-                click_y = top + title_y
-                print(
-                    f"Reward list title found at {click_x},{click_y}, "
-                    f"score={title_score:.3f}; clicking top-middle and "
-                    "checking again in 2s.",
-                    flush=True,
-                )
-                await _click(self.page, click_x, click_y)
-                reward_list_title_seen = True
-                await wait_for_flow_timeout(
-                    self.page, WIN_REWARD_RECHECK_MS, self.stop_event
-                )
-                continue
-
-            if reward_list_title_seen:
-                x, y, score, template_path = self.find_start_home(frame_gray)
-                if score >= START_HOME_TEMPLATE_THRESHOLD:
-                    print(
-                        f"Home ready at {x},{y}, score={score:.3f}, "
-                        f"template={template_path.name}; auto-map complete.",
-                        flush=True,
-                    )
-                    return True
-
-            if not reward_followup_clicked:
-                print(
-                    "No win reward remains; waiting 1s then clicking "
-                    f"{WIN_REWARD_FOLLOWUP_CLICK[0]},"
-                    f"{WIN_REWARD_FOLLOWUP_CLICK[1]} once before rechecking.",
-                    flush=True,
-                )
-                if not await wait_for_flow_timeout(
-                    self.page, WIN_REWARD_EMPTY_DELAY_MS, self.stop_event
-                ):
-                    break
-                await _click(self.page, *WIN_REWARD_FOLLOWUP_CLICK)
-                reward_followup_clicked = True
-                continue
-
-            x, y, score, template_path = self.find_start_home(frame_gray)
-            if score >= START_HOME_TEMPLATE_THRESHOLD:
-                print(
-                    f"Home ready at {x},{y}, score={score:.3f}, "
-                    f"template={template_path.name}; auto-map complete.",
-                    flush=True,
-                )
-                return True
-
-            await wait_for_flow_timeout(
-                self.page, AUTOMAP_POLL_MS, self.stop_event
-            )
-
-        print("Auto-map flow stopped while waiting for home reward.", flush=True)
-        return False
+        outcome = await _finish_map_from_home(
+            self.page,
+            self.stop_event,
+            win_reward_template=self.win_reward_template,
+            win_reward_template_path=self.config.win_reward_template_path,
+            reward_list_title_template=self.reward_list_title_template,
+            reward_list_title_template_path=self.config.reward_list_title_template_path,
+            start_home_template=self.start_home_template,
+            start_home_template_path=self.config.start_home_template_path,
+            win_recorded=self.win_recorded,
+            total_win=self.total_win,
+            on_win=self.config.on_win,
+            capture_page_bgr_fn=capture_page_bgr,
+            to_grayscale_fn=_to_grayscale,
+            find_template_fn=find_template,
+            find_template_matches_fn=find_template_matches,
+            click_fn=_click,
+            wait_for_flow_timeout_fn=wait_for_flow_timeout,
+            flow_checkpoint_fn=flow_checkpoint,
+            poll_ms=AUTOMAP_POLL_MS,
+        )
+        self.win_recorded = outcome.win_recorded
+        self.total_win = outcome.total_win
+        return outcome.completed
 
     async def hero_levelup(
         self,
         frame_bgr: np.ndarray,
         _frame_gray: np.ndarray,
     ) -> bool:
-        # Option fallback matching intentionally uses a broad saturated-panel
-        # heuristic. Never run it on the battle frame: other open panels can
-        # resemble a card and cause an endless click loop. Only inspect options
-        # after the fixed price region proves that level-up is available and we
-        # have opened the picker ourselves.
-        if not hero_levelup_price_is_available(frame_bgr):
-            return False
-
-        print("Hero level-up available; opening option picker.", flush=True)
-        await _click(self.page, *HERO_LEVELUP_OPEN_CLICK)
-        # The cards flash white while the picker animates in. Waiting for the
-        # animation to settle prevents the saturated-panel fallback from
-        # winning before the prioritized name/art templates become visible.
-        if not await wait_for_flow_timeout(
-            self.page, HERO_LEVELUP_OPTION_SETTLE_MS, self.stop_event
-        ):
-            return True
-        choice = None
-        for _poll in range(HERO_LEVELUP_OPTION_MAX_POLLS):
-            if not await flow_checkpoint(self.stop_event):
-                return True
-            option_frame = await capture_page_bgr(self.page)
-            choice = self.hero_levelup_matcher.find_choice(option_frame)
-            if choice is not None:
-                break
-            await wait_for_flow_timeout(
-                self.page, HERO_LEVELUP_OPTION_POLL_MS, self.stop_event
-            )
-
-        if choice is not None and choice.is_prioritized:
-            print(
-                f"Hero level-up option {choice.template_name!r} matched at "
-                f"{choice.x},{choice.y}, score={choice.score:.3f}; "
-                "clicking by priority.",
-                flush=True,
-            )
-            await _click(self.page, choice.x, choice.y)
-            await wait_for_flow_timeout(
-                self.page, HERO_LEVELUP_SELECTION_SETTLE_MS, self.stop_event
-            )
+        outcome = await _handle_hero_levelup(
+            self.page,
+            self.stop_event,
+            frame_bgr,
+            matcher=self.hero_levelup_matcher,
+            hero_levelup_price_is_available_fn=hero_levelup_price_is_available,
+            capture_page_bgr_fn=capture_page_bgr,
+            save_screenshot_fn=save_screenshot,
+            click_fn=_click,
+            wait_for_flow_timeout_fn=wait_for_flow_timeout,
+            flow_checkpoint_fn=flow_checkpoint,
+        )
+        if outcome.initial_gear_unlocked:
             self.initial_gear_unlocked = True
-            return True
-
-        if choice is not None:
-            # TEMP FALLBACK TRACKING: capture only a complete three-card layout
-            # with no purple option. Partial layouts are expected while cards
-            # animate in and are not useful tracking evidence.
-            if (
-                choice.fallback_color == "other"
-                and choice.fallback_option_count == 3
-            ):
-                await save_screenshot(
-                    self.page,
-                    "no-priority-no-purple-hero-option",
-                    HERO_FALLBACK_SCREENSHOT_DIR,
-                    "Hero fallback tracking",
-                )
-            print(
-                f"No prioritized hero option matched; clicking visible fallback "
-                f"card at {choice.x},{choice.y}.",
-                flush=True,
-            )
-            await _click(self.page, choice.x, choice.y)
-            await wait_for_flow_timeout(
-                self.page, HERO_LEVELUP_SELECTION_SETTLE_MS, self.stop_event
-            )
-            self.initial_gear_unlocked = True
-            return True
-
-        print("No visible hero level-up option found; skipping.", flush=True)
-        return True
+        return outcome.handled
 
     async def handle_initial_gear(
         self,
@@ -420,146 +288,68 @@ class AutomapFlow:
         frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
-        match = find_boss_health_bar(frame_gray, self.boss_hp_template)
-        if match is None:
-            return False
-
-        x, y, score = match
-        is_final_boss = boss_progress_is_full(frame_bgr)
-        boss_kind = "Final boss" if is_final_boss else "Mini-boss"
-        if self.config.pause_on_any_boss:
-            exit_x, exit_y, exit_score = find_template(
-                frame_gray,
-                self.exit_click_template,
-                self.config.exit_click_template_path.name,
-            )
-            if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
-                print(
-                    f"{boss_kind} detected at {x},{y}, score={score:.3f}; "
-                    f"pause button not found yet (score={exit_score:.3f}).",
-                    flush=True,
-                )
-                return False
-
-            print(
-                f"{boss_kind} detected at {x},{y}, score={score:.3f}; "
-                f"clicking pause at {exit_x},{exit_y} and stopping for "
-                "manual control.",
-                flush=True,
-            )
-            await _click(self.page, exit_x, exit_y)
-            self.boss_handoff_requested = True
-            return True
-
-        if is_final_boss and not self.final_boss_pet_deployed:
-            self.final_boss_pet_deployed = await deploy_boss_pet(
-                self.page,
-                boss_position=(x, y),
-                frame_bgr=frame_bgr,
-                stop_event=self.stop_event,
-            )
-            return True
-
-        exit_x, exit_y, exit_score = find_template(
+        outcome = await _handle_boss_critical(
+            self.page,
+            self.stop_event,
+            frame_bgr,
             frame_gray,
-            self.exit_click_template,
-            self.config.exit_click_template_path.name,
+            boss_hp_template=self.boss_hp_template,
+            exit_click_template=self.exit_click_template,
+            exit_click_template_name=self.config.exit_click_template_path.name,
+            pause_on_any_boss=self.config.pause_on_any_boss,
+            final_boss_pet_deployed=self.final_boss_pet_deployed,
+            find_boss_health_bar_fn=find_boss_health_bar,
+            boss_progress_is_full_fn=boss_progress_is_full,
+            find_template_fn=find_template,
+            deploy_boss_pet_fn=deploy_boss_pet,
+            click_fn=_click,
         )
-        if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
-            print(
-                f"{boss_kind} HP entered upper search region at {x},{y}, "
-                f"score={score:.3f}; "
-                f"exit_click not found (score={exit_score:.3f}).",
-                flush=True,
-            )
-            return False
-
-        print(
-            f"{boss_kind} HP entered upper search region at {x},{y}, "
-            f"score={score:.3f}; "
-            f"clicking exit_click once at {exit_x},{exit_y} and stopping auto-map.",
-            flush=True,
-        )
-        # pause game and exit loop
-        # await _click(self.page, exit_x, exit_y)
-        # self.boss_handoff_requested = True
-        return True
+        if outcome.boss_handoff_requested:
+            self.boss_handoff_requested = True
+        if outcome.final_boss_pet_deployed is not None:
+            self.final_boss_pet_deployed = outcome.final_boss_pet_deployed
+        return outcome.handled
 
     async def handle_level_up(
         self,
         _frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
-        matches = find_template_matches(
-            frame_gray,
-            self.lv_up_template,
-            self.config.lv_up_template_path.name,
-            threshold=self.config.threshold,
-        )
-        if not matches:
-            return False
-
-        x, y, score = max(matches, key=lambda match: match[1])
-        print(
-            f"Level up at {x},{y}, score={score:.3f}; "
-            "clicking bottom-most match, then confirm in 800ms.",
-            flush=True,
-        )
-        await _click(self.page, x, y)
-        if not await wait_with_countdown(
+        outcome = await _handle_level_up(
             self.page,
-            AUTOMAP_ACTION_DELAY_MS,
-            "Level up",
             self.stop_event,
-        ):
-            return True
-        frame_bgr = await capture_page_bgr(self.page)
-        frame_gray = _to_grayscale(frame_bgr)
-        if await self.click_level_spin_if_present(frame_gray):
-            return True
-        await _click(self.page, *UPGRADE_CONFIRM_CLICK)
-        self.initial_gear_unlocked = True
-        return True
+            frame_gray,
+            lv_up_template=self.lv_up_template,
+            lv_up_template_name=self.config.lv_up_template_path.name,
+            lv_up_threshold=self.config.threshold,
+            capture_page_bgr_fn=capture_page_bgr,
+            to_grayscale_fn=_to_grayscale,
+            find_template_matches_fn=find_template_matches,
+            click_level_spin_if_present_fn=self.click_level_spin_if_present,
+            click_fn=_click,
+            wait_with_countdown_fn=wait_with_countdown,
+        )
+        if outcome.initial_gear_unlocked:
+            self.initial_gear_unlocked = True
+        return outcome.handled
 
     async def handle_build_structure(
         self,
         _frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
-        matches = find_template_matches(
-            frame_gray,
-            self.built_template,
-            self.config.built_template_path.name,
-            threshold=BUILT_TEMPLATE_THRESHOLD,
-            scales=(1.0,),
-        )
-        if not matches:
-            return False
-
-        x, y, score = max(matches, key=lambda match: (match[0], match[1]))
-        print(
-            f"Build marker at {x},{y}, score={score:.3f}; "
-            "clicking the highest-x/highest-y match.",
-            flush=True,
-        )
-        await _click(self.page, x, y)
-        if not await wait_with_countdown(
+        return await _handle_build_structure(
             self.page,
-            AUTOMAP_ACTION_DELAY_MS,
-            "Build menu",
             self.stop_event,
-        ):
-            return True
-
-        popup_frame = await capture_page_bgr(self.page)
-        available_option = find_first_available_build_option(popup_frame)
-        if available_option is not None:
-            print("White-price build option is available; clicking it.", flush=True)
-            await _click(self.page, *available_option)
-            return True
-
-        print("No white-price build option is available; skipping.", flush=True)
-        return True
+            frame_gray,
+            built_template=self.built_template,
+            built_template_name=self.config.built_template_path.name,
+            capture_page_bgr_fn=capture_page_bgr,
+            find_template_matches_fn=find_template_matches,
+            find_first_available_build_option_fn=find_first_available_build_option,
+            click_fn=_click,
+            wait_with_countdown_fn=wait_with_countdown,
+        )
 
     async def run(self) -> bool:
         """Run handlers in priority order until stopped or the map completes."""

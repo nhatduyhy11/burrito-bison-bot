@@ -221,16 +221,20 @@ uv run python tools/hauntedroom_runner.py --dev-reload
 Vòng lặp phát triển là `Shift+0` → sửa code/template/action JSON → bắt đầu lại
 flow. Runner giữ nguyên browser và session, nhưng reload module Python liên quan
 tới flow mới. Với `Shift+2`/`Shift+3`, runner reload `core.vision`, action
-support, các module `flows.automap_support` gồm cả `gear_action`, rồi
-`flows.automap`. Với `Shift+3`, action JSON cũng được load lại trước khi lấy
+support, các module `flows.automap_support`, rồi `flows.automap`. Các phase
+orchestration đã tách gồm `map_completion.py`, `upgrade_action.py`,
+`hero_action.py` và `boss_flow.py`; các detector/action nền vẫn nằm ở
+`boss_detector.py`, `detectors.py`, `boss_action.py`, `gear_action.py` và
+`hero_levelup.py`. Với `Shift+3`, action JSON cũng được load lại trước khi lấy
 prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở trạng
 thái idle để có thể sửa và thử lại.
 
 ## Vị trí code và test
 
-- Auto-map core: `tools/hauntedroom/flows/automap.py`.
+- Auto-map coordinator/public API: `tools/hauntedroom/flows/automap.py`.
 - Wrapper `Shift+3` và hotkey controller: `tools/hauntedroom_runner.py`.
-- Detector và rule hỗ trợ: `tools/hauntedroom/flows/automap_support/`.
+- Detector, action và phase rule hỗ trợ:
+  `tools/hauntedroom/flows/automap_support/`.
 - Template: `tools/rooms/automap/` và `tools/rooms/boss/`.
 - Regression test: `tests/automap/`, `tests/hero_select/`, `tests/runner/` và
   fixture trong `tests/fixtures/`.

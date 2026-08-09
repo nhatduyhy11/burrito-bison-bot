@@ -38,6 +38,7 @@ tools/hauntedroom/
 │   └── new_tab_blocker.py
 └── flows/
     ├── __init__.py
+    ├── automap_support/
     ├── automap.py
     └── research.py
 ```
@@ -60,7 +61,10 @@ import `actions`, `flows` hay entrypoint.
   preempt normal flow.
 - `control_events/new_tab_blocker.py`: chặn tab profile từ trang game, xử lý
   fallback đóng tab và inject CSS ẩn game-core iframe sau startup delay 30 giây.
-- `flows/automap.py`: flow battle priority của `Shift+2`.
+- `flows/automap.py`: coordinator, state và public API của battle priority
+  `Shift+2`.
+- `flows/automap_support/`: detector, action và phase orchestration dùng riêng
+  bởi auto-map.
 - `flows/research.py`: flow research của `Shift+9`.
 - `hauntedroom_runner.py`: composition root, browser bootstrap, hotkey controller
   và hot-reload.
