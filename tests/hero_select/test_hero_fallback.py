@@ -19,6 +19,8 @@ sys.path.insert(0, str(TOOLS_DIR))
 from hauntedroom.flows.automap import (
     AutomapConfig,
     AutomapFlow,
+)
+from hauntedroom.flows.automap_support.hero_action import (
     HERO_FALLBACK_SCREENSHOT_DIR,
     HERO_LEVELUP_OPEN_CLICK,
 )

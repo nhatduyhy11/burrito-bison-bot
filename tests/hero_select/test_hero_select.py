@@ -21,6 +21,8 @@ sys.path.insert(0, str(TOOLS_DIR))
 from hauntedroom.flows.automap import (
     AutomapConfig,
     AutomapFlow,
+)
+from hauntedroom.flows.automap_support.hero_action import (
     HERO_LEVELUP_OPEN_CLICK,
     HERO_LEVELUP_OPTION_SETTLE_MS,
     HERO_LEVELUP_SELECTION_SETTLE_MS,
@@ -83,6 +85,11 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
                 "02_hanuman.png",
                 "03_soul_spear.png",
                 "04_thunder_trident.png",
+                "09_death.png",
+                "09_underworld.png",
+                "10_soul_reaper.png",
+                "11_pinocchio.png",
+                "12_prayer_box.png",
                 "99_mage_king.png",
             ],
         )
@@ -247,3 +254,80 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         self.assertEqual(choice.template_name, "00_mage_king.png")
         self.assertEqual(choice.priority, 0.0)
         self.assertEqual((choice.x, choice.y), (192, 597))
+
+    def test_hero_levelup_priority_9_selects_underworld_once(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "prio_9start.png")
+        )
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "09_underworld.png")
+        self.assertEqual(choice.priority, 9.0)
+        self.assertEqual((choice.x, choice.y), (193, 597))
+
+    def test_hero_levelup_priority_9_death_beats_priority_10_soul_reaper(self):
+        popup = cv2.imread(str(HERO_SELECT_FIXTURES_DIR / "prio_910.png"))
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "09_death.png")
+        self.assertEqual(choice.priority, 9.0)
+        self.assertEqual((choice.x, choice.y), (447, 597))
+
+    def test_hero_levelup_priority_10_soul_reaper_template_matches(self):
+        popup = cv2.imread(str(HERO_SELECT_FIXTURES_DIR / "prio_910.png"))
+        soul_reaper_path = next(
+            path
+            for path in HERO_LEVELUP_TEMPLATE_PATHS
+            if path.name == "10_soul_reaper.png"
+        )
+
+        choice = HeroLevelupMatcher((soul_reaper_path,)).find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "10_soul_reaper.png")
+        self.assertEqual(choice.priority, 10.0)
+        self.assertEqual((choice.x, choice.y), (319, 598))
+
+    def test_hero_levelup_priority_11_pinocchio_beats_priority_12_prayer_box(self):
+        popup = cv2.imread(str(HERO_SELECT_FIXTURES_DIR / "prio_1112.png"))
+        priority_11_and_12_paths = tuple(
+            path
+            for path in HERO_LEVELUP_TEMPLATE_PATHS
+            if path.name in {"11_pinocchio.png", "12_prayer_box.png"}
+        )
+
+        choice = HeroLevelupMatcher(priority_11_and_12_paths).find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "11_pinocchio.png")
+        self.assertEqual(choice.priority, 11.0)
+        self.assertEqual((choice.x, choice.y), (218, 597))
+
+    def test_hero_levelup_new_fixture_still_respects_priority_9_death(self):
+        popup = cv2.imread(str(HERO_SELECT_FIXTURES_DIR / "prio_1112.png"))
+
+        choice = HeroLevelupMatcher().find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "09_death.png")
+        self.assertEqual(choice.priority, 9.0)
+        self.assertEqual((choice.x, choice.y), (320, 597))
+
+    def test_hero_levelup_priority_12_prayer_box_template_matches(self):
+        popup = cv2.imread(str(HERO_SELECT_FIXTURES_DIR / "prio_1112.png"))
+        prayer_box_path = next(
+            path
+            for path in HERO_LEVELUP_TEMPLATE_PATHS
+            if path.name == "12_prayer_box.png"
+        )
+
+        choice = HeroLevelupMatcher((prayer_box_path,)).find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertEqual(choice.template_name, "12_prayer_box.png")
+        self.assertEqual(choice.priority, 12.0)
+        self.assertEqual((choice.x, choice.y), (446, 598))

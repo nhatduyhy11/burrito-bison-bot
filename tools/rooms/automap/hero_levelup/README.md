@@ -47,7 +47,12 @@ file thể hiện trong bảng.
 | 4 | 02 | `02_hanuman.png` | Hanuman | `0.70` | Chọn nếu không có match priority 00–01 |
 | 5 | 03 | `03_soul_spear.png` | Cây Giáo Hút Hồn | `0.80` | Chọn nếu không có match priority thấp hơn |
 | 6 | 04 | `04_thunder_trident.png` | Đinh Ba Sấm Sét | `0.80` | Chọn nếu không có match priority thấp hơn |
-| 7 | 99 | `99_mage_king.png` | Variant Vua Pháp Sư/tăng sao cần tránh | `0.80` | Không chọn theo template; loại card gần match khỏi fallback nếu còn card khác |
+| 7 | 09 | `09_death.png` | Tử Thần trong card tăng sao | `0.70` | Chọn nếu không có match priority thấp hơn |
+| 8 | 09 | `09_underworld.png` | U Minh Thần khi chưa được chọn | `0.70` | Chọn nếu không có match priority thấp hơn |
+| 9 | 10 | `10_soul_reaper.png` | Liềm Đoạt Hồn | `0.80` | Chọn nếu không có match priority thấp hơn |
+| 10 | 11 | `11_pinocchio.png` | Từ “Pinocchio”, dùng chung cho card mới và tăng sao | `0.70` | Chọn nếu không có match priority thấp hơn |
+| 11 | 12 | `12_prayer_box.png` | Hộp Cầu Nguyện | `0.80` | Chọn nếu không có match priority thấp hơn |
+| 12 | 99 | `99_mage_king.png` | Variant Vua Pháp Sư/tăng sao cần tránh | `0.80` | Không chọn theo template; loại card gần match khỏi fallback nếu còn card khác |
 
 `00_hero_ascend.png` là trường hợp đặc biệt: matcher tìm tất cả match ở scale
 `1.0`, chọn card bên trái nhất, dịch tâm match `-47 px` theo trục x và click tại
