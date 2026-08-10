@@ -96,7 +96,8 @@ noted.
 | --- | --- | --- | --- |
 | CLI defaults | `tools/hauntedroom/core/cli.py` | `GAME_URL`, `DEFAULT_VIEWPORT_WIDTH`, `DEFAULT_VIEWPORT_HEIGHT`, `DEFAULT_BROWSER`, `DEFAULT_PROFILE_DIR` | Parsed once in `prepare_runner()`. |
 | CLI args | command line | `--actions`, `--profile`, `--url`, `--headless`, `--browser`, `--width`, `--height`, `--keep-open`, `--dev-reload`, `--debug` | `argparse` runs once. Browser/context choices cannot be changed without relaunch. |
-| Browser launch | `tools/hauntedroom_runner.py` | `launch_options`, persistent context | Created once in `main()`. Viewport, channel, profile, headless are fixed for that context. |
+| Browser launch | `tools/hauntedroom_runner.py` | `launch_options`, persistent context, blocked service workers | Created once in `main()`. Viewport, channel, profile, headless, and service-worker policy are fixed for that context. |
+| Startup navigation | `tools/hauntedroom/runner/navigation.py` | `NAVIGATION_ATTEMPTS`, `NAVIGATION_TIMEOUT_MS`, `NAVIGATION_RETRY_DELAY_SECONDS` | Read when the process starts and used only for the initial game navigation. Changing them requires relaunch. |
 | Action file path | command line | `--actions` | The selected file path is parsed once. In dev reload mode, that same file is re-read before `Shift+1` and `Shift+3`. |
 | Injected page guards | `tools/hauntedroom/settings.py`, `tools/hauntedroom/control_events/new_tab_blocker.py` | `ENABLE_SCRIPT_INJECTION`, profile popup guard script, iframe guard script and delay | `ENABLE_SCRIPT_INJECTION` is effectively startup-only because scripts already injected into the page are not replaced without explicit reinjection or page restart. |
 | Runtime globals | `tools/hauntedroom/core/runtime.py` | `ACTION_LOOP_COUNT`, `COUNTDOWN_WAIT_THRESHOLD_MS`, screenshot dirs, `HOTKEY_SCRIPT` | Imported at process startup; hotkey script is injected once. |

@@ -16,6 +16,7 @@ from hauntedroom.core.runtime import (
     wait_for_ctrl_c,
 )
 from hauntedroom.runner.default_commands import FLOW_COMMANDS
+from hauntedroom.runner.navigation import navigate_to_game
 from hauntedroom.runner.standby import run_standby_controller
 
 
@@ -29,6 +30,9 @@ async def main() -> None:
             "headless": args.headless,
             "viewport": {"width": args.width, "height": args.height},
             "args": ["--disable-blink-features=AutomationControlled"],
+            # The runner only needs cookies/local storage from this profile. A
+            # stale game worker can otherwise interfere with a fresh navigation.
+            "service_workers": "block",
         }
         if args.browser != "chromium":
             launch_options["channel"] = args.browser
@@ -38,11 +42,7 @@ async def main() -> None:
         try:
             page = context.pages[0] if context.pages else await context.new_page()
             await install_profile_popup_guard(page)
-            # The game can keep a parser-blocking resource pending long enough for
-            # DOMContentLoaded to exceed Playwright's default 30-second timeout.
-            # The automation uses visual polling, so it only needs the navigation
-            # to be committed before its guards and controllers are started.
-            await page.goto(args.url, wait_until="commit")
+            await navigate_to_game(page, args.url)
             game_core_guard_task = asyncio.create_task(
                 install_game_core_frame_guard_after_delay(page)
             )

@@ -125,6 +125,7 @@ Code runner được chia theo trách nhiệm:
 - `tools/hauntedroom/runner/standby.py`: hotkey queue, control command và lifecycle task; command table được inject từ entrypoint.
 - `tools/hauntedroom/runner/commands.py`: factory/dataclass thuần cho hotkey command spec.
 - `tools/hauntedroom/runner/default_commands.py`: wiring mặc định tạo `FLOW_COMMANDS`.
+- `tools/hauntedroom/runner/navigation.py`: mở URL game và retry lỗi navigation transient khi khởi động.
 - `tools/hauntedroom/runner/reload.py`: dev reload policy.
 - `tools/hauntedroom/flows/start_auto.py`: composite flow/wrapper `Shift+3`.
 
@@ -249,6 +250,10 @@ timeout nằm ở `tests/fixtures/hauntedroom-timeouts/`. Screenshot timeout m�
 Profile mặc định nằm tại `.tmp/hauntedroom-profile`. Cookies, localStorage, IndexedDB và session game được giữ lại giữa các lần chạy.
 
 Chỉ một browser instance được dùng profile này tại cùng thời điểm. Nếu một lần chạy với `--keep-open` vẫn còn hoạt động, lần chạy tiếp theo có thể báo profile đang được sử dụng.
+
+Runner chặn service worker trong browser context automation vì game không cần thành phần này để bot hoạt động, trong khi worker cũ trong persistent profile có thể cản navigation mới. Cookies, localStorage và dữ liệu đăng nhập vẫn được giữ nguyên.
+
+Khi navigation đầu tiên bị treo, thường gặp hơn nếu chạy lại ngay sau `Ctrl+C`, runner chờ tối đa 15 giây, dừng request đang pending rồi tự thử lại. Runner thử tối đa 3 lần, với khoảng chờ tăng dần 2 giây và 4 giây; chỉ lần cuối thất bại mới trả traceback. Terminal sẽ in `Navigation attempt ... timed out` khi cơ chế này được kích hoạt.
 
 Xóa profile sẽ reset session và có thể làm game quay lại luồng guest/intro.
 
