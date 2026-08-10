@@ -1,32 +1,50 @@
 # Refactor Review
 
+Lần review gần nhất: 2026-08-10
+
 ## Kết luận
 
-Structure hiện tại hợp lý hơn cho một bot local: khoảng **7.5/10**. Ranh giới
-`core / actions / control_events / flows / runner` còn rõ, dependency direction
-vẫn sạch, auto-map đã có support package riêng và runner entrypoint không còn là
-controller monolith.
+Structure hiện tại vẫn hợp lý cho một bot local: khoảng **7/10**. Ranh giới
+`core / actions / control_events / flows / runner` còn khá rõ, dependency
+direction về cơ bản vẫn đúng ADR, và `hauntedroom_runner.py` đã về đúng vai trò
+composition root.
 
-Chưa cần đổi kiến trúc tổng thể. Vấn đề hiện tại không phải thiếu layer lớn, mà
-là một vài module còn đang gom trách nhiệm runtime cụ thể: action loader/runner
-và một số flow còn thể hiện state bằng nested loop.
+Nhưng trạng thái hiện tại không còn "test xanh". Bot code và test contract đang
+bị drift sau đợt tách auto-map constants sang `automap_support/`: một số test vẫn
+import constants cũ từ `hauntedroom.flows.automap`, trong khi code hiện không
+re-export các symbol đó nữa.
 
-Bot chính hiện chạy xanh khi scope test vào `tests/`:
+Command hiện tại:
 
 ```shell
 uv run --with pytest pytest tests -q
-# 119 passed, 12 subtests passed
 ```
 
-Full pytest collection từ repo root vẫn fail ở `ref_cv/tests` vì `ref_cv/` là
-project tham khảo độc lập và test trong đó import theo local module `vision`.
+Kết quả hiện tại:
+
+```text
+4 collection errors
+```
+
+Lỗi chính:
+
+- `tests/automap/test_level_up.py`: import `LV_SPIN_CLICK_OFFSET_X` từ
+  `hauntedroom.flows.automap` không còn hợp lệ.
+- `tests/automap/test_map_end.py`: import `REWARD_LIST_TITLE_TEMPLATE_THRESHOLD`
+  từ `hauntedroom.flows.automap` không còn hợp lệ.
+- `tests/hero_select/test_hero_fallback.py`: import
+  `HERO_FALLBACK_SCREENSHOT_DIR` từ `hauntedroom.flows.automap` không còn hợp lệ.
+- `tests/hero_select/test_hero_select.py`: import `HERO_LEVELUP_OPEN_CLICK` từ
+  `hauntedroom.flows.automap` không còn hợp lệ.
+
+Trước khi refactor thêm, nên restore test/code contract để có baseline xanh.
 
 ## Structure hiện tại
 
 ```text
 tools/hauntedroom/
 ├── core/                 # foundational runtime, CLI, template, vision
-├── actions/              # JSON action loader/runner
+├── actions/              # JSON action loader/runner + typed action models
 ├── control_events/       # blocker/new-tab handling
 ├── runner/               # hotkey standby, command specs, dev reload
 ├── flows/                # hotkey business flows
@@ -38,287 +56,202 @@ tools/hauntedroom/
 └── settings.py           # source-level runtime switches
 ```
 
-`hauntedroom_runner.py` vẫn là composition root nhưng hiện chỉ giữ browser
-bootstrap, CLI composition và shutdown. Hotkey standby, dev reload và command
-mapping nằm trong `tools/hauntedroom/runner/`; wrapper `Shift+3` nằm đúng layer
-flow tại `tools/hauntedroom/flows/start_auto.py`.
+`tools/hauntedroom_runner.py` hiện khoảng 75 dòng và chỉ giữ browser bootstrap,
+CLI composition và shutdown. Hotkey standby, dev reload và command mapping nằm
+trong `tools/hauntedroom/runner/`. Wrapper `Shift+3` nằm tại
+`tools/hauntedroom/flows/start_auto.py`.
 
-## Các issue đang lớn lên
+## Snapshot line-count hiện tại
 
-| Ưu tiên | Điểm nóng | Vị trí | Kích thước hiện tại | Vấn đề chính |
-| --- | --- | --- | ---: | --- |
-| Trung bình | `run_research_flow` | `tools/hauntedroom/flows/research.py:23` | 120 dòng | State `available -> active -> available` nằm trong nested loop, khó mở rộng thêm trạng thái |
-| Trung bình | `clear_blockers` | `tools/hauntedroom/control_events/blockers.py:21` | 81 dòng, 12 tham số | Signature dài; timeout semantics là inactivity timeout nhưng tên vẫn dễ hiểu nhầm là total timeout |
-| Thấp | command spec factory | `tools/hauntedroom/runner/commands.py` | 148 dòng | Command spec đã gom switch-case lặp; default wiring nằm riêng trong `default_commands.py` để tránh sibling import ngược |
-| Thấp | `wait_for_template` | `tools/hauntedroom/actions/runner.py:31` | 63 dòng, 11 tham số | Logic còn ổn, nhưng nên gom config nếu tiếp tục thêm option |
-
-Đã xử lý: action loader/runner không còn dùng raw dict làm contract; loader trả
-typed object và runner đã chia executor theo action type.
-
-## Line-count audit
-
-Line count không tự động đồng nghĩa over-responsibility. Vì test file lớn và
-runtime file lớn có ý nghĩa khác nhau, audit được tách thành hai phần.
-
-### Test files
-
-Command:
-
-```bash
-find ./tests -type f -name '*.py' \
-  ! -path '*/__pycache__/*' \
-  -exec wc -l {} + |
-  sort -nr |
-  awk '$1 > 100 && $2 != "total" { printf "%4d %s\n", $1, $2 }' |
-  head -10
-```
-
-Snapshot:
+Runtime/non-test files trên 100 dòng:
 
 ```text
- 573 ./tests/automap/test_boss.py
- 398 ./tests/runner/test_standby_controller.py
- 330 ./tests/hero_select/test_hero_fallback.py
- 316 ./tests/automap/test_map_end.py
- 267 ./tests/actions/test_runner.py
- 249 ./tests/hero_select/test_hero_select.py
- 237 ./tests/automap/test_level_up.py
- 226 ./tests/runner/test_start_automap_loop.py
- 159 ./tests/control_events/test_new_tab_blocker.py
- 142 ./tests/test_hauntedroom_vision.py
-```
-
-Audit:
-
-- Test lớn chủ yếu phản ánh nhiều scenario fixture-driven, không phải lỗi
-  architecture runtime.
-- `test_boss.py` đang gom detector, boss handoff, spell/pet action và final boss
-  behavior; nếu review chậm, nên split theo `boss_detector`, `boss_action` và
-  `boss_flow`.
-- `test_standby_controller.py` đã bám theo package `runner/` mới, nhưng hiện vẫn
-  gom reload, standby lifecycle, pause/resume và click-loop behavior trong một
-  test module. Nếu review chậm, nên split thành `test_reload.py`,
-  `test_standby.py` và `test_commands.py`.
-- Các test automap/hero lớn còn lại có thể giữ nếu fixture setup dùng chung giúp
-  đọc dễ hơn; chỉ split khi setup chung bắt đầu che intent của từng scenario.
-
-### Non-test files
-
-Command:
-
-```bash
-find . -type f -name '*.py' \
-  ! -path './.git/*' \
-  ! -path './.venv/*' \
-  ! -path './__pycache__/*' \
-  ! -path '*/__pycache__/*' \
-  ! -path './tests/*' \
-  ! -path './ref_cv/tests/*' \
-  -exec wc -l {} + |
-  sort -nr |
-  awk '$1 > 100 && $2 != "total" { printf "%4d %s\n", $1, $2 }' |
-  head -15
-```
-
-Snapshot:
-
-```text
- 440 ./tools/hauntedroom/flows/automap.py
- 366 ./tools/hauntedroom/actions/runner.py
+ 419 ./tools/hauntedroom/flows/automap.py
+ 403 ./tools/hauntedroom/actions/runner.py
  302 ./tools/hauntedroom/flows/automap_support/boss_detector.py
+ 299 ./tools/hauntedroom/actions/loader.py
  271 ./tools/hauntedroom/flows/automap_support/hero_levelup.py
  259 ./tools/hauntedroom/core/runtime.py
  223 ./tools/hauntedroom/flows/automap_support/gear_action.py
- 190 ./tools/hauntedroom/actions/loader.py
  174 ./tools/hauntedroom/flows/automap_support/map_completion.py
- 157 ./tools/hauntedroom/runner/standby.py
  166 ./tools/debug_template_match.py
  162 ./tools/hauntedroom/core/template.py
+ 158 ./tools/hauntedroom/runner/standby.py
  150 ./tools/hauntedroom/flows/automap_support/upgrade_action.py
- 148 ./tools/hauntedroom/runner/commands.py
- 146 ./tools/hauntedroom/flows/automap_support/boss_action.py
- 143 ./ref_cv/vision.py
+ 149 ./tools/hauntedroom/runner/commands.py
+ 145 ./tools/hauntedroom/flows/automap_support/boss_action.py
  142 ./tools/hauntedroom/flows/research.py
+ 142 ./ref_cv/vision.py
+ 140 ./ref_cv/game.py
+ 127 ./tools/hauntedroom/control_events/new_tab_blocker.py
+ 110 ./tools/hauntedroom/flows/automap_support/detectors.py
+ 107 ./tools/hauntedroom/flows/automap_support/hero_action.py
 ```
 
-Audit:
+Test files trên 100 dòng:
 
-- `tools/hauntedroom_runner.py`: không còn là over-responsibility chính; file
-  hiện khoảng 86 dòng và chỉ giữ composition root/browser lifecycle.
-- `tools/hauntedroom/runner/commands.py`: command mapping đã data-driven thay vì
-  switch-case lặp. Module này là factory thuần, không import `reload`,
-  `start_auto` hay `standby`; default wiring nằm trong `default_commands.py`, và
-  `standby` nhận command table qua injection.
-- `tools/hauntedroom/runner/standby.py`: standby loop hiện cohesive hơn: hotkey
-  queue, control command và lifecycle task. Nên theo dõi nếu thêm nhiều control
-  command mới.
-- `tools/hauntedroom/actions/runner.py`: đã tách executor theo action type;
-  `run_actions` còn giữ orchestration chung như loop, retry/timeout và preload
-  template.
-- `tools/hauntedroom/actions/loader.py`: đã chuyển từ mutate raw dict sang parse
-  JSON thành typed action object.
-- `tools/hauntedroom/flows/automap.py`: dài nhưng chưa phải over-responsibility
-  nghiêm trọng. Vai trò hiện là coordinator/state/public API; phase logic đã tách
-  sang support modules.
-- `boss_detector.py`, `hero_levelup.py`, `gear_action.py`, `map_completion.py`:
-  dài chủ yếu vì CV heuristic và fixture-driven behavior; vẫn cohesive theo
-  domain nhỏ.
-- `tools/hauntedroom/core/runtime.py`: foundational helper hơi lớn nhưng chưa
-  vượt responsibility rõ ràng; chỉ nên tách khi có nhóm API tự nhiên như
-  screenshot persistence hoặc hotkey/click logging.
-- `tools/hauntedroom/core/template.py`: foundational template helper, hiện vẫn
-  cohesive.
-- `upgrade_action.py` và `boss_action.py`: phase action modules vừa phải; chưa có
-  dấu hiệu gom responsibility ngoài auto-map concern của chúng.
-- `tools/hauntedroom/flows/research.py`: không quá dài nhưng state đang nằm trong
-  nested loop; đây là issue maintainability nếu thêm trạng thái research mới.
-- `ref_cv/vision.py`: thuộc project tham khảo `ref_cv/`, không tính là architecture
-  runtime chính của bot.
-- `tools/debug_template_match.py`: CLI debug độc lập, line count không ảnh hưởng
-  nhiều tới architecture runtime.
+```text
+ 573 ./tests/automap/test_boss.py
+ 404 ./tests/runner/test_standby_controller.py
+ 330 ./tests/hero_select/test_hero_fallback.py
+ 316 ./tests/automap/test_map_end.py
+ 274 ./tests/actions/test_runner.py
+ 249 ./tests/hero_select/test_hero_select.py
+ 237 ./tests/automap/test_level_up.py
+ 202 ./tests/runner/test_start_automap_loop.py
+ 159 ./tests/control_events/test_new_tab_blocker.py
+ 142 ./tests/test_hauntedroom_vision.py
+ 120 ./tests/automap/test_gear.py
+ 105 ./tests/automap/test_build.py
+```
+
+Line count không tự động đồng nghĩa over-responsibility. Test lớn chủ yếu là
+fixture/scenario-driven. Runtime file lớn đang cần theo dõi nhất là
+`actions/runner.py`, `actions/loader.py`, và `flows/research.py`; `automap.py`
+dài nhưng phần phase logic đã được tách.
 
 ## Đang làm tốt
 
-- Dependency direction vẫn đúng theo ADR: `core` không import feature; `actions`
-  và `flows` không import lẫn nhau; `runner` là layer nối hotkey với flow.
-- `automap.py` đã đóng vai trò coordinator thay vì chứa toàn bộ phase logic.
-- `automap_support/` đã tách các nhóm concern thực tế: map completion, upgrade,
-  hero level-up, boss, detector và gear placement.
-- `hauntedroom_runner.py` đã trở lại đúng vai trò composition root; runner
-  runtime nằm trong `hauntedroom/runner/`.
-- Flow command được gom qua command spec factory và `FLOW_COMMANDS` mặc định,
-  nên thêm hotkey mới không còn phải sửa nhiều switch-case trong cùng controller.
-- Test không còn là một file monolith; hiện đã chia theo `actions/`, `automap/`,
-  `control_events/`, `hero_select/`, `research/`, `runner/`.
-- README hiện khớp default `delay_ms = 400`, không còn drift cũ về `500`.
-- `settings.py` đã gom các source-level switch như hero fallback screenshot,
-  script injection và boss exit behavior.
+- Dependency direction vẫn sạch ở mức chính: `core` không import feature;
+  `actions` không depend vào `flows`; `runner` là layer nối hotkey với flow.
+- `automap.py` hiện là coordinator/state/public API, không còn chứa toàn bộ
+  phase logic.
+- `automap_support/` đã tách các concern rõ: map completion, upgrade, hero
+  level-up, boss, detector và gear placement.
+- `actions/models.py` đã tạo typed boundary cho action JSON; runner không còn
+  chạy trên raw dict làm contract chính.
+- `hauntedroom_runner.py` không còn là controller monolith.
+- Command mapping đã được gom qua command spec/default wiring, dễ thêm hotkey
+  mới mà không phải sửa một switch-case lớn.
 
-## Các điểm cần cải thiện
+## Drift và issue hiện tại
 
-### 1. Action boundary đã chuyển sang typed object
+### 1. Test contract drift sau khi tách auto-map support modules
 
-`load_actions` hiện trả `list[Action]` với các dataclass cụ thể trong
-`tools/hauntedroom/actions/models.py`:
+Một số constants đã được chuyển sang module đúng concern:
+
+- `AUTOMAP_POLL_MS`, `LV_SPIN_CLICK_OFFSET_X`, `UPGRADE_CONFIRM_CLICK` nằm ở
+  `tools/hauntedroom/flows/automap_support/upgrade_action.py`.
+- `MAP_END_CHECK_INTERVAL_SEC`, `WIN_REWARD_*`,
+  `REWARD_LIST_TITLE_TEMPLATE_THRESHOLD` nằm ở
+  `tools/hauntedroom/flows/automap_support/map_completion.py`.
+- `HERO_LEVELUP_OPEN_CLICK`, `HERO_FALLBACK_SCREENSHOT_DIR` nằm ở
+  `tools/hauntedroom/flows/automap_support/hero_action.py`.
+
+Test vẫn import các symbol này từ `hauntedroom.flows.automap`, nên collection
+fail. Cần quyết định đây là public compatibility hay internal test drift:
+
+- Nếu các constants này là public API: re-export có chủ đích trong `automap.py`.
+- Nếu chỉ là internal implementation detail: sửa test import trực tiếp từ module
+  owner hiện tại.
+
+Recommendation: sửa test import theo module owner hiện tại. Re-export constants
+từ `automap.py` sẽ làm coordinator tiếp tục thành dumping ground.
+
+### 2. Architecture test chưa khóa hết boundary hiện tại
+
+`tests/test_hauntedroom_architecture.py` đang quét bằng `glob("*.py")`, nên chưa
+quét recursive các package con như `flows/automap_support/*.py`. Test cũng chưa
+có rule riêng cho package `runner/`.
+
+Import thực tế hiện có vẻ sạch, nhưng guardrail chưa bao phủ hết structure đã
+được refactor.
+
+### 3. Action loader đã typed, nhưng validation chưa normalize hết
+
+`load_actions` hiện trả `list[Action]`, gồm:
 
 - `ClickAction`
 - `ClickTemplateAction`
 - `WaitAction`
 - `ClearBlockersAction`
 
-Loader resolve path, validate field và normalize default vào object trước khi
-trả về. Runner không còn đọc internal key `_template_path`, `_blocker_paths` hay
-`_until_template_path` từ raw dict.
-
-Executor cũng đã được tách theo action type:
-
-- `execute_click_action`
-- `execute_click_template_action`
-- `execute_wait_action`
-- `execute_clear_blockers_action`
-
-`run_actions` giờ giữ vai trò orchestration chung: preload template, loop,
-soft-stop, timeout retry và reset timeout count sau loop thành công.
-
-### 2. Validation đã normalize ở typed boundary
-
-Không còn đúng khi nói `load_actions` chỉ kiểm tra `wait.ms`. Hiện loader đã
-validate threshold, timing âm, scales, priority, click position, click count và
-boolean field, đồng thời normalize default/path trước khi runner nhận action.
-
-Phần còn thiếu:
+Loader đã validate threshold, timing âm, scales, priority, click position,
+click count và boolean field. Tuy nhiên còn thiếu:
 
 - `wait.ms` chưa chặn âm/sai kiểu rõ ràng.
-- `click.x`, `click.y` chỉ được yêu cầu tồn tại, chưa normalize thành int trong
-  loader.
-- `button` chưa bị giới hạn vào các giá trị Playwright hợp lệ.
-- runner vẫn phải gọi `int()`/`float()` thay vì nhận object đã chuẩn hóa.
+- `click.x`, `click.y` mới `int()` lúc load, nhưng error message sai kiểu chưa
+  thân thiện.
+- `button` chưa giới hạn vào các giá trị Playwright hợp lệ.
+- Runner vẫn còn vài `int()`/`float()` fallback, nghĩa là typed boundary chưa
+  đóng kín hoàn toàn.
 
-### 3. Architecture test chưa quét sâu package con
+### 4. `run_research_flow` vẫn là nested state loop
 
-`tests/test_hauntedroom_architecture.py` đang bảo vệ rule chính và pass. Nhưng
-rule cho `flows` chỉ quét `flows/*.py`, chưa quét recursive trong
-`flows/automap_support/*.py`, và chưa khóa dependency direction cho package
-`runner/` mới.
+`tools/hauntedroom/flows/research.py` không quá dài, nhưng state
+`available -> active -> available` đang nằm trong nested loop. Nếu thêm state
+research mới, flow này sẽ khó mở rộng và khó test hơn.
 
-Import thực tế hiện vẫn sạch, nhưng test chưa khóa đầy đủ boundary đã ghi trong
-ADR. Nên đổi sang quét recursive, cho phép import ngang trong cùng feature
-package `hauntedroom.flows.automap_support`, và assert `runner` chỉ phụ thuộc
-`core`, `actions`, `flows`, `control_events`, `settings` hoặc sibling runner
-modules.
+Nên tách thành các helper nhỏ như `wait_for_research_available`,
+`drain_active_research`, và giữ `run_research_flow` làm coordinator.
 
-### 4. Packaging/test discovery còn nhập nhằng
+### 5. `clear_blockers` signature và timeout semantics cần dọn lại
+
+`tools/hauntedroom/control_events/blockers.py` vẫn là điểm cần theo dõi:
+signature dài và timeout là inactivity timeout, không phải total timeout. Nếu
+thêm option nữa, nên gom vào `BlockerConfig` và đặt tên/docstring rõ hơn.
+
+### 6. Test discovery/package boundary còn nhập nhằng
 
 `pyproject.toml` đặt `package = false`, test tự thêm `tools` vào `sys.path`.
-Điều này vẫn chấp nhận được nếu bot chỉ chạy local.
+Điều này chấp nhận được cho bot local.
 
-Điểm gây nhiễu thực tế là `ref_cv/` có `pyproject.toml`, lock file và test riêng.
-Chạy pytest từ repo root sẽ collect cả `ref_cv/tests` và fail import. Nên chọn
-một trong ba hướng:
-
-- cấu hình pytest chỉ collect `tests/`
-- chuyển `ref_cv/` sang `archive/` hoặc repo riêng
-- làm `ref_cv/` thành project con có test command riêng, không lẫn với bot chính
-
-### 5. Flow vẫn coupling trực tiếp với infrastructure
-
-Các flow gọi trực tiếp Playwright page, OpenCV helper và `print`. Với bot local,
-đây là trade-off ổn. Chỉ nên thêm abstraction mỏng khi có nhu cầu thật như replay
-screenshot, simulator hoặc integration test ổn định hơn.
-
-Nếu cần, abstraction nên nhỏ theo behavior:
-
-- capture frame
-- click/wait
-- log
-- save diagnostic screenshot
-
-Chưa nên dựng Clean Architecture đầy đủ.
+Nhưng repo có `ref_cv/` là project tham khảo độc lập, cũng có `pyproject.toml`
+và test riêng. Sau khi fix collection của `tests/`, nên thêm config pytest để
+root pytest chỉ collect `tests/`, hoặc tách/di chuyển `ref_cv/` rõ hơn.
 
 ## Auto-map hiện tại
 
-Auto-map không còn là monolith nguyên khối. `run_automap_flow` chỉ build
-`AutomapConfig` rồi chạy `AutomapFlow`; coordinator giữ template loading, mutable
-state, handler priority và public API.
-
-Các phase chính đang nằm trong:
+Auto-map chưa cần refactor lớn tiếp. `AutomapFlow` giữ template loading, mutable
+state, handler priority và public API. Phase logic nằm trong:
 
 - `map_completion.py`: map end, win reward, reward list title, home detection.
-- `upgrade_action.py`: level-spin interrupt, level-up confirm, build menu.
+- `upgrade_action.py`: level spin, level-up confirm, build menu.
 - `hero_action.py`: mở/chọn hero level-up option.
 - `hero_levelup.py`: detect và rank hero option.
-- `boss_flow.py`, `boss_action.py`, `boss_detector.py`: boss handoff/pet/detection.
+- `boss_flow.py`, `boss_action.py`, `boss_detector.py`: boss handoff/pet/detect.
 - `gear_action.py`: initial gear placement.
 
-Phần auto-map có thể giữ như hiện tại. Nếu tiếp tục thêm phase hoặc state mới,
-bước refactor hợp lý nhất là tạo context/runtime adapter nhỏ để giảm số callable
-dependency truyền qua helper, không phải tạo handler registry tổng quát.
+Nếu tiếp tục thêm phase/state mới, bước hợp lý là tạo context/runtime adapter nhỏ
+để giảm số dependency callable truyền qua helper. Chưa nên tạo registry tổng quát
+hay Clean Architecture đầy đủ.
 
-## Thứ tự refactor đề xuất
+## Next step đề xuất
 
-1. Cập nhật architecture test để quét recursive package con.
-2. Cấu hình test discovery để root pytest không collect nhầm `ref_cv/tests`.
-3. Tách `run_research_flow` thành hai phase nhỏ: available và active.
-4. Đổi `clear_blockers` sang `BlockerConfig` và document/rename timeout theo
-   inactivity semantics.
+1. **Restore test baseline.** Sửa các import trong test sang module owner hiện
+   tại, hoặc re-export có chủ đích nếu muốn giữ public compatibility từ
+   `automap.py`. Chạy lại:
 
-## Không còn là issue chính
+   ```shell
+   uv run --with pytest pytest tests -q
+   ```
 
-- Không cần chia test monolith nữa; việc này đã xong ở mức đủ tốt.
-- README không còn sai default `delay_ms`.
-- Action JSON không còn chạy qua raw dict sau loader; loader trả typed action
-  object và runner đã tách executor theo action type.
-- Auto-map không cần refactor lớn ngay; coordinator khoảng 440 dòng nhưng phase logic đã
-  được tách theo feature và hiện chưa phải điểm nóng nhất.
-- Entrypoint/controller mini đã được xử lý: `hauntedroom_runner.py` chỉ còn
-  browser bootstrap; standby/reload/command nằm trong `tools/hauntedroom/runner/`,
-  còn start-auto nằm trong `tools/hauntedroom/flows/start_auto.py`.
+2. **Mở rộng architecture guardrail.** Đổi architecture test sang quét recursive
+   package con và thêm rule cho `hauntedroom.runner`.
+
+3. **Chốt pytest discovery.** Thêm config để root pytest chỉ collect `tests/`,
+   tránh collect nhầm `ref_cv/tests`.
+
+4. **Đóng kín typed action boundary.** Normalize/validate `wait.ms`, `click.x/y`
+   và `button` trong loader; giảm ép kiểu trong runner.
+
+5. **Tách `run_research_flow` thành phase helper.** Làm sau khi test baseline đã
+   xanh, vì đây là refactor behavior-preserving.
+
+6. **Sau cùng mới xem `clear_blockers` config object.** Đây là cleanup tốt,
+   nhưng chưa khẩn cấp bằng test drift và guardrail.
+
+## Không nên làm ngay
+
+- Chưa nên refactor lớn `automap.py`; file dài nhưng cohesive với vai trò
+  coordinator.
+- Chưa cần tách tiếp các test lớn nếu chúng vẫn đọc được theo scenario.
+- Chưa nên thêm abstraction tổng quát cho Playwright/CV/log nếu chưa có consumer
+  thứ hai như replay simulator hoặc integration harness.
 
 ## Nguyên tắc khi refactor
 
 - Giữ dependency rule trong `docs/ADR_bot.md`.
-- Refactor theo behavior hiện tại và giữ `uv run --with pytest pytest tests -q`
-  xanh sau từng bước.
-- Không tạo registry hoặc abstraction tổng quát khi mới chỉ có một consumer.
-- Ưu tiên typed boundary và state rõ ràng hơn là chỉ chuyển code sang nhiều file.
-- Mỗi bước nên đủ nhỏ để review và rollback độc lập.
+- Sau mỗi bước, chạy `uv run --with pytest pytest tests -q`.
+- Ưu tiên baseline xanh và typed boundary hơn là chỉ chia file.
+- Mỗi PR/commit nên nhỏ, rollback được độc lập.
