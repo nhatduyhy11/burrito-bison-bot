@@ -12,7 +12,7 @@ CAPTURE_HERO_FALLBACK_SCREENSHOTS = True
 
 # Install JavaScript/CSS guards for profile popup blocking and the H5 SDK iframe.
 # This is read at runner startup; changing it requires restarting the runner.
-ENABLE_SCRIPT_INJECTION = True
+ENABLE_SCRIPT_INJECTION = False
 
 # Click rooms/exit_click.png once when a boss HP bar enters the critical upper
 # region. This pauses the game and stops auto-map without clicking exit_confirm.
