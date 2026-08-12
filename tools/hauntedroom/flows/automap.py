@@ -76,6 +76,7 @@ EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
+BOSS_RECHECK_INTERVAL_MS = 400
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -332,11 +333,12 @@ class AutomapFlow:
     async def run(self) -> bool:
         """Run handlers in priority order until stopped or the map completes."""
         map_end_handler = self.handle_map_end
+        boss_handler = self.handle_boss_critical
         handlers: tuple[SituationHandler, ...] = (
             self.handle_level_spin_interrupt,
             map_end_handler,
             self.handle_initial_gear,
-            self.handle_boss_critical,
+            boss_handler,
             self.handle_level_up, # gate, bed
             self.handle_build_structure,
             self.hero_levelup,
@@ -355,6 +357,12 @@ class AutomapFlow:
                             flush=True,
                         )
                         return False
+                    if handler is boss_handler:
+                        await wait_for_flow_timeout(
+                            self.page,
+                            BOSS_RECHECK_INTERVAL_MS,
+                            self.stop_event,
+                        )
                     if handler is map_end_handler:
                         if self.map_completed:
                             if self.win_recorded:
