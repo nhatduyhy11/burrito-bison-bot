@@ -1,0 +1,117 @@
+Possible duplicate-function candidates (name-only heuristic)
+No function bodies, calls, or behavior were compared. Review manually.
+
+1. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:150::AutomapFlow.click_level_spin_if_present
+   - tools/hauntedroom/flows/automap_support/upgrade_action.py:24::click_level_spin_if_present
+2. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:198::AutomapFlow.finish_map_from_home
+   - tools/hauntedroom/flows/automap_support/map_completion.py:43::finish_map_from_home
+3. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:268::AutomapFlow.handle_boss_critical
+   - tools/hauntedroom/flows/automap_support/boss_flow.py:20::handle_boss_critical
+4. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:320::AutomapFlow.handle_build_structure
+   - tools/hauntedroom/flows/automap_support/upgrade_action.py:104::handle_build_structure
+5. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:297::AutomapFlow.handle_level_up
+   - tools/hauntedroom/flows/automap_support/upgrade_action.py:58::handle_level_up
+6. score=1.00 — exact same function name
+   - tools/debug_template_match.py:87::main
+   - tools/hauntedroom_runner.py:23::main
+7. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:338::AutomapFlow.run
+   - tools/hauntedroom/runner/commands.py:51::build_flow_commands.resolve_enter_exit.run
+8. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:338::AutomapFlow.run
+   - tools/hauntedroom/runner/commands.py:68::build_flow_commands.resolve_automap.run
+9. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:338::AutomapFlow.run
+   - tools/hauntedroom/runner/commands.py:81::build_flow_commands.resolve_start_auto.run
+10. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:338::AutomapFlow.run
+   - tools/hauntedroom/runner/commands.py:100::build_flow_commands.resolve_click_loop.run
+11. score=1.00 — exact same function name
+   - tools/hauntedroom/flows/automap.py:338::AutomapFlow.run
+   - tools/hauntedroom/runner/commands.py:112::build_flow_commands.resolve_research.run
+12. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:100::build_flow_commands.resolve_click_loop.run
+   - tools/hauntedroom/runner/commands.py:112::build_flow_commands.resolve_research.run
+13. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:51::build_flow_commands.resolve_enter_exit.run
+   - tools/hauntedroom/runner/commands.py:68::build_flow_commands.resolve_automap.run
+14. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:51::build_flow_commands.resolve_enter_exit.run
+   - tools/hauntedroom/runner/commands.py:81::build_flow_commands.resolve_start_auto.run
+15. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:51::build_flow_commands.resolve_enter_exit.run
+   - tools/hauntedroom/runner/commands.py:100::build_flow_commands.resolve_click_loop.run
+16. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:51::build_flow_commands.resolve_enter_exit.run
+   - tools/hauntedroom/runner/commands.py:112::build_flow_commands.resolve_research.run
+17. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:68::build_flow_commands.resolve_automap.run
+   - tools/hauntedroom/runner/commands.py:81::build_flow_commands.resolve_start_auto.run
+18. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:68::build_flow_commands.resolve_automap.run
+   - tools/hauntedroom/runner/commands.py:100::build_flow_commands.resolve_click_loop.run
+19. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:68::build_flow_commands.resolve_automap.run
+   - tools/hauntedroom/runner/commands.py:112::build_flow_commands.resolve_research.run
+20. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:81::build_flow_commands.resolve_start_auto.run
+   - tools/hauntedroom/runner/commands.py:100::build_flow_commands.resolve_click_loop.run
+21. score=1.00 — exact same function name
+   - tools/hauntedroom/runner/commands.py:81::build_flow_commands.resolve_start_auto.run
+   - tools/hauntedroom/runner/commands.py:112::build_flow_commands.resolve_research.run
+22. score=0.88 — nearly identical name tokens
+   - tools/hauntedroom/actions/runner.py:126::execute_click_action
+   - tools/hauntedroom/actions/runner.py:156::execute_click_template_action
+23. score=0.88 — nearly identical name tokens
+   - tools/hauntedroom/actions/loader.py:78::load_click_action
+   - tools/hauntedroom/actions/loader.py:89::load_click_template_action
+24. score=0.88 — high normalized-name similarity
+   - tools/hauntedroom/core/runtime.py:136::save_screenshot
+   - tools/hauntedroom/core/runtime.py:169::save_live_screenshot
+25. score=0.87 — high normalized-name similarity
+   - tools/hauntedroom/actions/runner.py:256::execute_wait_action
+   - tools/hauntedroom/actions/runner.py:265::execute_action
+26. score=0.87 — high normalized-name similarity
+   - tools/hauntedroom/flows/automap_support/hero_action.py:23::handle_hero_levelup
+   - tools/hauntedroom/flows/automap_support/upgrade_action.py:58::handle_level_up
+27. score=0.87 — high normalized-name similarity
+   - tools/hauntedroom/flows/automap.py:297::AutomapFlow.handle_level_up
+   - tools/hauntedroom/flows/automap_support/hero_action.py:23::handle_hero_levelup
+28. score=0.84 — one function name extends the other
+   - tools/hauntedroom/actions/runner.py:133::execute_clear_blockers_action
+   - tools/hauntedroom/control_events/blockers.py:21::clear_blockers
+29. score=0.84 — one function name extends the other
+   - tools/hauntedroom/actions/runner.py:133::execute_clear_blockers_action
+   - tools/hauntedroom/actions/runner.py:265::execute_action
+30. score=0.84 — one function name extends the other
+   - tools/hauntedroom/actions/runner.py:126::execute_click_action
+   - tools/hauntedroom/actions/runner.py:265::execute_action
+31. score=0.84 — one function name extends the other
+   - tools/hauntedroom/actions/runner.py:156::execute_click_template_action
+   - tools/hauntedroom/actions/runner.py:265::execute_action
+32. score=0.84 — one function name extends the other
+   - tools/hauntedroom/core/template.py:28::find_template
+   - tools/hauntedroom/core/template.py:88::find_template_matches
+33. score=0.84 — one function name extends the other
+   - tools/hauntedroom/flows/automap.py:224::AutomapFlow.hero_levelup
+   - tools/hauntedroom/flows/automap_support/hero_action.py:23::handle_hero_levelup
+34. score=0.84 — one function name extends the other
+   - tools/hauntedroom/flows/automap.py:224::AutomapFlow.hero_levelup
+   - tools/hauntedroom/flows/automap_support/detectors.py:36::hero_levelup_price_is_available
+35. score=0.84 — one function name extends the other
+   - tools/hauntedroom/control_events/new_tab_blocker.py:81::install_game_core_frame_guard
+   - tools/hauntedroom/control_events/new_tab_blocker.py:89::install_game_core_frame_guard_after_delay
+36. score=0.84 — one function name extends the other
+   - tools/hauntedroom/actions/loader.py:167::load_clear_blockers_action
+   - tools/hauntedroom/control_events/blockers.py:21::clear_blockers
+37. score=0.84 — one function name extends the other
+   - tools/hauntedroom/actions/loader.py:89::load_click_template_action
+   - tools/hauntedroom/core/template.py:13::load_template
+38. score=0.84 — one function name extends the other
+   - tools/hauntedroom/core/runtime.py:136::save_screenshot
+   - tools/hauntedroom/core/runtime.py:165::save_timeout_screenshot

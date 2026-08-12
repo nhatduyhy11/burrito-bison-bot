@@ -1,0 +1,125 @@
+tools/
+├── __pycache__/
+│   ├── debug_template_match.cpython-312.pyc
+│   ├── hauntedroom_common.cpython-312.pyc
+│   ├── hauntedroom_config.cpython-312.pyc
+│   └── hauntedroom_runner.cpython-312.pyc
+├── hauntedroom/
+│   ├── __pycache__/
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── action_loader.cpython-312.pyc
+│   │   ├── action_runner.cpython-312.pyc
+│   │   ├── automap.cpython-312.pyc
+│   │   ├── clear_blocker.cpython-312.pyc
+│   │   ├── common.cpython-312.pyc
+│   │   ├── custom_macro.cpython-312.pyc
+│   │   ├── cv_pattern_matching.cpython-312.pyc
+│   │   └── settings.cpython-312.pyc
+│   ├── actions/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── blocker.cpython-312.pyc
+│   │   │   ├── defaults.cpython-312.pyc
+│   │   │   ├── loader.cpython-312.pyc
+│   │   │   ├── models.cpython-312.pyc
+│   │   │   └── runner.cpython-312.pyc
+│   │   ├── __init__.py
+│   │   ├── defaults.py
+│   │   ├── loader.py
+│   │   ├── models.py
+│   │   └── runner.py
+│   ├── control_events/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── blockers.cpython-312.pyc
+│   │   │   └── new_tab_blocker.cpython-312.pyc
+│   │   ├── __init__.py
+│   │   ├── blockers.py
+│   │   └── new_tab_blocker.py
+│   ├── core/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── cli.cpython-312.pyc
+│   │   │   ├── runtime.cpython-312.pyc
+│   │   │   ├── template.cpython-312.pyc
+│   │   │   └── vision.cpython-312.pyc
+│   │   ├── __init__.py
+│   │   ├── cli.py
+│   │   ├── runtime.py
+│   │   ├── template.py
+│   │   └── vision.py
+│   ├── flows/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── automap.cpython-312.pyc
+│   │   │   ├── boss_action.cpython-312.pyc
+│   │   │   ├── click_loop.cpython-312.pyc
+│   │   │   ├── map_action.cpython-312.pyc
+│   │   │   ├── map_vision_helper.cpython-312.pyc
+│   │   │   ├── research.cpython-312.pyc
+│   │   │   ├── start_auto.cpython-312.pyc
+│   │   │   ├── start_automap_loop.cpython-312.pyc
+│   │   │   ├── train.cpython-312.pyc
+│   │   │   └── vision_auto.cpython-312.pyc
+│   │   ├── automap_macros/
+│   │   │   └── __pycache__/
+│   │   │       ├── __init__.cpython-312.pyc
+│   │   │       └── hero_levelup.cpython-312.pyc
+│   │   ├── automap_support/
+│   │   │   ├── __pycache__/
+│   │   │   │   ├── __init__.cpython-312.pyc
+│   │   │   │   ├── boss_action.cpython-312.pyc
+│   │   │   │   ├── boss_detector.cpython-312.pyc
+│   │   │   │   ├── boss_flow.cpython-312.pyc
+│   │   │   │   ├── detectors.cpython-312.pyc
+│   │   │   │   ├── gear_action.cpython-312.pyc
+│   │   │   │   ├── hero_action.cpython-312.pyc
+│   │   │   │   ├── hero_levelup.cpython-312.pyc
+│   │   │   │   ├── map_completion.cpython-312.pyc
+│   │   │   │   ├── train_select.cpython-312.pyc
+│   │   │   │   ├── upgrade_action.cpython-312.pyc
+│   │   │   │   └── vision.cpython-312.pyc
+│   │   │   ├── __init__.py
+│   │   │   ├── boss_action.py
+│   │   │   ├── boss_detector.py
+│   │   │   ├── boss_flow.py
+│   │   │   ├── detectors.py
+│   │   │   ├── gear_action.py
+│   │   │   ├── hero_action.py
+│   │   │   ├── hero_levelup.py
+│   │   │   ├── map_completion.py
+│   │   │   └── upgrade_action.py
+│   │   ├── __init__.py
+│   │   ├── automap.py
+│   │   ├── click_loop.py
+│   │   ├── research.py
+│   │   └── start_auto.py
+│   ├── runner/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-312.pyc
+│   │   │   ├── commands.cpython-312.pyc
+│   │   │   ├── default_commands.cpython-312.pyc
+│   │   │   ├── navigation.cpython-312.pyc
+│   │   │   ├── reload.cpython-312.pyc
+│   │   │   └── standby.cpython-312.pyc
+│   │   ├── __init__.py
+│   │   ├── commands.py
+│   │   ├── default_commands.py
+│   │   ├── navigation.py
+│   │   ├── reload.py
+│   │   └── standby.py
+│   ├── __init__.py
+│   └── settings.py
+├── rooms/
+│   ├── automap/
+│   │   ├── gear_placement/
+│   │   └── hero_levelup/
+│   │       └── README.md
+│   ├── blocker/
+│   ├── boss/
+│   └── misc/
+├── debug_template_match.py
+├── hauntedroom_actions.sample.json
+├── hauntedroom_runner.py
+├── macro_record.json
+└── utils.js

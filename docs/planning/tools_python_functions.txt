@@ -1,0 +1,227 @@
+Python functions defined under tools/
+Generated with Python AST; __pycache__ directories are ignored.
+
+[tools/debug_template_match.py]
+  L11: def parse_scales
+  L20: def find_best_rect
+  L64: def write_annotation
+  L87: def main
+
+[tools/hauntedroom/__init__.py]
+  (no functions defined)
+
+[tools/hauntedroom/actions/__init__.py]
+  (no functions defined)
+
+[tools/hauntedroom/actions/defaults.py]
+  (no functions defined)
+
+[tools/hauntedroom/actions/loader.py]
+  L23: def validate_threshold
+  L31: def validate_timing_fields
+  L37: def load_scales
+  L50: def resolve_template_file
+  L57: def load_threshold
+  L62: def load_non_negative_int
+  L78: def load_click_action
+  L89: def load_click_template_action
+  L167: def load_clear_blockers_action
+  L266: def load_wait_action
+  L275: def load_actions
+
+[tools/hauntedroom/actions/models.py]
+  L44: def ClickTemplateAction.effective_repeat_delay_ms
+
+[tools/hauntedroom/actions/runner.py]
+  L40: async def wait_for_template
+  L105: def note_suffix
+  L109: def action_label
+  L113: def collect_template_paths
+  L126: async def execute_click_action
+  L133: async def execute_clear_blockers_action
+  L156: async def execute_click_template_action
+  L256: async def execute_wait_action
+  L265: async def execute_action
+  L299: def log_action_timeout
+  L330: async def run_actions
+
+[tools/hauntedroom/control_events/__init__.py]
+  (no functions defined)
+
+[tools/hauntedroom/control_events/blockers.py]
+  L21: async def clear_blockers
+
+[tools/hauntedroom/control_events/new_tab_blocker.py]
+  L55: def is_profile_popup_url
+  L67: async def install_profile_popup_guard
+  L81: async def install_game_core_frame_guard
+  L89: async def install_game_core_frame_guard_after_delay
+  L103: async def close_profile_popup_tabs
+
+[tools/hauntedroom/core/__init__.py]
+  (no functions defined)
+
+[tools/hauntedroom/core/cli.py]
+  L13: def prepare_runner
+
+[tools/hauntedroom/core/runtime.py]
+  L51: def FlowControl.__init__
+  L58: def FlowControl.is_set
+  L61: def FlowControl.set
+  L66: async def FlowControl.wait
+  L70: def FlowControl.is_paused
+  L73: def FlowControl.pause
+  L80: def FlowControl.resume
+  L89: def FlowControl.active_time
+  L94: async def FlowControl.checkpoint
+  L101: async def flow_checkpoint
+  L111: def flow_time
+  L119: async def wait_for_flow_timeout
+  L136: async def save_screenshot
+  L165: async def save_timeout_screenshot
+  L169: async def save_live_screenshot
+  L173: async def wait_with_countdown
+  L194: async def start_hotkey_listener
+  L198: async def start_hotkey_listener.send_command
+  L207: async def start_user_click_logger
+  L208: async def start_user_click_logger.log_click
+  L253: async def wait_for_ctrl_c
+
+[tools/hauntedroom/core/template.py]
+  L13: def load_template
+  L20: def load_bgr_reference
+  L28: def find_template
+  L88: def find_template_matches
+
+[tools/hauntedroom/core/vision.py]
+  L7: async def capture_page_grayscale
+  L16: async def capture_page_bgr
+  L25: def region_has_enough_white
+
+[tools/hauntedroom/flows/__init__.py]
+  (no functions defined)
+
+[tools/hauntedroom/flows/automap.py]
+  L89: def _to_grayscale
+  L115: def AutomapFlow.__init__
+  L150: async def AutomapFlow.click_level_spin_if_present
+  L162: async def AutomapFlow.handle_level_spin_interrupt
+  L169: async def AutomapFlow.handle_map_end
+  L198: async def AutomapFlow.finish_map_from_home
+  L224: async def AutomapFlow.hero_levelup
+  L248: async def AutomapFlow.handle_initial_gear
+  L268: async def AutomapFlow.handle_boss_critical
+  L297: async def AutomapFlow.handle_level_up
+  L320: async def AutomapFlow.handle_build_structure
+  L338: async def AutomapFlow.run
+  L395: async def run_automap_flow
+
+[tools/hauntedroom/flows/automap_support/__init__.py]
+  (no functions defined)
+
+[tools/hauntedroom/flows/automap_support/boss_action.py]
+  L40: def load_boss_action_references
+  L49: async def click
+  L57: async def activate_boss_spell
+  L82: async def deploy_boss_pet
+
+[tools/hauntedroom/flows/automap_support/boss_detector.py]
+  L58: def _vertical_edge_signature
+  L65: def boss_progress_is_full
+  L97: def _has_full_width_hp_signature
+  L133: def _has_hp_geometry_signature
+  L184: def find_boss_health_bar
+  L251: def _largest_ready_glow_component
+  L271: def boss_action_has_ready_glow
+
+[tools/hauntedroom/flows/automap_support/boss_flow.py]
+  L20: async def handle_boss_critical
+
+[tools/hauntedroom/flows/automap_support/detectors.py]
+  L36: def hero_levelup_price_is_available
+  L47: def find_first_available_build_option
+
+[tools/hauntedroom/flows/automap_support/gear_action.py]
+  L47: def _valid_color_frame
+  L51: def find_gear_button
+  L85: def gear_menu_is_open
+  L111: def find_gear_drop_position
+  L149: async def _drag_gear_smoothly
+  L173: async def deploy_initial_gear
+
+[tools/hauntedroom/flows/automap_support/hero_action.py]
+  L23: async def handle_hero_levelup
+
+[tools/hauntedroom/flows/automap_support/hero_levelup.py]
+  L46: def _template_priority
+  L77: def HeroLevelupChoice.is_prioritized
+  L81: def find_hero_option_centers
+  L128: def hero_option_is_purple
+  L157: def find_hero_ascend_options
+  L186: def HeroLevelupMatcher.__init__
+  L196: def HeroLevelupMatcher.find_choice
+
+[tools/hauntedroom/flows/automap_support/map_completion.py]
+  L28: def find_start_home
+  L43: async def finish_map_from_home
+
+[tools/hauntedroom/flows/automap_support/upgrade_action.py]
+  L24: async def click_level_spin_if_present
+  L58: async def handle_level_up
+  L104: async def handle_build_structure
+
+[tools/hauntedroom/flows/click_loop.py]
+  L8: async def run_click_loop
+
+[tools/hauntedroom/flows/research.py]
+  L23: async def run_research_flow
+
+[tools/hauntedroom/flows/start_auto.py]
+  L12: def get_start_battle_actions
+  L28: async def map_was_lost
+  L33: async def run_start_automap_loop
+  L46: def run_start_automap_loop.record_win
+
+[tools/hauntedroom/runner/__init__.py]
+  (no functions defined)
+
+[tools/hauntedroom/runner/commands.py]
+  L30: def build_flow_commands
+  L31: def build_flow_commands.reload_actions_for_dev
+  L43: def build_flow_commands.resolve_enter_exit
+  L51: async def build_flow_commands.resolve_enter_exit.run
+  L61: def build_flow_commands.resolve_automap
+  L68: async def build_flow_commands.resolve_automap.run
+  L73: def build_flow_commands.resolve_start_auto
+  L81: async def build_flow_commands.resolve_start_auto.run
+  L93: def build_flow_commands.resolve_click_loop
+  L100: async def build_flow_commands.resolve_click_loop.run
+  L105: def build_flow_commands.resolve_research
+  L112: async def build_flow_commands.resolve_research.run
+
+[tools/hauntedroom/runner/default_commands.py]
+  (no functions defined)
+
+[tools/hauntedroom/runner/navigation.py]
+  L15: async def navigate_to_game
+
+[tools/hauntedroom/runner/reload.py]
+  L34: def reload_action_modules
+  L51: def get_action_runner
+  L57: def get_click_loop_flow
+  L70: def get_research_flow
+  L85: def get_automap_flow
+  L89: def get_automap_runtime
+
+[tools/hauntedroom/runner/standby.py]
+  L9: def format_flow_menu
+  L16: def start_resolved_flow
+  L21: async def handle_control_command
+  L60: def finish_flow_task
+  L67: async def run_standby_controller
+
+[tools/hauntedroom/settings.py]
+  (no functions defined)
+
+[tools/hauntedroom_runner.py]
+  L23: async def main
