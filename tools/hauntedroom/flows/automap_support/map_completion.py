@@ -63,18 +63,23 @@ async def finish_map_from_home(
     poll_ms: int,
 ) -> MapCompletionOutcome:
     reward_followup_clicked = False
+    reward_click_position: Optional[tuple[int, int]] = None
     reward_list_title_seen = False
     while await flow_checkpoint_fn(stop_event):
         frame_bgr = await capture_page_bgr_fn(page)
         frame_gray = to_grayscale_fn(frame_bgr)
 
-        reward_matches = find_template_matches_fn(
-            frame_gray,
-            win_reward_template,
-            win_reward_template_path.name,
-            threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
-            scales=(1.0,),
-        )
+        if reward_click_position is None:
+            reward_matches = find_template_matches_fn(
+                frame_gray,
+                win_reward_template,
+                win_reward_template_path.name,
+                threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
+                scales=(1.0,),
+            )
+        else:
+            reward_matches = []
+
         if reward_matches:
             if not win_recorded:
                 win_recorded = True
@@ -93,10 +98,12 @@ async def finish_map_from_home(
                 f"{center_x},{click_y} and checking again in 2s.",
                 flush=True,
             )
+            reward_click_position = (center_x, click_y)
             await click_fn(page, center_x, click_y)
-            await wait_for_flow_timeout_fn(
+            if not await wait_for_flow_timeout_fn(
                 page, WIN_REWARD_RECHECK_MS, stop_event
-            )
+            ):
+                break
             continue
 
         left, top, right, bottom = REWARD_LIST_TITLE_SEARCH_REGION
@@ -119,9 +126,24 @@ async def finish_map_from_home(
             )
             await click_fn(page, click_x, click_y)
             reward_list_title_seen = True
-            await wait_for_flow_timeout_fn(
+            if not await wait_for_flow_timeout_fn(
                 page, WIN_REWARD_RECHECK_MS, stop_event
+            ):
+                break
+            continue
+
+        if reward_click_position is not None and not reward_list_title_seen:
+            click_x, click_y = reward_click_position
+            print(
+                "Reward list title not found; clicking previous win reward "
+                f"position at {click_x},{click_y} and checking again in 2s.",
+                flush=True,
             )
+            await click_fn(page, click_x, click_y)
+            if not await wait_for_flow_timeout_fn(
+                page, WIN_REWARD_RECHECK_MS, stop_event
+            ):
+                break
             continue
 
         if reward_list_title_seen:

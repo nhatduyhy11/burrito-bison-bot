@@ -51,6 +51,11 @@ from hauntedroom.flows.automap_support.hero_action import (
 from hauntedroom.flows.automap_support.map_completion import (
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
+    REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
+    WIN_REWARD_EMPTY_DELAY_MS,
+    WIN_REWARD_FOLLOWUP_CLICK,
+    WIN_REWARD_RECHECK_MS,
+    WIN_REWARD_TEMPLATE_THRESHOLD,
     finish_map_from_home as _finish_map_from_home,
 )
 from hauntedroom.flows.automap_support.upgrade_action import (

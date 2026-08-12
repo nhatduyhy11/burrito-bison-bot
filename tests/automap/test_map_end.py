@@ -58,13 +58,14 @@ class MapEndTest(IsolatedAsyncioTestCase):
             (0, 0, 0.0),
             (300, 400, 0.91),
             (0, 0, 0.0),
-            (0, 0, 0.0),
+            (138, 37, 0.99),
+            (0, 0, 0.20),
             (50, 600, 0.95),
         ],
     )
     @patch("hauntedroom.flows.automap.find_template_matches")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_reclicks_first_reward_top_middle_until_no_match(
+    async def test_map_end_reclicks_reward_position_until_title_appears(
         self,
         capture_page_bgr,
         find_template_matches,
@@ -82,12 +83,7 @@ class MapEndTest(IsolatedAsyncioTestCase):
             (305, 466, 1.0),
             (341, 466, 0.98),
         ]
-        find_template_matches.side_effect = [
-            reward_matches,
-            reward_matches,
-            [],
-            [],
-        ]
+        find_template_matches.return_value = reward_matches
 
         on_win = Mock(return_value=1)
         with patch("builtins.print") as print_mock:
@@ -104,13 +100,18 @@ class MapEndTest(IsolatedAsyncioTestCase):
             messages.index(">>> [1] win"),
             messages.index("Auto-map flow completed; runner is idle."),
         )
+        self.assertIn(
+            "Reward list title not found; clicking previous win reward "
+            "position at 305,446 and checking again in 2s.",
+            messages,
+        )
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [
                 call(300, 400),
                 call(305, 446),
                 call(305, 446),
-                call(*WIN_REWARD_FOLLOWUP_CLICK),
+                call(318, 237),
             ],
         )
         self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
@@ -125,9 +126,10 @@ class MapEndTest(IsolatedAsyncioTestCase):
             [
                 call(WIN_REWARD_RECHECK_MS),
                 call(WIN_REWARD_RECHECK_MS),
-                call(WIN_REWARD_EMPTY_DELAY_MS),
+                call(WIN_REWARD_RECHECK_MS),
             ],
         )
+        self.assertEqual(find_template_matches.call_count, 1)
 
     def test_win_reward_template_matches_dynamic_reward_screens(self):
         template = load_real_template(WIN_REWARD_TEMPLATE_PATH)
