@@ -72,7 +72,7 @@ import `actions`, `flows` hay entrypoint.
   này không import `runner/reload.py`, `runner/standby.py` hay flow implementation.
 - `runner/default_commands.py`: wiring mặc định nối `commands.py`,
   `runner/reload.py` và `flows/start_auto.py` để tạo `FLOW_COMMANDS`.
-- `runner/navigation.py`: startup navigation policy; chờ tới `commit`, dừng request
+- `runner/navigation.py`: startup navigation policy; chờ tới `commit`, thay page khi
   bị treo và retry có giới hạn cho lỗi Playwright timeout transient.
 - `runner/reload.py`: policy hot-reload module Python cho từng nhóm flow.
 - `runner/standby.py`: hotkey standby loop, control command `Shift+0`/`Shift+8`,

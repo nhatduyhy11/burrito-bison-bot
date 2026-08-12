@@ -72,8 +72,8 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
 - `research/`: polling và interaction của flow research.
 - `runner/`: standby controller, command specs, hotkey, live capture, dev reload và
   startup navigation retry.
-- `runner/test_navigation.py`: retry khi lần navigation đầu timeout, giới hạn số
-  lần thử và validation cấu hình attempts.
+- `runner/test_navigation.py`: bỏ page bị kẹt và retry trên page mới khi lần
+  navigation đầu timeout, giới hạn số lần thử và validation cấu hình attempts.
 - `runner/test_start_automap_loop.py`: regression cho composite flow
   `tools/hauntedroom/flows/start_auto.py`.
 - `tests/fixtures/`: screenshot cố định cho các test nhận diện ảnh.

@@ -41,8 +41,12 @@ async def main() -> None:
 
         try:
             page = context.pages[0] if context.pages else await context.new_page()
-            await install_profile_popup_guard(page)
-            await navigate_to_game(page, args.url)
+            page = await navigate_to_game(
+                context,
+                page,
+                args.url,
+                prepare_page=install_profile_popup_guard,
+            )
             game_core_guard_task = asyncio.create_task(
                 install_game_core_frame_guard_after_delay(page)
             )
