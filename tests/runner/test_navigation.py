@@ -18,6 +18,11 @@ class NavigateToGameTest(IsolatedAsyncioTestCase):
         new_page = AsyncMock()
         stuck_page.goto.side_effect = PlaywrightTimeoutError("timed out")
         context.new_page.return_value = new_page
+
+        async def assert_replacement_exists_before_close():
+            context.new_page.assert_awaited_once_with()
+
+        stuck_page.close.side_effect = assert_replacement_exists_before_close
         prepare_page = AsyncMock()
 
         with patch(

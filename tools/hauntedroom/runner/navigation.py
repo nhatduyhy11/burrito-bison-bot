@@ -41,13 +41,17 @@ async def navigate_to_game(
                 f"Navigation attempt {attempt}/{attempts} timed out; "
                 "discarding the stuck page and retrying with a new page..."
             )
+            # Keep at least one page alive in a persistent context. Closing its
+            # last page can terminate the context (notably when a debugger is
+            # attached), making the following context.new_page() impossible.
+            await asyncio.sleep(retry_delay_seconds * attempt)
+            replacement_page = await context.new_page()
             try:
                 await page.close()
             except PlaywrightError:
                 # The failed renderer can reject close while it is being torn down.
                 # Stop using it regardless and continue with a fresh page.
                 pass
-            await asyncio.sleep(retry_delay_seconds * attempt)
-            page = await context.new_page()
+            page = replacement_page
             if prepare_page is not None:
                 await prepare_page(page)

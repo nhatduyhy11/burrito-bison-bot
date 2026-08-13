@@ -253,7 +253,11 @@ Chỉ một browser instance được dùng profile này tại cùng thời đi�
 
 Runner chặn service worker trong browser context automation vì game không cần thành phần này để bot hoạt động, trong khi worker cũ trong persistent profile có thể cản navigation mới. Cookies, localStorage và dữ liệu đăng nhập vẫn được giữ nguyên.
 
-Khi navigation đầu tiên bị treo, thường gặp hơn nếu chạy lại ngay sau `Ctrl+C`, runner chờ tối đa 15 giây, bỏ tab đang kẹt, tạo tab mới trong cùng browser context rồi tự thử lại. Tab mới được cài lại popup guard trước khi tải game; cookie, localStorage và dữ liệu đăng nhập trong persistent profile vẫn được giữ. Runner thử tối đa 3 lần, với khoảng chờ tăng dần 2 giây và 4 giây; chỉ lần cuối thất bại mới trả traceback. Terminal sẽ in `Navigation attempt ... timed out` khi cơ chế này được kích hoạt.
+Khi navigation đầu tiên bị treo, thường gặp hơn nếu chạy lại ngay sau `Ctrl+C`, runner chờ tối đa 15 giây, tạo tab thay thế trong cùng browser context rồi mới bỏ tab đang kẹt và tự thử lại. Thứ tự này giữ persistent context còn sống khi tab cũ bị đóng. Tab mới được cài lại popup guard trước khi tải game; cookie, localStorage và dữ liệu đăng nhập trong persistent profile vẫn được giữ. Runner thử tối đa 3 lần, với khoảng chờ tăng dần 2 giây và 4 giây; chỉ lần cuối thất bại mới trả traceback. Terminal sẽ in `Navigation attempt ... timed out` khi cơ chế này được kích hoạt.
+
+Nếu cả ba lần startup navigation đều timeout và browser đứng ở `about:blank`, xem
+[TROUBLESHOOTING.md](TROUBLESHOOTING.md#cả-ba-lần-startup-navigation-đều-timeout)
+để chẩn đoán URL, network service và phục hồi cache profile mà không mất session.
 
 Xóa profile sẽ reset session và có thể làm game quay lại luồng guest/intro.
 
