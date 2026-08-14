@@ -15,9 +15,10 @@ from hauntedroom.flows.automap_support.train_select import TrainChoice
 from hauntedroom.actions.models import ClickTemplateAction
 from hauntedroom.flows.train import (
     TRAIN_BATTLE_LOAD_MS,
-    TRAIN_ENTRY_CLICK,
+    TRAIN_ENTRY_SETTLE_MS,
     TRAIN_SELECTION_ROUNDS,
     TRAIN_SELECTION_SETTLE_MS,
+    find_train_challenge_click,
     get_start_battle_action,
     run_train_flow,
     train_is_available,
@@ -43,6 +44,17 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
     def test_available_fixture_is_detected(self):
         frame = cv2.imread(str(FIXTURES / "train_available.png"))
         self.assertTrue(train_is_available(frame))
+
+    def test_finds_live_train_challenge_button_center(self):
+        frame = cv2.imread(str(FIXTURES / "train_available.png"))
+
+        self.assertEqual(find_train_challenge_click(frame), (400, 646))
+
+    def test_does_not_invent_click_when_challenge_button_is_absent(self):
+        frame = cv2.imread(str(FIXTURES / "train_available.png"))
+        frame[620:680, 320:480] = 0
+
+        self.assertIsNone(find_train_challenge_click(frame))
 
     def test_reuses_start_battle_action_configuration(self):
         self.assertIs(get_start_battle_action(self.actions), self.actions[0])
@@ -87,7 +99,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         self.assertTrue(result)
         self.assertEqual(
             self.page.mouse.click.await_args_list[:2],
-            [call(*TRAIN_ENTRY_CLICK), call(401, 644)],
+            [call(400, 646), call(401, 644)],
         )
         confirm_clicks = [
             click_args
@@ -97,10 +109,13 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         self.assertEqual(len(confirm_clicks), TRAIN_SELECTION_ROUNDS)
         self.assertEqual(
             self.page.wait_for_timeout.await_args_list,
-            [call(TRAIN_BATTLE_LOAD_MS)]
+            [call(TRAIN_ENTRY_SETTLE_MS), call(TRAIN_BATTLE_LOAD_MS)]
             + [call(TRAIN_SELECTION_SETTLE_MS)] * 15,
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["template_scales"],
+            (1.0, 0.67),
         )
         automap_flow.assert_awaited_once_with(
             self.page, stop_event, debug=True
         )
-        self.assertEqual(wait_for_template.await_args.kwargs["template_scales"], (1.0, 0.67))

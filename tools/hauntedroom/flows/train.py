@@ -17,7 +17,19 @@ from hauntedroom.flows.automap_support.train_select import TrainHeroMatcher
 
 TRAIN_AVAILABLE_REGION = (126, 196, 222, 213)
 TRAIN_AVAILABLE_MIN_TEXT_PIXELS = 30
-TRAIN_ENTRY_CLICK = (319, 129)
+# The train challenge button is yellow only while it can be pressed. Detect its
+# live bounding box instead of trusting a fixed point from a different screen.
+TRAIN_CHALLENGE_REGION = (320, 620, 480, 680)
+TRAIN_CHALLENGE_HUE_MIN = 15
+TRAIN_CHALLENGE_HUE_MAX = 40
+TRAIN_CHALLENGE_SATURATION_MIN = 80
+TRAIN_CHALLENGE_VALUE_MIN = 100
+TRAIN_CHALLENGE_MIN_AREA = 2_000
+TRAIN_CHALLENGE_MIN_WIDTH = 80
+TRAIN_CHALLENGE_MAX_WIDTH = 140
+TRAIN_CHALLENGE_MIN_HEIGHT = 20
+TRAIN_CHALLENGE_MAX_HEIGHT = 50
+TRAIN_ENTRY_SETTLE_MS = 2_000
 TRAIN_BATTLE_LOAD_MS = 5_000
 TRAIN_SELECTION_ROUNDS = 5
 TRAIN_SELECTION_POLL_MS = 200
@@ -38,6 +50,41 @@ def train_is_available(frame_bgr: np.ndarray) -> bool:
         & (hsv[:, :, 2] >= 80)
     )
     return int(np.count_nonzero(available_text)) >= TRAIN_AVAILABLE_MIN_TEXT_PIXELS
+
+
+def find_train_challenge_click(
+    frame_bgr: np.ndarray,
+) -> Optional[tuple[int, int]]:
+    """Return the center of the live yellow train challenge button."""
+    if frame_bgr.ndim != 3 or frame_bgr.shape[:2] != (720, 640):
+        return None
+
+    left, top, right, bottom = TRAIN_CHALLENGE_REGION
+    hsv = cv2.cvtColor(frame_bgr[top:bottom, left:right], cv2.COLOR_BGR2HSV)
+    mask = (
+        (hsv[:, :, 0] >= TRAIN_CHALLENGE_HUE_MIN)
+        & (hsv[:, :, 0] <= TRAIN_CHALLENGE_HUE_MAX)
+        & (hsv[:, :, 1] >= TRAIN_CHALLENGE_SATURATION_MIN)
+        & (hsv[:, :, 2] >= TRAIN_CHALLENGE_VALUE_MIN)
+    ).astype(np.uint8)
+
+    component_count, _labels, stats, _centroids = cv2.connectedComponentsWithStats(
+        mask
+    )
+    candidates: list[tuple[int, int, int, int, int]] = []
+    for component in range(1, component_count):
+        x, y, width, height, area = (int(value) for value in stats[component])
+        if (
+            area >= TRAIN_CHALLENGE_MIN_AREA
+            and TRAIN_CHALLENGE_MIN_WIDTH <= width <= TRAIN_CHALLENGE_MAX_WIDTH
+            and TRAIN_CHALLENGE_MIN_HEIGHT <= height <= TRAIN_CHALLENGE_MAX_HEIGHT
+        ):
+            candidates.append((area, x, y, width, height))
+
+    if not candidates:
+        return None
+    _area, x, y, width, height = max(candidates)
+    return left + x + width // 2, top + y + height // 2
 
 
 def get_start_battle_action(actions: list[Action]) -> ClickTemplateAction:
@@ -63,15 +110,29 @@ async def run_train_flow(
         print("No train attempt is currently available; runner is idle.", flush=True)
         return False
 
-    print(f"Train attempt available; entering at {TRAIN_ENTRY_CLICK}.", flush=True)
-    await click(page, *TRAIN_ENTRY_CLICK)
+    challenge_click = find_train_challenge_click(frame_bgr)
+    if challenge_click is None:
+        print(
+            "Train attempt available, but the challenge button was not found; "
+            "runner is idle.",
+            flush=True,
+        )
+        return False
+
+    print(
+        f"Train attempt available; challenge button detected at "
+        f"{challenge_click}; clicking.",
+        flush=True,
+    )
+    await click(page, *challenge_click)
+    if not await wait_for_flow_timeout(page, TRAIN_ENTRY_SETTLE_MS, stop_event):
+        return False
 
     action = get_start_battle_action(actions)
     template_path = action.template_path
-    start_battle = load_template(template_path)
     match = await wait_for_template(
         page,
-        start_battle,
+        load_template(template_path),
         template_path.name,
         float(action.threshold),
         int(action.timeout_ms),
@@ -82,8 +143,13 @@ async def run_train_flow(
     )
     if match is None:
         return False
+
     x, y, score = match
-    print(f"Train start battle at {x},{y}, score={score:.3f}; clicking.", flush=True)
+    print(
+        f"Train start battle detected at {x},{y}, "
+        f"score={score:.3f}; clicking.",
+        flush=True,
+    )
     await click(page, x, y)
     if not await wait_for_flow_timeout(page, TRAIN_BATTLE_LOAD_MS, stop_event):
         return False
