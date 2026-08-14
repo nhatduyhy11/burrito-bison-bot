@@ -7,7 +7,7 @@ from hauntedroom.actions import runner as actions_runner
 from hauntedroom.control_events import blockers as control_blockers
 from hauntedroom.control_events import new_tab_blocker
 from hauntedroom.core import template, vision
-from hauntedroom.flows import automap, click_loop, research
+from hauntedroom.flows import automap, click_loop, research, train
 from hauntedroom.flows.automap_support import (
     boss_action,
     boss_detector,
@@ -17,6 +17,7 @@ from hauntedroom.flows.automap_support import (
     hero_action,
     hero_levelup,
     map_completion,
+    train_select,
     upgrade_action,
 )
 from hauntedroom.flows.click_loop import run_click_loop
@@ -84,6 +85,17 @@ def get_research_flow(dev_reload: bool = False):
 
 def get_automap_flow(dev_reload: bool = False):
     return get_automap_runtime(dev_reload).automap_flow
+
+
+def get_train_flow(dev_reload: bool = False):
+    if not dev_reload:
+        return train.run_train_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(train_select)
+    reloaded_train = importlib.reload(train)
+    print("Train modules reloaded.", flush=True)
+    return reloaded_train.run_train_flow
 
 
 def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:

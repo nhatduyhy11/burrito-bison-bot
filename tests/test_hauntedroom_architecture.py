@@ -59,6 +59,15 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.automap_support.map_completion",
                 "hauntedroom.flows.automap_support.upgrade_action",
             },
+            "train.py": {
+                "hauntedroom.actions.models",
+                "hauntedroom.actions.runner",
+                "hauntedroom.core.runtime",
+                "hauntedroom.core.template",
+                "hauntedroom.core.vision",
+                "hauntedroom.flows.automap_support.boss_action",
+                "hauntedroom.flows.automap_support.train_select",
+            },
         }
         for path in (PACKAGE_DIR / "flows").glob("*.py"):
             forbidden = {

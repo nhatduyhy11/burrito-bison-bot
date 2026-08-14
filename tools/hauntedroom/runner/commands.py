@@ -90,6 +90,26 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_train(
+        actions: list[Action],
+        dev_reload: bool,
+        actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        automap_runtime = reload_policy.get_automap_runtime(dev_reload)
+        train_flow = reload_policy.get_train_flow(dev_reload)
+        actions = reload_actions_for_dev(actions, dev_reload, actions_path)
+
+        async def run(page, stop_event, debug: bool):
+            return await train_flow(
+                page,
+                actions,
+                automap_runtime.automap_flow,
+                stop_event,
+                debug,
+            )
+
+        return ResolvedFlow(actions, run)
+
     def resolve_click_loop(
         actions: list[Action],
         dev_reload: bool,
@@ -133,6 +153,12 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "Start-auto loop / pause / resume",
             resolve_start_auto,
             control_factory=FlowControl,
+        ),
+        "4": FlowCommand(
+            "4",
+            "train then auto-battle",
+            "Train mode then auto-battle",
+            resolve_train,
         ),
         "7": FlowCommand(
             "7",

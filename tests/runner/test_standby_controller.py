@@ -283,6 +283,60 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertIs(run_start_automap_loop.await_args.args[4], action_runner)
 
     @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_train_flow")
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
+    @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
+    async def test_shift_4_starts_train_then_automap_flow(
+        self,
+        start_hotkey_listener,
+        get_automap_runtime,
+        get_train_flow,
+        load_actions,
+        save_live_screenshot,
+    ):
+        page = Mock()
+        original_actions = [{"type": "old-action"}]
+        reloaded_actions = [{"type": "new-action"}]
+        automap_flow = AsyncMock()
+        train_flow = AsyncMock()
+        get_automap_runtime.return_value = AutomapRuntime(automap_flow, AsyncMock())
+        get_train_flow.return_value = train_flow
+        load_actions.return_value = reloaded_actions
+
+        async def enqueue_commands(_page, command_queue):
+            command_queue.put_nowait("4")
+            command_queue.put_nowait("8")
+
+        async def wait_until_stopped(
+            _page, _actions, _automap, stop_event, _debug
+        ):
+            await stop_event.wait()
+            return False
+
+        start_hotkey_listener.side_effect = enqueue_commands
+        train_flow.side_effect = wait_until_stopped
+        save_live_screenshot.side_effect = RuntimeError("stop test loop")
+
+        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+            await run_standby_controller(
+                page,
+                original_actions,
+                FLOW_COMMANDS,
+                dev_reload=True,
+                actions_path=Path("tools/hauntedroom_actions.sample.json"),
+            )
+
+        get_automap_runtime.assert_called_once_with(True)
+        get_train_flow.assert_called_once_with(True)
+        load_actions.assert_called_once_with(Path("tools/hauntedroom_actions.sample.json"))
+        train_flow.assert_awaited_once()
+        self.assertEqual(
+            train_flow.await_args.args[:3],
+            (page, reloaded_actions, automap_flow),
+        )
+
+    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
     @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
