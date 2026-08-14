@@ -8,6 +8,7 @@ import cv2
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_select"
+TRAIN_FLOW_FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 
 from hauntedroom.flows.automap_support.train_select import (
     TRAIN_CONFIRM_CLICK,
@@ -64,5 +65,8 @@ class TrainSelectTest(TestCase):
         self.assertTrue(selected_choice.confirm)
 
     def test_non_picker_frame_is_rejected(self):
-        self.assertEqual(find_train_cards(self.load("train_available.png")), [])
-        self.assertIsNone(self.matcher.find_choice(self.load("train_available.png")))
+        frame = cv2.imread(str(TRAIN_FLOW_FIXTURES / "train_available.png"))
+        self.assertIsNotNone(frame)
+
+        self.assertEqual(find_train_cards(frame), [])
+        self.assertIsNone(self.matcher.find_choice(frame))

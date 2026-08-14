@@ -9,7 +9,7 @@ import cv2
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
-FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_select"
+FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 
 from hauntedroom.flows.automap_support.train_select import TrainChoice
 from hauntedroom.actions.models import ClickTemplateAction
