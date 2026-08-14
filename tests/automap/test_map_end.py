@@ -2,7 +2,7 @@ import asyncio
 import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import AsyncMock, Mock, call, patch
+from unittest.mock import ANY, AsyncMock, Mock, call, patch
 
 import cv2
 import numpy as np
@@ -10,6 +10,7 @@ import numpy as np
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TOOLS_DIR = PROJECT_ROOT / "tools"
 FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
+MAP_WIN_FIXTURES_DIR = FIXTURES_DIR / "hauntedroom-captures" / "map_win"
 sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.core.template import find_template as find_real_template
@@ -17,8 +18,12 @@ from hauntedroom.core.template import find_template_matches as find_real_templat
 from hauntedroom.core.template import load_template as load_real_template
 from hauntedroom.flows.automap import (
     AUTOMAP_POLL_MS,
+    DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
+    DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
+    DAILY_FIRST_WIN_TEMPLATE_PATH,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
+    MAP_WIN_TEMPLATE_DIR,
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     WIN_REWARD_EMPTY_DELAY_MS,
@@ -28,6 +33,11 @@ from hauntedroom.flows.automap import (
     WIN_REWARD_TEMPLATE_THRESHOLD,
     run_automap_flow,
 )
+from hauntedroom.flows.automap_support.map_completion import (
+    DAILY_FIRST_WIN_CHECK_DELAY_MS,
+    handle_daily_first_win,
+)
+from hauntedroom.flows import automap
 from hauntedroom.flows.automap_support.detectors import (
     HERO_LEVELUP_PRICE_REGION,
 )
@@ -36,6 +46,7 @@ from hauntedroom.flows.automap_support.detectors import (
 class MapEndTest(IsolatedAsyncioTestCase):
 
     def setUp(self):
+        automap.FIRST_WIN_DONE = False
         self.page = Mock()
         self.page.evaluate = AsyncMock()
         self.page.wait_for_timeout = AsyncMock()
@@ -50,6 +61,21 @@ class MapEndTest(IsolatedAsyncioTestCase):
         x1, y1, _, _ = HERO_LEVELUP_PRICE_REGION
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
+
+    def test_map_win_templates_are_grouped_in_map_win_directory(self):
+        template_paths = (
+            WIN_REWARD_TEMPLATE_PATH,
+            REWARD_LIST_TITLE_TEMPLATE_PATH,
+            DAILY_FIRST_WIN_TEMPLATE_PATH,
+            DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
+            DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
+        )
+
+        self.assertTrue(MAP_WIN_TEMPLATE_DIR.is_dir())
+        for template_path in template_paths:
+            with self.subTest(template_path=template_path):
+                self.assertEqual(template_path.parent, MAP_WIN_TEMPLATE_DIR)
+                self.assertTrue(template_path.is_file())
 
     @patch("hauntedroom.flows.automap.load_template")
     @patch(
@@ -94,6 +120,7 @@ class MapEndTest(IsolatedAsyncioTestCase):
             )
 
         self.assertTrue(completed)
+        self.assertTrue(automap.FIRST_WIN_DONE)
         on_win.assert_called_once_with()
         messages = [print_call.args[0] for print_call in print_mock.call_args_list]
         self.assertLess(
@@ -137,11 +164,7 @@ class MapEndTest(IsolatedAsyncioTestCase):
         for fixture_name in ("rewards_v1.png", "rewards_v2.png"):
             with self.subTest(fixture_name=fixture_name):
                 frame = cv2.imread(
-                    str(
-                        FIXTURES_DIR
-                        / "hauntedroom-captures"
-                        / fixture_name
-                    ),
+                    str(MAP_WIN_FIXTURES_DIR / fixture_name),
                     cv2.IMREAD_GRAYSCALE,
                 )
                 self.assertIsNotNone(frame)
@@ -158,11 +181,7 @@ class MapEndTest(IsolatedAsyncioTestCase):
     def test_reward_list_title_template_matches_reward_list_screen(self):
         template = load_real_template(REWARD_LIST_TITLE_TEMPLATE_PATH)
         frame = cv2.imread(
-            str(
-                FIXTURES_DIR
-                / "hauntedroom-captures"
-                / "reward_list_screen.png"
-            ),
+            str(MAP_WIN_FIXTURES_DIR / "reward_list_screen.png"),
             cv2.IMREAD_GRAYSCALE,
         )
         self.assertIsNotNone(frame)
@@ -187,6 +206,8 @@ class MapEndTest(IsolatedAsyncioTestCase):
         side_effect=[
             (0, 0, 0.0),
             (300, 400, 0.91),
+            (0, 0, 0.0),
+            (0, 0, 0.0),
             (0, 0, 0.0),
             (0, 0, 0.0),
             (50, 600, 0.95),
@@ -217,6 +238,147 @@ class MapEndTest(IsolatedAsyncioTestCase):
         self.page.wait_for_timeout.assert_awaited_once_with(
             WIN_REWARD_EMPTY_DELAY_MS
         )
+
+    def test_daily_first_win_templates_match_supplied_screens(self):
+        label_template = load_real_template(DAILY_FIRST_WIN_TEMPLATE_PATH)
+        checkbox_template = load_real_template(
+            DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+        )
+        checked_template = load_real_template(
+            DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+        )
+
+        for fixture_name in (
+            "daily_first_win.png",
+            "daily_first_win_checked.png",
+        ):
+            with self.subTest(fixture_name=fixture_name):
+                frame = cv2.imread(
+                    str(MAP_WIN_FIXTURES_DIR / fixture_name),
+                    cv2.IMREAD_GRAYSCALE,
+                )
+                self.assertIsNotNone(frame)
+                _x, _y, label_score = find_real_template(
+                    frame,
+                    label_template,
+                    DAILY_FIRST_WIN_TEMPLATE_PATH.name,
+                    scales=(1.0,),
+                )
+                _x, _y, unchecked_score = find_real_template(
+                    frame,
+                    checkbox_template,
+                    DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH.name,
+                    scales=(1.0,),
+                )
+                _x, _y, checked_score = find_real_template(
+                    frame,
+                    checked_template,
+                    DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH.name,
+                    scales=(1.0,),
+                )
+                self.assertGreaterEqual(label_score, 0.90)
+                if fixture_name == "daily_first_win.png":
+                    self.assertGreaterEqual(unchecked_score, 0.95)
+                    self.assertLess(checked_score, 0.95)
+                else:
+                    self.assertLess(unchecked_score, 0.95)
+                    self.assertGreaterEqual(checked_score, 0.95)
+
+    async def test_daily_first_win_retries_until_checkbox_is_confirmed(self):
+        find_template = Mock()
+
+        checked_scores = iter((0.20, 0.20, 0.99))
+        unchecked_scores = iter((0.99, 0.99))
+
+        def match_with_checkbox_state(_frame, _template, name, **_kwargs):
+            if name == DAILY_FIRST_WIN_TEMPLATE_PATH.name:
+                return (332, 442, 0.99)
+            if name == DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH.name:
+                return (10, 10, next(checked_scores))
+            return (10, 10, next(unchecked_scores))
+
+        find_template.side_effect = match_with_checkbox_state
+        wait = AsyncMock(return_value=True)
+        click = AsyncMock()
+        capture = AsyncMock(
+            return_value=np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+        checkpoint = AsyncMock(return_value=True)
+
+        handled = await handle_daily_first_win(
+            self.page,
+            asyncio.Event(),
+            np.zeros((720, 640), dtype=np.uint8),
+            daily_first_win_template=np.zeros((18, 150), dtype=np.uint8),
+            daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
+            daily_first_win_checkbox_template=np.zeros((19, 19), dtype=np.uint8),
+            daily_first_win_checkbox_template_path=(
+                DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+            ),
+            daily_first_win_checked_template=np.zeros((19, 19), dtype=np.uint8),
+            daily_first_win_checked_template_path=(
+                DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+            ),
+            capture_page_bgr_fn=capture,
+            to_grayscale_fn=lambda frame: frame[:, :, 0],
+            find_template_fn=find_template,
+            click_fn=click,
+            wait_for_flow_timeout_fn=wait,
+            flow_checkpoint_fn=checkpoint,
+            poll_ms=100,
+        )
+
+        self.assertTrue(handled)
+        self.assertEqual(click.await_count, 3)
+        self.assertEqual(click.await_args_list[-1], call(self.page, 377, 478))
+        self.assertEqual(
+            wait.await_args_list,
+            [
+                call(self.page, DAILY_FIRST_WIN_CHECK_DELAY_MS, ANY),
+                call(self.page, DAILY_FIRST_WIN_CHECK_DELAY_MS, ANY),
+            ],
+        )
+
+    async def test_daily_first_win_never_toggles_a_checked_checkbox(self):
+        frame = cv2.imread(
+            str(MAP_WIN_FIXTURES_DIR / "daily_first_win_checked.png"),
+            cv2.IMREAD_GRAYSCALE,
+        )
+        click = AsyncMock()
+        wait = AsyncMock(return_value=True)
+
+        handled = await handle_daily_first_win(
+            self.page,
+            asyncio.Event(),
+            frame,
+            daily_first_win_template=load_real_template(
+                DAILY_FIRST_WIN_TEMPLATE_PATH
+            ),
+            daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
+            daily_first_win_checkbox_template=load_real_template(
+                DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+            ),
+            daily_first_win_checkbox_template_path=(
+                DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+            ),
+            daily_first_win_checked_template=load_real_template(
+                DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+            ),
+            daily_first_win_checked_template_path=(
+                DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+            ),
+            capture_page_bgr_fn=AsyncMock(),
+            to_grayscale_fn=lambda image: image,
+            find_template_fn=find_real_template,
+            click_fn=click,
+            wait_for_flow_timeout_fn=wait,
+            flow_checkpoint_fn=AsyncMock(return_value=True),
+            poll_ms=100,
+        )
+
+        self.assertTrue(handled)
+        click.assert_awaited_once_with(self.page, 377, 478)
+        wait.assert_not_awaited()
 
     @patch("hauntedroom.flows.automap.load_template")
     @patch(

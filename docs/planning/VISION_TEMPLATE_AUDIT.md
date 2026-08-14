@@ -33,7 +33,7 @@ nguy cơ không match trên phiên bản server Trung Quốc dù bố cục game
 
 - Flow Shift+1 và prefix của Shift+3 được khai báo trong
   `tools/hauntedroom_actions.sample.json`.
-- `map_end.png` và `reward_list_title.png` được khai báo và sử dụng trong
+- `map_end.png` và `map_win/reward_list_title.png` được khai báo và sử dụng trong
   `tools/hauntedroom/flows/automap.py`.
 - Các template hero được tự động load từ
   `tools/rooms/automap/hero_levelup/` bởi

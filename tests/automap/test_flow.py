@@ -36,7 +36,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
 
         AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
 
-        self.assertEqual(load_template.call_count, 9)
+        self.assertEqual(load_template.call_count, 12)
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     @patch("hauntedroom.flows.automap.load_template")

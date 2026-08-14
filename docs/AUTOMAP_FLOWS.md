@@ -61,11 +61,11 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 - Tìm `automap/map_end.png` với threshold `0.90`; phép kiểm tra được throttle
   tối đa một lần mỗi 5 giây.
 - Khi match, click để quay về home.
-- Nếu thấy `automap/win_reward.png`, click match đầu tiên ở mép trên template
-  rồi kiểm tra lại sau `2 giây` cho tới khi không còn reward icon.
-- Sau khi reward icon biến mất, tìm `automap/reward_list_title.png` trong vùng
-  title của popup reward-list; nếu match, click title đúng một lần rồi tiếp tục
-  đợi home.
+- Nếu thấy `automap/map_win/win_reward.png`, click match đầu tiên ở mép trên
+  template rồi kiểm tra lại sau `2 giây` cho tới khi không còn reward icon.
+- Sau khi reward icon biến mất, tìm
+  `automap/map_win/reward_list_title.png` trong vùng title của popup reward-list;
+  nếu match, click title đúng một lần rồi tiếp tục đợi home.
 - Khi `rooms/start_home.png` xuất hiện, đánh dấu auto-map hoàn tất và về idle.
 
 ### 3. Initial gear setup

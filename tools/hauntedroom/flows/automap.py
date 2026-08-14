@@ -67,14 +67,22 @@ from hauntedroom.flows.automap_support.upgrade_action import (
 
 
 AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "automap"
+MAP_WIN_TEMPLATE_DIR = AUTOMAP_TEMPLATE_DIR / "map_win"
 ROOM_TEMPLATE_DIR = AUTOMAP_TEMPLATE_DIR.parent
 BOSS_TEMPLATE_DIR = ROOM_TEMPLATE_DIR / "boss"
 LV_UP_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_up.png"
 BUILT_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "built.png"
 LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
 MAP_END_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "map_end.png"
-WIN_REWARD_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "win_reward.png"
-REWARD_LIST_TITLE_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "reward_list_title.png"
+WIN_REWARD_TEMPLATE_PATH = MAP_WIN_TEMPLATE_DIR / "win_reward.png"
+REWARD_LIST_TITLE_TEMPLATE_PATH = MAP_WIN_TEMPLATE_DIR / "reward_list_title.png"
+DAILY_FIRST_WIN_TEMPLATE_PATH = MAP_WIN_TEMPLATE_DIR / "daily_first_win.png"
+DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH = (
+    MAP_WIN_TEMPLATE_DIR / "daily_first_win_checkbox.png"
+)
+DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH = (
+    MAP_WIN_TEMPLATE_DIR / "daily_first_win_checked.png"
+)
 BOSS_HP_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "boss_hp_bar.png"
 START_HOME_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "start_home.png"
 EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
@@ -82,6 +90,8 @@ EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
 BOSS_RECHECK_INTERVAL_MS = 400
+# Keep the process-lifetime blocker across --dev-reload module refreshes.
+FIRST_WIN_DONE = globals().get("FIRST_WIN_DONE", False)
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -99,6 +109,13 @@ class AutomapConfig:
     map_end_template_path: Path = MAP_END_TEMPLATE_PATH
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH
     reward_list_title_template_path: Path = REWARD_LIST_TITLE_TEMPLATE_PATH
+    daily_first_win_template_path: Path = DAILY_FIRST_WIN_TEMPLATE_PATH
+    daily_first_win_checkbox_template_path: Path = (
+        DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+    )
+    daily_first_win_checked_template_path: Path = (
+        DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+    )
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
@@ -129,6 +146,15 @@ class AutomapFlow:
         self.reward_list_title_template = load_template(
             config.reward_list_title_template_path
         )
+        self.daily_first_win_template = load_template(
+            config.daily_first_win_template_path
+        )
+        self.daily_first_win_checkbox_template = load_template(
+            config.daily_first_win_checkbox_template_path
+        )
+        self.daily_first_win_checked_template = load_template(
+            config.daily_first_win_checked_template_path
+        )
         self.boss_hp_template = load_template(config.boss_hp_template_path)
         self.start_home_template = load_template(config.start_home_template_path)
         self.exit_click_template = load_template(config.exit_click_template_path)
@@ -140,6 +166,7 @@ class AutomapFlow:
         self.map_completed = False
         self.win_recorded = False
         self.total_win: Optional[int] = None
+        self.first_win_done = FIRST_WIN_DONE
         self.boss_handoff_requested = False
         self.final_boss_pet_deployed = False
         self.boss_detection_logged = False
@@ -196,6 +223,8 @@ class AutomapFlow:
         return True
 
     async def finish_map_from_home(self) -> bool:
+        global FIRST_WIN_DONE
+
         outcome = await _finish_map_from_home(
             self.page,
             self.stop_event,
@@ -205,6 +234,19 @@ class AutomapFlow:
             reward_list_title_template_path=self.config.reward_list_title_template_path,
             start_home_template=self.start_home_template,
             start_home_template_path=self.config.start_home_template_path,
+            daily_first_win_template=self.daily_first_win_template,
+            daily_first_win_template_path=self.config.daily_first_win_template_path,
+            daily_first_win_checkbox_template=(
+                self.daily_first_win_checkbox_template
+            ),
+            daily_first_win_checkbox_template_path=(
+                self.config.daily_first_win_checkbox_template_path
+            ),
+            daily_first_win_checked_template=self.daily_first_win_checked_template,
+            daily_first_win_checked_template_path=(
+                self.config.daily_first_win_checked_template_path
+            ),
+            first_win_done=self.first_win_done,
             win_recorded=self.win_recorded,
             total_win=self.total_win,
             on_win=self.config.on_win,
@@ -219,6 +261,8 @@ class AutomapFlow:
         )
         self.win_recorded = outcome.win_recorded
         self.total_win = outcome.total_win
+        self.first_win_done = outcome.first_win_done
+        FIRST_WIN_DONE = outcome.first_win_done
         return outcome.completed
 
     async def hero_levelup(
@@ -402,6 +446,13 @@ async def run_automap_flow(
     map_end_template_path: Path = MAP_END_TEMPLATE_PATH,
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH,
     reward_list_title_template_path: Path = REWARD_LIST_TITLE_TEMPLATE_PATH,
+    daily_first_win_template_path: Path = DAILY_FIRST_WIN_TEMPLATE_PATH,
+    daily_first_win_checkbox_template_path: Path = (
+        DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+    ),
+    daily_first_win_checked_template_path: Path = (
+        DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+    ),
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH,
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
@@ -420,6 +471,13 @@ async def run_automap_flow(
         map_end_template_path=map_end_template_path,
         win_reward_template_path=win_reward_template_path,
         reward_list_title_template_path=reward_list_title_template_path,
+        daily_first_win_template_path=daily_first_win_template_path,
+        daily_first_win_checkbox_template_path=(
+            daily_first_win_checkbox_template_path
+        ),
+        daily_first_win_checked_template_path=(
+            daily_first_win_checked_template_path
+        ),
         boss_hp_template_path=boss_hp_template_path,
         start_home_template_path=start_home_template_path,
         exit_click_template_path=exit_click_template_path,
