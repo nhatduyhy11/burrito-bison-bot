@@ -67,7 +67,7 @@ Các tùy chọn thường dùng:
 - `--width` và `--height`: thay đổi viewport; mặc định hiện tại là `640x720`.
 - `--profile`: thay đổi thư mục browser profile.
 - `--url`: thay đổi URL đích.
-- `--dev-reload`: reload module Python liên quan mỗi lần bắt đầu flow (`Shift+1`, `Shift+2`, `Shift+3`, `Shift+7`, `Shift+9`); với `Shift+1` và `Shift+3` cũng reload action JSON. Dùng cho vòng lặp debug `Shift+0` → sửa code/template/action → bắt đầu lại flow.
+- `--dev-reload`: reload module Python liên quan mỗi lần bắt đầu flow (`Shift+1`, `Shift+2`, `Shift+3`, `Shift+5`, `Shift+6`, `Shift+7`, `Shift+9`); với `Shift+1` và `Shift+3` cũng reload action JSON. Dùng cho vòng lặp debug `Shift+0` → sửa code/template/action → bắt đầu lại flow.
 - `--keep-open`: chỉ giữ browser sau khi action hoàn tất khi `ACTION_LOOP_COUNT > 0`; không cần trong standby mặc định.
 
 Xem toàn bộ tùy chọn:
@@ -110,11 +110,13 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 - `Shift+1`: chạy flow enter-exit room liên tục.
 - `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [tài liệu auto-map](AUTOMAP_FLOWS.md) để biết priority, điều kiện và hành vi của từng phase.
 - `Shift+3`: khi idle, bắt đầu loop start room → auto-map → chờ 2 giây → start map tiếp theo. Khi loop đang chạy, bấm lại để pause; bấm lần nữa để resume đúng state hiện tại. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [tài liệu auto-map](AUTOMAP_FLOWS.md).
+- `Shift+5`: click lần lượt các badge EXP vàng còn khả dụng, chờ 800 ms và chụp lại sau mỗi click; về idle khi không còn badge.
+- `Shift+6`: chỉ xem nút `Đột phá` trong popup là available khi có dấu `!` đỏ trên nút (màu vàng của nút không đủ để kết luận và tên tab phía dưới luôn bị loại trừ). Khi available, flow click nút, chờ 800 ms, click lại đúng vị trí đó, chờ 1 giây rồi detect lại. Khi hết dấu `!`, flow click mũi tên phải một lần, chờ 2 giây rồi kiểm tra hero tiếp theo; nếu hero tiếp theo cũng không có dấu `!` thì về idle.
 - `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
-- `Shift+4` đến `Shift+6`: được dành sẵn cho các flow bổ sung và hiện chỉ in thông báo chưa cấu hình.
+- `Shift+4`: chạy train mode rồi auto-battle.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
 Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi một flow đang chạy, runner không nhận flow khác cho tới khi flow đó hoàn tất hoặc được dừng bằng `Shift+0`; riêng `Shift+3` toggle pause/resume cho chính start-auto loop và `Shift+8` chỉ chụp screenshot nên không bị chặn. `Shift+0` vẫn dừng hẳn được flow `Shift+3` khi flow đang pause.

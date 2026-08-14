@@ -91,6 +91,22 @@ class ExpAvailableDetectionTest(TestCase):
             ],
         )
 
+    def test_ignores_dim_orange_card_background(self):
+        frame = cv2.imread(str(FIXTURE_DIR / "exp_avail_5.png"))
+
+        matches = find_exp_available_matches(frame)
+
+        self.assertEqual(
+            matches,
+            [
+                (312, 352),
+                (436, 352),
+                (188, 496),
+                (312, 496),
+                (436, 496),
+            ],
+        )
+
     def test_detects_exp_badges_after_grid_is_scrolled(self):
         frame = cv2.imread(str(FIXTURE_DIR / "exp_avail_scroll.png"))
 

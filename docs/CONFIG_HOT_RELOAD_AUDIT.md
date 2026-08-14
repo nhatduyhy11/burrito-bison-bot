@@ -6,7 +6,7 @@ Date: 2026-08-09
 
 The runner has hot reload for the Python modules used by newly started flows.
 With `--dev-reload`, the runner reloads the relevant modules before starting
-`Shift+1`, `Shift+2`, `Shift+3`, `Shift+7`, or `Shift+9`.
+`Shift+1`, `Shift+2`, `Shift+3`, `Shift+5`, `Shift+6`, `Shift+7`, or `Shift+9`.
 
 For `Shift+2` and `Shift+3`, the runner reloads:
 
@@ -83,6 +83,8 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Action loader/runner | `tools/hauntedroom/actions/*.py` | action defaults, loader validation, runner behavior | Reloaded for `Shift+1`, and before `Shift+2`/`Shift+3`; the default command table injects the current runner into `flows.start_auto` for entry actions. |
 | Blocker fallback Python code | `tools/hauntedroom/control_events/*.py` | blocker fallback behavior, popup host/path used by Python fallback | Reloaded for action flows. Already injected JavaScript guards are not re-injected. |
 | Research flow | `tools/hauntedroom/flows/research.py` | research templates, threshold, scale, poll/miss counts | Reloaded when `Shift+9` starts. |
+| EXP available flow | `tools/hauntedroom/flows/exp_available.py` | EXP badge color/slot detector and click delay | Reloaded when `Shift+5` starts. |
+| Hero breakthrough flow | `tools/hauntedroom/flows/hero_up_available.py` | yellow popup button plus red `!` availability detector, click positions and delays | Reloaded when `Shift+6` starts. |
 | Fixed click loop | `tools/hauntedroom/flows/click_loop.py` | `CLICK_POSITION`, `CLICK_INTERVAL_MS` | Reloaded when `Shift+7` starts. |
 | Top-level auto-map settings | `tools/hauntedroom/settings.py` | `CAPTURE_HERO_FALLBACK_SCREENSHOTS`, `CLICK_EXIT_ON_BOSS` | Reloaded before auto-map support modules when `Shift+2`/`Shift+3` starts with `--dev-reload`. |
 

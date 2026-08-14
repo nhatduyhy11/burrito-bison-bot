@@ -8,20 +8,26 @@ import numpy as np
 
 from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
 from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.flows.automap_support.boss_action import click
 
 
 EXP_AVAILABLE_SEARCH_REGION = (128, 140, 485, 570)
 EXP_AVAILABLE_HUE_MIN = 10
 EXP_AVAILABLE_HUE_MAX = 40
 EXP_AVAILABLE_SATURATION_MIN = 80
-EXP_AVAILABLE_VALUE_MIN = 120
+EXP_AVAILABLE_VALUE_MIN = 180
 EXP_AVAILABLE_SLOT_X = (188, 312, 436)
 EXP_AVAILABLE_SLOT_Y = (209, 353, 497)
 EXP_AVAILABLE_MAX_VERTICAL_OFFSET = 45
 EXP_AVAILABLE_CORE_RADIUS = 24
 EXP_AVAILABLE_CORE_MIN_FILL_RATIO = 0.70
 EXP_CLICK_SETTLE_MS = 800
+
+
+async def _click(page, x: int, y: int) -> None:
+    await page.evaluate(
+        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
+    )
+    await page.mouse.click(x, y)
 
 
 def find_exp_available_matches(frame_bgr: np.ndarray) -> list[tuple[int, int]]:
@@ -116,7 +122,7 @@ async def run_exp_available_flow(
             f"match and checking again in {delay_ms}ms.",
             flush=True,
         )
-        await click(page, x, y)
+        await _click(page, x, y)
         if not await wait_for_flow_timeout(page, delay_ms, stop_event):
             print("EXP available flow stopped; runner is idle.", flush=True)
             return False

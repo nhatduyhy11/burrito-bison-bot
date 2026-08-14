@@ -7,7 +7,14 @@ from hauntedroom.actions import runner as actions_runner
 from hauntedroom.control_events import blockers as control_blockers
 from hauntedroom.control_events import new_tab_blocker
 from hauntedroom.core import template, vision
-from hauntedroom.flows import automap, click_loop, exp_available, research, train
+from hauntedroom.flows import (
+    automap,
+    click_loop,
+    exp_available,
+    hero_up_available,
+    research,
+    train,
+)
 from hauntedroom.flows.automap_support import (
     boss_action,
     boss_detector,
@@ -22,6 +29,7 @@ from hauntedroom.flows.automap_support import (
 )
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.exp_available import run_exp_available_flow
+from hauntedroom.flows.hero_up_available import run_hero_up_available_flow
 from hauntedroom.flows.research import run_research_flow
 
 load_actions = actions_loader.load_actions
@@ -96,6 +104,22 @@ def get_exp_available_flow(dev_reload: bool = False):
     run_exp_available_flow = reloaded_exp_available.run_exp_available_flow
     print("EXP available module reloaded.", flush=True)
     return run_exp_available_flow
+
+
+def get_hero_up_available_flow(dev_reload: bool = False):
+    global run_hero_up_available_flow
+
+    if not dev_reload:
+        return run_hero_up_available_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(vision)
+    reloaded_hero_up_available = importlib.reload(hero_up_available)
+    run_hero_up_available_flow = (
+        reloaded_hero_up_available.run_hero_up_available_flow
+    )
+    print("Hero breakthrough module reloaded.", flush=True)
+    return run_hero_up_available_flow
 
 
 def get_automap_flow(dev_reload: bool = False):
