@@ -134,6 +134,18 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_exp_available(
+        actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        exp_available_flow = reload_policy.get_exp_available_flow(dev_reload)
+
+        async def run(page, stop_event, _debug: bool):
+            return await exp_available_flow(page, stop_event)
+
+        return ResolvedFlow(actions, run)
+
     return {
         "1": FlowCommand(
             "1",
@@ -165,6 +177,12 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "fixed-position click loop",
             "Click (440, 500) every 1s",
             resolve_click_loop,
+        ),
+        "5": FlowCommand(
+            "5",
+            "EXP available",
+            "EXP available",
+            resolve_exp_available,
         ),
         "9": FlowCommand(
             "9",
