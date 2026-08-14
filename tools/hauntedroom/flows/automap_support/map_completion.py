@@ -13,6 +13,11 @@ WIN_REWARD_TEMPLATE_THRESHOLD = 0.85
 WIN_REWARD_RECHECK_MS = 2_000
 WIN_REWARD_EMPTY_DELAY_MS = 3_000
 WIN_REWARD_FOLLOWUP_CLICK = (220, 560)
+WIN_REWARD_FOLLOWUP_CLICK_COUNT = 2
+MAP_COMPLETION_BLOCKER_THRESHOLD = 0.90
+MAP_COMPLETION_BLOCKER_CLICK_POSITIONS = {
+    "overlay_newbie.png": "top_middle",
+}
 REWARD_LIST_TITLE_TEMPLATE_THRESHOLD = 0.90
 REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
 START_HOME_TEMPLATE_THRESHOLD = 0.90
@@ -154,6 +159,26 @@ def find_start_home(
     return x, y, score, start_home_template_path
 
 
+def find_map_completion_blocker(
+    frame_gray: np.ndarray,
+    blocker_templates: tuple[tuple[Path, np.ndarray], ...],
+    find_template_fn,
+) -> Optional[tuple[int, int, float, Path]]:
+    for blocker_path, blocker_template in blocker_templates:
+        x, y, score = find_template_fn(
+            frame_gray,
+            blocker_template,
+            blocker_path.name,
+            click_position=MAP_COMPLETION_BLOCKER_CLICK_POSITIONS.get(
+                blocker_path.name,
+                "center",
+            ),
+        )
+        if score >= MAP_COMPLETION_BLOCKER_THRESHOLD:
+            return x, y, score, blocker_path
+    return None
+
+
 async def finish_map_from_home(
     page,
     stop_event,
@@ -164,6 +189,7 @@ async def finish_map_from_home(
     reward_list_title_template_path: Path,
     start_home_template: np.ndarray,
     start_home_template_path: Path,
+    blocker_templates: tuple[tuple[Path, np.ndarray], ...],
     daily_first_win_template: np.ndarray,
     daily_first_win_template_path: Path,
     daily_first_win_checkbox_template: np.ndarray,
@@ -183,7 +209,7 @@ async def finish_map_from_home(
     flow_checkpoint_fn,
     poll_ms: int,
 ) -> MapCompletionOutcome:
-    reward_followup_clicked = False
+    reward_followup_click_count = 0
     reward_click_position: Optional[tuple[int, int]] = None
     reward_list_title_seen = False
     while await flow_checkpoint_fn(stop_event):
@@ -334,11 +360,14 @@ async def finish_map_from_home(
                     True, win_recorded, total_win, first_win_done
                 )
 
-        if not reward_followup_clicked:
+        if reward_followup_click_count < WIN_REWARD_FOLLOWUP_CLICK_COUNT:
+            next_click = reward_followup_click_count + 1
             print(
-                "No win reward remains; waiting 1s then clicking "
+                "No win reward remains; waiting 3s then clicking "
                 f"{WIN_REWARD_FOLLOWUP_CLICK[0]},"
-                f"{WIN_REWARD_FOLLOWUP_CLICK[1]} once before rechecking.",
+                f"{WIN_REWARD_FOLLOWUP_CLICK[1]} "
+                f"({next_click}/{WIN_REWARD_FOLLOWUP_CLICK_COUNT}) "
+                "before rechecking.",
                 flush=True,
             )
             if not await wait_for_flow_timeout_fn(
@@ -346,7 +375,24 @@ async def finish_map_from_home(
             ):
                 break
             await click_fn(page, *WIN_REWARD_FOLLOWUP_CLICK)
-            reward_followup_clicked = True
+            reward_followup_click_count += 1
+            continue
+
+        blocker_match = find_map_completion_blocker(
+            frame_gray,
+            blocker_templates,
+            find_template_fn,
+        )
+        if blocker_match is not None:
+            blocker_x, blocker_y, blocker_score, blocker_path = blocker_match
+            print(
+                f"Post-map blocker {blocker_path.name} at "
+                f"{blocker_x},{blocker_y}, score={blocker_score:.3f}; clearing.",
+                flush=True,
+            )
+            await click_fn(page, blocker_x, blocker_y)
+            if not await wait_for_flow_timeout_fn(page, poll_ms, stop_event):
+                break
             continue
 
         x, y, score, template_path = find_start_home(

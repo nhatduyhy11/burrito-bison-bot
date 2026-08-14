@@ -23,11 +23,13 @@ from hauntedroom.flows.automap import (
     DAILY_FIRST_WIN_TEMPLATE_PATH,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
+    MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS,
     MAP_WIN_TEMPLATE_DIR,
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     WIN_REWARD_EMPTY_DELAY_MS,
     WIN_REWARD_FOLLOWUP_CLICK,
+    WIN_REWARD_FOLLOWUP_CLICK_COUNT,
     WIN_REWARD_RECHECK_MS,
     WIN_REWARD_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_THRESHOLD,
@@ -35,6 +37,8 @@ from hauntedroom.flows.automap import (
 )
 from hauntedroom.flows.automap_support.map_completion import (
     DAILY_FIRST_WIN_CHECK_DELAY_MS,
+    MAP_COMPLETION_BLOCKER_THRESHOLD,
+    find_map_completion_blocker,
     handle_daily_first_win,
 )
 from hauntedroom.flows import automap
@@ -201,27 +205,24 @@ class MapEndTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch(
-        "hauntedroom.flows.automap.find_template",
-        side_effect=[
-            (0, 0, 0.0),
-            (300, 400, 0.91),
-            (0, 0, 0.0),
-            (0, 0, 0.0),
-            (0, 0, 0.0),
-            (0, 0, 0.0),
-            (50, 600, 0.95),
-        ],
-    )
+    @patch("hauntedroom.flows.automap.find_template")
     @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_clicks_followup_once_before_checking_home(
+    async def test_map_end_clicks_followup_twice_before_checking_home(
         self,
         capture_page_bgr,
         find_template_matches,
         find_template,
         _load_template,
     ):
+        def match_by_name(_frame, _template, name, **_kwargs):
+            if name == "map_end.png":
+                return 300, 400, 0.91
+            if name == "start_home.png":
+                return 50, 600, 0.95
+            return 0, 0, 0.0
+
+        find_template.side_effect = match_by_name
         capture_page_bgr.return_value = self.make_protect_available(
             np.zeros((720, 640, 3), dtype=np.uint8)
         )
@@ -231,12 +232,94 @@ class MapEndTest(IsolatedAsyncioTestCase):
         self.assertTrue(completed)
         self.assertEqual(
             self.page.mouse.click.await_args_list,
-            [call(300, 400), call(*WIN_REWARD_FOLLOWUP_CLICK)],
+            [
+                call(300, 400),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
+            ],
         )
         self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
-        self.assertEqual(find_template_matches.call_count, 2)
-        self.page.wait_for_timeout.assert_awaited_once_with(
-            WIN_REWARD_EMPTY_DELAY_MS
+        self.assertEqual(find_template_matches.call_count, 3)
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [
+                call(WIN_REWARD_EMPTY_DELAY_MS),
+                call(WIN_REWARD_EMPTY_DELAY_MS),
+            ],
+        )
+
+    def test_newbie_screen_matches_map_completion_blocker(self):
+        frame = cv2.imread(
+            str(FIXTURES_DIR / "hauntedroom-captures" / "newbie_block_screen.png"),
+            cv2.IMREAD_GRAYSCALE,
+        )
+        self.assertIsNotNone(frame)
+        blocker_templates = tuple(
+            (path, load_real_template(path))
+            for path in MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS
+        )
+
+        match = find_map_completion_blocker(
+            frame,
+            blocker_templates,
+            find_real_template,
+        )
+
+        self.assertIsNotNone(match)
+        x, y, score, path = match
+        self.assertEqual(path.name, "overlay_newbie.png")
+        self.assertEqual((x, y), (345, 75))
+        self.assertGreaterEqual(score, MAP_COMPLETION_BLOCKER_THRESHOLD)
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.flows.automap.find_template")
+    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    async def test_map_end_clears_newbie_blocker_after_two_followup_clicks(
+        self,
+        capture_page_bgr,
+        _find_template_matches,
+        find_template,
+        _load_template,
+    ):
+        blocker_cleared = False
+
+        def match_by_name(_frame, _template, name, **_kwargs):
+            if name == "map_end.png":
+                return 300, 400, 0.91
+            if name == "overlay_newbie.png" and not blocker_cleared:
+                return 345, 75, 0.99
+            if name == "start_home.png" and blocker_cleared:
+                return 50, 600, 0.95
+            return 0, 0, 0.0
+
+        def record_click(x, y):
+            nonlocal blocker_cleared
+            if (x, y) == (345, 75):
+                blocker_cleared = True
+
+        find_template.side_effect = match_by_name
+        self.page.mouse.click.side_effect = record_click
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+
+        completed = await run_automap_flow(self.page, asyncio.Event())
+
+        self.assertTrue(completed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(300, 400),
+                *[
+                    call(*WIN_REWARD_FOLLOWUP_CLICK)
+                    for _ in range(WIN_REWARD_FOLLOWUP_CLICK_COUNT)
+                ],
+                call(345, 75),
+            ],
         )
 
     def test_daily_first_win_templates_match_supplied_screens(self):

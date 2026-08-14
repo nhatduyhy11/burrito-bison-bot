@@ -54,6 +54,7 @@ from hauntedroom.flows.automap_support.map_completion import (
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     WIN_REWARD_EMPTY_DELAY_MS,
     WIN_REWARD_FOLLOWUP_CLICK,
+    WIN_REWARD_FOLLOWUP_CLICK_COUNT,
     WIN_REWARD_RECHECK_MS,
     WIN_REWARD_TEMPLATE_THRESHOLD,
     finish_map_from_home as _finish_map_from_home,
@@ -70,6 +71,7 @@ AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "automap"
 MAP_WIN_TEMPLATE_DIR = AUTOMAP_TEMPLATE_DIR / "map_win"
 ROOM_TEMPLATE_DIR = AUTOMAP_TEMPLATE_DIR.parent
 BOSS_TEMPLATE_DIR = ROOM_TEMPLATE_DIR / "boss"
+BLOCKER_TEMPLATE_DIR = ROOM_TEMPLATE_DIR / "blocker"
 LV_UP_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_up.png"
 BUILT_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "built.png"
 LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
@@ -86,6 +88,15 @@ DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH = (
 BOSS_HP_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "boss_hp_bar.png"
 START_HOME_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "start_home.png"
 EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
+MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS = tuple(
+    BLOCKER_TEMPLATE_DIR / name
+    for name in (
+        "lubu_close.png",
+        "overlay_close.png",
+        "overlay_close_2.png",
+        "overlay_newbie.png",
+    )
+)
 # lv_up.png excludes the two-pixel background border. The two valid icons in
 # the captured battle UI score about 0.95 and 0.86; other UI stays below 0.60.
 AUTOMAP_TEMPLATE_THRESHOLD = 0.80
@@ -119,6 +130,9 @@ class AutomapConfig:
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
+    map_completion_blocker_template_paths: tuple[
+        Path, ...
+    ] = MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS
     capture_hero_fallback_screenshots: bool = CAPTURE_HERO_FALLBACK_SCREENSHOTS
     click_exit_on_boss: bool = CLICK_EXIT_ON_BOSS
@@ -158,6 +172,10 @@ class AutomapFlow:
         self.boss_hp_template = load_template(config.boss_hp_template_path)
         self.start_home_template = load_template(config.start_home_template_path)
         self.exit_click_template = load_template(config.exit_click_template_path)
+        self.map_completion_blocker_templates = tuple(
+            (path, load_template(path))
+            for path in config.map_completion_blocker_template_paths
+        )
         self.hero_levelup_matcher = HeroLevelupMatcher(
             config.hero_levelup_template_paths
         )
@@ -234,6 +252,7 @@ class AutomapFlow:
             reward_list_title_template_path=self.config.reward_list_title_template_path,
             start_home_template=self.start_home_template,
             start_home_template_path=self.config.start_home_template_path,
+            blocker_templates=self.map_completion_blocker_templates,
             daily_first_win_template=self.daily_first_win_template,
             daily_first_win_template_path=self.config.daily_first_win_template_path,
             daily_first_win_checkbox_template=(
@@ -456,6 +475,9 @@ async def run_automap_flow(
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH,
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH,
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH,
+    map_completion_blocker_template_paths: tuple[Path, ...] = (
+        MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS
+    ),
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS,
     capture_hero_fallback_screenshots: bool = CAPTURE_HERO_FALLBACK_SCREENSHOTS,
     click_exit_on_boss: bool = CLICK_EXIT_ON_BOSS,
@@ -481,6 +503,9 @@ async def run_automap_flow(
         boss_hp_template_path=boss_hp_template_path,
         start_home_template_path=start_home_template_path,
         exit_click_template_path=exit_click_template_path,
+        map_completion_blocker_template_paths=(
+            map_completion_blocker_template_paths
+        ),
         hero_levelup_template_paths=hero_levelup_template_paths,
         capture_hero_fallback_screenshots=capture_hero_fallback_screenshots,
         click_exit_on_boss=click_exit_on_boss,
