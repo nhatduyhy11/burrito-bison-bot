@@ -1,14 +1,14 @@
 # Config and Hot Reload Audit
 
-Date: 2026-08-09
+Date: 2026-08-15
 
 ## Summary
 
 The runner has hot reload for the Python modules used by newly started flows.
 With `--dev-reload`, the runner reloads the relevant modules before starting
-`Shift+1`, `Shift+2`, `Shift+3`, `Shift+5`, `Shift+6`, `Shift+7`, or `Shift+9`.
+`Shift+1` through `Shift+7`, or `Shift+9`.
 
-For `Shift+2` and `Shift+3`, the runner reloads:
+For `Shift+2`, `Shift+3`, and `Shift+4`, the runner reloads:
 
 - `hauntedroom.core.vision`
 - `hauntedroom.core.template`
@@ -30,8 +30,9 @@ For `Shift+2` and `Shift+3`, the runner reloads:
 The browser process, Playwright context, current page, hotkey bindings, parsed
 CLI arguments, and injected page scripts are not recreated. A flow object that is
 already running also keeps the templates and config it loaded at construction.
-For `Shift+1` and `Shift+3`, the action JSON file is reloaded before the flow
-starts.
+For `Shift+1`, `Shift+3`, and `Shift+4`, the action JSON file is reloaded before
+the flow starts. `Shift+4` uses the `start_battle.png` action configuration when
+entering train battle.
 
 The project currently does not use environment variables for runtime config. A
 repo scan found no `os.environ`, `os.getenv`, `process.env`, or `dotenv` usage,
@@ -46,12 +47,18 @@ the default command table by `tools/hauntedroom/runner/default_commands.py`:
   support modules, and the auto-map module.
 - `get_action_runner(dev_reload=True)` reloads JSON action support for
   `Shift+1`.
+- `get_automap_runtime(dev_reload=True)` returns both the refreshed auto-map flow
+  and action runner for `Shift+2`, `Shift+3`, and `Shift+4`. The default
+  `Shift+3` command passes that action runner into
+  `flows.start_auto.run_start_automap_loop()`, while `Shift+4` passes the
+  refreshed auto-map callable into the train flow.
+- `get_train_flow(dev_reload=True)` reloads `automap_support/train_select.py`
+  followed by `flows/train.py` for `Shift+4`.
+- `get_exp_available_flow(dev_reload=True)` and
+  `get_hero_up_available_flow(dev_reload=True)` reload their detector/flow
+  modules for `Shift+5` and `Shift+6`.
 - `get_click_loop_flow(dev_reload=True)` and `get_research_flow(dev_reload=True)`
   reload their flow modules for `Shift+7` and `Shift+9`.
-- `get_automap_runtime(dev_reload=True)` returns both the refreshed auto-map flow
-  and action runner. The default `Shift+3` command passes that action runner into
-  `flows.start_auto.run_start_automap_loop()`, so entry actions use the reloaded
-  runner without mutating the flow module.
 - Reload functions are called only when a new flow is started.
 - `Shift+0` is still required to stop the old flow before the new code is used.
 
@@ -80,9 +87,10 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Gear placement | `tools/hauntedroom/flows/automap_support/gear_action.py` | gear regions, HSV thresholds, drag timings, drop offsets | Explicitly reloaded before `automap`. |
 | Core template matching for auto-map | `tools/hauntedroom/core/template.py` | `DEFAULT_TEMPLATE_THRESHOLD`, `TEMPLATE_SCALES`, matching functions | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
 | Core vision for auto-map | `tools/hauntedroom/core/vision.py` | screenshot capture, generic OpenCV region helpers | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
-| Action loader/runner | `tools/hauntedroom/actions/*.py` | action defaults, loader validation, runner behavior | Reloaded for `Shift+1`, and before `Shift+2`/`Shift+3`; the default command table injects the current runner into `flows.start_auto` for entry actions. |
+| Action loader/runner | `tools/hauntedroom/actions/*.py` | action defaults, loader validation, runner behavior | Reloaded for `Shift+1`, and before `Shift+2`/`Shift+3`/`Shift+4`; start-auto and train receive the refreshed dependencies through the command resolver. |
 | Blocker fallback Python code | `tools/hauntedroom/control_events/*.py` | blocker fallback behavior, popup host/path used by Python fallback | Reloaded for action flows. Already injected JavaScript guards are not re-injected. |
 | Research flow | `tools/hauntedroom/flows/research.py` | research templates, threshold, scale, poll/miss counts | Reloaded when `Shift+9` starts. |
+| Train flow | `tools/hauntedroom/flows/train.py`, `tools/hauntedroom/flows/automap_support/train_select.py` | availability/button detector, selection matcher, click positions and delays | Reloaded when `Shift+4` starts; its auto-map dependency is refreshed separately by `get_automap_runtime()`. |
 | EXP available flow | `tools/hauntedroom/flows/exp_available.py` | EXP badge color/slot detector and click delay | Reloaded when `Shift+5` starts. |
 | Hero breakthrough flow | `tools/hauntedroom/flows/hero_up_available.py` | yellow popup button plus red `!` availability detector, click positions and delays | Reloaded when `Shift+6` starts. |
 | Fixed click loop | `tools/hauntedroom/flows/click_loop.py` | `CLICK_POSITION`, `CLICK_INTERVAL_MS` | Reloaded when `Shift+7` starts. |
@@ -100,7 +108,7 @@ noted.
 | CLI args | command line | `--actions`, `--profile`, `--url`, `--headless`, `--browser`, `--width`, `--height`, `--keep-open`, `--dev-reload`, `--debug` | `argparse` runs once. Browser/context choices cannot be changed without relaunch. |
 | Browser launch | `tools/hauntedroom_runner.py` | `launch_options`, persistent context, blocked service workers | Created once in `main()`. Viewport, channel, profile, headless, and service-worker policy are fixed for that context. |
 | Startup navigation | `tools/hauntedroom/runner/navigation.py` | `NAVIGATION_ATTEMPTS`, `NAVIGATION_TIMEOUT_MS`, `NAVIGATION_RETRY_DELAY_SECONDS` | Read when the process starts and used only for the initial game navigation. Changing them requires relaunch. |
-| Action file path | command line | `--actions` | The selected file path is parsed once. In dev reload mode, that same file is re-read before `Shift+1` and `Shift+3`. |
+| Action file path | command line | `--actions` | The selected file path is parsed once. In dev reload mode, that same file is re-read before `Shift+1`, `Shift+3`, and `Shift+4`. |
 | Injected page guards | `tools/hauntedroom/settings.py`, `tools/hauntedroom/control_events/new_tab_blocker.py` | `ENABLE_SCRIPT_INJECTION`, profile popup guard script, iframe guard script and delay | `ENABLE_SCRIPT_INJECTION` is effectively startup-only because scripts already injected into the page are not replaced without explicit reinjection or page restart. |
 | Runtime globals | `tools/hauntedroom/core/runtime.py` | `ACTION_LOOP_COUNT`, `COUNTDOWN_WAIT_THRESHOLD_MS`, screenshot dirs, `HOTKEY_SCRIPT` | Imported at process startup; hotkey script is injected once. |
 | Runner entrypoint | `tools/hauntedroom_runner.py` | browser `launch_options`, composition of standby/action mode | Entrypoint module is not reloaded. |

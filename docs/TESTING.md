@@ -24,11 +24,17 @@ Chạy toàn bộ suite chính:
 uv run --with pytest pytest tests -q
 ```
 
-Snapshot hiện tại:
+Snapshot ngày 2026-08-15:
 
 ```text
-119 passed, 12 subtests passed
+1 collection error
 ```
+
+Full suite hiện dừng khi `tests/automap/test_level_up.py` còn import
+`LV_SPIN_CLICK_OFFSET_X` và `UPGRADE_CONFIRM_CLICK` từ
+`hauntedroom.flows.automap` thay vì module owner
+`hauntedroom.flows.automap_support.upgrade_action`. Hai module special-flow vẫn
+chạy độc lập và có tổng cộng 16 test pass.
 
 Lệnh `unittest discover` vẫn dùng được khi cần debug theo standard library:
 
@@ -46,6 +52,8 @@ uv run python -m unittest tests.automap.test_boss -v
 uv run python -m unittest tests.hero_select.test_hero_select -v
 uv run python -m unittest tests.hero_select.test_hero_fallback -v
 uv run python -m unittest tests.research.test_research_flow -v
+uv run python -m unittest tests.special_flow.test_exp_available_flow -v
+uv run python -m unittest tests.special_flow.test_hero_up_available_flow -v
 ```
 
 Chạy một test cụ thể:
@@ -70,6 +78,8 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
   Asset và selection contract được mô tả tại
   [`tools/rooms/automap/hero_levelup/README.md`](../tools/rooms/automap/hero_levelup/README.md).
 - `research/`: polling và interaction của flow research.
+- `special_flow/`: detector ảnh, click loop, stop event, command registration và
+  dev-reload wiring của `Shift+5` EXP available và `Shift+6` hero breakthrough.
 - `runner/`: standby controller, command specs, hotkey, live capture, dev reload và
   startup navigation retry.
 - `runner/test_navigation.py`: bỏ page bị kẹt và retry trên page mới khi lần
@@ -84,6 +94,9 @@ Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
 ## Fixture ảnh
 
 - Fixture đã chọn và ổn định nằm trong `tests/fixtures/`.
+- Fixture của hai flow mới nằm trong `tests/fixtures/special_flow/`, gồm cả
+  trường hợp available/unavailable, artwork vàng/cam gây nhiễu và grid EXP đã
+  scroll.
 - `Shift+8` chụp viewport live vào
   `tests/fixtures/hauntedroom-captures/` mà không dừng flow hiện tại.
 - Screenshot timeout mới được lưu tạm trong `.tmp/hauntedroom-timeouts/`.

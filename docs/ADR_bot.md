@@ -10,7 +10,8 @@ Haunted Room runner có ba nhóm trách nhiệm:
 
 - Khởi tạo CLI/browser và các primitive dùng chung.
 - Load và thực thi flow action-driven `Shift+1` từ JSON.
-- Thực thi các flow độc lập theo hotkey như auto-map và research.
+- Thực thi các flow theo hotkey như auto-map, train, EXP available, hero
+  breakthrough và research.
 
 Khi tất cả module nằm trực tiếp trong `hauntedroom/`, dependency vẫn có thể không
 cycle nhưng khó nhìn ra module nào là nền tảng và module nào là business flow.
@@ -27,10 +28,13 @@ tools/hauntedroom/
 │   ├── __init__.py
 │   ├── cli.py
 │   ├── runtime.py
+│   ├── template.py
 │   └── vision.py
 ├── actions/
 │   ├── __init__.py
+│   ├── defaults.py
 │   ├── loader.py
+│   ├── models.py
 │   └── runner.py
 ├── control_events/
 │   ├── __init__.py
@@ -40,14 +44,19 @@ tools/hauntedroom/
 │   ├── __init__.py
 │   ├── commands.py
 │   ├── default_commands.py
+│   ├── navigation.py
 │   ├── reload.py
 │   └── standby.py
 └── flows/
     ├── __init__.py
     ├── automap_support/
     ├── automap.py
+    ├── click_loop.py
+    ├── exp_available.py
+    ├── hero_up_available.py
+    ├── research.py
     ├── start_auto.py
-    └── research.py
+    └── train.py
 ```
 
 Trong project này, `core` có nghĩa là **foundational modules**. Đây không phải
@@ -80,10 +89,19 @@ import `actions`, `flows` hay entrypoint.
   entrypoint thay vì import `runner/commands.py`.
 - `flows/automap.py`: coordinator, state và public API của battle priority
   `Shift+2`.
-- `flows/automap_support/`: detector, action và phase orchestration dùng riêng
-  bởi auto-map.
+- `flows/automap_support/`: detector, action và phase orchestration của
+  auto-map; `train_select.py` là support module cho composite train.
 - `flows/start_auto.py`: composite flow của `Shift+3`, tái dùng prefix action
   `start_battle.png`, gọi auto-map và cooldown giữa map.
+- `flows/train.py`: composite flow của `Shift+4`; kiểm tra lượt train, vào trận,
+  chọn hero năm vòng rồi bàn giao cho auto-map.
+- `flows/automap_support/train_select.py`: detector/matcher card dùng riêng cho
+  hero picker của train.
+- `flows/exp_available.py`: detector HSV theo slot và click loop thu EXP của
+  `Shift+5`.
+- `flows/hero_up_available.py`: detector nút vàng + dấu `!` đỏ và click loop đột
+  phá của `Shift+6`.
+- `flows/click_loop.py`: fixed-position click loop của `Shift+7`.
 - `flows/research.py`: flow research của `Shift+9`.
 - `hauntedroom_runner.py`: composition root và browser bootstrap. Entrypoint nối
   CLI/browser với action runner hoặc standby controller, và inject `FLOW_COMMANDS`
@@ -110,6 +128,7 @@ flowchart TD
     template[hauntedroom.core.template]
     vision[hauntedroom.core.vision]
     runner[hauntedroom.runner]
+    train[hauntedroom.flows.train]
 
     entry --> actions
     entry --> runner
@@ -118,6 +137,7 @@ flowchart TD
     entry --> controlEvents
     runner --> actions
     runner --> flows
+    runner --> train
     runner --> runtime
     runner --> controlEvents
     actions --> runtime
@@ -127,6 +147,10 @@ flowchart TD
     flows --> runtime
     flows --> template
     flows --> vision
+    train --> actions
+    train --> runtime
+    train --> template
+    train --> vision
     controlEvents --> runtime
     controlEvents --> vision
 ```
@@ -136,8 +160,12 @@ Các rule cụ thể:
 1. `core` không import module nào từ `actions` hoặc `flows`.
 2. Module trong `control_events` được import ngang hàng trong cùng package và
    phụ thuộc `core`, nhưng không import `actions` hoặc `flows`.
-3. `actions` và `flows` không import lẫn nhau.
-4. Flow trong `flows` không import flow khác.
+3. Các leaf flow không import `actions` hoặc flow khác. `train.py` là composite
+   flow có chủ đích: nó dùng typed action/start-battle runner và
+   `automap_support/train_select.py`, nhưng nhận auto-map callable từ command
+   resolver thay vì import `automap.py` trực tiếp.
+4. `automap.py` chỉ import các module con thuộc `flows/automap_support/`; các
+   special flow `Shift+5`/`Shift+6` không phụ thuộc auto-map implementation.
 5. `runner` là nơi nối hotkey với flow và action runner; module tầng dưới không
    import ngược `hauntedroom_runner`.
 6. Entrypoint không chứa business flow policy; nó bootstrap browser, chọn
@@ -158,7 +186,7 @@ actions.loader.load_actions
   - parse / validate
   - resolve template paths
       ↓
-prepared list[dict]
+prepared list[Action]
       ↓
 actions.runner.run_actions
   - load templates
@@ -166,17 +194,21 @@ actions.runner.run_actions
   - click / wait / retry
 ```
 
-`run_actions` giả định input đã qua `load_actions`. Auto-map và research không
-dùng action JSON và chạy độc lập trong `flows`.
+`run_actions` giả định input đã qua `load_actions`. Auto-map, EXP available,
+hero breakthrough và research không dùng action JSON. Train chỉ lấy typed
+`start_battle.png` action/config từ danh sách đã load, sau đó chạy logic Python
+riêng và nhận auto-map callable qua dependency injection.
 
 ## Hot-reload
 
 Dev mode reload module Python trước khi bắt đầu flow mới, trong khi browser và
 session hiện tại vẫn được giữ nguyên. Policy nằm trong `runner/reload.py`.
-`Shift+2`/`Shift+3` reload `core.vision`, action support,
+`Shift+2`/`Shift+3`/`Shift+4` reload `core.vision`, action support,
 `flows.automap_support` rồi `flows.automap` để các import by-value bind lại
-function/constant mới. `Shift+1`/`Shift+3` cũng load lại action JSON trước khi
-chạy. `runner.reload.get_automap_runtime()` trả về cặp auto-map flow/action
+function/constant mới. `Shift+4` reload thêm `train_select.py` và `train.py`.
+`Shift+5`, `Shift+6`, `Shift+7` và `Shift+9` reload module flow tương ứng.
+`Shift+1`/`Shift+3`/`Shift+4` cũng load lại action JSON trước khi chạy.
+`runner.reload.get_automap_runtime()` trả về cặp auto-map flow/action
 runner hiện tại; command table trong `runner/default_commands.py` truyền action
 runner đó vào `flows.start_auto.run_start_automap_loop()`, nên entry actions của
 `Shift+3` dùng runner đã reload mà flow module không cần import `actions`.

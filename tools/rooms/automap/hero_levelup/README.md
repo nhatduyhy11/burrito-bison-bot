@@ -1,8 +1,8 @@
 # Hero level-up selection
 
 Thư mục này chứa các asset được `HeroLevelupMatcher` dùng để chọn option trong
-popup hero level-up. Logic này được dùng chung bởi auto-map của cả `Shift+2` và
-`Shift+3`.
+popup hero level-up. Logic priority/template này được dùng chung bởi auto-map
+của `Shift+2`/`Shift+3` và hero picker train của `Shift+4`.
 
 ## Flow selection
 
@@ -59,6 +59,11 @@ file thể hiện trong bảng.
 `y=632`. Các asset còn lại dùng template matching grayscale ở scale `1.0` trong
 vùng từ `y=460` trở xuống.
 
+Train `Shift+4` tái sử dụng cùng danh sách priority ở scale cố định `0.8` trong
+`automap_support/train_select.py`. Fallback train dựa trên cạnh card đỏ/tím và
+chỉ tự chọn card tím chưa chọn; nó không dùng toàn bộ fallback panel của
+auto-map.
+
 ## Fallback theo panel và màu
 
 Khi không có template ưu tiên nào match, detector dùng panel dưới của card:
@@ -103,10 +108,12 @@ flag được đọc lại cho flow mới khi runner chạy `--dev-reload`.
 ## Code, test và tài liệu liên quan
 
 - Matcher: [`hero_levelup.py`](../../../hauntedroom/flows/automap_support/hero_levelup.py)
+- Train matcher: [`train_select.py`](../../../hauntedroom/flows/automap_support/train_select.py)
 - Orchestrator: [`automap.py`](../../../hauntedroom/flows/automap.py)
 - Template priority và orchestration test: [`test_hero_select.py`](../../../../tests/hero_select/test_hero_select.py)
 - Panel/màu/capture fallback test: [`test_hero_fallback.py`](../../../../tests/hero_select/test_hero_fallback.py)
+- Train selection test: [`test_train_select.py`](../../../../tests/hero_select/test_train_select.py)
 - Fixture selection chuẩn: [`tests/fixtures/hauntedroom-captures/hero_select/`](../../../../tests/fixtures/hauntedroom-captures/hero_select/)
 - Fixture từng bị capture sai: [`tests/fixtures/hauntedroom-captures/wrong_fallback/`](../../../../tests/fixtures/hauntedroom-captures/wrong_fallback/)
 - Auto-map flow: [`AUTOMAP_FLOWS.md`](../../../../docs/AUTOMAP_FLOWS.md)
-- Audit template phụ thuộc chữ: [`VISION_TEMPLATE_AUDIT.md`](../../../../docs/VISION_TEMPLATE_AUDIT.md)
+- Audit template phụ thuộc chữ: [`VISION_TEMPLATE_AUDIT.md`](../../../../docs/planning/VISION_TEMPLATE_AUDIT.md)
