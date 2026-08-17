@@ -5,6 +5,7 @@ from typing import Optional
 import cv2
 import numpy as np
 
+from hauntedroom.core.mouse import smooth_drag
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.boss_action import click
 
@@ -146,30 +147,6 @@ def find_gear_drop_position(
     return x1 + hp_left + offset_x, y1 + hp_top + offset_y
 
 
-async def _drag_gear_smoothly(
-    page,
-    start: tuple[int, int],
-    end: tuple[int, int],
-) -> None:
-    """Hold long enough to select the gear, then emit a timed mouse path."""
-    await page.mouse.move(*start)
-    await page.mouse.down()
-    try:
-        # The game changes to its placement grid only after a real click-hold.
-        await page.wait_for_timeout(GEAR_DRAG_HOLD_MS)
-        start_x, start_y = start
-        end_x, end_y = end
-        for step in range(1, GEAR_DRAG_STEPS + 1):
-            progress = step / GEAR_DRAG_STEPS
-            next_x = round(start_x + (end_x - start_x) * progress)
-            next_y = round(start_y + (end_y - start_y) * progress)
-            await page.mouse.move(next_x, next_y)
-            await page.wait_for_timeout(GEAR_DRAG_STEP_DELAY_MS)
-        await page.wait_for_timeout(GEAR_DROP_HOLD_MS)
-    finally:
-        await page.mouse.up()
-
-
 async def deploy_initial_gear(
     page,
     frame_bgr: np.ndarray,
@@ -205,7 +182,16 @@ async def deploy_initial_gear(
     await page.evaluate(
         "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
     )
-    await _drag_gear_smoothly(page, GEAR_ITEM_POSITION, drop_position)
+    await smooth_drag(
+        page,
+        GEAR_ITEM_POSITION,
+        drop_position,
+        # The game changes to its placement grid only after a real click-hold.
+        hold_before_move_ms=GEAR_DRAG_HOLD_MS,
+        steps=GEAR_DRAG_STEPS,
+        step_delay_ms=GEAR_DRAG_STEP_DELAY_MS,
+        hold_before_release_ms=GEAR_DROP_HOLD_MS,
+    )
     await page.wait_for_timeout(GEAR_DROP_SETTLE_MS)
 
     result_frame = await capture_page_bgr(page)
