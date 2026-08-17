@@ -12,6 +12,7 @@ TOOLS_DIR = PROJECT_ROOT / "tools"
 FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
+from hauntedroom.core.vision import region_has_color_component
 from hauntedroom.flows.automap import (
     AutomapConfig,
     AutomapFlow,
@@ -19,18 +20,16 @@ from hauntedroom.flows.automap import (
 )
 from hauntedroom.flows.automap_support.boss_action import (
     PET_ACTIVE_TEMPLATE_PATH,
-    PET_ACTION_POSITION,
-    PET_READY_TEMPLATE_PATH,
     SPELL_ACTION_POSITION,
-    SPELL_READY_TEMPLATE_PATH,
     activate_boss_spell,
     deploy_boss_pet,
 )
 from hauntedroom.flows.automap_support.boss_detector import (
     BOSS_HP_SEARCH_REGION,
+    PET_READY_GLOW_PATTERN,
     PET_READY_REGION,
     SPELL_READY_REGION,
-    boss_action_has_ready_glow,
+    SPELL_READY_GLOW_PATTERN,
     boss_progress_is_full,
     find_boss_health_bar,
 )
@@ -377,39 +376,55 @@ class BossTest(IsolatedAsyncioTestCase):
                 / "pet-spell-ready.png"
             )
         )
-        pet_reference = cv2.imread(str(PET_READY_TEMPLATE_PATH))
-        spell_reference = cv2.imread(str(SPELL_READY_TEMPLATE_PATH))
-
         self.assertIsNotNone(capture)
         self.assertTrue(
-            boss_action_has_ready_glow(
+            region_has_color_component(
                 capture,
-                pet_reference,
                 PET_READY_REGION,
+                PET_READY_GLOW_PATTERN,
             )
         )
         self.assertTrue(
-            boss_action_has_ready_glow(
+            region_has_color_component(
                 capture,
-                spell_reference,
                 SPELL_READY_REGION,
+                SPELL_READY_GLOW_PATTERN,
             )
         )
 
-    def test_ready_glow_detector_ignores_exact_glow_shape(self):
-        reference = np.zeros((20, 20, 3), dtype=np.uint8)
-        reference[2:10, 2:10] = (0, 220, 255)
-        frame = np.zeros((40, 40, 3), dtype=np.uint8)
-        frame[20:24, 10:26] = (0, 220, 255)
+    def test_pet_ready_glow_accepts_different_pet_art(self):
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet_alt.png"
+            )
+        )
 
         self.assertTrue(
-            boss_action_has_ready_glow(frame, reference, (0, 10, 30, 30))
+            region_has_color_component(
+                frame,
+                PET_READY_REGION,
+                PET_READY_GLOW_PATTERN,
+            )
         )
+
+    def test_pet_ready_glow_rejects_partial_width_bar(self):
+        frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "test_boss_detect.png"
+            )
+        )
+
         self.assertFalse(
-            boss_action_has_ready_glow(
-                np.zeros_like(frame),
-                reference,
-                (0, 10, 30, 30),
+            region_has_color_component(
+                frame,
+                PET_READY_REGION,
+                PET_READY_GLOW_PATTERN,
             )
         )
 
@@ -469,7 +484,40 @@ class BossTest(IsolatedAsyncioTestCase):
         self.assertTrue(deployed)
         self.assertEqual(
             self.page.mouse.click.await_args_list,
-            [call(*PET_ACTION_POSITION), call(463, 455)],
+            [call(321, 604), call(463, 455)],
+        )
+
+    @patch(
+        "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_deploy_boss_pet_accepts_different_pet_art(
+        self,
+        capture_page_bgr,
+    ):
+        ready_frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet_alt.png"
+            )
+        )
+        capture_page_bgr.return_value = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet_alt_ready.png"
+            )
+        )
+
+        deployed = await deploy_boss_pet(self.page, frame_bgr=ready_frame)
+
+        self.assertTrue(deployed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(319, 603), call(463, 455)],
         )
 
     @patch(
@@ -504,8 +552,8 @@ class BossTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [
-                call(*PET_ACTION_POSITION),
-                call(*PET_ACTION_POSITION),
+                call(321, 604),
+                call(321, 604),
                 call(463, 455),
             ],
         )

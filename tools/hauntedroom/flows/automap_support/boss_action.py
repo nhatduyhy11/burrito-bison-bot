@@ -1,6 +1,5 @@
 """Boss-specific actions used by the auto-map battle flow."""
 
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -9,41 +8,28 @@ import numpy as np
 
 from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
 from hauntedroom.core.template import find_template, load_bgr_reference
-from hauntedroom.core.vision import capture_page_bgr
+from hauntedroom.core.vision import (
+    capture_page_bgr,
+    find_color_component,
+    region_has_color_component,
+)
 from hauntedroom.flows.automap_support.boss_detector import (
+    PET_READY_GLOW_PATTERN,
+    PET_READY_REGION,
     SPELL_READY_REGION,
-    boss_action_has_ready_glow,
+    SPELL_READY_GLOW_PATTERN,
 )
 
 
 ROOM_TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "rooms"
 BOSS_TEMPLATE_DIR = ROOM_TEMPLATE_DIR / "boss"
-PET_READY_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "pet_ready.png"
 PET_ACTIVE_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "pet_active.png"
-SPELL_READY_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "spell_ready.png"
 
-PET_ACTION_POSITION = (319, 603)
+PET_READY_CLICK_OFFSET_Y = 15
 SPELL_ACTION_POSITION = (488, 584)
 BOSS_ACTION_SELECT_DELAY_MS = 200
-BOSS_PET_DRAG_STEPS = 10
 PET_MENU_RECHECK_MS = 300
-PET_TEMPLATE_THRESHOLD = 0.90
-
-
-@dataclass(frozen=True)
-class BossActionReferences:
-    pet_ready: np.ndarray
-    pet_active: np.ndarray
-    spell_ready: np.ndarray
-
-
-def load_boss_action_references() -> BossActionReferences:
-    """Load immutable boss-action references once for an auto-map run."""
-    return BossActionReferences(
-        pet_ready=load_bgr_reference(PET_READY_TEMPLATE_PATH),
-        pet_active=load_bgr_reference(PET_ACTIVE_TEMPLATE_PATH),
-        spell_ready=load_bgr_reference(SPELL_READY_TEMPLATE_PATH),
-    )
+PET_ACTIVE_TEMPLATE_THRESHOLD = 0.90
 
 
 async def click(page, x: int, y: int) -> None:
@@ -58,17 +44,14 @@ async def activate_boss_spell(
     page,
     boss_position: tuple[int, int],
     frame_bgr: Optional[np.ndarray] = None,
-    ready_reference: Optional[np.ndarray] = None,
 ) -> bool:
     """Select and target the boss spell when its electric glow is ready."""
     if frame_bgr is None:
         frame_bgr = await capture_page_bgr(page)
-    if ready_reference is None:
-        ready_reference = load_bgr_reference(SPELL_READY_TEMPLATE_PATH)
-    if not boss_action_has_ready_glow(
+    if not region_has_color_component(
         frame_bgr,
-        ready_reference,
         SPELL_READY_REGION,
+        SPELL_READY_GLOW_PATTERN,
     ):
         return False
 
@@ -83,7 +66,6 @@ async def deploy_boss_pet(
     page,
     boss_position: Optional[tuple[int, int]] = None,
     frame_bgr: Optional[np.ndarray] = None,
-    ready_reference: Optional[np.ndarray] = None,
     active_reference: Optional[np.ndarray] = None,
     stop_event=None,
 ) -> bool:
@@ -94,29 +76,27 @@ async def deploy_boss_pet(
     """
     if frame_bgr is None:
         frame_bgr = await capture_page_bgr(page)
-    if ready_reference is None:
-        ready_reference = load_bgr_reference(PET_READY_TEMPLATE_PATH)
-    frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
-    ready_gray = cv2.cvtColor(ready_reference, cv2.COLOR_BGR2GRAY)
-    ready_x, ready_y, ready_score = find_template(
-        frame_gray,
-        ready_gray,
-        PET_READY_TEMPLATE_PATH.name,
-        scales=(1.0,),
+    ready_bar = find_color_component(
+        frame_bgr,
+        PET_READY_REGION,
+        PET_READY_GLOW_PATTERN,
     )
-    if ready_score < PET_TEMPLATE_THRESHOLD:
+    if ready_bar is None:
         return False
+    ready_bar_x, ready_bar_y = ready_bar.center
+    pet_click = (ready_bar_x, ready_bar_y - PET_READY_CLICK_OFFSET_Y)
 
     if active_reference is None:
         active_reference = load_bgr_reference(PET_ACTIVE_TEMPLATE_PATH)
     active_gray = cv2.cvtColor(active_reference, cv2.COLOR_BGR2GRAY)
     print(
-        f"Final-boss pet is ready at {ready_x},{ready_y}, "
-        f"score={ready_score:.3f}; opening its menu.",
+        f"Final-boss pet has a full glowing bar at "
+        f"{ready_bar_x},{ready_bar_y}; opening its menu at "
+        f"{pet_click[0]},{pet_click[1]}.",
         flush=True,
     )
     while await flow_checkpoint(stop_event):
-        await click(page, ready_x, ready_y)
+        await click(page, *pet_click)
         if not await wait_for_flow_timeout(page, PET_MENU_RECHECK_MS, stop_event):
             break
 
@@ -127,7 +107,7 @@ async def deploy_boss_pet(
             PET_ACTIVE_TEMPLATE_PATH.name,
             scales=(1.0,),
         )
-        if active_score >= PET_TEMPLATE_THRESHOLD:
+        if active_score >= PET_ACTIVE_TEMPLATE_THRESHOLD:
             print(
                 f"Pet summon is active at {active_x},{active_y}, "
                 f"score={active_score:.3f}; clicking it.",
@@ -138,7 +118,7 @@ async def deploy_boss_pet(
 
         print(
             f"Pet summon is not active yet (score={active_score:.3f}); "
-            "clicking pet_ready again.",
+            "clicking above the detected ready bar again.",
             flush=True,
         )
 

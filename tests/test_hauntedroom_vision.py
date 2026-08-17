@@ -10,7 +10,42 @@ FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.core.template import find_template, find_template_matches
-from hauntedroom.core.vision import region_has_enough_white
+from hauntedroom.core.vision import (
+    ColorComponentPattern,
+    find_color_component,
+    region_has_color_component,
+    region_has_enough_white,
+)
+
+
+class ColorComponentTest(TestCase):
+    def test_checks_color_geometry_and_fill(self):
+        pattern = ColorComponentPattern(
+            lower_hsv=(15, 120, 180),
+            upper_hsv=(40, 255, 255),
+            min_area=200,
+            min_width=30,
+            max_width=40,
+            min_height=8,
+            max_height=12,
+            min_fill_ratio=0.70,
+        )
+        frame = np.zeros((40, 60, 3), dtype=np.uint8)
+        frame[15:25, 10:46] = (0, 220, 255)
+
+        self.assertTrue(
+            region_has_color_component(frame, (0, 0, 60, 40), pattern)
+        )
+        self.assertEqual(
+            find_color_component(frame, (0, 0, 60, 40), pattern).center,
+            (28, 20),
+        )
+
+        partial = np.zeros_like(frame)
+        partial[15:25, 10:34] = (0, 220, 255)
+        self.assertFalse(
+            region_has_color_component(partial, (0, 0, 60, 40), pattern)
+        )
 
 
 class WhiteRegionTest(TestCase):

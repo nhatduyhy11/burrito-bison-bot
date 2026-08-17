@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 
 from hauntedroom.core.template import find_template
+from hauntedroom.core.vision import ColorComponentPattern
 
 
 # Upper battlefield above the room entrance, expressed with exclusive x2/y2
@@ -41,18 +42,26 @@ BOSS_PROGRESS_MIN_SATURATION = 100
 BOSS_PROGRESS_MIN_VALUE = 120
 BOSS_PROGRESS_MIN_YELLOW_RATIO = 0.85
 
-# Both controls have an animated electric outline, so their ready state is
-# detected by the amount of connected bright yellow/orange glow in their fixed
-# UI slots rather than by requiring the pixels to match a single animation
-# frame. The reference crops calibrate how much glow constitutes "ready".
+# Both controls have a bright yellow/orange ready glow in fixed UI slots. The
+# pet pattern specifically requires its energy bar to span the known full
+# width, so the pet artwork above the bar can vary freely.
 PET_READY_REGION = (292, 574, 346, 632)
 SPELL_READY_REGION = (450, 542, 522, 623)
-BOSS_READY_MIN_HUE = 15
-BOSS_READY_MAX_HUE = 40
-BOSS_READY_MIN_SATURATION = 120
-BOSS_READY_MIN_VALUE = 180
-BOSS_READY_COMPONENT_RATIO = 0.40
-BOSS_READY_MIN_COMPONENT_PIXELS = 40
+PET_READY_GLOW_PATTERN = ColorComponentPattern(
+    lower_hsv=(15, 120, 180),
+    upper_hsv=(40, 255, 255),
+    min_area=250,
+    min_width=35,
+    max_width=45,
+    min_height=8,
+    max_height=14,
+    min_fill_ratio=0.65,
+)
+SPELL_READY_GLOW_PATTERN = ColorComponentPattern(
+    lower_hsv=(15, 120, 180),
+    upper_hsv=(40, 255, 255),
+    min_area=400,
+)
 
 
 def _vertical_edge_signature(image: np.ndarray) -> np.ndarray:
@@ -246,57 +255,3 @@ def find_boss_health_bar(
         return global_x, global_y, score
 
     return None
-
-
-def _largest_ready_glow_component(image: np.ndarray) -> int:
-    """Return the largest connected bright yellow/orange component."""
-    if image.ndim != 3 or image.shape[2] != 3 or image.size == 0:
-        return 0
-
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    glow_mask = (
-        (hsv[:, :, 0] >= BOSS_READY_MIN_HUE)
-        & (hsv[:, :, 0] <= BOSS_READY_MAX_HUE)
-        & (hsv[:, :, 1] >= BOSS_READY_MIN_SATURATION)
-        & (hsv[:, :, 2] >= BOSS_READY_MIN_VALUE)
-    ).astype(np.uint8)
-    component_count, _labels, stats, _centroids = (
-        cv2.connectedComponentsWithStats(glow_mask)
-    )
-    if component_count <= 1:
-        return 0
-    return int(stats[1:, cv2.CC_STAT_AREA].max())
-
-
-def boss_action_has_ready_glow(
-    frame_bgr: np.ndarray,
-    ready_reference: np.ndarray,
-    region: tuple[int, int, int, int],
-) -> bool:
-    """Detect a ready boss control without matching its animated glow shape."""
-    if frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
-        return False
-
-    x1, y1, x2, y2 = region
-    height, width = frame_bgr.shape[:2]
-    if (
-        x1 < 0
-        or y1 < 0
-        or x2 > width
-        or y2 > height
-        or x1 >= x2
-        or y1 >= y2
-    ):
-        return False
-
-    reference_component = _largest_ready_glow_component(ready_reference)
-    if reference_component < BOSS_READY_MIN_COMPONENT_PIXELS:
-        return False
-
-    live_component = _largest_ready_glow_component(frame_bgr[y1:y2, x1:x2])
-    required_component = max(
-        BOSS_READY_MIN_COMPONENT_PIXELS,
-        int(reference_component * BOSS_READY_COMPONENT_RATIO),
-    )
-    return live_component >= required_component
-
