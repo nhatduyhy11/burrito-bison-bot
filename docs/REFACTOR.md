@@ -212,8 +212,8 @@ root pytest chỉ collect `tests/`, hoặc tách/di chuyển `ref_cv/` rõ hơn.
 Auto-map chưa cần refactor lớn tiếp. `AutomapFlow` giữ template loading, mutable
 state, handler priority và public API. Phase logic nằm trong:
 
-- `map_completion.py`: map end, win reward, daily-first-win prompt, reward list
-  title và home detection.
+- `map_completion.py`: map end, win reward, reward list title và home detection.
+- `map_first_win.py`: daily-first-win prompt và checkbox confirmation.
 - `upgrade_action.py`: level spin, level-up confirm, build menu.
 - `hero_action.py`: business priority, mở/chọn/click hero level-up option.
 - `hero_levelup_vision.py`: sở hữu template/calibration và trả lời từng query về

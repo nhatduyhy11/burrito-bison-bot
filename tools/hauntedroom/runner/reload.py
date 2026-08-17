@@ -24,6 +24,7 @@ from hauntedroom.flows.automap_support import (
     hero_action,
     hero_levelup_vision,
     map_completion,
+    map_first_win,
     train_select,
     upgrade_action,
 )
@@ -149,6 +150,7 @@ def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
     importlib.reload(boss_action)
     importlib.reload(gear_action)
     importlib.reload(hero_levelup_vision)
+    importlib.reload(map_first_win)
     importlib.reload(map_completion)
     importlib.reload(upgrade_action)
     importlib.reload(hero_action)

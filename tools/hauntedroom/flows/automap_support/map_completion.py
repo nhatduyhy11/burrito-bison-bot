@@ -6,6 +6,8 @@ from typing import Callable, Optional
 
 import numpy as np
 
+from hauntedroom.flows.automap_support import map_first_win
+
 
 MAP_END_TEMPLATE_THRESHOLD = 0.90
 MAP_END_CHECK_INTERVAL_SEC = 5.0
@@ -21,12 +23,6 @@ MAP_COMPLETION_BLOCKER_CLICK_POSITIONS = {
 REWARD_LIST_TITLE_TEMPLATE_THRESHOLD = 0.90
 REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
 START_HOME_TEMPLATE_THRESHOLD = 0.90
-DAILY_FIRST_WIN_TEMPLATE_THRESHOLD = 0.90
-DAILY_FIRST_WIN_CHECKBOX_THRESHOLD = 0.95
-DAILY_FIRST_WIN_CHECK_DELAY_MS = 1_000
-DAILY_FIRST_WIN_CHECKBOX_OFFSET = (-88, -1)
-DAILY_FIRST_WIN_CONFIRM_OFFSET = (45, 36)
-DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD = 8
 
 
 @dataclass(frozen=True)
@@ -35,113 +31,6 @@ class MapCompletionOutcome:
     win_recorded: bool
     total_win: Optional[int]
     first_win_done: bool
-
-
-def find_daily_first_win_checkbox(
-    frame_gray: np.ndarray,
-    label_position: tuple[int, int],
-    checkbox_template: np.ndarray,
-    checkbox_template_path: Path,
-    find_template_fn,
-) -> tuple[int, int, float]:
-    expected_x = label_position[0] + DAILY_FIRST_WIN_CHECKBOX_OFFSET[0]
-    expected_y = label_position[1] + DAILY_FIRST_WIN_CHECKBOX_OFFSET[1]
-    height, width = checkbox_template.shape
-    pad = DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD
-    left = max(expected_x - width // 2 - pad, 0)
-    top = max(expected_y - height // 2 - pad, 0)
-    right = min(expected_x + (width + 1) // 2 + pad, frame_gray.shape[1])
-    bottom = min(expected_y + (height + 1) // 2 + pad, frame_gray.shape[0])
-    checkbox_frame = frame_gray[top:bottom, left:right]
-    x, y, score = find_template_fn(
-        checkbox_frame,
-        checkbox_template,
-        checkbox_template_path.name,
-        scales=(1.0,),
-    )
-    return left + x, top + y, score
-
-
-async def handle_daily_first_win(
-    page,
-    stop_event,
-    initial_frame_gray: np.ndarray,
-    *,
-    daily_first_win_template: np.ndarray,
-    daily_first_win_template_path: Path,
-    daily_first_win_checkbox_template: np.ndarray,
-    daily_first_win_checkbox_template_path: Path,
-    daily_first_win_checked_template: np.ndarray,
-    daily_first_win_checked_template_path: Path,
-    capture_page_bgr_fn,
-    to_grayscale_fn,
-    find_template_fn,
-    click_fn,
-    wait_for_flow_timeout_fn,
-    flow_checkpoint_fn,
-    poll_ms: int,
-) -> bool:
-    frame_gray = initial_frame_gray
-    while await flow_checkpoint_fn(stop_event):
-        label_x, label_y, label_score = find_template_fn(
-            frame_gray,
-            daily_first_win_template,
-            daily_first_win_template_path.name,
-            scales=(1.0,),
-        )
-        if label_score < DAILY_FIRST_WIN_TEMPLATE_THRESHOLD:
-            if not await wait_for_flow_timeout_fn(page, poll_ms, stop_event):
-                return False
-            frame_gray = to_grayscale_fn(await capture_page_bgr_fn(page))
-            continue
-
-        checked_x, checked_y, checked_score = find_daily_first_win_checkbox(
-            frame_gray,
-            (label_x, label_y),
-            daily_first_win_checked_template,
-            daily_first_win_checked_template_path,
-            find_template_fn,
-        )
-        if checked_score >= DAILY_FIRST_WIN_CHECKBOX_THRESHOLD:
-            confirm_x = label_x + DAILY_FIRST_WIN_CONFIRM_OFFSET[0]
-            confirm_y = label_y + DAILY_FIRST_WIN_CONFIRM_OFFSET[1]
-            print(
-                f"Daily first-win checkbox confirmed at {checked_x},{checked_y}, "
-                f"score={checked_score:.3f}; clicking decline at "
-                f"{confirm_x},{confirm_y}.",
-                flush=True,
-            )
-            await click_fn(page, confirm_x, confirm_y)
-            return True
-
-        checkbox_x, checkbox_y, checkbox_score = find_daily_first_win_checkbox(
-            frame_gray,
-            (label_x, label_y),
-            daily_first_win_checkbox_template,
-            daily_first_win_checkbox_template_path,
-            find_template_fn,
-        )
-        if checkbox_score >= DAILY_FIRST_WIN_CHECKBOX_THRESHOLD:
-            print(
-                f"Daily first-win checkbox at {checkbox_x},{checkbox_y}, "
-                f"score={checkbox_score:.3f}; clicking and confirming in 1s.",
-                flush=True,
-            )
-            await click_fn(page, checkbox_x, checkbox_y)
-            if not await wait_for_flow_timeout_fn(
-                page, DAILY_FIRST_WIN_CHECK_DELAY_MS, stop_event
-            ):
-                return False
-            frame_gray = to_grayscale_fn(await capture_page_bgr_fn(page))
-            continue
-
-        # Neither explicit state is reliable on this frame. Re-capture without
-        # clicking so a transition/animation can never toggle a checked box.
-        if not await wait_for_flow_timeout_fn(page, poll_ms, stop_event):
-            return False
-        frame_gray = to_grayscale_fn(await capture_page_bgr_fn(page))
-
-    return False
 
 
 def find_start_home(
@@ -261,19 +150,20 @@ async def finish_map_from_home(
             continue
 
         if not first_win_done:
-            daily_x, daily_y, daily_score = find_template_fn(
+            daily_first_win_match = map_first_win.find_daily_first_win(
                 frame_gray,
                 daily_first_win_template,
-                daily_first_win_template_path.name,
-                scales=(1.0,),
+                daily_first_win_template_path,
+                find_template_fn,
             )
-            if daily_score >= DAILY_FIRST_WIN_TEMPLATE_THRESHOLD:
+            if daily_first_win_match is not None:
+                daily_x, daily_y, daily_score = daily_first_win_match
                 print(
                     f"Daily first-win prompt at {daily_x},{daily_y}, "
                     f"score={daily_score:.3f}; entering isolated flow.",
                     flush=True,
                 )
-                first_win_done = await handle_daily_first_win(
+                first_win_done = await map_first_win.handle_daily_first_win(
                     page,
                     stop_event,
                     frame_gray,

@@ -228,12 +228,12 @@ Vòng lặp phát triển là `Shift+0` → sửa code/template/action JSON → 
 flow. Runner giữ nguyên browser và session, nhưng reload module Python liên quan
 tới flow mới. Với `Shift+2`/`Shift+3`, runner reload `core.vision`, action
 support, các module `flows.automap_support`, rồi `flows.automap`. Các phase
-orchestration đã tách gồm `map_completion.py`, `upgrade_action.py`,
-`hero_action.py` và `boss_flow.py`; các detector/action nền vẫn nằm ở
-`boss_detector.py`, `detectors.py`, `boss_action.py`, `gear_action.py` và
-`hero_levelup_vision.py`. Với `Shift+3`, action JSON cũng được load lại trước khi
-lấy prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở
-trạng thái idle để có thể sửa và thử lại.
+orchestration đã tách gồm `map_completion.py`, `map_first_win.py`,
+`upgrade_action.py`, `hero_action.py` và `boss_flow.py`; các detector/action nền
+vẫn nằm ở `boss_detector.py`, `detectors.py`, `boss_action.py`, `gear_action.py`
+và `hero_levelup_vision.py`. Với `Shift+3`, action JSON cũng được load lại trước
+khi lấy prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở
+ở trạng thái idle để có thể sửa và thử lại.
 
 ## Vị trí code và test
 

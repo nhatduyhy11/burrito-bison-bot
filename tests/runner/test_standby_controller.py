@@ -61,6 +61,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             hero_action,
             hero_levelup_vision,
             map_completion,
+            map_first_win,
             upgrade_action,
         )
         from hauntedroom import settings
@@ -74,6 +75,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             boss_action,
             gear_action,
             hero_levelup_vision,
+            map_first_win,
             map_completion,
             upgrade_action,
             hero_action,
@@ -94,6 +96,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
                 call(boss_action),
                 call(gear_action),
                 call(hero_levelup_vision),
+                call(map_first_win),
                 call(map_completion),
                 call(upgrade_action),
                 call(hero_action),

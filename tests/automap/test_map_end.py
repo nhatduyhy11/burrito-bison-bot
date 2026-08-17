@@ -36,9 +36,11 @@ from hauntedroom.flows.automap import (
     run_automap_flow,
 )
 from hauntedroom.flows.automap_support.map_completion import (
-    DAILY_FIRST_WIN_CHECK_DELAY_MS,
     MAP_COMPLETION_BLOCKER_THRESHOLD,
     find_map_completion_blocker,
+)
+from hauntedroom.flows.automap_support.map_first_win import (
+    DAILY_FIRST_WIN_CHECK_DELAY_MS,
     handle_daily_first_win,
 )
 from hauntedroom.flows import automap

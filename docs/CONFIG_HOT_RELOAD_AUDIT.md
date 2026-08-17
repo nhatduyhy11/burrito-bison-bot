@@ -21,6 +21,7 @@ For `Shift+2`, `Shift+3`, and `Shift+4`, the runner reloads:
 - `hauntedroom.flows.automap_support.boss_action`
 - `hauntedroom.flows.automap_support.gear_action`
 - `hauntedroom.flows.automap_support.hero_levelup_vision`
+- `hauntedroom.flows.automap_support.map_first_win`
 - `hauntedroom.flows.automap_support.map_completion`
 - `hauntedroom.flows.automap_support.upgrade_action`
 - `hauntedroom.flows.automap_support.hero_action`
@@ -76,6 +77,7 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Area | File | Constants / config | Notes |
 | --- | --- | --- | --- |
 | Auto-map coordinator/templates | `tools/hauntedroom/flows/automap.py` | `*_TEMPLATE_PATH`, `AUTOMAP_TEMPLATE_DIR`, `ROOM_TEMPLATE_DIR`, `BOSS_TEMPLATE_DIR`, `AUTOMAP_TEMPLATE_THRESHOLD`, `AutomapConfig` | New flow loads templates in `AutomapFlow.__init__`. Running flow keeps old loaded images. Phase constants imported from support modules are re-exported here for compatibility. |
+| Daily first win | `tools/hauntedroom/flows/automap_support/map_first_win.py` | `DAILY_FIRST_WIN_*` | Explicitly reloaded before `map_completion`; newly started auto-map uses the refreshed prompt handler and thresholds. |
 | Map completion | `tools/hauntedroom/flows/automap_support/map_completion.py` | `MAP_END_*`, `WIN_REWARD_*`, `REWARD_LIST_TITLE_*`, `START_HOME_TEMPLATE_THRESHOLD` | Explicitly reloaded before `automap`; newly started auto-map imports the refreshed constants/functions. |
 | Upgrade/build actions | `tools/hauntedroom/flows/automap_support/upgrade_action.py` | `BUILT_TEMPLATE_THRESHOLD`, `AUTOMAP_POLL_MS`, `AUTOMAP_ACTION_DELAY_MS`, `LV_SPIN_*`, `UPGRADE_CONFIRM_CLICK` | Explicitly reloaded before `automap`; newly started auto-map imports the refreshed constants/functions. |
 | Boss detectors | `tools/hauntedroom/flows/automap_support/boss_detector.py` | `BOSS_HP_*`, `BOSS_PROGRESS_*`, `PET_READY_REGION`, `SPELL_READY_REGION` | Explicitly reloaded before `automap`. |
