@@ -150,16 +150,23 @@ Generated with Python AST; __pycache__ directories are ignored.
   L173: async def deploy_initial_gear
 
 [tools/hauntedroom/flows/automap_support/hero_action.py]
-  L23: async def handle_hero_levelup
+  L28: def _hero_template_priority
+  L57: def HeroLevelupChoice.is_prioritized
+  L61: def choose_hero_levelup_option
+  L161: async def handle_hero_levelup
 
-[tools/hauntedroom/flows/automap_support/hero_levelup.py]
-  L46: def _template_priority
-  L77: def HeroLevelupChoice.is_prioritized
-  L81: def find_hero_option_centers
-  L128: def hero_option_is_purple
-  L157: def find_hero_ascend_options
-  L186: def HeroLevelupMatcher.__init__
-  L196: def HeroLevelupMatcher.find_choice
+[tools/hauntedroom/flows/automap_support/hero_levelup_vision.py]
+  L58: def load_hero_levelup_templates
+  L65: def find_hero_option_centers
+  L109: def _hero_option_median_hue
+  L137: def hero_option_is_purple
+  L148: def hero_option_is_yellow
+  L159: def hero_option_color
+  L171: def find_hero_ascend_options
+  L197: def prepare_hero_levelup_frame
+  L206: def find_hero_ascend_matches
+  L220: def find_hero_template_match
+  L244: def find_hero_options
 
 [tools/hauntedroom/flows/automap_support/map_completion.py]
   L28: def find_start_home

@@ -55,7 +55,7 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.automap_support.detectors",
                 "hauntedroom.flows.automap_support.gear_action",
                 "hauntedroom.flows.automap_support.hero_action",
-                "hauntedroom.flows.automap_support.hero_levelup",
+                "hauntedroom.flows.automap_support.hero_levelup_vision",
                 "hauntedroom.flows.automap_support.map_completion",
                 "hauntedroom.flows.automap_support.upgrade_action",
             },

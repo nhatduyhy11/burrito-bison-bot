@@ -86,7 +86,7 @@ tools/
 │   │   │   ├── detectors.py
 │   │   │   ├── gear_action.py
 │   │   │   ├── hero_action.py
-│   │   │   ├── hero_levelup.py
+│   │   │   ├── hero_levelup_vision.py
 │   │   │   ├── map_completion.py
 │   │   │   └── upgrade_action.py
 │   │   ├── __init__.py

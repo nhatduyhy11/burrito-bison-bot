@@ -68,7 +68,7 @@ Runtime/non-test files trên 100 dòng:
  403 ./tools/hauntedroom/actions/runner.py
  302 ./tools/hauntedroom/flows/automap_support/boss_detector.py
  299 ./tools/hauntedroom/actions/loader.py
- 271 ./tools/hauntedroom/flows/automap_support/hero_levelup.py
+ 250 ./tools/hauntedroom/flows/automap_support/hero_levelup_vision.py
  259 ./tools/hauntedroom/core/runtime.py
  223 ./tools/hauntedroom/flows/automap_support/gear_action.py
  211 ./tools/hauntedroom/runner/commands.py
@@ -85,7 +85,7 @@ Runtime/non-test files trên 100 dòng:
  131 ./tools/hauntedroom/flows/exp_available.py
  127 ./tools/hauntedroom/control_events/new_tab_blocker.py
  110 ./tools/hauntedroom/flows/automap_support/detectors.py
- 107 ./tools/hauntedroom/flows/automap_support/hero_action.py
+ 255 ./tools/hauntedroom/flows/automap_support/hero_action.py
  101 ./tools/hauntedroom/control_events/blockers.py
 ```
 
@@ -215,8 +215,9 @@ state, handler priority và public API. Phase logic nằm trong:
 - `map_completion.py`: map end, win reward, daily-first-win prompt, reward list
   title và home detection.
 - `upgrade_action.py`: level spin, level-up confirm, build menu.
-- `hero_action.py`: mở/chọn hero level-up option.
-- `hero_levelup.py`: detect và rank hero option.
+- `hero_action.py`: business priority, mở/chọn/click hero level-up option.
+- `hero_levelup_vision.py`: sở hữu template/calibration và trả lời từng query về
+  card, màu, template match; action điều khiển thứ tự và short-circuit.
 - `boss_flow.py`, `boss_action.py`, `boss_detector.py`: boss handoff/pet/detect.
 - `gear_action.py`: initial gear placement.
 

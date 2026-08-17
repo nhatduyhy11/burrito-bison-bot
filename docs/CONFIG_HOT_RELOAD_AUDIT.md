@@ -20,7 +20,7 @@ For `Shift+2`, `Shift+3`, and `Shift+4`, the runner reloads:
 - `hauntedroom.flows.automap_support.detectors`
 - `hauntedroom.flows.automap_support.boss_action`
 - `hauntedroom.flows.automap_support.gear_action`
-- `hauntedroom.flows.automap_support.hero_levelup`
+- `hauntedroom.flows.automap_support.hero_levelup_vision`
 - `hauntedroom.flows.automap_support.map_completion`
 - `hauntedroom.flows.automap_support.upgrade_action`
 - `hauntedroom.flows.automap_support.hero_action`
@@ -82,8 +82,8 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Boss flow policy | `tools/hauntedroom/flows/automap_support/boss_flow.py` | `EXIT_CLICK_TEMPLATE_THRESHOLD`, boss handoff/deploy orchestration | Explicitly reloaded before `automap`. |
 | Small auto-map detectors | `tools/hauntedroom/flows/automap_support/detectors.py` | `BUILD_BUTTON_*`, `HERO_LEVELUP_PRICE_REGION`, `WHITE_*` | Explicitly reloaded before `automap`. |
 | Boss actions | `tools/hauntedroom/flows/automap_support/boss_action.py` | pet/spell template paths, action positions, delays, thresholds | Explicitly reloaded before `automap`. |
-| Hero level-up | `tools/hauntedroom/flows/automap_support/hero_levelup.py` | search regions, thresholds, priorities, template directory/glob | Explicitly reloaded before `automap`. Adding/removing PNGs is picked up on reload because `HERO_LEVELUP_TEMPLATE_PATHS` is rebuilt. |
-| Hero level-up action | `tools/hauntedroom/flows/automap_support/hero_action.py` | `HERO_LEVELUP_OPEN_CLICK`, `HERO_LEVELUP_OPTION_*`, `HERO_LEVELUP_SELECTION_SETTLE_MS`, fallback screenshot path | Explicitly reloaded before `automap`. |
+| Hero level-up vision | `tools/hauntedroom/flows/automap_support/hero_levelup_vision.py` | template directory/glob, match calibration, search regions, HSV thresholds, visual queries | Explicitly reloaded before `automap`; action controls query order and selection priority. Adding/removing PNGs is picked up because `HERO_LEVELUP_TEMPLATE_PATHS` is rebuilt. |
+| Hero level-up action | `tools/hauntedroom/flows/automap_support/hero_action.py` | selection priority, `HERO_LEVELUP_OPEN_CLICK`, `HERO_LEVELUP_OPTION_*`, `HERO_LEVELUP_SELECTION_SETTLE_MS`, fallback screenshot path | Explicitly reloaded before `automap`. |
 | Gear placement | `tools/hauntedroom/flows/automap_support/gear_action.py` | gear regions, HSV thresholds, drag timings, drop offsets | Explicitly reloaded before `automap`. |
 | Core template matching for auto-map | `tools/hauntedroom/core/template.py` | `DEFAULT_TEMPLATE_THRESHOLD`, `TEMPLATE_SCALES`, matching functions | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |
 | Core vision for auto-map | `tools/hauntedroom/core/vision.py` | screenshot capture, generic OpenCV region helpers | Explicitly reloaded. Auto-map sees updated imports after `automap` is reloaded. |

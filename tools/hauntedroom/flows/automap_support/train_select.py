@@ -8,11 +8,9 @@ import cv2
 import numpy as np
 
 from hauntedroom.core.template import find_template, load_template
-from hauntedroom.flows.automap_support.hero_levelup import (
+from hauntedroom.flows.automap_support.hero_levelup_vision import (
     HERO_ASCEND_TEMPLATE_NAME,
-    HERO_IGNORED_PRIORITY,
     HERO_LEVELUP_TEMPLATE_PATHS,
-    _template_priority,
 )
 
 
@@ -43,6 +41,17 @@ TRAIN_EDGE_RIGHT_OFFSET = -30
 TRAIN_CARD_MIN_COLORED_PIXELS = 500
 TRAIN_PURPLE_HUE_MIN = 125
 TRAIN_PURPLE_HUE_MAX = 155
+TRAIN_IGNORED_PRIORITY = 99.0
+
+
+def _train_template_priority(path: Path) -> tuple[float, str]:
+    """Parse the train selection priority encoded in an asset filename."""
+    prefix = path.stem.split("_", 1)[0]
+    try:
+        priority = float(prefix)
+    except ValueError:
+        priority = float("inf")
+    return priority, path.name
 
 
 @dataclass(frozen=True)
@@ -127,7 +136,7 @@ class TrainHeroMatcher:
     ) -> None:
         self.templates = tuple(
             (path, load_template(path))
-            for path in template_paths
+            for path in sorted(template_paths, key=_train_template_priority)
         )
 
     def find_choice(self, frame_bgr: np.ndarray) -> Optional[TrainChoice]:
@@ -144,7 +153,7 @@ class TrainHeroMatcher:
         ignored_indices: set[int] = set()
 
         for template_path, template in self.templates:
-            priority = _template_priority(template_path)[0]
+            priority = _train_template_priority(template_path)[0]
             x, _local_y, score = find_template(
                 name_region,
                 template,
@@ -162,7 +171,7 @@ class TrainHeroMatcher:
             card = min(cards, key=lambda candidate: abs(candidate.x - x))
             if abs(card.x - x) > TRAIN_CARD_HALF_WIDTH:
                 continue
-            if priority >= HERO_IGNORED_PRIORITY:
+            if priority >= TRAIN_IGNORED_PRIORITY:
                 ignored_indices.add(card.index)
                 continue
             if not card.is_selected:

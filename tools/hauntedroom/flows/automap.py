@@ -26,9 +26,9 @@ from hauntedroom.flows.automap_support.boss_action import (
     click as _click,
     deploy_boss_pet,
 )
-from hauntedroom.flows.automap_support.hero_levelup import (
+from hauntedroom.flows.automap_support.hero_levelup_vision import (
     HERO_LEVELUP_TEMPLATE_PATHS,
-    HeroLevelupMatcher,
+    load_hero_levelup_templates,
 )
 from hauntedroom.flows.automap_support.gear_action import (
     deploy_initial_gear,
@@ -176,7 +176,7 @@ class AutomapFlow:
             (path, load_template(path))
             for path in config.map_completion_blocker_template_paths
         )
-        self.hero_levelup_matcher = HeroLevelupMatcher(
+        self.hero_levelup_templates = load_hero_levelup_templates(
             config.hero_levelup_template_paths
         )
         self.loop = asyncio.get_running_loop()
@@ -293,7 +293,8 @@ class AutomapFlow:
             self.page,
             self.stop_event,
             frame_bgr,
-            matcher=self.hero_levelup_matcher,
+            hero_levelup_template_paths=self.config.hero_levelup_template_paths,
+            hero_levelup_templates=self.hero_levelup_templates,
             hero_levelup_price_is_available_fn=hero_levelup_price_is_available,
             capture_page_bgr_fn=capture_page_bgr,
             save_screenshot_fn=save_screenshot,

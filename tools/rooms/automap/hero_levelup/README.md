@@ -1,8 +1,10 @@
 # Hero level-up selection
 
-Thư mục này chứa các asset được `HeroLevelupMatcher` dùng để chọn option trong
-popup hero level-up. Logic priority/template này được dùng chung bởi auto-map
-của `Shift+2`/`Shift+3` và hero picker train của `Shift+4`.
+Thư mục này chứa các asset dùng để nhận diện option trong popup hero level-up.
+`hero_action.py` hỏi vision theo business priority và dừng ngay khi chọn được
+card. Vision chỉ trả lời từng query về card, màu hoặc template match. Vision sở
+hữu template paths/calibration; hero picker train của `Shift+4` tái sử dụng cùng
+danh sách asset.
 
 ## Flow selection
 
@@ -16,17 +18,11 @@ click (320, 640) để mở picker
 chờ animation settle 1.500 ms
         |
         v
-tìm template theo priority từ y=460 trở xuống
-        |
-        +-- có match ưu tiên: click match và kết thúc
-        |
-        +-- chỉ match priority 99: đánh dấu card cần tránh
-        |
-        +-- không có match ưu tiên:
-              1. tìm các card từ panel màu phía dưới
-              2. loại card priority 99 nếu còn card khác
-              3. ưu tiên card tím
-              4. nếu không có tím, chọn card hợp lệ đầu tiên
+action hỏi vision và short-circuit:
+  1. có ascend? -> chọn ascend bên trái nhất
+  2. lần lượt từng template priority -> match thì chọn ngay
+  3. priority 99 -> đánh dấu card cần tránh
+  4. detect card fallback một lần -> vàng, rồi tím, rồi đỏ
 ```
 
 Flow chỉ mở picker sau khi detector xác nhận vùng level-up sẵn sàng. Sau lần chờ
@@ -35,9 +31,9 @@ Sau khi click lựa chọn, flow chờ `600 ms` trước khi tiếp tục auto-m
 
 ## Priority và asset
 
-Runtime đọc prefix trước dấu gạch dưới dưới dạng số và sort tăng dần theo
-`(priority, filename)`. Vì vậy hai asset priority `00` được thử theo thứ tự tên
-file thể hiện trong bảng.
+Action đọc prefix trước dấu gạch dưới dưới dạng số, luôn hỏi ascend trước rồi sort
+các template còn lại tăng dần theo `(priority, filename)`. Vision chỉ match
+template mà action đang hỏi; khi match, action không chạy các priority sau.
 
 | Thứ tự | Priority | Asset | Nhận diện | Threshold | Hành vi |
 |---:|---:|---|---|---:|---|
@@ -54,10 +50,10 @@ file thể hiện trong bảng.
 | 11 | 12 | `12_soul_reaper.png` | Liềm Đoạt Hồn | `0.80` | Chọn nếu không có match priority thấp hơn |
 | 12 | 99 | `99_mage_king.png` | Variant Vua Pháp Sư/tăng sao cần tránh | `0.80` | Không chọn theo template; loại card gần match khỏi fallback nếu còn card khác |
 
-`00_hero_ascend.png` là trường hợp đặc biệt: matcher tìm tất cả match ở scale
-`1.0`, chọn card bên trái nhất, dịch tâm match `-47 px` theo trục x và click tại
-`y=632`. Các asset còn lại dùng template matching grayscale ở scale `1.0` trong
-vùng từ `y=460` trở xuống.
+`00_hero_ascend.png` là trường hợp đặc biệt: vision tìm tất cả match ở scale
+`1.0` và dịch tâm match `-47 px` theo trục x về `y=632`; action chọn match ascend
+bên trái nhất. Các asset còn lại dùng template matching grayscale ở scale `1.0`
+trong vùng từ `y=460` trở xuống.
 
 Train `Shift+4` tái sử dụng cùng danh sách priority ở scale cố định `0.8` trong
 `automap_support/train_select.py`. Fallback train dựa trên cạnh card đỏ/tím và
@@ -84,9 +80,12 @@ y = 610 .. 654
 ```
 
 Sau khi bỏ pixel thiếu saturation/value, median hue trong khoảng `130..150`
-được xem là tím. Fallback chọn card tím hợp lệ đầu tiên từ trái sang phải; nếu
-không có tím thì chọn card hợp lệ đầu tiên. Nếu mọi card đều bị priority `99`
-đánh dấu, detector vẫn chọn một card thay vì không xử lý popup.
+được vision phân loại là tím và `10..25` là vàng. Action luôn chọn ascend trước,
+sau đó tới các template priority còn lại. Nếu không template nào match, action
+chọn card vàng hợp lệ đầu tiên từ trái sang phải, sau đó card tím, và chỉ chọn
+card đỏ khi không có cả vàng lẫn tím. Log ghi rõ fallback về `purple`, `yellow`
+hay `red`. Nếu mọi card đều bị priority `99` đánh dấu, action vẫn chọn một card
+thay vì không xử lý popup.
 
 Flow chỉ lưu screenshot tracking vào `.tmp/hauntedroom-hero-fallbacks/` khi
 detector thấy đủ đúng 3 card và không card nào là tím. Layout chỉ có 1/2 card,
@@ -107,7 +106,8 @@ flag được đọc lại cho flow mới khi runner chạy `--dev-reload`.
 
 ## Code, test và tài liệu liên quan
 
-- Matcher: [`hero_levelup.py`](../../../hauntedroom/flows/automap_support/hero_levelup.py)
+- Vision queries và template: [`hero_levelup_vision.py`](../../../hauntedroom/flows/automap_support/hero_levelup_vision.py)
+- Business decision/action: [`hero_action.py`](../../../hauntedroom/flows/automap_support/hero_action.py)
 - Train matcher: [`train_select.py`](../../../hauntedroom/flows/automap_support/train_select.py)
 - Orchestrator: [`automap.py`](../../../hauntedroom/flows/automap.py)
 - Template priority và orchestration test: [`test_hero_select.py`](../../../../tests/hero_select/test_hero_select.py)

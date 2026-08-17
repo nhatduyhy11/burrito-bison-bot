@@ -22,7 +22,7 @@ from hauntedroom.flows.automap_support import (
     detectors,
     gear_action,
     hero_action,
-    hero_levelup,
+    hero_levelup_vision,
     map_completion,
     train_select,
     upgrade_action,
@@ -131,6 +131,7 @@ def get_train_flow(dev_reload: bool = False):
         return train.run_train_flow
 
     importlib.invalidate_caches()
+    importlib.reload(hero_levelup_vision)
     importlib.reload(train_select)
     reloaded_train = importlib.reload(train)
     print("Train modules reloaded.", flush=True)
@@ -147,7 +148,7 @@ def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
     importlib.reload(detectors)
     importlib.reload(boss_action)
     importlib.reload(gear_action)
-    importlib.reload(hero_levelup)
+    importlib.reload(hero_levelup_vision)
     importlib.reload(map_completion)
     importlib.reload(upgrade_action)
     importlib.reload(hero_action)

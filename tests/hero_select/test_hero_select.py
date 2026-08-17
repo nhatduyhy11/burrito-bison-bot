@@ -26,17 +26,32 @@ from hauntedroom.flows.automap_support.hero_action import (
     HERO_LEVELUP_OPEN_CLICK,
     HERO_LEVELUP_OPTION_SETTLE_MS,
     HERO_LEVELUP_SELECTION_SETTLE_MS,
+    choose_hero_levelup_option,
 )
 from hauntedroom.flows.automap_support.detectors import (
     HERO_LEVELUP_PRICE_REGION,
 )
-from hauntedroom.flows.automap_support.hero_levelup import (
+from hauntedroom.flows.automap_support.hero_levelup_vision import (
     HERO_ASCEND_TEMPLATE_NAME,
     HERO_LEVELUP_SEARCH_TOP,
     HERO_LEVELUP_TEMPLATE_PATHS,
-    HeroLevelupMatcher,
     find_hero_ascend_options,
+    load_hero_levelup_templates,
+    prepare_hero_levelup_frame,
 )
+
+
+def find_choice(frame_bgr, template_paths=None):
+    paths = (
+        HERO_LEVELUP_TEMPLATE_PATHS
+        if template_paths is None
+        else template_paths
+    )
+    return choose_hero_levelup_option(
+        paths,
+        load_hero_levelup_templates(paths),
+        prepare_hero_levelup_frame(frame_bgr),
+    )
 
 
 class HeroSelectTest(IsolatedAsyncioTestCase):
@@ -108,7 +123,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
     ):
         battle_frame = np.zeros((720, 640, 3), dtype=np.uint8)
         battle_frame[610:655, 120:520] = (80, 20, 60)
-        self.assertIsNotNone(HeroLevelupMatcher().find_choice(battle_frame))
+        self.assertIsNotNone(find_choice(battle_frame))
         flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
 
         handled = await flow.hero_levelup(
@@ -126,12 +141,70 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "hero_ascend_option.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, HERO_ASCEND_TEMPLATE_NAME)
         self.assertEqual(choice.priority, 0.0)
         self.assertEqual((choice.x, choice.y), (194, 632))
+
+    def test_action_policy_selects_ascend_before_name_priorities(self):
+        frame = Mock()
+        ascend_path = Path(HERO_ASCEND_TEMPLATE_NAME)
+        templates = {ascend_path: Mock()}
+        find_ascend = Mock(return_value=[(320, 632, 0.95)])
+        find_template = Mock()
+        find_options = Mock()
+
+        choice = choose_hero_levelup_option(
+            (ascend_path,),
+            templates,
+            frame,
+            find_ascend_fn=find_ascend,
+            find_template_fn=find_template,
+            find_options_fn=find_options,
+        )
+
+        self.assertEqual(choice.template_name, HERO_ASCEND_TEMPLATE_NAME)
+        self.assertEqual((choice.x, choice.y), (320, 632))
+        find_ascend.assert_called_once_with(frame, templates[ascend_path])
+        find_template.assert_not_called()
+        find_options.assert_not_called()
+
+    def test_action_policy_selects_numeric_priority_independent_of_match_order(
+        self,
+    ):
+        frame = Mock()
+        priority_1 = Path("01_dark_lubu.png")
+        priority_2 = Path("02_hanuman.png")
+        templates = {priority_1: Mock(), priority_2: Mock()}
+        find_ascend = Mock(return_value=[])
+        find_template = Mock(
+            side_effect=lambda _frame, path, _template: {
+                priority_1: (193, 597, 0.91),
+                priority_2: (446, 597, 0.99),
+            }[path]
+        )
+        find_options = Mock()
+
+        choice = choose_hero_levelup_option(
+            (priority_2, priority_1),
+            templates,
+            frame,
+            find_ascend_fn=find_ascend,
+            find_template_fn=find_template,
+            find_options_fn=find_options,
+        )
+
+        self.assertEqual(choice.template_name, "01_dark_lubu.png")
+        self.assertEqual(choice.priority, 1.0)
+        find_ascend.assert_not_called()
+        find_template.assert_called_once_with(
+            frame,
+            priority_1,
+            templates[priority_1],
+        )
+        find_options.assert_not_called()
 
     def test_hero_ascend_crop_matches_both_new_options(self):
         popup = cv2.imread(
@@ -165,7 +238,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         )
         self.assertGreaterEqual(min(score for _x, _y, score in options), 0.97)
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
         self.assertEqual(choice.template_name, HERO_ASCEND_TEMPLATE_NAME)
         self.assertEqual((choice.x, choice.y), (320, 632))
 
@@ -213,7 +286,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "3_option_2lubu.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "01_dark_lubu.png")
@@ -224,7 +297,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "lubu and hanu.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "01_dark_lubu.png")
@@ -236,7 +309,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "start_with_vps.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "00_mage_king.png")
@@ -248,7 +321,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "test-vps-lubu.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "00_mage_king.png")
@@ -260,7 +333,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "prio_9start.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "11_underworld.png")
@@ -270,7 +343,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
     def test_hero_levelup_priority_11_death_beats_priority_12_soul_reaper(self):
         popup = cv2.imread(str(HERO_SELECT_FIXTURES_DIR / "prio_910.png"))
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "11_death.png")
@@ -285,7 +358,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             if path.name == "12_soul_reaper.png"
         )
 
-        choice = HeroLevelupMatcher((soul_reaper_path,)).find_choice(popup)
+        choice = find_choice(popup, (soul_reaper_path,))
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "12_soul_reaper.png")
@@ -300,7 +373,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             if path.name in {"09_pinocchio.png", "10_prayer_box.png"}
         )
 
-        choice = HeroLevelupMatcher(priority_9_and_10_paths).find_choice(popup)
+        choice = find_choice(popup, priority_9_and_10_paths)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "09_pinocchio.png")
@@ -310,7 +383,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
     def test_hero_levelup_new_fixture_prefers_priority_9_pinocchio_over_death(self):
         popup = cv2.imread(str(HERO_SELECT_FIXTURES_DIR / "prio_1112.png"))
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "09_pinocchio.png")
@@ -325,7 +398,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             if path.name == "10_prayer_box.png"
         )
 
-        choice = HeroLevelupMatcher((prayer_box_path,)).find_choice(popup)
+        choice = find_choice(popup, (prayer_box_path,))
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "10_prayer_box.png")

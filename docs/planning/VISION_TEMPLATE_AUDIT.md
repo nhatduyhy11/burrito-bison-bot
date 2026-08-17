@@ -57,9 +57,9 @@ làm detector fail.
   `Shift+2`, `Shift+3` và phần auto-map sau train của `Shift+4`.
 - Các template hero được tự động load từ
   `tools/rooms/automap/hero_levelup/` bởi
-  `tools/hauntedroom/flows/automap_support/hero_levelup.py`. Auto-map dùng chúng
-  ở scale `1.0`; `tools/hauntedroom/flows/automap_support/train_select.py` tái
-  sử dụng ở scale `0.8` cho `Shift+4`. Xem
+  `tools/hauntedroom/flows/automap_support/hero_levelup_vision.py`. Auto-map
+  quan sát chúng ở scale `1.0`; `train_select.py` tái sử dụng danh sách asset ở
+  scale `0.8` cho `Shift+4`. Xem
   [hero level-up selection](../../tools/rooms/automap/hero_levelup/README.md) để
   biết thứ tự priority, threshold và fallback hiện hành.
 - Hai trạng thái research được khai báo trong
@@ -68,9 +68,9 @@ làm detector fail.
 ## Ghi chú riêng cho hero level-up
 
 Đây là khu vực phụ thuộc chữ nhiều nhất. Trong auto-map, nếu tên hero/item không
-match thì fallback tìm card từ panel màu, ưu tiên card tím rồi mới chọn card hợp
-lệ đầu tiên. Vì vậy bản Trung Quốc vẫn có khả năng chọn được một option, nhưng
-mất thứ tự ưu tiên chi tiết từ các template hero/item.
+match thì action chọn card từ panel màu theo vàng → tím → đỏ. Vì vậy bản Trung
+Quốc vẫn có khả năng chọn được một option, nhưng mất thứ tự ưu tiên chi tiết từ
+các template hero/item.
 
 Train `Shift+4` tái sử dụng cùng template tên ở scale `0.8`, nhưng fallback của
 train chỉ chọn card tím chưa chọn. Nếu template chữ đều miss và một round không

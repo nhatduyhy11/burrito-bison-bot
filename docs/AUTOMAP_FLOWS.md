@@ -178,8 +178,11 @@ Danh sách asset, thứ tự sort, threshold và chi tiết fallback được gi
   đo chiều rộng để không làm mất card.
 - Detector đọc hue từ strip background sạch ở cạnh phải phía dưới mỗi card.
   Card có median hue trong khoảng `130..150` được phân loại là tím.
-- Fallback chọn card tím hợp lệ đầu tiên; nếu không có card tím mới chọn card
-  hợp lệ đầu tiên. Card priority `99` chỉ được dùng khi không còn lựa chọn khác.
+- Card có median hue trong khoảng `10..25` được phân loại là vàng.
+- Matcher luôn kiểm tra ascend trước, sau đó mới tới các template priority còn
+  lại. Khi không template nào match, fallback ưu tiên card vàng hợp lệ đầu tiên,
+  rồi card tím, cuối cùng mới chọn card đỏ. Log ghi rõ màu fallback đã chọn.
+  Card priority `99` chỉ được dùng khi không còn lựa chọn khác.
 
 ## `Shift+2`: chạy một map
 
@@ -228,9 +231,9 @@ support, các module `flows.automap_support`, rồi `flows.automap`. Các phase
 orchestration đã tách gồm `map_completion.py`, `upgrade_action.py`,
 `hero_action.py` và `boss_flow.py`; các detector/action nền vẫn nằm ở
 `boss_detector.py`, `detectors.py`, `boss_action.py`, `gear_action.py` và
-`hero_levelup.py`. Với `Shift+3`, action JSON cũng được load lại trước khi lấy
-prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở trạng
-thái idle để có thể sửa và thử lại.
+`hero_levelup_vision.py`. Với `Shift+3`, action JSON cũng được load lại trước khi
+lấy prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở
+trạng thái idle để có thể sửa và thử lại.
 
 ## Vị trí code và test
 

@@ -23,15 +23,32 @@ from hauntedroom.flows.automap import (
 from hauntedroom.flows.automap_support.hero_action import (
     HERO_FALLBACK_SCREENSHOT_DIR,
     HERO_LEVELUP_OPEN_CLICK,
+    choose_hero_levelup_option,
 )
 from hauntedroom.flows.automap_support.detectors import (
     HERO_LEVELUP_PRICE_REGION,
 )
-from hauntedroom.flows.automap_support.hero_levelup import (
-    HeroLevelupMatcher,
+from hauntedroom.flows.automap_support.hero_levelup_vision import (
+    HERO_LEVELUP_TEMPLATE_PATHS,
     find_hero_option_centers,
     hero_option_is_purple,
+    hero_option_is_yellow,
+    load_hero_levelup_templates,
+    prepare_hero_levelup_frame,
 )
+
+
+def find_choice(frame_bgr, template_paths=None):
+    paths = (
+        HERO_LEVELUP_TEMPLATE_PATHS
+        if template_paths is None
+        else template_paths
+    )
+    return choose_hero_levelup_option(
+        paths,
+        load_hero_levelup_templates(paths),
+        prepare_hero_levelup_frame(frame_bgr),
+    )
 
 
 class HeroFallbackTest(IsolatedAsyncioTestCase):
@@ -49,11 +66,11 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         return image
 
     @patch(
-        "hauntedroom.flows.automap_support.hero_levelup.load_template",
+        "hauntedroom.flows.automap_support.hero_levelup_vision.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch(
-        "hauntedroom.flows.automap_support.hero_levelup.find_template",
+        "hauntedroom.flows.automap_support.hero_levelup_vision.find_template",
         side_effect=[(0, 0, 0.1), (252, 137, 0.95)],
     )
     def test_priority_99_is_excluded_from_fallback(
@@ -64,14 +81,17 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         popup = np.zeros((720, 640, 3), dtype=np.uint8)
         popup[610:655, 196:309] = (0, 0, 180)
         popup[610:655, 331:444] = (0, 0, 180)
-        matcher = HeroLevelupMatcher(
-            (
-                Path("01_other.png"),
-                Path("99_mage_king_upgrade.png"),
-            )
+        template_paths = (
+            Path("01_other.png"),
+            Path("99_mage_king_upgrade.png"),
         )
+        templates = load_hero_levelup_templates(template_paths)
 
-        choice = matcher.find_choice(popup)
+        choice = choose_hero_levelup_option(
+            template_paths,
+            templates,
+            prepare_hero_levelup_frame(popup),
+        )
 
         self.assertIsNotNone(choice)
         self.assertFalse(choice.is_prioritized)
@@ -82,7 +102,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "only_2_option.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertFalse(choice.is_prioritized)
@@ -98,7 +118,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             str(HERO_SELECT_FIXTURES_DIR / "only_1_option.png")
         )
 
-        choice = HeroLevelupMatcher().find_choice(popup)
+        choice = find_choice(popup)
 
         self.assertIsNotNone(choice)
         self.assertFalse(choice.is_prioritized)
@@ -106,7 +126,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         self.assertEqual((choice.x, choice.y), (319, 632))
         self.assertEqual(find_hero_option_centers(popup), [(319, 632)])
 
-    def test_prefers_purple_over_red(self):
+    def test_prefers_yellow_over_purple(self):
         popup = cv2.imread(
             str(HERO_SELECT_FIXTURES_DIR / "3 lvup option.png")
         )
@@ -119,21 +139,44 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         self.assertTrue(hero_option_is_purple(popup, centers[0]))
         self.assertTrue(hero_option_is_purple(popup, centers[1]))
         self.assertFalse(hero_option_is_purple(popup, centers[2]))
+        self.assertTrue(hero_option_is_yellow(popup, centers[2]))
 
-        choice = HeroLevelupMatcher(()).find_choice(popup)
+        choice = find_choice(popup, ())
 
         self.assertIsNotNone(choice)
         self.assertFalse(choice.is_prioritized)
-        self.assertEqual(choice.fallback_color, "purple")
+        self.assertEqual(choice.fallback_color, "yellow")
         self.assertEqual(choice.fallback_option_count, 3)
-        self.assertEqual((choice.x, choice.y), (193, 632))
+        self.assertEqual((choice.x, choice.y), (446, 632))
+
+    def test_prefers_yellow_over_red(self):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "fallback_yellow.png")
+        )
+        centers = find_hero_option_centers(popup)
+
+        self.assertEqual(
+            centers,
+            [(193, 632), (319, 632), (446, 632)],
+        )
+        self.assertFalse(hero_option_is_yellow(popup, centers[0]))
+        self.assertTrue(hero_option_is_yellow(popup, centers[1]))
+        self.assertFalse(hero_option_is_yellow(popup, centers[2]))
+
+        choice = find_choice(popup)
+
+        self.assertIsNotNone(choice)
+        self.assertFalse(choice.is_prioritized)
+        self.assertEqual(choice.fallback_color, "yellow")
+        self.assertEqual(choice.fallback_option_count, 3)
+        self.assertEqual((choice.x, choice.y), (319, 632))
 
     def test_chooses_purple_even_when_red_is_left(self):
         popup = np.zeros((720, 640, 3), dtype=np.uint8)
         popup[610:655, 196:309] = (0, 0, 180)
         popup[610:655, 331:444] = (180, 0, 120)
 
-        choice = HeroLevelupMatcher(()).find_choice(popup)
+        choice = find_choice(popup, ())
 
         self.assertIsNotNone(choice)
         self.assertFalse(choice.is_prioritized)
@@ -146,7 +189,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         centers = find_hero_option_centers(popup)
-        choice = HeroLevelupMatcher(()).find_choice(popup)
+        choice = find_choice(popup, ())
 
         self.assertEqual(centers, [(193, 632), (319, 632), (446, 632)])
         self.assertTrue(hero_option_is_purple(popup, centers[0]))
@@ -167,7 +210,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
                     for center in centers
                     if hero_option_is_purple(popup, center)
                 ]
-                choice = HeroLevelupMatcher().find_choice(popup)
+                choice = find_choice(popup)
 
                 self.assertEqual(len(centers), 3)
                 self.assertTrue(purple_centers)
@@ -203,12 +246,14 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             [call(*HERO_LEVELUP_OPEN_CLICK), call(319, 632)],
         )
 
+    @patch("builtins.print")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
     async def test_no_purple_three_options_saves_tracking_screenshot(
         self,
         save_screenshot,
         capture_page_bgr,
+        print_mock,
     ):
         popup = cv2.imread(
             str(HERO_SELECT_FIXTURES_DIR / "lubu and hanu.png")
@@ -236,6 +281,73 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(193, 632)],
+        )
+        print_mock.assert_any_call(
+            "No prioritized hero option matched; falling back to red hero "
+            "card at 193,632.",
+            flush=True,
+        )
+
+    @patch("builtins.print")
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    async def test_yellow_fallback_logs_color_and_clicks_yellow_card(
+        self,
+        _save_screenshot,
+        capture_page_bgr,
+        print_mock,
+    ):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "fallback_yellow.png")
+        )
+        capture_page_bgr.return_value = popup
+        initial_frame = self.make_protect_available(np.zeros_like(popup))
+        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+
+        handled = await flow.hero_levelup(
+            initial_frame,
+            cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertTrue(handled)
+        print_mock.assert_any_call(
+            "No prioritized hero option matched; falling back to yellow "
+            "hero card at 319,632.",
+            flush=True,
+        )
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*HERO_LEVELUP_OPEN_CLICK), call(319, 632)],
+        )
+
+    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    async def test_yellow_fallback_with_purple_does_not_save_tracking_screenshot(
+        self,
+        save_screenshot,
+        capture_page_bgr,
+    ):
+        popup = cv2.imread(
+            str(HERO_SELECT_FIXTURES_DIR / "3 lvup option.png")
+        )
+        capture_page_bgr.return_value = popup
+        initial_frame = self.make_protect_available(np.zeros_like(popup))
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(hero_levelup_template_paths=()),
+        )
+
+        handled = await flow.hero_levelup(
+            initial_frame,
+            cv2.cvtColor(initial_frame, cv2.COLOR_BGR2GRAY),
+        )
+
+        self.assertTrue(handled)
+        save_screenshot.assert_not_awaited()
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(*HERO_LEVELUP_OPEN_CLICK), call(446, 632)],
         )
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
@@ -271,15 +383,17 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             [call(*HERO_LEVELUP_OPEN_CLICK), call(193, 632)],
         )
 
+    @patch("builtins.print")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
     @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
     async def test_purple_fallback_does_not_save_tracking_screenshot(
         self,
         save_screenshot,
         capture_page_bgr,
+        print_mock,
     ):
         popup = cv2.imread(
-            str(HERO_SELECT_FIXTURES_DIR / "3 lvup option.png")
+            str(HERO_SELECT_FIXTURES_DIR / "3_option_2lubu.png")
         )
         capture_page_bgr.return_value = popup
         initial_frame = self.make_protect_available(np.zeros_like(popup))
@@ -299,6 +413,11 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(193, 632)],
+        )
+        print_mock.assert_any_call(
+            "No prioritized hero option matched; falling back to purple "
+            "hero card at 193,632.",
+            flush=True,
         )
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
