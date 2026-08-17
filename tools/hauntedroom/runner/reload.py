@@ -19,14 +19,20 @@ from hauntedroom.flows.automap_support import (
     boss_action,
     boss_detector,
     boss_flow,
+    completion_flow,
     detectors,
     gear_action,
     hero_action,
     hero_levelup_vision,
     map_completion,
-    map_first_win,
     train_select,
     upgrade_action,
+)
+from hauntedroom.flows.automap_support.completion_flow import (
+    blocker,
+    first_win,
+    reward,
+    state,
 )
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.exp_available import run_exp_available_flow
@@ -150,7 +156,11 @@ def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
     importlib.reload(boss_action)
     importlib.reload(gear_action)
     importlib.reload(hero_levelup_vision)
-    importlib.reload(map_first_win)
+    importlib.reload(state)
+    importlib.reload(first_win)
+    importlib.reload(reward)
+    importlib.reload(blocker)
+    importlib.reload(completion_flow)
     importlib.reload(map_completion)
     importlib.reload(upgrade_action)
     importlib.reload(hero_action)

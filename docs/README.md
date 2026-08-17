@@ -8,6 +8,7 @@ Runner Playwright dùng OpenCV template matching để tìm và click các nút 
 Tài liệu liên quan:
 
 - [Auto-map flows: `Shift+2` và `Shift+3`](AUTOMAP_FLOWS.md)
+- [Map-completion bridge và các điểm có thể stuck](MAP_COMPLETION_BRIDGE.md)
 - [Hero level-up selection assets](../tools/rooms/automap/hero_levelup/README.md)
 - [Testing](TESTING.md)
 - [ADR cấu trúc `core / actions / flows`](ADR_bot.md)

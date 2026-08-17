@@ -1,6 +1,6 @@
 # Refactor Review
 
-Lần review gần nhất: 2026-08-15
+Lần review gần nhất: 2026-08-17
 
 ## Kết luận
 
@@ -9,10 +9,17 @@ Structure hiện tại vẫn hợp lý cho một bot local: khoảng **7/10**. R
 direction về cơ bản vẫn đúng ADR, và `hauntedroom_runner.py` đã về đúng vai trò
 composition root.
 
-Baseline full suite chưa xanh: còn một module test import hai constant cũ từ
-`hauntedroom.flows.automap` sau đợt tách owner sang `automap_support/`. Các flow
-train, EXP available và hero breakthrough đã nằm đúng trong package `flows/`,
-được nối qua command resolver và có test riêng.
+Baseline full suite chưa xanh. Lỗi collection cũ ở `test_level_up.py` vẫn còn;
+ngoài ra, khi bỏ file này để chạy phần suite còn lại thì có thêm bốn test
+`new_tab_blocker` fail vì source setting hiện tắt script injection trong khi test
+vẫn giả định mặc định bật. Các flow train, EXP available và hero breakthrough đã
+nằm đúng trong package `flows/`, được nối qua command resolver và có test riêng.
+
+Đợt tách map completion mới đi đúng hướng: `map_completion.py` đã trở thành
+orchestrator và các phase first-win/reward/blocker có owner riêng trong
+`completion_flow/`. Đổi lại, boundary này hiện mang khá nhiều callable/runtime
+dependency; chưa phải lỗi cần refactor ngay, nhưng là điểm cần theo dõi khi thêm
+phase.
 
 Command hiện tại:
 
@@ -30,6 +37,23 @@ Lỗi còn lại nằm ở `tests/automap/test_level_up.py`: module này import
 `LV_SPIN_CLICK_OFFSET_X` và `UPGRADE_CONFIRM_CLICK` từ
 `hauntedroom.flows.automap`, nhưng owner hiện tại là
 `hauntedroom.flows.automap_support.upgrade_action`.
+
+Để nhìn tiếp phần suite còn lại đã chạy thêm:
+
+```shell
+uv run --with pytest pytest tests -q --ignore=tests/automap/test_level_up.py
+```
+
+Kết quả:
+
+```text
+4 failed, 159 passed, 19 subtests passed
+```
+
+Bốn failure đều ở `tests/control_events/test_new_tab_blocker.py`.
+`tools/hauntedroom/settings.py` đặt `ENABLE_SCRIPT_INJECTION = False`, nên ba test
+gọi guard mà không patch setting sang `True` không thấy lệnh inject, và một test
+khác vẫn assert setting mặc định là `True`.
 
 Trước khi refactor thêm, nên restore test/code contract để có baseline xanh.
 
@@ -63,40 +87,43 @@ trong `tools/hauntedroom/runner/`. Wrapper `Shift+3` nằm tại
 Runtime/non-test files trên 100 dòng:
 
 ```text
- 515 ./tools/hauntedroom/flows/automap.py
- 417 ./tools/hauntedroom/flows/automap_support/map_completion.py
+ 516 ./tools/hauntedroom/flows/automap.py
  403 ./tools/hauntedroom/actions/runner.py
  302 ./tools/hauntedroom/flows/automap_support/boss_detector.py
  299 ./tools/hauntedroom/actions/loader.py
- 250 ./tools/hauntedroom/flows/automap_support/hero_levelup_vision.py
  259 ./tools/hauntedroom/core/runtime.py
+ 255 ./tools/hauntedroom/flows/automap_support/hero_action.py
+ 250 ./tools/hauntedroom/flows/automap_support/hero_levelup_vision.py
  223 ./tools/hauntedroom/flows/automap_support/gear_action.py
+ 222 ./tools/hauntedroom/flows/automap_support/map_completion.py
  211 ./tools/hauntedroom/runner/commands.py
  203 ./tools/hauntedroom/flows/train.py
- 184 ./tools/hauntedroom/flows/automap_support/train_select.py
+ 193 ./tools/hauntedroom/flows/automap_support/train_select.py
+ 175 ./tools/hauntedroom/flows/automap_support/completion_flow/first_win.py
+ 170 ./tools/hauntedroom/runner/reload.py
  166 ./tools/debug_template_match.py
  162 ./tools/hauntedroom/core/template.py
  158 ./tools/hauntedroom/runner/standby.py
- 157 ./tools/hauntedroom/runner/reload.py
  150 ./tools/hauntedroom/flows/automap_support/upgrade_action.py
+ 149 ./tools/hauntedroom/flows/automap_support/completion_flow/reward.py
  149 ./tools/hauntedroom/flows/hero_up_available.py
  145 ./tools/hauntedroom/flows/automap_support/boss_action.py
  142 ./tools/hauntedroom/flows/research.py
  131 ./tools/hauntedroom/flows/exp_available.py
  127 ./tools/hauntedroom/control_events/new_tab_blocker.py
  110 ./tools/hauntedroom/flows/automap_support/detectors.py
- 255 ./tools/hauntedroom/flows/automap_support/hero_action.py
+ 102 ./tools/hauntedroom/flows/automap_support/completion_flow/state.py
  101 ./tools/hauntedroom/control_events/blockers.py
 ```
 
 Test files trên 100 dòng:
 
 ```text
+ 576 ./tests/automap/test_map_end.py
  573 ./tests/automap/test_boss.py
- 563 ./tests/automap/test_map_end.py
- 458 ./tests/runner/test_standby_controller.py
- 333 ./tests/hero_select/test_hero_select.py
- 332 ./tests/hero_select/test_hero_fallback.py
+ 475 ./tests/runner/test_standby_controller.py
+ 451 ./tests/hero_select/test_hero_fallback.py
+ 406 ./tests/hero_select/test_hero_select.py
  274 ./tests/actions/test_runner.py
  237 ./tests/automap/test_level_up.py
  202 ./tests/runner/test_start_automap_loop.py
@@ -110,9 +137,10 @@ Test files trên 100 dòng:
 ```
 
 Line count không tự động đồng nghĩa over-responsibility. Test lớn chủ yếu là
-fixture/scenario-driven. Runtime file lớn đang cần theo dõi nhất là
-`automap.py`, `automap_support/map_completion.py`, `actions/runner.py` và
-`actions/loader.py`; các special flow mới vẫn là module độc lập, kích thước vừa.
+fixture/scenario-driven. Runtime file lớn đang cần theo dõi nhất là `automap.py`,
+`actions/runner.py`, `actions/loader.py` và `boss_detector.py`.
+`map_completion.py` vẫn trên 200 dòng nhưng phần phase đã được tách có ranh giới;
+review nên nhìn cả cụm `completion_flow/` thay vì chỉ kích thước orchestrator.
 
 ## Đang làm tốt
 
@@ -122,6 +150,8 @@ fixture/scenario-driven. Runtime file lớn đang cần theo dõi nhất là
   phase logic.
 - `automap_support/` đã tách các concern rõ: map completion, upgrade, hero
   level-up, boss, detector, gear placement và train selection.
+- Map completion đã có result/state object rõ và phase handler trả
+  `CompletionStep`, giúp vòng orchestration giữ thứ tự ưu tiên dễ đọc hơn.
 - `actions/models.py` đã tạo typed boundary cho action JSON; runner không còn
   chạy trên raw dict làm contract chính.
 - `hauntedroom_runner.py` không còn là controller monolith.
@@ -130,15 +160,18 @@ fixture/scenario-driven. Runtime file lớn đang cần theo dõi nhất là
 
 ## Drift và issue hiện tại
 
-### 1. Một test contract còn drift sau khi tách auto-map support modules
+### 1. Hai test contract đang drift so với code/settings hiện tại
 
 Các constants đã được chuyển sang module đúng concern:
 
 - `AUTOMAP_POLL_MS`, `LV_SPIN_CLICK_OFFSET_X`, `UPGRADE_CONFIRM_CLICK` nằm ở
   `tools/hauntedroom/flows/automap_support/upgrade_action.py`.
-- `MAP_END_CHECK_INTERVAL_SEC`, `WIN_REWARD_*`,
-  `REWARD_LIST_TITLE_TEMPLATE_THRESHOLD` nằm ở
+- `MAP_END_CHECK_INTERVAL_SEC` nằm ở
   `tools/hauntedroom/flows/automap_support/map_completion.py`.
+- `WIN_REWARD_*`, `REWARD_LIST_TITLE_TEMPLATE_THRESHOLD` nằm ở
+  `tools/hauntedroom/flows/automap_support/completion_flow/reward.py`.
+- `MAP_COMPLETION_BLOCKER_*` nằm ở
+  `tools/hauntedroom/flows/automap_support/completion_flow/blocker.py`.
 - `HERO_LEVELUP_OPEN_CLICK`, `HERO_FALLBACK_SCREENSHOT_DIR` nằm ở
   `tools/hauntedroom/flows/automap_support/hero_action.py`.
 
@@ -155,14 +188,25 @@ drift:
 Recommendation: sửa test import theo module owner hiện tại. Re-export constants
 từ `automap.py` sẽ làm coordinator tiếp tục thành dumping ground.
 
+Contract thứ hai nằm ở script injection. Setting source-level hiện tại là
+`ENABLE_SCRIPT_INJECTION = False`, nhưng ba test happy-path gọi thẳng function
+mà không patch setting sang `True`, và test `test_script_injection_is_enabled_by_default`
+vẫn yêu cầu `True`. Cần chốt default mong muốn trước:
+
+- Nếu runtime cần mặc định tắt: sửa happy-path test để patch `True`, và đổi test
+  default theo setting mới.
+- Nếu việc đổi setting là ngoài ý muốn: bật lại setting và giữ test hiện tại.
+
+Không nên sửa function guard để bỏ qua setting chỉ nhằm làm test xanh.
+
 ### 2. Architecture test chưa khóa hết boundary hiện tại
 
 `tests/test_hauntedroom_architecture.py` đang quét bằng `glob("*.py")`, nên chưa
 quét recursive các package con như `flows/automap_support/*.py`. Test cũng chưa
 có rule riêng cho package `runner/`.
 
-Import thực tế hiện có vẻ sạch, nhưng guardrail chưa bao phủ hết structure đã
-được refactor.
+Test hiện tại chạy xanh (`4 passed`) và import thực tế chưa lộ dependency ngược,
+nhưng guardrail chưa bao phủ hết structure đã được refactor.
 
 ### 3. Action loader đã typed, nhưng validation chưa normalize hết
 
@@ -212,8 +256,12 @@ root pytest chỉ collect `tests/`, hoặc tách/di chuyển `ref_cv/` rõ hơn.
 Auto-map chưa cần refactor lớn tiếp. `AutomapFlow` giữ template loading, mutable
 state, handler priority và public API. Phase logic nằm trong:
 
-- `map_completion.py`: map end, win reward, reward list title và home detection.
-- `map_first_win.py`: daily-first-win prompt và checkbox confirmation.
+- `map_completion.py`: map end và home orchestration.
+- `completion_flow/first_win.py`: daily-first-win lifecycle hoàn chỉnh.
+- `completion_flow/reward.py`: win reward, reward-list và fallback clicks.
+- `completion_flow/blocker.py`: post-map blocker detection và cleanup.
+- `completion_flow/state.py`: state/result và runtime context dùng chung cho
+  completion helpers.
 - `upgrade_action.py`: level spin, level-up confirm, build menu.
 - `hero_action.py`: business priority, mở/chọn/click hero level-up option.
 - `hero_levelup_vision.py`: sở hữu template/calibration và trả lời từng query về
@@ -230,7 +278,8 @@ hay Clean Architecture đầy đủ.
 1. **Restore test baseline.** Sửa hai import còn lại trong
    `tests/automap/test_level_up.py` sang `automap_support/upgrade_action.py`,
    hoặc re-export có chủ đích nếu muốn giữ public compatibility từ `automap.py`.
-   Chạy lại:
+   Đồng thời chốt default của `ENABLE_SCRIPT_INJECTION` rồi đồng bộ bốn test
+   `new_tab_blocker`. Chạy lại:
 
    ```shell
    uv run --with pytest pytest tests -q

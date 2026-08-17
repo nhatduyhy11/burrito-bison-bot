@@ -35,13 +35,16 @@ from hauntedroom.flows.automap import (
     WIN_REWARD_TEMPLATE_THRESHOLD,
     run_automap_flow,
 )
-from hauntedroom.flows.automap_support.map_completion import (
+from hauntedroom.flows.automap_support.completion_flow.blocker import (
     MAP_COMPLETION_BLOCKER_THRESHOLD,
     find_map_completion_blocker,
 )
-from hauntedroom.flows.automap_support.map_first_win import (
+from hauntedroom.flows.automap_support.completion_flow.first_win import (
     DAILY_FIRST_WIN_CHECK_DELAY_MS,
     handle_daily_first_win,
+)
+from hauntedroom.flows.automap_support.completion_flow.state import (
+    FirstWinContext,
 )
 from hauntedroom.flows import automap
 from hauntedroom.flows.automap_support.detectors import (
@@ -391,26 +394,32 @@ class MapEndTest(IsolatedAsyncioTestCase):
         checkpoint = AsyncMock(return_value=True)
 
         handled = await handle_daily_first_win(
-            self.page,
-            asyncio.Event(),
+            FirstWinContext(
+                page=self.page,
+                stop_event=asyncio.Event(),
+                daily_first_win_template=np.zeros((18, 150), dtype=np.uint8),
+                daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
+                daily_first_win_checkbox_template=np.zeros(
+                    (19, 19), dtype=np.uint8
+                ),
+                daily_first_win_checkbox_template_path=(
+                    DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+                ),
+                daily_first_win_checked_template=np.zeros(
+                    (19, 19), dtype=np.uint8
+                ),
+                daily_first_win_checked_template_path=(
+                    DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+                ),
+                capture_page_bgr_fn=capture,
+                to_grayscale_fn=lambda frame: frame[:, :, 0],
+                find_template_fn=find_template,
+                click_fn=click,
+                wait_for_flow_timeout_fn=wait,
+                flow_checkpoint_fn=checkpoint,
+                poll_ms=100,
+            ),
             np.zeros((720, 640), dtype=np.uint8),
-            daily_first_win_template=np.zeros((18, 150), dtype=np.uint8),
-            daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
-            daily_first_win_checkbox_template=np.zeros((19, 19), dtype=np.uint8),
-            daily_first_win_checkbox_template_path=(
-                DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
-            ),
-            daily_first_win_checked_template=np.zeros((19, 19), dtype=np.uint8),
-            daily_first_win_checked_template_path=(
-                DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
-            ),
-            capture_page_bgr_fn=capture,
-            to_grayscale_fn=lambda frame: frame[:, :, 0],
-            find_template_fn=find_template,
-            click_fn=click,
-            wait_for_flow_timeout_fn=wait,
-            flow_checkpoint_fn=checkpoint,
-            poll_ms=100,
         )
 
         self.assertTrue(handled)
@@ -433,32 +442,34 @@ class MapEndTest(IsolatedAsyncioTestCase):
         wait = AsyncMock(return_value=True)
 
         handled = await handle_daily_first_win(
-            self.page,
-            asyncio.Event(),
+            FirstWinContext(
+                page=self.page,
+                stop_event=asyncio.Event(),
+                daily_first_win_template=load_real_template(
+                    DAILY_FIRST_WIN_TEMPLATE_PATH
+                ),
+                daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
+                daily_first_win_checkbox_template=load_real_template(
+                    DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+                ),
+                daily_first_win_checkbox_template_path=(
+                    DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
+                ),
+                daily_first_win_checked_template=load_real_template(
+                    DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+                ),
+                daily_first_win_checked_template_path=(
+                    DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
+                ),
+                capture_page_bgr_fn=AsyncMock(),
+                to_grayscale_fn=lambda image: image,
+                find_template_fn=find_real_template,
+                click_fn=click,
+                wait_for_flow_timeout_fn=wait,
+                flow_checkpoint_fn=AsyncMock(return_value=True),
+                poll_ms=100,
+            ),
             frame,
-            daily_first_win_template=load_real_template(
-                DAILY_FIRST_WIN_TEMPLATE_PATH
-            ),
-            daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
-            daily_first_win_checkbox_template=load_real_template(
-                DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
-            ),
-            daily_first_win_checkbox_template_path=(
-                DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
-            ),
-            daily_first_win_checked_template=load_real_template(
-                DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
-            ),
-            daily_first_win_checked_template_path=(
-                DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH
-            ),
-            capture_page_bgr_fn=AsyncMock(),
-            to_grayscale_fn=lambda image: image,
-            find_template_fn=find_real_template,
-            click_fn=click,
-            wait_for_flow_timeout_fn=wait,
-            flow_checkpoint_fn=AsyncMock(return_value=True),
-            poll_ms=100,
         )
 
         self.assertTrue(handled)

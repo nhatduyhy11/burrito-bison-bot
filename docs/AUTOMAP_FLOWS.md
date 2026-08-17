@@ -58,15 +58,96 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 
 ### 2. Map end
 
+Map-end không kết thúc ngay khi `automap/map_end.png` xuất hiện. Match này chỉ
+bắt đầu **win-map completion bridge**: đóng toàn bộ reward/prompt/blocker, xác
+nhận home đã thật sự sẵn sàng rồi mới cho `Shift+3` chạy map kế tiếp.
+
+Xem [Map-completion bridge](MAP_COMPLETION_BRIDGE.md) để có call chain, state
+machine đầy đủ và review các nhánh retry có thể làm bridge bị stuck.
+
 - Tìm `automap/map_end.png` với threshold `0.90`; phép kiểm tra được throttle
   tối đa một lần mỗi 5 giây.
-- Khi match, click để quay về home.
-- Nếu thấy `automap/map_win/win_reward.png`, click match đầu tiên ở mép trên
-  template rồi kiểm tra lại sau `2 giây` cho tới khi không còn reward icon.
-- Sau khi reward icon biến mất, tìm
-  `automap/map_win/reward_list_title.png` trong vùng title của popup reward-list;
-  nếu match, click title đúng một lần rồi tiếp tục đợi home.
-- Khi `rooms/start_home.png` xuất hiện, đánh dấu auto-map hoàn tất và về idle.
+- Khi match, click để rời battle và chuyển quyền điều khiển sang
+  `finish_map_from_home()`.
+- Bridge trả `completed=True` chỉ khi `rooms/start_home.png` match threshold
+  `0.90`. Việc đã thấy reward hoặc đã tăng win count không đủ để hoàn tất map.
+- Nếu bridge bị stop, một wait bị ngắt hoặc daily-first-win không hoàn thành,
+  bridge trả `completed=False` và `Shift+3` dừng, không chạy entry action của
+  map tiếp theo.
+
+#### Thứ tự kiểm tra của win-map bridge
+
+Mỗi vòng bridge chỉ xử lý nhánh đầu tiên match rồi chụp frame mới. Thứ tự này là
+contract vì popup phía trên phải được dọn trước khi kiểm tra home phía dưới.
+
+```mermaid
+flowchart TD
+    A[map_end match<br/>click rời battle] --> B[Chụp frame]
+    B --> C{Win reward lần đầu?}
+    C -- Có --> D[Ghi nhận win một lần<br/>click mép trên reward<br/>chờ 2 giây]
+    D --> B
+    C -- Không --> E{Daily first-win<br/>còn pending và đang hiện?}
+    E -- Có --> F[Check/tick checkbox<br/>click decline]
+    F --> B
+    E -- Không --> G{Reward-list title<br/>đang hiện?}
+    G -- Có --> H[Click title<br/>đánh dấu title seen<br/>chờ 2 giây]
+    H --> B
+    G -- Không --> I{Đã lưu vị trí reward<br/>nhưng chưa từng thấy title?}
+    I -- Có --> J[Click lại vị trí reward cũ<br/>chờ 2 giây]
+    J --> B
+    I -- Không --> K{Title đã từng hiện<br/>và home đã sẵn sàng?}
+    K -- Có --> Z[completed = true]
+    K -- Không --> L{Đã đủ 2 fallback click?}
+    L -- Chưa --> M[Chờ 3 giây<br/>click 220,560]
+    M --> B
+    L -- Đủ --> N{Có post-map blocker?}
+    N -- Có --> O[Click blocker<br/>chờ poll interval]
+    O --> B
+    N -- Không --> P{Home đã sẵn sàng?}
+    P -- Có --> Z
+    P -- Không --> Q[Chờ poll interval]
+    Q --> B
+```
+
+#### Các nhánh reward và fallback
+
+| Tình huống | Hành vi | Ảnh hưởng tới loop kế tiếp |
+|---|---|---|
+| Thấy `win_reward.png` | Chỉ match đầu tiên được dùng; click ở mép trên template, lưu vị trí click và gọi `on_win()` đúng một lần trong map hiện tại. | Chưa được chạy map mới; bridge tiếp tục dọn reward-list và chờ home. |
+| Reward đã click nhưng title chưa xuất hiện | Không scan/ghi nhận reward lần nữa; click lại vị trí reward đã lưu sau mỗi `2 giây`. | Giữ bridge ở map hiện tại cho tới khi title xuất hiện hoặc flow bị stop. |
+| `reward_list_title.png` còn hiện | Tìm trong region `(180, 200, 460, 300)`, click top-middle, đánh dấu `title_seen` và kiểm tra lại sau `2 giây`. Nếu popup vẫn còn thì click lại. | Chỉ khi title biến mất mới tiến tới home/fallback check. |
+| Không thấy reward và title | Chờ `3 giây` rồi click `(220, 560)`, tối đa hai lần. | Cho UI có cơ hội đóng animation/popup trước khi kiểm tra blocker và home. |
+| Có post-map blocker | Sau hai fallback click, tìm các template trong `rooms/blocker/`, click blocker đầu tiên match rồi scan lại. `overlay_newbie.png` dùng vị trí `top_middle`; blocker khác dùng tâm. | Không đánh dấu hoàn tất khi blocker còn che home. |
+| Home xuất hiện mà không thấy reward | Vẫn có thể trả `completed=True` sau fallback/blocker cleanup. `win_recorded` giữ `False`, vì vậy win count không tăng. | `Shift+3` vẫn có thể tiếp tục map sau vì completion và win-count là hai contract độc lập. |
+
+#### Daily first-win
+
+Daily-first-win là một sub-flow riêng trong
+`flows/automap_support/completion_flow/first_win.py` và chỉ được kiểm tra khi
+`first_win_done=False`.
+
+- Nếu checkbox đang unchecked, click checkbox, chờ `1 giây`, chụp lại và chỉ
+  tiếp tục khi template checked đã được xác nhận.
+- Nếu checkbox đã checked, không toggle lại; click nút decline theo offset từ
+  label rồi trả quyền điều khiển cho win-map bridge.
+- Nếu chưa nhận diện chắc chắn checked/unchecked, chỉ chờ và chụp lại, không
+  click mù.
+- Nếu reward xuất hiện mà daily prompt không xuất hiện, bridge đặt
+  `first_win_done=True` để không tiếp tục tìm prompt trong process hiện tại.
+- `FIRST_WIN_DONE` được giữ qua các map trong cùng process. `win_recorded` là state
+  riêng của từng map và chỉ ngăn `on_win()` bị gọi nhiều lần trên cùng reward
+  screen.
+
+#### Điều kiện kết thúc và dữ liệu trả về
+
+`MapCompletionOutcome` mang bốn giá trị về `AutomapFlow`:
+
+| Field | Ý nghĩa |
+|---|---|
+| `completed` | Chỉ `True` khi home template đã match; đây là tín hiệu quyết định `Shift+3` có được nối sang map tiếp theo hay không. |
+| `win_recorded` | Reward của map hiện tại đã gọi `on_win()` hay chưa. |
+| `total_win` | Tổng win do wrapper `Shift+3` quản lý; không dùng để quyết định completion. |
+| `first_win_done` | Không cần xử lý lại daily-first-win trong các map sau của process hiện tại. |
 
 ### 3. Initial gear setup
 
@@ -202,13 +283,29 @@ Mỗi vòng chạy theo thứ tự:
    `start_battle.png`; các action exit không được chạy. Entry actions được thử
    tối đa 2 lần khi timeout và dừng ngay sau lần đầu tiên hoàn thành thành công.
 2. Gọi `run_automap_flow()` để chạy trọn một lượt business core giống `Shift+2`.
-3. Kiểm tra map có thất bại hay không.
-4. Nếu chưa thất bại, chờ 2 giây rồi bắt đầu vòng tiếp theo.
+   Khi map-end match, lời gọi này chỉ trả thành công sau khi win-map completion
+   bridge đã dọn UI và xác nhận home.
+3. Nếu completion bridge trả `False`, dừng toàn bộ start-auto loop ngay; không
+   chạy loss check, cooldown hoặc entry action mới.
+4. Nếu completion bridge trả `True`, kiểm tra map có thất bại hay không.
+5. Nếu chưa thất bại, chờ 2 giây rồi bắt đầu vòng tiếp theo.
+
+Contract nối loop là:
+
+```text
+start battle
+    -> run_automap_flow()
+    -> finish_map_from_home()
+       -> completed=False: stop Shift+3
+       -> completed=True: loss check -> cooldown 2 giây -> start battle kế tiếp
+```
 
 Flow giữ `win_count` trong suốt một lần chạy `Shift+3`. Khi auto-map nhận diện
 `win_reward.png` lần đầu tiên trong màn reward của một map, `win_count` tăng 1;
 các reward còn lại trong cùng màn không làm tăng thêm count. Ngay trước log hoàn
 thành auto-map, flow in tổng hiện tại theo format `>>> [total_win] win`.
+`win_count` không phải điều kiện nối loop: map chỉ cần completion bridge xác nhận
+home, kể cả trường hợp reward không được nhận diện và count không tăng.
 Boss handoff không bị runner tự override theo số loop; muốn click nút pause/menu
 khi gặp boss thì bật `CLICK_EXIT_ON_BOSS` trong `tools/hauntedroom/settings.py`.
 
@@ -228,12 +325,16 @@ Vòng lặp phát triển là `Shift+0` → sửa code/template/action JSON → 
 flow. Runner giữ nguyên browser và session, nhưng reload module Python liên quan
 tới flow mới. Với `Shift+2`/`Shift+3`, runner reload `core.vision`, action
 support, các module `flows.automap_support`, rồi `flows.automap`. Các phase
-orchestration đã tách gồm `map_completion.py`, `map_first_win.py`,
-`upgrade_action.py`, `hero_action.py` và `boss_flow.py`; các detector/action nền
-vẫn nằm ở `boss_detector.py`, `detectors.py`, `boss_action.py`, `gear_action.py`
-và `hero_levelup_vision.py`. Với `Shift+3`, action JSON cũng được load lại trước
-khi lấy prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở
-ở trạng thái idle để có thể sửa và thử lại.
+`map_completion.py` giữ priority orchestration tổng cùng home detection. Package
+nội bộ `completion_flow/` chứa `first_win.py`, `reward.py`, `blocker.py` và
+`state.py`; file `state.py` gom shared state/result cùng các runtime context để
+tránh sinh thêm module quá nhỏ. Các helper này chỉ được map-completion consume.
+Các phase khác gồm
+`upgrade_action.py`, `hero_action.py` và `boss_flow.py`; detector/action nền vẫn
+nằm ở `boss_detector.py`, `detectors.py`, `boss_action.py`, `gear_action.py` và
+`hero_levelup_vision.py`. Với `Shift+3`, action JSON cũng được load lại trước khi
+lấy prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở
+trạng thái idle để có thể sửa và thử lại.
 
 ## Vị trí code và test
 
