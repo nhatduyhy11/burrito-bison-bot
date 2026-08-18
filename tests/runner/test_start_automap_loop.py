@@ -9,6 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.actions.models import ClickTemplateAction
+from hauntedroom.core.runtime import FlowControl
 from hauntedroom.flows.start_auto import (
     BETWEEN_MAPS_WAIT_MS,
     get_start_battle_actions,
@@ -167,3 +168,74 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(completed)
         self.assertEqual(automap_flow.await_count, 3)
+
+    @patch(
+        "hauntedroom.flows.start_auto.wait_with_countdown",
+        new_callable=AsyncMock,
+        return_value=True,
+    )
+    @patch(
+        "hauntedroom.flows.start_auto.map_was_lost",
+        new_callable=AsyncMock,
+        side_effect=[False, True],
+    )
+    async def test_missing_reward_arms_pause_at_first_boss_of_next_map(
+        self,
+        _map_was_lost,
+        _wait_with_countdown,
+    ):
+        stop_event = FlowControl()
+
+        async def complete_map(_page, flow_control, **_kwargs):
+            if complete_map.call_count == 1:
+                self.assertEqual(
+                    flow_control.boss_pause_target,
+                    FlowControl.PAUSE_AT_ANY_BOSS,
+                )
+            complete_map.call_count += 1
+            return True
+
+        complete_map.call_count = 0
+
+        completed = await run_start_automap_loop(
+            Mock(),
+            self.actions,
+            AsyncMock(side_effect=complete_map),
+            stop_event,
+            AsyncMock(return_value=True),
+        )
+
+        self.assertTrue(completed)
+        self.assertEqual(complete_map.call_count, 2)
+
+    @patch(
+        "hauntedroom.flows.start_auto.wait_with_countdown",
+        new_callable=AsyncMock,
+        return_value=True,
+    )
+    @patch(
+        "hauntedroom.flows.start_auto.map_was_lost",
+        new_callable=AsyncMock,
+        return_value=True,
+    )
+    async def test_detected_reward_does_not_arm_next_boss_pause(
+        self,
+        _map_was_lost,
+        _wait_with_countdown,
+    ):
+        stop_event = FlowControl()
+
+        async def complete_winning_map(_page, _flow_control, **kwargs):
+            kwargs["on_win"]()
+            return True
+
+        completed = await run_start_automap_loop(
+            Mock(),
+            self.actions,
+            AsyncMock(side_effect=complete_winning_map),
+            stop_event,
+            AsyncMock(return_value=True),
+        )
+
+        self.assertTrue(completed)
+        self.assertIsNone(stop_event.boss_pause_target)

@@ -299,8 +299,10 @@ Mỗi vòng chạy theo thứ tự:
    bridge đã dọn UI và xác nhận home.
 3. Nếu completion bridge trả `False`, dừng toàn bộ start-auto loop ngay; không
    chạy loss check, cooldown hoặc entry action mới.
-4. Nếu completion bridge trả `True`, kiểm tra map có thất bại hay không.
-5. Nếu chưa thất bại, chờ 2 giây rồi bắt đầu vòng tiếp theo.
+4. Nếu completion bridge trả `True`, kiểm tra map có thất bại hay không. Nếu
+   `win_count` không tăng trong map vừa xong, coi đó là một loss và tự arm policy
+   pause một lần ở boss đầu tiên cho map kế tiếp (tương đương `Shift+2`).
+5. Chờ 2 giây rồi bắt đầu vòng tiếp theo.
 
 Contract nối loop là:
 
@@ -309,7 +311,9 @@ start battle
     -> run_automap_flow()
     -> finish_map_from_home()
        -> completed=False: stop Shift+3
-       -> completed=True: loss check -> cooldown 2 giây -> start battle kế tiếp
+       -> completed=True: loss check
+          -> không thấy reward: arm pause ở boss đầu tiên của map kế
+          -> cooldown 2 giây -> start battle kế tiếp
 ```
 
 Flow giữ `win_count` trong suốt một lần chạy `Shift+3`. Khi auto-map nhận diện
@@ -317,10 +321,11 @@ Flow giữ `win_count` trong suốt một lần chạy `Shift+3`. Khi auto-map n
 các reward còn lại trong cùng màn không làm tăng thêm count. Ngay trước log hoàn
 thành auto-map, flow in tổng hiện tại theo format `>>> [total_win] win`.
 `win_count` không phải điều kiện nối loop: map chỉ cần completion bridge xác nhận
-home, kể cả trường hợp reward không được nhận diện và count không tăng.
-Boss pause policy thuộc runtime manual control và không bị runner tự override
-theo số loop. Sau khi pause, người dùng tự xử lý game rồi resume script bằng
-hotkey `pause_resume` (mặc định `Shift+1`).
+home. Tuy nhiên, nếu reward không được nhận diện và count không tăng, runner coi
+map đó là loss và arm `PAUSE_AT_ANY_BOSS` cho map kế tiếp. Khi boss đầu tiên được
+nhận diện, flow click pause trong game rồi pause script; người dùng xử lý game và
+resume script bằng hotkey `pause_resume` (mặc định `Shift+1`). Policy này là
+one-shot và được consume khi boss match.
 
 Trước log cooldown giữa hai map có một dòng gạch ngang để phân cách log. Detector
 thất bại hiện là placeholder `map_was_lost()` và luôn trả về `False`; vì vậy flow

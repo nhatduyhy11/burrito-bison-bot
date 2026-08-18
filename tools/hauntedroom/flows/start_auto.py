@@ -50,6 +50,7 @@ async def run_start_automap_loop(
 
     while await flow_checkpoint(stop_event):
         loop_index += 1
+        wins_before_map = win_count
         print("\n" + "=" * 60, flush=True)
         print(f"Start-auto loop {loop_index} start.", flush=True)
 
@@ -80,6 +81,26 @@ async def run_start_automap_loop(
         if await map_was_lost(page):
             print("Map loss detected; stopping start-auto loop.", flush=True)
             return True
+
+        if win_count == wins_before_map:
+            pause_at_next_boss = getattr(
+                stop_event,
+                "pause_at_next_boss",
+                None,
+            )
+            if pause_at_next_boss is None:
+                print(
+                    "Map completed without a detected win reward, but the "
+                    "next-boss pause policy is unavailable.",
+                    flush=True,
+                )
+            elif pause_at_next_boss(final_only=False):
+                print(
+                    "Map completed without a detected win reward; treating "
+                    "it as a loss and arming a one-shot pause at the first "
+                    "boss of the next map.",
+                    flush=True,
+                )
 
         print("-" * 60, flush=True)
         waited = await wait_with_countdown(
