@@ -43,9 +43,10 @@ BOSS_PROGRESS_MIN_VALUE = 120
 BOSS_PROGRESS_MIN_YELLOW_RATIO = 0.85
 
 # Both controls have a bright yellow/orange ready glow in fixed UI slots. The
-# pet pattern specifically requires its energy bar to span the known full
-# width, so the pet artwork above the bar can vary freely.
-PET_READY_REGION = (292, 574, 346, 632)
+# pet region spans the complete late-game cluster because the UI can show one
+# to three pets. The pattern still requires a full-width energy bar, so empty
+# slots, partially charged pets, and the artwork above each bar are ignored.
+PET_READY_REGION = (250, 574, 390, 632)
 SPELL_READY_REGION = (450, 542, 522, 623)
 PET_READY_GLOW_PATTERN = ColorComponentPattern(
     lower_hsv=(15, 120, 180),

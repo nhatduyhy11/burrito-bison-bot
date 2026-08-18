@@ -537,6 +537,38 @@ class BossTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
         new_callable=AsyncMock,
     )
+    async def test_deploy_boss_pet_scans_complete_three_pet_cluster(
+        self,
+        capture_page_bgr,
+    ):
+        ready_frame = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "standby 3 pet.png"
+            )
+        )
+        capture_page_bgr.return_value = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "boss_screen"
+                / "pet_menu_open.png"
+            )
+        )
+
+        deployed = await deploy_boss_pet(self.page, frame_bgr=ready_frame)
+
+        self.assertTrue(deployed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(367, 604), call(463, 455)],
+        )
+
+    @patch(
+        "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
     async def test_deploy_boss_pet_accepts_different_pet_art(
         self,
         capture_page_bgr,
