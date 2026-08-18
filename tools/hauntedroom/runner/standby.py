@@ -184,17 +184,20 @@ async def run_standby_controller(
     stop_event = None
     current_command = None
     print(
-        "\n"
-        "Haunted Room runner ready\n"
-        "-------------------------\n"
-        f"{format_flow_menu(flow_commands)}\n"
-        "  Shift+8    Capture screenshot\n"
-        "  Shift+0    Stop current flow\n"
-        "  During Shift+2/Shift+3: "
-        f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
-        "  Ctrl+C     Close runner\n"
-        "-------------------------\n"
-        "Runner idle.",
+        colorize(
+            "\n"
+            "Haunted Room runner ready\n"
+            "-------------------------\n"
+            f"{format_flow_menu(flow_commands)}\n"
+            "  Shift+8    Capture screenshot\n"
+            "  Shift+0    Stop current flow\n"
+            "  During Shift+2/Shift+3: "
+            f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
+            "  Ctrl+C     Close runner\n"
+            "-------------------------\n"
+            "Runner idle.",
+            GREEN,
+        ),
         flush=True,
     )
 

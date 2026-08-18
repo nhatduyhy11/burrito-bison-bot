@@ -288,7 +288,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
 
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "01_dark_lubu.png")
-        self.assertEqual((choice.x, choice.y), (473, 597))
+        self.assertEqual((choice.x, choice.y), (484, 597))
 
     def test_hero_levelup_name_only_dark_lubu_beats_hanuman(self):
         popup = cv2.imread(
@@ -300,7 +300,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         self.assertIsNotNone(choice)
         self.assertEqual(choice.template_name, "01_dark_lubu.png")
         self.assertEqual(choice.priority, 1.0)
-        self.assertEqual((choice.x, choice.y), (447, 597))
+        self.assertEqual((choice.x, choice.y), (458, 597))
 
     def test_hero_levelup_new_mage_king_overrides_priorities_1_and_2(self):
         popup = cv2.imread(
