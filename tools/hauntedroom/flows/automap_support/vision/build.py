@@ -1,15 +1,11 @@
-"""Small auto-map detectors used by the battle flow."""
+"""Visual queries for available structure build options."""
 
 from typing import Optional
 
 import cv2
 import numpy as np
 
-from hauntedroom.core.vision import (
-    region_has_enough_white as _region_has_enough_white,
-)
-from hauntedroom.flows.automap_support.boss_detector import *  # noqa: F403
-
+from hauntedroom.core.vision import region_has_enough_white
 
 # A popup can contain one or two choices, and the single choice is vertically
 # centered. Detect the yellow buttons instead of assuming fixed row positions.
@@ -21,27 +17,9 @@ BUILD_BUTTON_MIN_VALUE = 180
 BUILD_BUTTON_MIN_AREA = 500
 BUILD_BUTTON_MIN_WIDTH = 50
 BUILD_BUTTON_MIN_HEIGHT = 15
-
-# The right-aligned hero level-up price digit is more stable than the money
-# icon or the complete price. Coordinates are in the fixed 640x720 viewport.
-HERO_LEVELUP_PRICE_REGION = (328, 630, 348, 647)
 WHITE_MAX_SATURATION = 50
 WHITE_MIN_VALUE = 180
 WHITE_MIN_PIXELS = 8
-
-# Legacy name kept while older tests and scripts are migrated.
-PROTECT_AVAILABLE_REGION = HERO_LEVELUP_PRICE_REGION
-
-
-def hero_levelup_price_is_available(image: np.ndarray) -> bool:
-    """Return whether the fixed hero level-up price region is white."""
-    return _region_has_enough_white(
-        image,
-        HERO_LEVELUP_PRICE_REGION,
-        min_pixels=WHITE_MIN_PIXELS,
-        max_saturation=WHITE_MAX_SATURATION,
-        min_value=WHITE_MIN_VALUE,
-    )
 
 
 def find_first_available_build_option(
@@ -95,7 +73,7 @@ def find_first_available_build_option(
             button_x + button_width,
             button_y + button_height,
         )
-        if _region_has_enough_white(
+        if region_has_enough_white(
             image,
             price_region,
             min_pixels=WHITE_MIN_PIXELS,

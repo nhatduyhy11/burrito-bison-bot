@@ -13,32 +13,18 @@ from hauntedroom.core.runtime import (
     wait_for_flow_timeout,
     wait_with_countdown,
 )
-from hauntedroom.core.terminal import GREEN, colorize
 from hauntedroom.core.template import (
     find_template,
     find_template_matches,
     load_template,
 )
+from hauntedroom.core.terminal import GREEN, colorize
 from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.settings import CAPTURE_HERO_FALLBACK_SCREENSHOTS
 from hauntedroom.flows.automap_support.boss_action import deploy_boss_pet
-from hauntedroom.flows.automap_support.hero_levelup_vision import (
-    HERO_LEVELUP_TEMPLATE_PATHS,
-    load_hero_levelup_templates,
-)
-from hauntedroom.flows.automap_support.gear_action import deploy_initial_gear
-from hauntedroom.flows.automap_support.gear_vision import find_gear_button
-from hauntedroom.flows.automap_support.boss_detector import (
-    boss_progress_is_full,
-    find_boss_health_bar,
-)
 from hauntedroom.flows.automap_support.boss_flow import (
     handle_boss_critical as _handle_boss_critical,
 )
-from hauntedroom.flows.automap_support.detectors import (
-    find_first_available_build_option,
-    hero_levelup_price_is_available,
-)
+from hauntedroom.flows.automap_support.gear_action import deploy_initial_gear
 from hauntedroom.flows.automap_support.hero_action import (
     handle_hero_levelup as _handle_hero_levelup,
 )
@@ -51,14 +37,36 @@ from hauntedroom.flows.automap_support.map_completion import (
     WIN_REWARD_FOLLOWUP_CLICK_COUNT,
     WIN_REWARD_RECHECK_MS,
     WIN_REWARD_TEMPLATE_THRESHOLD,
+)
+from hauntedroom.flows.automap_support.map_completion import (
     finish_map_from_home as _finish_map_from_home,
 )
 from hauntedroom.flows.automap_support.upgrade_action import (
     AUTOMAP_POLL_MS,
+)
+from hauntedroom.flows.automap_support.upgrade_action import (
     click_level_spin_if_present as _click_level_spin_if_present,
+)
+from hauntedroom.flows.automap_support.upgrade_action import (
     handle_build_structure as _handle_build_structure,
+)
+from hauntedroom.flows.automap_support.upgrade_action import (
     handle_level_up as _handle_level_up,
 )
+from hauntedroom.flows.automap_support.vision.boss import (
+    boss_progress_is_full,
+    find_boss_health_bar,
+)
+from hauntedroom.flows.automap_support.vision.build import (
+    find_first_available_build_option,
+)
+from hauntedroom.flows.automap_support.vision.gear import find_gear_button
+from hauntedroom.flows.automap_support.vision.hero_levelup import (
+    HERO_LEVELUP_TEMPLATE_PATHS,
+    hero_levelup_price_is_available,
+    load_hero_levelup_templates,
+)
+from hauntedroom.settings import CAPTURE_HERO_FALLBACK_SCREENSHOTS
 
 
 async def _click(page, x: int, y: int) -> None:

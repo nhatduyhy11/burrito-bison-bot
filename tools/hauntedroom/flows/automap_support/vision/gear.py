@@ -5,7 +5,6 @@ from typing import Optional
 import cv2
 import numpy as np
 
-
 # Coordinates are calibrated for the fixed 640x720 Playwright viewport.
 GEAR_AVAILABLE_REGION = (130, 620, 200, 700)
 GEAR_PLUS_MIN_HUE = 35

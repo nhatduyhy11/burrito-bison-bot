@@ -11,7 +11,7 @@ CAPTURES_DIR = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
 GEAR_FIXTURES_DIR = CAPTURES_DIR / "gear_placement"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.flows.automap_support.gear_vision import (
+from hauntedroom.flows.automap_support.vision.gear import (
     GEAR_MENU_STRIPE_REGION,
     find_gear_button,
     find_gear_drop_position,

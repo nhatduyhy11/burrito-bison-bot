@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy as np
 
-from hauntedroom.flows.automap_support.hero_levelup_vision import (
+from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_ASCEND_TEMPLATE_NAME,
     HeroLevelupFrame,
     find_hero_ascend_matches,
@@ -14,7 +14,6 @@ from hauntedroom.flows.automap_support.hero_levelup_vision import (
     find_hero_template_match,
     prepare_hero_levelup_frame,
 )
-
 
 HERO_LEVELUP_OPEN_CLICK = (320, 640)
 HERO_LEVELUP_OPTION_SETTLE_MS = 1_500

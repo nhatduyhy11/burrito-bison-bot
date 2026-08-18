@@ -11,7 +11,7 @@ from hauntedroom.core.template import (
     find_template_matches,
     load_template,
 )
-
+from hauntedroom.core.vision import region_has_enough_white
 
 HERO_LEVELUP_SEARCH_TOP = 460
 HERO_LEVELUP_TEMPLATE_THRESHOLD = 0.80
@@ -44,8 +44,18 @@ HERO_ASCEND_TEMPLATE_THRESHOLD = 0.90
 # card. Its match center sits 47 pixels to the right of the card center.
 HERO_ASCEND_MATCH_CENTER_OFFSET_X = -47
 
+# The right-aligned hero level-up price digit is more stable than the money
+# icon or complete price. Coordinates are in the fixed 640x720 viewport.
+HERO_LEVELUP_PRICE_REGION = (328, 630, 348, 647)
+HERO_PRICE_WHITE_MAX_SATURATION = 50
+HERO_PRICE_WHITE_MIN_VALUE = 180
+HERO_PRICE_WHITE_MIN_PIXELS = 8
+
+# Legacy name kept while older callers migrate to the hero-specific name.
+PROTECT_AVAILABLE_REGION = HERO_LEVELUP_PRICE_REGION
+
 HERO_LEVELUP_TEMPLATE_DIR = (
-    Path(__file__).resolve().parents[3] / "rooms" / "automap" / "hero_levelup"
+    Path(__file__).resolve().parents[4] / "rooms" / "automap" / "hero_levelup"
 )
 HERO_LEVELUP_TEMPLATE_PATHS = tuple(
     sorted(HERO_LEVELUP_TEMPLATE_DIR.glob("*.png"))
@@ -53,6 +63,17 @@ HERO_LEVELUP_TEMPLATE_PATHS = tuple(
 HeroLevelupFrame = tuple[np.ndarray, np.ndarray]
 HeroOption = tuple[int, int, str]
 HeroTemplateMatch = tuple[int, int, float]
+
+
+def hero_levelup_price_is_available(image: np.ndarray) -> bool:
+    """Return whether the fixed hero level-up price region is white."""
+    return region_has_enough_white(
+        image,
+        HERO_LEVELUP_PRICE_REGION,
+        min_pixels=HERO_PRICE_WHITE_MIN_PIXELS,
+        max_saturation=HERO_PRICE_WHITE_MAX_SATURATION,
+        min_value=HERO_PRICE_WHITE_MIN_VALUE,
+    )
 
 
 def load_hero_levelup_templates(

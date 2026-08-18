@@ -25,7 +25,7 @@ from hauntedroom.flows.automap_support.boss_action import (
     activate_boss_spell,
     deploy_boss_pet,
 )
-from hauntedroom.flows.automap_support.boss_detector import (
+from hauntedroom.flows.automap_support.vision.boss import (
     BOSS_HP_SEARCH_REGION,
     PET_READY_GLOW_PATTERN,
     PET_READY_REGION,

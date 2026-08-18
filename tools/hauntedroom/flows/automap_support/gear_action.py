@@ -7,12 +7,11 @@ import numpy as np
 from hauntedroom.core.mouse import click_and_wait, smooth_drag
 from hauntedroom.core.terminal import BLUE, RED, colorize
 from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.flows.automap_support.gear_vision import (
+from hauntedroom.flows.automap_support.vision.gear import (
     find_gear_button,
     find_gear_drop_position,
     gear_menu_is_open,
 )
-
 
 GEAR_ITEM_POSITION = (320, 526)
 GEAR_MENU_SETTLE_MS = 1_000

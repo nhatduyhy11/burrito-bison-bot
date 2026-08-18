@@ -25,10 +25,8 @@ from hauntedroom.flows.automap_support.hero_action import (
     HERO_LEVELUP_OPEN_CLICK,
     choose_hero_levelup_option,
 )
-from hauntedroom.flows.automap_support.detectors import (
+from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_LEVELUP_PRICE_REGION,
-)
-from hauntedroom.flows.automap_support.hero_levelup_vision import (
     HERO_LEVELUP_TEMPLATE_PATHS,
     find_hero_option_centers,
     hero_option_is_purple,
@@ -66,11 +64,11 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         return image
 
     @patch(
-        "hauntedroom.flows.automap_support.hero_levelup_vision.load_template",
+        "hauntedroom.flows.automap_support.vision.hero_levelup.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch(
-        "hauntedroom.flows.automap_support.hero_levelup_vision.find_template",
+        "hauntedroom.flows.automap_support.vision.hero_levelup.find_template",
         side_effect=[(0, 0, 0.1), (252, 137, 0.95)],
     )
     def test_priority_99_is_excluded_from_fallback(

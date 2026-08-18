@@ -12,8 +12,10 @@ TRAIN_FLOW_FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 
 from hauntedroom.flows.automap_support.train_select import (
     TRAIN_CONFIRM_CLICK,
-    TRAIN_TEMPLATE_SCALE,
     TrainHeroMatcher,
+)
+from hauntedroom.flows.automap_support.vision.train import (
+    TRAIN_TEMPLATE_SCALE,
     find_train_cards,
 )
 

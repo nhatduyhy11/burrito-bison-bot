@@ -47,7 +47,7 @@ from hauntedroom.flows.automap_support.completion_flow.state import (
     FirstWinContext,
 )
 from hauntedroom.flows import automap
-from hauntedroom.flows.automap_support.detectors import (
+from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_LEVELUP_PRICE_REGION,
 )
 

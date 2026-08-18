@@ -28,10 +28,8 @@ from hauntedroom.flows.automap_support.hero_action import (
     HERO_LEVELUP_SELECTION_SETTLE_MS,
     choose_hero_levelup_option,
 )
-from hauntedroom.flows.automap_support.detectors import (
+from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_LEVELUP_PRICE_REGION,
-)
-from hauntedroom.flows.automap_support.hero_levelup_vision import (
     HERO_ASCEND_TEMPLATE_NAME,
     HERO_LEVELUP_SEARCH_TOP,
     HERO_LEVELUP_TEMPLATE_PATHS,

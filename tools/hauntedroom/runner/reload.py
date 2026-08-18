@@ -19,14 +19,10 @@ from hauntedroom.flows import (
 from hauntedroom.flows.artifact import run_artifact_flow
 from hauntedroom.flows.automap_support import (
     boss_action,
-    boss_detector,
     boss_flow,
     completion_flow,
-    detectors,
     gear_action,
-    gear_vision,
     hero_action,
-    hero_levelup_vision,
     map_completion,
     train_select,
     upgrade_action,
@@ -36,6 +32,21 @@ from hauntedroom.flows.automap_support.completion_flow import (
     first_win,
     reward,
     state,
+)
+from hauntedroom.flows.automap_support.vision import (
+    boss as boss_vision,
+)
+from hauntedroom.flows.automap_support.vision import (
+    build as build_vision,
+)
+from hauntedroom.flows.automap_support.vision import (
+    gear as gear_vision,
+)
+from hauntedroom.flows.automap_support.vision import (
+    hero_levelup as hero_levelup_vision,
+)
+from hauntedroom.flows.automap_support.vision import (
+    train as train_vision,
 )
 from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.exp_available import run_exp_available_flow
@@ -157,6 +168,7 @@ def get_train_flow(dev_reload: bool = False):
 
     importlib.invalidate_caches()
     importlib.reload(hero_levelup_vision)
+    importlib.reload(train_vision)
     importlib.reload(train_select)
     reloaded_train = importlib.reload(train)
     print("Train modules reloaded.", flush=True)
@@ -169,12 +181,12 @@ def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
 
     action_runner = reload_action_modules()
     importlib.reload(settings)
-    importlib.reload(boss_detector)
-    importlib.reload(detectors)
-    importlib.reload(boss_action)
+    importlib.reload(boss_vision)
+    importlib.reload(build_vision)
     importlib.reload(gear_vision)
-    importlib.reload(gear_action)
     importlib.reload(hero_levelup_vision)
+    importlib.reload(boss_action)
+    importlib.reload(gear_action)
     importlib.reload(state)
     importlib.reload(first_win)
     importlib.reload(reward)

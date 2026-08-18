@@ -1,4 +1,4 @@
-"""Boss-specific OpenCV detectors used by the auto-map battle flow."""
+"""Visual queries for boss state and boss-action readiness."""
 
 from typing import Optional
 
@@ -6,8 +6,12 @@ import cv2
 import numpy as np
 
 from hauntedroom.core.template import find_template
-from hauntedroom.core.vision import ColorComponentPattern
-
+from hauntedroom.core.vision import (
+    ColorComponentMatch,
+    ColorComponentPattern,
+    find_color_component,
+    region_has_color_component,
+)
 
 # Upper battlefield above the room entrance, expressed with exclusive x2/y2
 # viewport coordinates. Bosses enter from the top or right, so their complete
@@ -63,6 +67,47 @@ SPELL_READY_GLOW_PATTERN = ColorComponentPattern(
     upper_hsv=(40, 255, 255),
     min_area=400,
 )
+
+
+def boss_spell_is_ready(frame_bgr: np.ndarray) -> bool:
+    """Return whether the fixed boss-spell slot has its ready glow."""
+    return region_has_color_component(
+        frame_bgr,
+        SPELL_READY_REGION,
+        SPELL_READY_GLOW_PATTERN,
+    )
+
+
+def find_ready_boss_pet(
+    frame_bgr: np.ndarray,
+) -> Optional[ColorComponentMatch]:
+    """Return the ready energy bar for the final-boss pet, when present."""
+    return find_color_component(
+        frame_bgr,
+        PET_READY_REGION,
+        PET_READY_GLOW_PATTERN,
+    )
+
+
+def find_active_pet_summon(
+    frame_bgr: np.ndarray,
+    active_reference_bgr: np.ndarray,
+    template_name: str,
+) -> Optional[tuple[int, int, float]]:
+    """Locate the active summon control in an opened pet popup."""
+    if (
+        frame_bgr.ndim != 3
+        or frame_bgr.shape[2] != 3
+        or active_reference_bgr.ndim != 3
+        or active_reference_bgr.shape[2] != 3
+    ):
+        return None
+    return find_template(
+        cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY),
+        cv2.cvtColor(active_reference_bgr, cv2.COLOR_BGR2GRAY),
+        template_name,
+        scales=(1.0,),
+    )
 
 
 def _vertical_edge_signature(image: np.ndarray) -> np.ndarray:

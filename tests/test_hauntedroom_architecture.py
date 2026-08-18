@@ -50,15 +50,15 @@ class HauntedRoomDependencyTest(TestCase):
         allowed_support_imports = {
             "automap.py": {
                 "hauntedroom.flows.automap_support.boss_action",
-                "hauntedroom.flows.automap_support.boss_detector",
                 "hauntedroom.flows.automap_support.boss_flow",
-                "hauntedroom.flows.automap_support.detectors",
                 "hauntedroom.flows.automap_support.gear_action",
-                "hauntedroom.flows.automap_support.gear_vision",
                 "hauntedroom.flows.automap_support.hero_action",
-                "hauntedroom.flows.automap_support.hero_levelup_vision",
                 "hauntedroom.flows.automap_support.map_completion",
                 "hauntedroom.flows.automap_support.upgrade_action",
+                "hauntedroom.flows.automap_support.vision.boss",
+                "hauntedroom.flows.automap_support.vision.build",
+                "hauntedroom.flows.automap_support.vision.gear",
+                "hauntedroom.flows.automap_support.vision.hero_levelup",
             },
             "train.py": {
                 "hauntedroom.actions.models",
@@ -76,5 +76,15 @@ class HauntedRoomDependencyTest(TestCase):
                 for module in internal_imports(path)
                 if module.startswith(("hauntedroom.actions", "hauntedroom.flows"))
                 and module not in allowed_support_imports.get(path.name, set())
+            }
+            self.assertEqual(forbidden, set(), path.name)
+
+    def test_automap_vision_only_depends_on_core(self):
+        vision_dir = PACKAGE_DIR / "flows" / "automap_support" / "vision"
+        for path in vision_dir.glob("*.py"):
+            forbidden = {
+                module
+                for module in internal_imports(path)
+                if not module.startswith("hauntedroom.core")
             }
             self.assertEqual(forbidden, set(), path.name)

@@ -13,18 +13,18 @@ FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 HERO_SELECT_FIXTURES_DIR = FIXTURES_DIR / "hauntedroom-captures" / "hero_select"
 
-from hauntedroom.flows.automap import (
+from hauntedroom.flows.automap import run_automap_flow
+from hauntedroom.flows.automap_support.upgrade_action import (
     AUTOMAP_POLL_MS,
     LV_SPIN_CLICK_OFFSET_X,
     UPGRADE_CONFIRM_CLICK,
-    run_automap_flow,
 )
 from hauntedroom.core.vision import region_has_enough_white
-from hauntedroom.flows.automap_support.detectors import (
+from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_LEVELUP_PRICE_REGION,
-    WHITE_MAX_SATURATION,
-    WHITE_MIN_PIXELS,
-    WHITE_MIN_VALUE,
+    HERO_PRICE_WHITE_MAX_SATURATION,
+    HERO_PRICE_WHITE_MIN_PIXELS,
+    HERO_PRICE_WHITE_MIN_VALUE,
     hero_levelup_price_is_available,
 )
 
@@ -77,18 +77,18 @@ class LevelUpTest(IsolatedAsyncioTestCase):
             region_has_enough_white(
                 available,
                 region=(90, 8, 140, 30),
-                min_pixels=WHITE_MIN_PIXELS,
-                max_saturation=WHITE_MAX_SATURATION,
-                min_value=WHITE_MIN_VALUE,
+                min_pixels=HERO_PRICE_WHITE_MIN_PIXELS,
+                max_saturation=HERO_PRICE_WHITE_MAX_SATURATION,
+                min_value=HERO_PRICE_WHITE_MIN_VALUE,
             )
         )
         self.assertFalse(
             region_has_enough_white(
                 unavailable,
                 region=(90, 8, 140, 30),
-                min_pixels=WHITE_MIN_PIXELS,
-                max_saturation=WHITE_MAX_SATURATION,
-                min_value=WHITE_MIN_VALUE,
+                min_pixels=HERO_PRICE_WHITE_MIN_PIXELS,
+                max_saturation=HERO_PRICE_WHITE_MAX_SATURATION,
+                min_value=HERO_PRICE_WHITE_MIN_VALUE,
             )
         )
 
