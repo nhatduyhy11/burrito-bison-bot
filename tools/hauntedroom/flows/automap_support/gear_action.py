@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 from hauntedroom.core.mouse import smooth_drag
-from hauntedroom.core.terminal import CYAN, colorize
+from hauntedroom.core.terminal import BLUE, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.boss_action import click
 
@@ -194,7 +194,7 @@ async def deploy_initial_gear(
             f"Dragging initial gear from {GEAR_ITEM_POSITION[0]},"
             f"{GEAR_ITEM_POSITION[1]} to {drop_position[0]},{drop_position[1]} "
             "using the door HP anchor.",
-            CYAN,
+            BLUE,
         ),
         flush=True,
     )

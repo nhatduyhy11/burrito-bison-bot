@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from hauntedroom.core.terminal import CYAN, colorize
+from hauntedroom.core.terminal import YELLOW, colorize
 
 
 BUILT_TEMPLATE_THRESHOLD = 0.80
@@ -51,7 +51,7 @@ async def click_level_spin_if_present(
         colorize(
             f"Level spin interrupt at {x},{y}, score={score:.3f}; "
             f"clicking {click_x},{y}.",
-            CYAN,
+            YELLOW,
         ),
         flush=True,
     )
