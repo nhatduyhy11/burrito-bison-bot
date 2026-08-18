@@ -11,6 +11,34 @@ Mục tiêu dài hạn là giữ lại một automation framework có thể tái
 "bộ ruột" Haunted Room bằng business package của game khác với rất ít thay đổi
 ở browser/runtime/runner.
 
+## Refactor nội bộ game có thể làm ngay
+
+Việc chưa extract framework không chặn các refactor behavior-preserving bên trong
+Haunted Room. Có thể tách các flow lớn ngay nếu boundary mới giúp phân biệt rõ:
+
+- Immutable config theo từng flow/invocation.
+- Loaded game assets/templates.
+- Mutable state theo một map/flow.
+- State có lifetime dài hơn như run/login/account/game-day.
+- Runtime dependencies và callback do composition root truyền vào.
+
+`AutomapFlow` là ví dụ chuẩn cho migration seam này. Boss, hero, gear, reward,
+map completion, handler priority, threshold và asset của Automap vẫn là game
+business. Có thể tách chúng thành package nội bộ game và giữ
+`flows/automap.py` làm compatibility facade. Không chuyển các module đó vào
+framework chỉ vì chúng dùng vision, polling hoặc state machine.
+
+Trong giai đoạn chuyển tiếp, game business được phép import capability hiện tại
+qua `hauntedroom.core.*`. Khi framework package được extract, các import này được
+đổi sang public framework contracts hoặc được wiring tại composition root mà
+không thay business behavior. Compatibility facade là API tạm thời của game,
+không phải framework contract lâu dài.
+
+Không dùng module global để nối lifetime qua dev reload. Callback như `on_win`
+thuộc từng invocation; daily/first-win state thuộc game-owned state context có
+scope và reset semantics rõ ràng. Có thể bắt đầu bằng in-memory run scope, nhưng
+không trộn nó vào config hoặc map-scoped state.
+
 ## Mental model mục tiêu
 
 Tách hệ thống thành ba vùng trách nhiệm:
@@ -121,7 +149,9 @@ nên chặn persistence về sau.
 Không bắt đầu bằng move/rename toàn bộ tree. Làm theo seam và giữ behavior:
 
 1. Hoàn thiện hoặc làm rõ các feature/state quan trọng, nhất là screen detection
-   và login/daily lifecycle.
+   và login/daily lifecycle. Điều này chặn việc generalize/extract contract tương
+   ứng vào framework, nhưng không chặn refactor nội bộ game theo migration seam
+   ở trên.
 2. Ghi dependency rules bằng architecture tests trước khi di chuyển code.
 3. Tách interface/contract nhỏ tại boundary hiện hữu: flow registration, reload
    policy, screen detector, state context, browser guard hooks.
