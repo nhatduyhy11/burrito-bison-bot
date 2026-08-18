@@ -87,7 +87,7 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Map completion | `tools/hauntedroom/flows/automap_support/map_completion.py`, `completion_flow/state.py` | `MAP_END_*`, `START_HOME_TEMPLATE_THRESHOLD`, runtime contexts and shared completion state | Helper modules are reloaded before the top-level orchestrator; `map_completion.py` remains the only completion entry point consumed by `automap`. |
 | Upgrade/build actions | `tools/hauntedroom/flows/automap_support/upgrade_action.py` | `BUILT_TEMPLATE_THRESHOLD`, `AUTOMAP_POLL_MS`, `AUTOMAP_ACTION_DELAY_MS`, `LV_SPIN_*`, `UPGRADE_CONFIRM_CLICK` | Explicitly reloaded before `automap`; newly started auto-map imports the refreshed constants/functions. |
 | Boss detectors | `tools/hauntedroom/flows/automap_support/boss_detector.py` | `BOSS_HP_*`, `BOSS_PROGRESS_*`, pet/spell ready regions and color-component patterns | Explicitly reloaded before `automap`. |
-| Boss flow policy | `tools/hauntedroom/flows/automap_support/boss_flow.py` | `EXIT_CLICK_TEMPLATE_THRESHOLD`, boss handoff/deploy orchestration | Explicitly reloaded before `automap`. |
+| Boss flow policy | `tools/hauntedroom/flows/automap_support/boss_flow.py` | `EXIT_CLICK_TEMPLATE_THRESHOLD`, manual boss pause/deploy orchestration | Explicitly reloaded before `automap`. |
 | Small auto-map detectors | `tools/hauntedroom/flows/automap_support/detectors.py` | `BUILD_BUTTON_*`, `HERO_LEVELUP_PRICE_REGION`, `WHITE_*` | Explicitly reloaded before `automap`. |
 | Boss actions | `tools/hauntedroom/flows/automap_support/boss_action.py` | pet summon template path, ready-bar click offset, spell position, delays, thresholds | Explicitly reloaded before `automap`. |
 | Hero level-up vision | `tools/hauntedroom/flows/automap_support/hero_levelup_vision.py` | template directory/glob, match calibration, search regions, HSV thresholds, visual queries | Explicitly reloaded before `automap`; action controls query order and selection priority. Adding/removing PNGs is picked up because `HERO_LEVELUP_TEMPLATE_PATHS` is rebuilt. |
@@ -102,7 +102,7 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | EXP available flow | `tools/hauntedroom/flows/exp_available.py` | EXP badge color/slot detector and click delay | Reloaded when `Shift+5` starts. |
 | Hero breakthrough flow | `tools/hauntedroom/flows/hero_up_available.py` | yellow popup button plus red `!` availability detector, click positions and delays | Reloaded when `Shift+6` starts. |
 | Fixed click loop | `tools/hauntedroom/flows/click_loop.py` | `CLICK_POSITION`, `CLICK_INTERVAL_MS` | Reloaded when `Shift+7` starts. |
-| Top-level auto-map settings | `tools/hauntedroom/settings.py` | `CAPTURE_HERO_FALLBACK_SCREENSHOTS`, `CLICK_EXIT_ON_BOSS` | Reloaded before auto-map support modules when `Shift+2`/`Shift+3` starts with `--dev-reload`. |
+| Top-level auto-map settings | `tools/hauntedroom/settings.py` | `CAPTURE_HERO_FALLBACK_SCREENSHOTS`, `START_AUTO_HOTKEYS` | Reloaded before auto-map support modules when `Shift+2`/`Shift+3` starts with `--dev-reload`. |
 
 ## Boot-Only / Env-Like Runtime Config
 

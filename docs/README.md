@@ -89,11 +89,6 @@ CLI args:
 - `ENABLE_SCRIPT_INJECTION`: bật/tắt inject guard JavaScript/CSS cho profile popup
   và iframe `#hwssH5GameCoreframe`. Flag này chỉ đọc lúc runner startup; đổi giá trị
   cần restart browser runner.
-- `CLICK_EXIT_ON_BOSS`: khi bật, auto-map click `rooms/exit_click.png` đúng một lần
-  khi boss HP đi vào upper search region, nhờ đó game pause và flow dừng trước
-  `exit_confirm`. Khi tắt, mini-boss chỉ được detect/no-op; final boss vẫn có thể
-  deploy pet theo logic riêng rồi tiếp tục flow. Flag này hot-reload theo `Shift+2`
-  hoặc `Shift+3` khi chạy `--dev-reload`.
 
 ## Action file
 
@@ -112,7 +107,7 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
 - `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [tài liệu auto-map](AUTOMAP_FLOWS.md) để biết priority, điều kiện và hành vi của từng phase.
-- `Shift+3`: khi idle, bắt đầu loop start room → auto-map → chờ 2 giây → start map tiếp theo. Trong lúc loop chạy, `Shift+1` pause ngay (bấm lại để resume), `Shift+2` đặt pause một lần ở boss kế tiếp, và `Shift+3` đặt pause một lần ở final boss. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [tài liệu auto-map](AUTOMAP_FLOWS.md).
+- `Shift+3`: khi idle, bắt đầu loop start room → auto-map → chờ 2 giây → start map tiếp theo. Trong lúc loop chạy, `Shift+1` pause script ngay (bấm lại để resume), `Shift+2` đặt pause một lần ở boss kế tiếp, và `Shift+3` đặt pause một lần ở final boss. Hai boss trigger sẽ click nút pause trong game rồi pause script tại đúng state; flow không stop/handoff. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua hiện là placeholder luôn trả về `False`; xem [tài liệu auto-map](AUTOMAP_FLOWS.md).
 - `Shift+4`: chạy train mode rồi auto-battle.
 - `Shift+5`: click lần lượt các badge EXP vàng còn khả dụng, chờ 800 ms và chụp lại sau mỗi click; về idle khi không còn badge.
 - `Shift+6`: chỉ xem nút `Đột phá` trong popup là available khi có dấu `!` đỏ trên nút (màu vàng của nút không đủ để kết luận và tên tab phía dưới luôn bị loại trừ). Khi available, flow click nút, chờ 800 ms, click lại đúng vị trí đó, chờ 1 giây rồi detect lại. Khi hết dấu `!`, flow click mũi tên phải một lần, chờ 2 giây rồi kiểm tra hero tiếp theo; nếu hero tiếp theo cũng không có dấu `!` thì về idle.
@@ -122,7 +117,26 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
-Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Khi flow `Shift+3` đang chạy, chỉ `Shift+1`, `Shift+2`, `Shift+3`, `Shift+8` và `Shift+0` có tác dụng như mô tả ở trên; các Shift+digit khác bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow `Shift+3` khi flow đang pause.
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Với config mặc định, khi flow `Shift+3` đang chạy, chỉ `Shift+1`, `Shift+2`, `Shift+3`, `Shift+8` và `Shift+0` có tác dụng như mô tả ở trên; các Shift+digit khác bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow `Shift+3` khi flow đang pause.
+
+Các số điều khiển trong lúc `Shift+3` chạy được cấu hình tại
+`START_AUTO_HOTKEYS` trong `tools/hauntedroom/settings.py`. Giữ nguyên tên action
+và chỉ đổi các chuỗi số; năm action phải dùng năm số khác nhau. Ví dụ:
+
+```python
+START_AUTO_HOTKEYS = {
+    "pause_resume": "1",
+    "pause_at_boss": "2",
+    "pause_at_final_boss": "3",
+    "stop": "0",
+    "screenshot": "8",
+}
+```
+
+Config này chỉ override hotkey khi start-auto đang chạy. Khi runner idle hoặc
+đang chạy flow khác, `Shift+0` và `Shift+8` vẫn giữ behavior mặc định. Với
+`--dev-reload`, config được đọc lại khi bắt đầu một flow `Shift+3` mới; nếu
+không dùng dev reload thì cần restart runner.
 
 Code runner được chia theo trách nhiệm:
 

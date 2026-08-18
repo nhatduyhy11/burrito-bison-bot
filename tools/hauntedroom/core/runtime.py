@@ -105,12 +105,16 @@ class FlowControl:
         )
         return True
 
-    def pause_for_detected_boss(self, *, is_final_boss: bool) -> bool:
-        """Pause when a detected boss matches the armed one-shot policy."""
+    def boss_pause_matches(self, *, is_final_boss: bool) -> bool:
+        """Report whether the armed one-shot policy matches this boss."""
         target = self._boss_pause_target
         if target is None:
             return False
-        if target == self.PAUSE_AT_FINAL_BOSS and not is_final_boss:
+        return target != self.PAUSE_AT_FINAL_BOSS or is_final_boss
+
+    def pause_for_detected_boss(self, *, is_final_boss: bool) -> bool:
+        """Pause when a detected boss matches the armed one-shot policy."""
+        if not self.boss_pause_matches(is_final_boss=is_final_boss):
             return False
 
         self._boss_pause_target = None

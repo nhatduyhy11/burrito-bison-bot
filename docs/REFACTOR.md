@@ -266,7 +266,7 @@ state, handler priority và public API. Phase logic nằm trong:
 - `hero_action.py`: business priority, mở/chọn/click hero level-up option.
 - `hero_levelup_vision.py`: sở hữu template/calibration và trả lời từng query về
   card, màu, template match; action điều khiển thứ tự và short-circuit.
-- `boss_flow.py`, `boss_action.py`, `boss_detector.py`: boss handoff/pet/detect.
+- `boss_flow.py`, `boss_action.py`, `boss_detector.py`: manual boss pause/pet/detect.
 - `gear_action.py`: initial gear placement.
 
 Nếu tiếp tục thêm phase/state mới, bước hợp lý là tạo context/runtime adapter nhỏ

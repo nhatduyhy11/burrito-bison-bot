@@ -142,38 +142,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         new_callable=AsyncMock,
         side_effect=[False, False, True],
     )
-    async def test_start_loop_does_not_override_click_exit_on_boss_setting(
-        self,
-        _map_was_lost,
-        _wait_with_countdown,
-    ):
-        automap_flow = AsyncMock(return_value=True)
-        action_runner = AsyncMock(return_value=True)
-
-        completed = await run_start_automap_loop(
-            Mock(),
-            self.actions,
-            automap_flow,
-            asyncio.Event(),
-            action_runner,
-        )
-
-        self.assertTrue(completed)
-        self.assertNotIn("click_exit_on_boss", automap_flow.await_args_list[0].kwargs)
-        self.assertNotIn("click_exit_on_boss", automap_flow.await_args_list[1].kwargs)
-        self.assertNotIn("click_exit_on_boss", automap_flow.await_args_list[2].kwargs)
-
-    @patch(
-        "hauntedroom.flows.start_auto.wait_with_countdown",
-        new_callable=AsyncMock,
-        return_value=True,
-    )
-    @patch(
-        "hauntedroom.flows.start_auto.map_was_lost",
-        new_callable=AsyncMock,
-        side_effect=[False, False, True],
-    )
-    async def test_recorded_win_keeps_third_loop_in_normal_automap_mode(
+    async def test_recorded_win_keeps_third_loop_running(
         self,
         _map_was_lost,
         _wait_with_countdown,
@@ -198,5 +167,3 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(completed)
         self.assertEqual(automap_flow.await_count, 3)
-        for call_args in automap_flow.await_args_list:
-            self.assertNotIn("click_exit_on_boss", call_args.kwargs)

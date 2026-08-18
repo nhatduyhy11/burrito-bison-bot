@@ -12,7 +12,6 @@ EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
 @dataclass(frozen=True)
 class BossCriticalOutcome:
     handled: bool
-    boss_handoff_requested: bool = False
     final_boss_pet_deployed: Optional[bool] = None
     boss_detection_logged: bool = False
 
@@ -26,7 +25,6 @@ async def handle_boss_critical(
     boss_hp_template: np.ndarray,
     exit_click_template: np.ndarray,
     exit_click_template_name: str,
-    click_exit_on_boss: bool,
     final_boss_pet_deployed: bool,
     boss_detection_logged: bool,
     find_boss_health_bar_fn,
@@ -46,47 +44,58 @@ async def handle_boss_critical(
     if should_log_detection:
         print(
             f"{boss_kind} HP entered upper search region at {x},{y}, "
-            f"score={score:.3f}; click_exit_on_boss={click_exit_on_boss}.",
+            f"score={score:.3f}.",
             flush=True,
         )
 
+    boss_pause_matches = getattr(stop_event, "boss_pause_matches", None)
     pause_for_detected_boss = getattr(
         stop_event,
         "pause_for_detected_boss",
         None,
     )
     if (
-        pause_for_detected_boss is not None
-        and pause_for_detected_boss(is_final_boss=is_final_boss)
+        boss_pause_matches is not None
+        and pause_for_detected_boss is not None
+        and boss_pause_matches(is_final_boss=is_final_boss)
     ):
-        print(f"Start-auto loop paused at {boss_kind.lower()}.", flush=True)
-        return BossCriticalOutcome(True, boss_detection_logged=True)
-
-    if click_exit_on_boss:
-        exit_x, exit_y, exit_score = find_template_fn(
-            frame_gray,
-            exit_click_template,
-            exit_click_template_name,
-        )
-        if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
-            if should_log_detection:
+        try:
+            pause_match = find_template_fn(
+                frame_gray,
+                exit_click_template,
+                exit_click_template_name,
+            )
+        except Exception as error:
+            print(
+                f"Game pause detection failed for {boss_kind}: {error}; "
+                "pausing script anyway.",
+                flush=True,
+            )
+        else:
+            exit_x, exit_y, exit_score = pause_match
+            if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
                 print(
-                    f"exit_click not found for {boss_kind} "
-                    f"(score={exit_score:.3f}).",
+                    f"Game pause button was not found for {boss_kind} "
+                    f"(score={exit_score:.3f}); pausing script anyway.",
                     flush=True,
                 )
-            return BossCriticalOutcome(False, boss_detection_logged=True)
+            else:
+                print(
+                    f"Clicking game pause at {exit_x},{exit_y} for {boss_kind}.",
+                    flush=True,
+                )
+                try:
+                    await click_fn(page, exit_x, exit_y)
+                except Exception as error:
+                    print(
+                        f"Game pause click failed for {boss_kind}: {error}; "
+                        "pausing script anyway.",
+                        flush=True,
+                    )
 
-        print(
-            f"clicking exit_click once at {exit_x},{exit_y} and stopping auto-map.",
-            flush=True,
-        )
-        await click_fn(page, exit_x, exit_y)
-        return BossCriticalOutcome(
-            True,
-            boss_handoff_requested=True,
-            boss_detection_logged=True,
-        )
+        if pause_for_detected_boss(is_final_boss=is_final_boss):
+            print(f"Start-auto loop paused at {boss_kind.lower()}.", flush=True)
+        return BossCriticalOutcome(True, boss_detection_logged=True)
 
     if is_final_boss and not final_boss_pet_deployed:
         deployed = await deploy_boss_pet_fn(

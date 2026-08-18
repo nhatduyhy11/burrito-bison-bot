@@ -164,9 +164,9 @@ Daily-first-win là một sub-flow riêng trong
 - Logic nhận diện button, mở menu và kéo gear nằm trong
   `flows/automap_support/gear_action.py`.
 
-### 4. Boss critical handoff
+### 4. Manual boss pause control
 
-- Tìm HP bar trước để phát hiện cả mini-boss lẫn final boss cần handoff.
+- Tìm HP bar trước để phát hiện cả mini-boss lẫn final boss cần pause.
 - Sau khi HP match, phân loại bằng endpoint cố định `(400, 61, 409, 72)`
   của thanh progress trên cùng: ít nhất `85%` pixel vàng là final boss;
   progress chưa tới endpoint là mini-boss. Classifier không được dùng để
@@ -182,16 +182,18 @@ Daily-first-win là một sub-flow riêng trong
 - Boss và mini-boss có thể dùng cùng hình học thanh HP, nên detector không
   phân loại chúng chỉ từ pixel của thanh. Scope hiện tại chấp nhận
   limitation này; nếu cần phân loại sau này phải thêm stage signal riêng.
-- Không xử lý riêng khoảnh khắc thanh máu cuối cạn và chuyển đen; flow
-  chấp nhận edge case này và handoff trong trạng thái boss thông thường còn thanh máu.
-- Khi `CLICK_EXIT_ON_BOSS=True` trong `tools/hauntedroom/settings.py` và
-  `rooms/exit_click.png` sẵn sàng, click đúng một lần rồi dừng auto-map để
-  người dùng xử lý boss thủ công. Click này chỉ pause game; flow không bấm
-  `exit_confirm`.
+- Không xử lý riêng khoảnh khắc thanh máu cuối cạn và chuyển đen; flow chấp nhận
+  edge case này và pause trong trạng thái boss thông thường còn thanh máu.
+- `Shift+2` arm pause một lần ở boss bất kỳ; `Shift+3` arm pause một lần ở final
+  boss. Khi boss match policy, flow click `rooms/exit_click.png` để pause game,
+  rồi pause script bằng `FlowControl`. Flow vẫn sống và chờ manual resume, không
+  bấm `exit_confirm`, không handoff và không trở về idle.
+- Nếu không match được nút pause game hoặc click lỗi, script vẫn pause theo
+  fail-safe và log cảnh báo để người dùng xử lý game thủ công.
 - Boss detection log loại boss, vị trí và score một lần khi thanh HP đi vào vùng
   search; log này không lặp theo từng frame trong cùng một lần HP hiện diện. Khi
-  `CLICK_EXIT_ON_BOSS=False`, mini-boss chỉ log/no-op; final boss vẫn đi qua
-  nhánh deploy pet nếu pet chưa được deploy trong flow hiện tại.
+  không có boss pause policy đang được arm, mini-boss chỉ log/no-op; final boss
+  vẫn đi qua nhánh deploy pet nếu pet chưa được deploy trong flow hiện tại.
 - Logic nhận diện và action boss hỗ trợ nằm trong
   `flows/automap_support/boss_detector.py` và `boss_action.py`.
 
@@ -279,6 +281,8 @@ chạy, `Shift+1` pause ngay và bấm lại để resume đúng state hiện t�
 nhận diện final boss. Hai policy boss có thể thay thế nhau trước khi trigger.
 `Shift+8` vẫn chụp screenshot, `Shift+0` dừng hẳn flow, còn các Shift+digit khác
 bị ignore cho tới khi flow kết thúc. Flow không restart từ đầu sau khi resume.
+Các số này là giá trị của dict `START_AUTO_HOTKEYS` trong
+`tools/hauntedroom/settings.py`, nên có thể remap mà không sửa controller.
 
 Mỗi vòng chạy theo thứ tự:
 
@@ -309,8 +313,9 @@ các reward còn lại trong cùng màn không làm tăng thêm count. Ngay trư
 thành auto-map, flow in tổng hiện tại theo format `>>> [total_win] win`.
 `win_count` không phải điều kiện nối loop: map chỉ cần completion bridge xác nhận
 home, kể cả trường hợp reward không được nhận diện và count không tăng.
-Boss handoff không bị runner tự override theo số loop; muốn click nút pause/menu
-khi gặp boss thì bật `CLICK_EXIT_ON_BOSS` trong `tools/hauntedroom/settings.py`.
+Boss pause policy thuộc runtime manual control và không bị runner tự override
+theo số loop. Sau khi pause, người dùng tự xử lý game rồi resume script bằng
+hotkey `pause_resume` (mặc định `Shift+1`).
 
 Trước log cooldown giữa hai map có một dòng gạch ngang để phân cách log. Detector
 thất bại hiện là placeholder `map_was_lost()` và luôn trả về `False`; vì vậy flow

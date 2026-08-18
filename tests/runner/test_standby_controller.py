@@ -24,6 +24,7 @@ from hauntedroom.runner.reload import AutomapRuntime, get_automap_flow
 from hauntedroom.runner.standby import (
     handle_control_command,
     run_standby_controller,
+    validate_start_auto_hotkeys,
 )
 
 
@@ -92,6 +93,59 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             control.boss_pause_target,
             FlowControl.PAUSE_AT_FINAL_BOSS,
         )
+
+    async def test_start_auto_hotkeys_can_be_remapped_by_config_values(self):
+        control = FlowControl()
+        remapped = {
+            "pause_resume": "4",
+            "pause_at_boss": "5",
+            "pause_at_final_boss": "6",
+            "stop": "7",
+            "screenshot": "9",
+        }
+
+        self.assertTrue(
+            await handle_control_command(
+                "5",
+                Mock(),
+                Mock(),
+                control,
+                "3",
+                remapped,
+            )
+        )
+        self.assertEqual(
+            control.boss_pause_target,
+            FlowControl.PAUSE_AT_ANY_BOSS,
+        )
+
+        # The old default is now unmapped and must be ignored.
+        self.assertTrue(
+            await handle_control_command(
+                "2",
+                Mock(),
+                Mock(),
+                control,
+                "3",
+                remapped,
+            )
+        )
+        self.assertEqual(
+            control.boss_pause_target,
+            FlowControl.PAUSE_AT_ANY_BOSS,
+        )
+
+    def test_start_auto_hotkey_config_rejects_duplicate_digits(self):
+        with self.assertRaisesRegex(ValueError, "cannot assign one digit twice"):
+            validate_start_auto_hotkeys(
+                {
+                    "pause_resume": "1",
+                    "pause_at_boss": "1",
+                    "pause_at_final_boss": "3",
+                    "stop": "0",
+                    "screenshot": "8",
+                }
+            )
 
     @patch("hauntedroom.runner.reload.reload_action_modules")
     @patch("hauntedroom.runner.reload.importlib.reload")

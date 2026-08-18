@@ -56,7 +56,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
         flow = AutomapFlow(
             self.page,
             stop_event,
-            AutomapConfig(click_exit_on_boss=False),
+            AutomapConfig(),
         )
         flow.handle_level_spin_interrupt = AsyncMock(return_value=False)
         flow.handle_map_end = AsyncMock(return_value=False)

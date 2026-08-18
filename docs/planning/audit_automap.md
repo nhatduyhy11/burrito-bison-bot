@@ -38,7 +38,6 @@ Giữ toàn bộ cấu hình dùng chung của automap:
 @dataclass
 class AutomapConfig:
     threshold: float = 0.8
-    click_exit_on_boss: bool = True
     debug: bool = False
     # template paths, polling intervals, feature flags, ...
 
@@ -52,15 +51,12 @@ Nên import module:
 
 ```python
 from hauntedroom.flows.automap_support import config
-
-if config.automap_config.click_exit_on_boss:
-    ...
 ```
 
 Không nên copy một giá trị global vào namespace của module sử dụng:
 
 ```python
-from hauntedroom.flows.automap_support.config import CLICK_EXIT_ON_BOSS
+from hauntedroom.flows.automap_support.config import AUTOMAP_TEMPLATE_THRESHOLD
 ```
 
 Import module giúp việc thay config trong test hoặc reload nhất quán hơn.
@@ -78,7 +74,6 @@ class AutomapState:
     map_completed: bool = False
     win_recorded: bool = False
     total_win: int | None = None
-    boss_handoff_requested: bool = False
     final_boss_pet_deployed: bool = False
     boss_detection_logged: bool = False
     initial_gear_unlocked: bool = False

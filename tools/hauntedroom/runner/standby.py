@@ -2,8 +2,57 @@ import asyncio
 from pathlib import Path
 from typing import Mapping, Optional
 
+from hauntedroom import settings
 from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
+
+
+START_AUTO_HOTKEY_ACTIONS = frozenset(
+    {
+        "pause_resume",
+        "pause_at_boss",
+        "pause_at_final_boss",
+        "stop",
+        "screenshot",
+    }
+)
+
+
+def validate_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> dict[str, str]:
+    """Validate and copy the configurable Shift+3 control mapping."""
+    configured_actions = set(hotkeys)
+    if configured_actions != START_AUTO_HOTKEY_ACTIONS:
+        missing = sorted(START_AUTO_HOTKEY_ACTIONS - configured_actions)
+        unknown = sorted(configured_actions - START_AUTO_HOTKEY_ACTIONS)
+        raise ValueError(
+            "START_AUTO_HOTKEYS must contain exactly the supported actions; "
+            f"missing={missing}, unknown={unknown}."
+        )
+
+    configured_keys = list(hotkeys.values())
+    invalid_keys = sorted(
+        [key for key in configured_keys if key not in tuple("0123456789")],
+        key=repr,
+    )
+    if invalid_keys:
+        raise ValueError(
+            "START_AUTO_HOTKEYS values must be digit strings from '0' to '9'; "
+            f"invalid={invalid_keys}."
+        )
+    if len(set(configured_keys)) != len(configured_keys):
+        raise ValueError("START_AUTO_HOTKEYS cannot assign one digit twice.")
+
+    return dict(hotkeys)
+
+
+def format_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> str:
+    return (
+        f"Shift+{hotkeys['pause_resume']} pause/resume; "
+        f"Shift+{hotkeys['pause_at_boss']} pause at boss; "
+        f"Shift+{hotkeys['pause_at_final_boss']} pause at final boss; "
+        f"Shift+{hotkeys['screenshot']} screenshot; "
+        f"Shift+{hotkeys['stop']} stop"
+    )
 
 
 def format_flow_menu(flow_commands: Mapping[str, object]) -> str:
@@ -24,7 +73,63 @@ async def handle_control_command(
     flow_task,
     stop_event,
     current_command: Optional[str],
+    start_auto_hotkeys: Optional[Mapping[str, str]] = None,
 ) -> bool:
+    if current_command == "3" and flow_task is not None:
+        hotkeys = (
+            start_auto_hotkeys
+            if start_auto_hotkeys is not None
+            else validate_start_auto_hotkeys(settings.START_AUTO_HOTKEYS)
+        )
+        action = next(
+            (name for name, key in hotkeys.items() if key == command),
+            None,
+        )
+
+        if action == "stop":
+            print("Stopping current flow...", flush=True)
+            stop_event.set()
+            return True
+
+        if action == "screenshot":
+            await save_live_screenshot(page)
+            print("Current flow continues.", flush=True)
+            return True
+
+        if action == "pause_resume":
+            if stop_event.is_paused:
+                stop_event.resume()
+                print("Start-auto loop resumed.", flush=True)
+            else:
+                stop_event.pause()
+                print(
+                    "Start-auto loop paused. "
+                    f"Press Shift+{hotkeys['pause_resume']} to resume or "
+                    f"Shift+{hotkeys['stop']} to stop.",
+                    flush=True,
+                )
+            return True
+
+        if action == "pause_at_boss":
+            if stop_event.pause_at_next_boss(final_only=False):
+                print(
+                    "Start-auto loop will pause at the next boss.",
+                    flush=True,
+                )
+            return True
+
+        if action == "pause_at_final_boss":
+            if stop_event.pause_at_next_boss(final_only=True):
+                print(
+                    "Start-auto loop will pause at the final boss.",
+                    flush=True,
+                )
+            return True
+
+        # While start-auto owns the runner, unmapped Shift+digit commands are
+        # intentionally ignored.
+        return True
+
     if command == "0":
         if flow_task is None:
             print("Runner is already idle.", flush=True)
@@ -39,41 +144,6 @@ async def handle_control_command(
             print("Runner idle.", flush=True)
         else:
             print("Current flow continues.", flush=True)
-        return True
-
-    if current_command == "3" and flow_task is not None:
-        if command == "1":
-            if stop_event.is_paused:
-                stop_event.resume()
-                print("Start-auto loop resumed.", flush=True)
-            else:
-                stop_event.pause()
-                print(
-                    "Start-auto loop paused. Press Shift+1 to resume or "
-                    "Shift+0 to stop.",
-                    flush=True,
-                )
-            return True
-
-        if command == "2":
-            if stop_event.pause_at_next_boss(final_only=False):
-                print(
-                    "Start-auto loop will pause at the next boss.",
-                    flush=True,
-                )
-            return True
-
-        if command == "3":
-            if stop_event.pause_at_next_boss(final_only=True):
-                print(
-                    "Start-auto loop will pause at the final boss.",
-                    flush=True,
-                )
-            return True
-
-        # While start-auto owns the runner, all other Shift+digit flow
-        # commands are intentionally ignored. Shift+0 and Shift+8 were handled
-        # above.
         return True
 
     return False
@@ -94,6 +164,7 @@ async def run_standby_controller(
     debug: bool = False,
     actions_path: Optional[Path] = None,
 ) -> None:
+    start_auto_hotkeys = validate_start_auto_hotkeys(settings.START_AUTO_HOTKEYS)
     command_queue: asyncio.Queue[str] = asyncio.Queue()
     await start_hotkey_listener(page, command_queue)
 
@@ -107,8 +178,7 @@ async def run_standby_controller(
         f"{format_flow_menu(flow_commands)}\n"
         "  Shift+8    Capture screenshot\n"
         "  Shift+0    Stop current flow\n"
-        "  During Shift+3: Shift+1 pause/resume; Shift+2 pause at boss; "
-        "Shift+3 pause at final boss\n"
+        f"  During Shift+3: {format_start_auto_hotkeys(start_auto_hotkeys)}\n"
         "  Ctrl+C     Close runner\n"
         "-------------------------\n"
         "Runner idle.",
@@ -143,6 +213,7 @@ async def run_standby_controller(
                 flow_task,
                 stop_event,
                 current_command,
+                start_auto_hotkeys,
             ):
                 continue
 
@@ -160,6 +231,10 @@ async def run_standby_controller(
 
             try:
                 resolved = command.resolve(actions, dev_reload, actions_path)
+                if command_key == "3":
+                    start_auto_hotkeys = validate_start_auto_hotkeys(
+                        settings.START_AUTO_HOTKEYS
+                    )
             except Exception as error:
                 print(f"Dev reload failed; runner remains idle: {error}", flush=True)
                 continue
@@ -167,6 +242,12 @@ async def run_standby_controller(
             stop_event = command.control_factory()
             current_command = command_key
             actions = resolved.actions
+            if command_key == "3":
+                print(
+                    "Start-auto controls: "
+                    f"{format_start_auto_hotkeys(start_auto_hotkeys)}.",
+                    flush=True,
+                )
             flow_task = start_resolved_flow(
                 command,
                 page,
