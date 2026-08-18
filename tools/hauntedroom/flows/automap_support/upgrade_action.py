@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from hauntedroom.core.terminal import CYAN, colorize
+
 
 BUILT_TEMPLATE_THRESHOLD = 0.80
 AUTOMAP_POLL_MS = 600
@@ -46,8 +48,11 @@ async def click_level_spin_if_present(
     y += search_top
     click_x = max(0, x + LV_SPIN_CLICK_OFFSET_X)
     print(
-        f"Level spin interrupt at {x},{y}, score={score:.3f}; "
-        f"clicking {click_x},{y}.",
+        colorize(
+            f"Level spin interrupt at {x},{y}, score={score:.3f}; "
+            f"clicking {click_x},{y}.",
+            CYAN,
+        ),
         flush=True,
     )
     await click_fn(page, click_x, y)

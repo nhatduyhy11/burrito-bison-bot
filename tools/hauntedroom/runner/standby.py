@@ -5,6 +5,7 @@ from typing import Mapping, Optional
 from hauntedroom import settings
 from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
+from hauntedroom.core.terminal import YELLOW, colorize
 
 
 START_AUTO_HOTKEY_ACTIONS = frozenset(
@@ -104,9 +105,12 @@ async def handle_control_command(
             else:
                 stop_event.pause()
                 print(
-                    "Auto-map flow paused. "
-                    f"Press Shift+{hotkeys['pause_resume']} to resume or "
-                    f"Shift+{hotkeys['stop']} to stop.",
+                    colorize(
+                        "Auto-map flow paused. "
+                        f"Press Shift+{hotkeys['pause_resume']} to resume or "
+                        f"Shift+{hotkeys['stop']} to stop.",
+                        YELLOW,
+                    ),
                     flush=True,
                 )
             return True
@@ -114,7 +118,9 @@ async def handle_control_command(
         if action == "pause_at_boss":
             if stop_event.pause_at_next_boss(final_only=False):
                 print(
-                    "Auto-map flow will pause at the next boss.",
+                    colorize(
+                        "Auto-map flow will pause at the next boss.", YELLOW
+                    ),
                     flush=True,
                 )
             return True
@@ -122,7 +128,9 @@ async def handle_control_command(
         if action == "pause_at_final_boss":
             if stop_event.pause_at_next_boss(final_only=True):
                 print(
-                    "Auto-map flow will pause at the final boss.",
+                    colorize(
+                        "Auto-map flow will pause at the final boss.", YELLOW
+                    ),
                     flush=True,
                 )
             return True

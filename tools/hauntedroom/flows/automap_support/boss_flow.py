@@ -5,6 +5,8 @@ from typing import Optional
 
 import numpy as np
 
+from hauntedroom.core.terminal import YELLOW, colorize
+
 
 EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
 
@@ -94,7 +96,12 @@ async def handle_boss_critical(
                     )
 
         if pause_for_detected_boss(is_final_boss=is_final_boss):
-            print(f"Auto-map flow paused at {boss_kind.lower()}.", flush=True)
+            print(
+                colorize(
+                    f"Auto-map flow paused at {boss_kind.lower()}.", YELLOW
+                ),
+                flush=True,
+            )
         return BossCriticalOutcome(True, boss_detection_logged=True)
 
     if is_final_boss and not final_boss_pet_deployed:

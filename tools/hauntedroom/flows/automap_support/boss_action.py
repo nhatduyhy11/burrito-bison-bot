@@ -8,6 +8,7 @@ import numpy as np
 
 from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
 from hauntedroom.core.template import find_template, load_bgr_reference
+from hauntedroom.core.terminal import CYAN, colorize
 from hauntedroom.core.vision import (
     capture_page_bgr,
     find_color_component,
@@ -90,9 +91,12 @@ async def deploy_boss_pet(
         active_reference = load_bgr_reference(PET_ACTIVE_TEMPLATE_PATH)
     active_gray = cv2.cvtColor(active_reference, cv2.COLOR_BGR2GRAY)
     print(
-        f"Final-boss pet has a full glowing bar at "
-        f"{ready_bar_x},{ready_bar_y}; opening its menu at "
-        f"{pet_click[0]},{pet_click[1]}.",
+        colorize(
+            f"Final-boss pet has a full glowing bar at "
+            f"{ready_bar_x},{ready_bar_y}; opening its menu at "
+            f"{pet_click[0]},{pet_click[1]}.",
+            CYAN,
+        ),
         flush=True,
     )
     while await flow_checkpoint(stop_event):
@@ -109,8 +113,11 @@ async def deploy_boss_pet(
         )
         if active_score >= PET_ACTIVE_TEMPLATE_THRESHOLD:
             print(
-                f"Pet summon is active at {active_x},{active_y}, "
-                f"score={active_score:.3f}; clicking it.",
+                colorize(
+                    f"Pet summon is active at {active_x},{active_y}, "
+                    f"score={active_score:.3f}; clicking it.",
+                    CYAN,
+                ),
                 flush=True,
             )
             await click(page, active_x, active_y)

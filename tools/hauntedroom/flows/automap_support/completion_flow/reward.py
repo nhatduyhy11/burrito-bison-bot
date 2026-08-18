@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from hauntedroom.core.terminal import GREEN, colorize
 from hauntedroom.flows.automap_support.completion_flow.state import (
     CompletionStep,
     MapCompletionState,
@@ -46,7 +47,10 @@ async def handle_win_reward(
         state.win_recorded = True
         if context.on_win is not None:
             state.total_win = context.on_win()
-        print("Win reward detected; win recorded.", flush=True)
+        print(
+            colorize("Win reward detected; win recorded.", GREEN),
+            flush=True,
+        )
 
     center_x, center_y, score = reward_matches[0]
     template_height = context.win_reward_template.shape[0]

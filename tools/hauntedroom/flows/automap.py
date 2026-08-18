@@ -12,6 +12,7 @@ from hauntedroom.core.runtime import (
     wait_for_flow_timeout,
     wait_with_countdown,
 )
+from hauntedroom.core.terminal import GREEN, colorize
 from hauntedroom.core.template import (
     find_template,
     find_template_matches,
@@ -426,7 +427,12 @@ class AutomapFlow:
                                     if self.total_win is not None
                                     else 1
                                 )
-                                print(f">>> [{displayed_win}] win", flush=True)
+                                print(
+                                    colorize(
+                                        f">>> [{displayed_win}] win", GREEN
+                                    ),
+                                    flush=True,
+                                )
                             print(
                                 "Auto-map flow completed; runner is idle.",
                                 flush=True,
