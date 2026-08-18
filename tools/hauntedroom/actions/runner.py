@@ -17,6 +17,7 @@ from hauntedroom.actions.defaults import (
     DEFAULT_TEMPLATE_TIMEOUT_MS,
 )
 from hauntedroom.control_events.blockers import clear_blockers
+from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
     flow_checkpoint,
@@ -28,6 +29,7 @@ from hauntedroom.core.runtime import (
 from hauntedroom.core.template import (
     DEFAULT_TEMPLATE_THRESHOLD,
     TEMPLATE_SCALES,
+    Region,
     find_template,
     load_template,
 )
@@ -50,6 +52,7 @@ async def wait_for_template(
     click_position: str = "center",
     template_scales: tuple[float, ...] = TEMPLATE_SCALES,
     skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES,
+    region: Optional[Region] = None,
 ) -> object:
     deadline = flow_time(stop_event) + timeout_ms / 1000
     best_score = -1.0
@@ -65,6 +68,7 @@ async def wait_for_template(
             template_name,
             click_position,
             scales=template_scales,
+            region=region,
         )
         best_score = max(best_score, score)
 
@@ -125,8 +129,7 @@ def collect_template_paths(actions: list[Action]) -> set[Path]:
 
 async def execute_click_action(page, action: ClickAction, label: str) -> bool:
     print(f"{label}: click {action.x},{action.y}", flush=True)
-    await page.evaluate("() => { window.__hauntedRoomSuppressNextClickLog = true; }")
-    await page.mouse.click(action.x, action.y, button=action.button)
+    await bot_click(page, (action.x, action.y), button=action.button)
     return True
 
 
@@ -187,6 +190,7 @@ async def execute_click_template_action(
         click_position=action.click_position,
         template_scales=action.template_scales,
         skip_template_scales=action.skip_template_scales,
+        region=action.region,
     )
     if match is SKIP_TEMPLATE_MATCHED:
         skip_template_name = (
@@ -230,6 +234,7 @@ async def execute_click_template_action(
                 template_path.name,
                 action.click_position,
                 scales=action.template_scales,
+                region=action.region,
             )
             if score < action.threshold:
                 print(
@@ -247,8 +252,7 @@ async def execute_click_template_action(
                 flush=True,
             )
 
-        await page.evaluate("() => { window.__hauntedRoomSuppressNextClickLog = true; }")
-        await page.mouse.click(x, y, button=action.button)
+        await bot_click(page, (x, y), button=action.button)
 
     return True
 

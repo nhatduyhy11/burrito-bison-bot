@@ -2,7 +2,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import ClassVar, Literal, Optional, Union
 
-from hauntedroom.core.template import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES
+from hauntedroom.core.template import (
+    DEFAULT_TEMPLATE_THRESHOLD,
+    TEMPLATE_SCALES,
+    Region,
+)
 
 from .defaults import (
     DEFAULT_CLICK_DELAY_MS,
@@ -37,6 +41,7 @@ class ClickTemplateAction:
     click_position: str = "center"
     template_scales: tuple[float, ...] = TEMPLATE_SCALES
     skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES
+    region: Optional[Region] = None
 
     type: ClassVar[Literal["click_template"]] = "click_template"
 

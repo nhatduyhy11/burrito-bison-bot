@@ -1,5 +1,38 @@
 """Reusable mouse gestures for browser automation."""
 
+from typing import Optional
+
+from .runtime import wait_for_flow_timeout
+
+
+async def bot_click(
+    page,
+    position: tuple[int, int],
+    *,
+    button: Optional[str] = None,
+) -> None:
+    """Click without recording the bot-generated input as a user action."""
+    await page.evaluate(
+        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
+    )
+    if button is None:
+        await page.mouse.click(*position)
+    else:
+        await page.mouse.click(*position, button=button)
+
+
+async def click_and_wait(
+    page,
+    position: tuple[int, int],
+    wait_ms: int,
+    stop_event=None,
+    *,
+    button: Optional[str] = None,
+) -> bool:
+    """Bot-click, then cooperatively wait until the flow may continue."""
+    await bot_click(page, position, button=button)
+    return await wait_for_flow_timeout(page, wait_ms, stop_event)
+
 
 async def smooth_drag(
     page,

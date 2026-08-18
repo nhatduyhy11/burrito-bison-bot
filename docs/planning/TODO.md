@@ -8,8 +8,8 @@ Planning notes only. Do not treat these as current implementation tasks.
 - [ ] Add an OS-global `Ctrl+Shift+F12` recovery hotkey that re-installs the
   browser listener across the current Playwright context without changing flow
   state. See [handoff](GLOBAL_HOTKEY_RECOVERY_HANDOFF.md).
-- [ ] Add active-artifact flow on temporary `Shift+5`, then fold it into the
-  unified `Shift+9` wrapper and retire the temporary binding.
+- [ ] Fold the active-artifact flow into the unified `Shift+9` wrapper and
+  retire the temporary binding.
 - [ ] Unify `Shift+5`, `Shift+6`, and `Shift+9` into one `Shift+9` wrapper flow.
   - [ ] Capture once at startup and detect which screen is currently active.
   - [ ] Use the detected screen to select and switch into its existing flow

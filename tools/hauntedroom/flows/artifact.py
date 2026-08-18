@@ -6,8 +6,14 @@ from typing import Optional
 
 import numpy as np
 
+from hauntedroom.core.mouse import click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
-from hauntedroom.core.template import find_template, load_template
+from hauntedroom.core.template import (
+    TemplateMatch,
+    find_template,
+    find_template_in_region,
+    load_template,
+)
 from hauntedroom.core.vision import capture_page_grayscale
 
 
@@ -42,34 +48,6 @@ ARTIFACT_IDLE_CONFIRM_MS = 2000
 ARTIFACT_POPUP_MAX_ATTEMPTS = 4
 ARTIFACT_ACTIVATE_MAX_CLICKS = 10
 
-Match = tuple[int, int, float]
-
-
-def _find_in_region(
-    frame: np.ndarray,
-    template: np.ndarray,
-    template_name: str,
-    region: tuple[int, int, int, int],
-    threshold: float,
-    scales: tuple[float, ...],
-    click_position: str = "center",
-) -> Optional[Match]:
-    if frame.ndim != 2 or frame.shape != (720, 640):
-        return None
-
-    left, top, right, bottom = region
-    x, y, score = find_template(
-        frame[top:bottom, left:right],
-        template,
-        template_name,
-        click_position,
-        scales=scales,
-    )
-    if score < threshold:
-        return None
-    return left + x, top + y, score
-
-
 def find_artifact_tabs(
     frame: np.ndarray,
     mark_template: np.ndarray,
@@ -77,14 +55,14 @@ def find_artifact_tabs(
     """Return marked rarity tabs from left to right."""
     matches = []
     for tab_index, region in enumerate(ARTIFACT_TAB_REGIONS):
-        match = _find_in_region(
+        match = find_template_in_region(
             frame,
             mark_template,
             ARTIFACT_MARK_TEMPLATE_PATH.name,
             region,
             ARTIFACT_TAB_THRESHOLD,
-            ARTIFACT_TAB_SCALE,
-            "bottom_left",
+            click_position="bottom_left",
+            scales=ARTIFACT_TAB_SCALE,
         )
         if match is not None:
             matches.append((tab_index, *match))
@@ -94,39 +72,39 @@ def find_artifact_tabs(
 def find_artifact_item(
     frame: np.ndarray,
     mark_template: np.ndarray,
-) -> Optional[Match]:
+) -> Optional[TemplateMatch]:
     """Return one marked artifact card, offset into the card for clicking."""
-    return _find_in_region(
+    return find_template_in_region(
         frame,
         mark_template,
         ARTIFACT_MARK_TEMPLATE_PATH.name,
         ARTIFACT_CONTENT_REGION,
         ARTIFACT_CONTENT_THRESHOLD,
-        ARTIFACT_CONTENT_SCALE,
-        "bottom_left",
+        click_position="bottom_left",
+        scales=ARTIFACT_CONTENT_SCALE,
     )
 
 
 def find_artifact_activation(
     frame: np.ndarray,
     mark_template: np.ndarray,
-) -> Optional[Match]:
+) -> Optional[TemplateMatch]:
     """Return the marked Activate button inside the artifact popup."""
-    return _find_in_region(
+    return find_template_in_region(
         frame,
         mark_template,
         ARTIFACT_MARK_TEMPLATE_PATH.name,
         ARTIFACT_ACTIVATE_REGION,
         ARTIFACT_ACTIVATE_THRESHOLD,
-        ARTIFACT_ACTIVATE_SCALE,
-        "bottom_left",
+        click_position="bottom_left",
+        scales=ARTIFACT_ACTIVATE_SCALE,
     )
 
 
 def find_artifact_popup_close(
     frame: np.ndarray,
     close_template: np.ndarray,
-) -> Optional[Match]:
+) -> Optional[TemplateMatch]:
     """Use the existing Lu Bu close icon to detect and close the popup."""
     if frame.ndim != 2 or frame.shape != (720, 640):
         return None
@@ -141,21 +119,6 @@ def find_artifact_popup_close(
     return x, y, score
 
 
-async def _click_and_wait(
-    page,
-    x: int,
-    y: int,
-    stop_event,
-    delay_ms: int,
-) -> bool:
-    """Perform one Artifact click and enforce its post-click settle time."""
-    await page.evaluate(
-        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-    )
-    await page.mouse.click(x, y)
-    return await wait_for_flow_timeout(page, delay_ms, stop_event)
-
-
 async def _click_activation_three_times(
     page,
     x: int,
@@ -164,12 +127,11 @@ async def _click_activation_three_times(
 ) -> bool:
     """Click Activate once plus two repeats, spaced one second apart."""
     for _ in range(3):
-        if not await _click_and_wait(
+        if not await click_and_wait(
             page,
-            x,
-            y,
-            stop_event,
+            (x, y),
             ARTIFACT_ACTIVATION_REPEAT_MS,
+            stop_event,
         ):
             return False
     return True
@@ -177,14 +139,14 @@ async def _click_activation_three_times(
 
 async def _open_artifact_popup(
     page,
-    item: Match,
+    item: TemplateMatch,
     close_template: np.ndarray,
     stop_event,
     delay_ms: int,
-) -> Optional[Match]:
+) -> Optional[TemplateMatch]:
     x, y, _score = item
     for attempt in range(1, ARTIFACT_POPUP_MAX_ATTEMPTS + 1):
-        if not await _click_and_wait(page, x, y, stop_event, delay_ms):
+        if not await click_and_wait(page, (x, y), delay_ms, stop_event):
             return None
         close_match = find_artifact_popup_close(
             await capture_page_grayscale(page), close_template
@@ -241,7 +203,7 @@ async def _activate_current_artifact(
 
 async def _process_artifact_item(
     page,
-    item: Match,
+    item: TemplateMatch,
     mark_template: np.ndarray,
     close_template: np.ndarray,
     stop_event,
@@ -281,8 +243,8 @@ async def _process_artifact_item(
             f"score={close_score:.3f}; closing.",
             flush=True,
         )
-        if not await _click_and_wait(
-            page, close_x, close_y, stop_event, delay_ms
+        if not await click_and_wait(
+            page, (close_x, close_y), delay_ms, stop_event
         ):
             return None
     return activated
@@ -332,8 +294,8 @@ async def _confirm_artifact_idle(
                 f"score={close_score:.3f}; clicking close again.",
                 flush=True,
             )
-            if not await _click_and_wait(
-                page, close_x, close_y, stop_event, delay_ms
+            if not await click_and_wait(
+                page, (close_x, close_y), delay_ms, stop_event
             ):
                 return None, extra_activations
             quiet_ms = 0
@@ -417,8 +379,8 @@ async def run_artifact_flow(
                 f"score={tab_score:.3f}; opening.",
                 flush=True,
             )
-            if not await _click_and_wait(
-                page, tab_x, tab_y, stop_event, delay_ms
+            if not await click_and_wait(
+                page, (tab_x, tab_y), delay_ms, stop_event
             ):
                 return False
 

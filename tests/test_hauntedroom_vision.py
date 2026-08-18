@@ -9,7 +9,11 @@ TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.core.template import find_template, find_template_matches
+from hauntedroom.core.template import (
+    find_template,
+    find_template_in_region,
+    find_template_matches,
+)
 from hauntedroom.core.vision import (
     ColorComponentPattern,
     find_color_component,
@@ -136,6 +140,47 @@ class FindTemplateScaleTest(TestCase):
 
         self.assertEqual((x, y), (51, 55))
         self.assertAlmostEqual(score, 1.0, places=5)
+
+    def test_region_limits_search_and_returns_absolute_coordinates(self):
+        screenshot = np.zeros((100, 120), dtype=np.uint8)
+        screenshot[10:40, 10:40] = self.template
+        screenshot[50:80, 70:100] = self.template
+
+        x, y, score = find_template(
+            screenshot,
+            self.template,
+            "test.png",
+            scales=(1.0,),
+            region=(60, 40, 110, 90),
+        )
+
+        self.assertEqual((x, y), (85, 65))
+        self.assertAlmostEqual(score, 1.0, places=5)
+
+    def test_rejects_region_outside_screenshot(self):
+        screenshot = np.zeros((100, 120), dtype=np.uint8)
+
+        with self.assertRaisesRegex(ValueError, "outside screenshot"):
+            find_template(
+                screenshot,
+                self.template,
+                "test.png",
+                region=(0, 0, 121, 100),
+            )
+
+    def test_region_helper_filters_below_threshold_match(self):
+        screenshot = np.zeros((100, 120), dtype=np.uint8)
+
+        match = find_template_in_region(
+            screenshot,
+            self.template,
+            "test.png",
+            (0, 0, 120, 100),
+            threshold=0.99,
+            scales=(1.0,),
+        )
+
+        self.assertIsNone(match)
 
     def test_finds_distinct_matches_ordered_by_largest_y(self):
         screenshot = np.zeros((140, 120), dtype=np.uint8)

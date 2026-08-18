@@ -8,10 +8,10 @@ import numpy as np
 
 from hauntedroom.actions.models import Action, ClickTemplateAction
 from hauntedroom.actions.runner import wait_for_template
+from hauntedroom.core.mouse import click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint, flow_time, wait_for_flow_timeout
 from hauntedroom.core.template import load_template
 from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.flows.automap_support.boss_action import click
 from hauntedroom.flows.automap_support.train_select import TrainHeroMatcher
 
 
@@ -124,8 +124,9 @@ async def run_train_flow(
         f"{challenge_click}; clicking.",
         flush=True,
     )
-    await click(page, *challenge_click)
-    if not await wait_for_flow_timeout(page, TRAIN_ENTRY_SETTLE_MS, stop_event):
+    if not await click_and_wait(
+        page, challenge_click, TRAIN_ENTRY_SETTLE_MS, stop_event
+    ):
         return False
 
     action = get_start_battle_action(actions)
@@ -150,8 +151,7 @@ async def run_train_flow(
         f"score={score:.3f}; clicking.",
         flush=True,
     )
-    await click(page, x, y)
-    if not await wait_for_flow_timeout(page, TRAIN_BATTLE_LOAD_MS, stop_event):
+    if not await click_and_wait(page, (x, y), TRAIN_BATTLE_LOAD_MS, stop_event):
         return False
 
     matcher = TrainHeroMatcher()
@@ -193,9 +193,11 @@ async def run_train_flow(
                 f"{choice.x},{choice.y}.",
                 flush=True,
             )
-        await click(page, choice.x, choice.y)
-        if not await wait_for_flow_timeout(
-            page, TRAIN_SELECTION_SETTLE_MS, stop_event
+        if not await click_and_wait(
+            page,
+            (choice.x, choice.y),
+            TRAIN_SELECTION_SETTLE_MS,
+            stop_event,
         ):
             return False
 

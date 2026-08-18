@@ -46,3 +46,46 @@ class ActionLoaderTest(TestCase):
             actions = load_actions(action_path)
 
         self.assertEqual(actions, [ClickAction(10, 20, note="tap"), WaitAction(250)])
+
+    def test_load_click_template_supports_search_region(self):
+        with TemporaryDirectory() as tmpdir:
+            directory = Path(tmpdir)
+            (directory / "target.png").write_bytes(b"fixture")
+            action_path = directory / "actions.json"
+            action_path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "type": "click_template",
+                            "template": "target.png",
+                            "region": [10, 20, 110, 220],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            actions = load_actions(action_path)
+
+        self.assertEqual(actions[0].region, (10, 20, 110, 220))
+
+    def test_load_click_template_rejects_invalid_search_region(self):
+        with TemporaryDirectory() as tmpdir:
+            directory = Path(tmpdir)
+            (directory / "target.png").write_bytes(b"fixture")
+            action_path = directory / "actions.json"
+            action_path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "type": "click_template",
+                            "template": "target.png",
+                            "region": [100, 20, 10, 220],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "increasing bounds"):
+                load_actions(action_path)

@@ -14,7 +14,7 @@ from hauntedroom.actions.defaults import (
     DEFAULT_TEMPLATE_POLL_MS,
     DEFAULT_TEMPLATE_TIMEOUT_MS,
 )
-from hauntedroom.core.template import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES
+from hauntedroom.core.template import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES, Region
 
 
 SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "mid_left", "top_middle"}
@@ -45,6 +45,25 @@ def load_scales(action: dict, index: int, field: str) -> tuple[float, ...]:
     if any(scale <= 0 for scale in scales):
         raise ValueError(f"Action #{index} {field} must contain positive numbers.")
     return scales
+
+
+def load_region(action: dict, index: int) -> Optional[Region]:
+    raw_region = action.get("region")
+    if raw_region is None:
+        return None
+    if not isinstance(raw_region, list) or len(raw_region) != 4:
+        raise ValueError(f"Action #{index} region must be a four-number array.")
+    try:
+        left, top, right, bottom = (int(value) for value in raw_region)
+    except (TypeError, ValueError) as error:
+        raise ValueError(
+            f"Action #{index} region must be a four-number array."
+        ) from error
+    if left < 0 or top < 0 or left >= right or top >= bottom:
+        raise ValueError(
+            f"Action #{index} region must have non-negative, increasing bounds."
+        )
+    return left, top, right, bottom
 
 
 def resolve_template_file(path: Path, raw_template: str, index: int, label: str) -> Path:
@@ -161,6 +180,7 @@ def load_click_template_action(
         click_position=click_position,
         template_scales=template_scales,
         skip_template_scales=skip_template_scales,
+        region=load_region(action, index),
     )
 
 

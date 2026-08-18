@@ -1,4 +1,5 @@
 import sys
+import asyncio
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock, call
@@ -7,7 +8,32 @@ from unittest.mock import AsyncMock, Mock, call
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.core.mouse import smooth_drag
+from hauntedroom.core.mouse import bot_click, click_and_wait, smooth_drag
+
+
+class ClickTest(IsolatedAsyncioTestCase):
+    def setUp(self):
+        self.page = Mock()
+        self.page.evaluate = AsyncMock()
+        self.page.wait_for_timeout = AsyncMock()
+        self.page.mouse = Mock()
+        self.page.mouse.click = AsyncMock()
+
+    async def test_bot_click_suppresses_logging_and_forwards_button(self):
+        await bot_click(self.page, (10, 20), button="right")
+
+        self.page.evaluate.assert_awaited_once()
+        self.page.mouse.click.assert_awaited_once_with(10, 20, button="right")
+
+    async def test_click_and_wait_returns_flow_wait_result(self):
+        stop_event = asyncio.Event()
+        stop_event.set()
+
+        continued = await click_and_wait(self.page, (30, 40), 250, stop_event)
+
+        self.assertFalse(continued)
+        self.page.mouse.click.assert_awaited_once_with(30, 40)
+        self.page.wait_for_timeout.assert_awaited_once_with(250)
 
 
 class SmoothDragTest(IsolatedAsyncioTestCase):

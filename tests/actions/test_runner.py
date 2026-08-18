@@ -151,6 +151,7 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             click_position="mid_left",
             template_scales=(1.0, 0.67, 0.5),
             skip_template_scales=(0.5,),
+            region=(10, 20, 300, 400),
         )
         wait_for_template.return_value = SKIP_TEMPLATE_MATCHED
 
@@ -177,6 +178,10 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             wait_for_template.await_args.kwargs["skip_template_scales"],
             (0.5,),
+        )
+        self.assertEqual(
+            wait_for_template.await_args.kwargs["region"],
+            (10, 20, 300, 400),
         )
         self.page.mouse.click.assert_awaited_once_with(10, 20, button="left")
 
@@ -205,6 +210,7 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             delay_ms=0,
             repeat_delay_ms=1000,
             recheck_before_repeat=True,
+            region=(1, 2, 9, 10),
         )
         wait_for_template.return_value = (10, 20, 0.95)
         capture_page_grayscale.return_value = np.zeros((10, 10), dtype=np.uint8)
@@ -218,6 +224,12 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             [call(0), call(1000), call(1000)],
         )
         self.assertEqual(capture_page_grayscale.await_count, 2)
+        self.assertTrue(
+            all(
+                match_call.kwargs["region"] == (1, 2, 9, 10)
+                for match_call in find_template.call_args_list
+            )
+        )
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [

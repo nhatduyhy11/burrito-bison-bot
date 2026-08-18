@@ -49,6 +49,7 @@ Tách hệ thống thành ba vùng trách nhiệm:
    - Hotkey/event transport và command dispatch tổng quát.
    - Screenshot capture, diagnostics và logging hooks.
    - Vision primitives: image capture, template matching, color/component tools.
+   - Browser input primitives: bot click, cooperative click-and-wait and drag gestures.
    - JSON action DSL: models, validation/parser và generic executor.
    - Generic flow registry/controller và optional developer reload mechanism.
 2. **Game integration/adapters**

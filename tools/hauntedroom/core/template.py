@@ -1,6 +1,7 @@
 """Template loading and matching helpers."""
 
 from pathlib import Path
+from typing import Optional
 
 import cv2
 import numpy as np
@@ -8,6 +9,8 @@ import numpy as np
 
 DEFAULT_TEMPLATE_THRESHOLD = 0.9
 TEMPLATE_SCALES = (1.0, 0.67)
+Region = tuple[int, int, int, int]
+TemplateMatch = tuple[int, int, float]
 
 
 def load_template(path: Path) -> np.ndarray:
@@ -31,8 +34,37 @@ def find_template(
     template_name: str,
     click_position: str = "center",
     scales: tuple[float, ...] = TEMPLATE_SCALES,
-) -> tuple[int, int, float]:
+    region: Optional[Region] = None,
+) -> TemplateMatch:
+    """Return the best match using absolute screenshot coordinates.
+
+    When ``region`` is supplied, matching is restricted to its
+    ``(left, top, right, bottom)`` bounds while the returned click position is
+    translated back into the full screenshot coordinate space.
+    """
     screenshot_height, screenshot_width = screenshot.shape
+    offset_x = 0
+    offset_y = 0
+    search_image = screenshot
+    if region is not None:
+        left, top, right, bottom = region
+        if (
+            left < 0
+            or top < 0
+            or right > screenshot_width
+            or bottom > screenshot_height
+            or left >= right
+            or top >= bottom
+        ):
+            raise ValueError(
+                f"Template search region {region} is outside screenshot "
+                f"{screenshot_width}x{screenshot_height}."
+            )
+        offset_x = left
+        offset_y = top
+        search_image = screenshot[top:bottom, left:right]
+
+    search_height, search_width = search_image.shape
     best_match = None
 
     for scale in scales:
@@ -48,11 +80,11 @@ def find_template(
             )
 
         template_height, template_width = scaled_template.shape
-        if template_width > screenshot_width or template_height > screenshot_height:
+        if template_width > search_width or template_height > search_height:
             continue
 
         result = cv2.matchTemplate(
-            screenshot,
+            search_image,
             scaled_template,
             cv2.TM_CCOEFF_NORMED,
         )
@@ -64,7 +96,7 @@ def find_template(
         template_height, template_width = template.shape
         raise ValueError(
             f"Template {template_name!r} is {template_width}x{template_height}, "
-            f"larger than screenshot {screenshot_width}x{screenshot_height} "
+            f"larger than search area {search_width}x{search_height} "
             f"at all configured scales."
         )
 
@@ -73,16 +105,37 @@ def find_template(
     if click_position == "mid_left":
         click_x = top_left[0] + min(1, template_width - 1)
         click_y = top_left[1] + template_height // 2
-        return click_x, click_y, score
+        return offset_x + click_x, offset_y + click_y, score
     if click_position == "bottom_left":
         click_x = top_left[0] + min(1, template_width - 1)
         click_y = top_left[1] + max(template_height - 2, 0)
-        return click_x, click_y, score
+        return offset_x + click_x, offset_y + click_y, score
     if click_position == "top_middle":
         click_y = top_left[1] + min(1, template_height - 1)
     else:
         click_y = top_left[1] + template_height // 2
-    return center_x, click_y, score
+    return offset_x + center_x, offset_y + click_y, score
+
+
+def find_template_in_region(
+    screenshot: np.ndarray,
+    template: np.ndarray,
+    template_name: str,
+    region: Region,
+    threshold: float = DEFAULT_TEMPLATE_THRESHOLD,
+    click_position: str = "center",
+    scales: tuple[float, ...] = TEMPLATE_SCALES,
+) -> Optional[TemplateMatch]:
+    """Return an above-threshold match restricted to a screenshot region."""
+    match = find_template(
+        screenshot,
+        template,
+        template_name,
+        click_position,
+        scales,
+        region,
+    )
+    return match if match[2] >= threshold else None
 
 
 def find_template_matches(

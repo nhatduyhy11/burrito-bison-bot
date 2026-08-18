@@ -2,6 +2,10 @@
 
 Audit date: 2026-08-18
 
+Implementation update: `core/mouse.py` now owns `bot_click`, `click_and_wait` and
+`smooth_drag`. Artifact and Train use the cooperative helper, while raw waits,
+pre-click waits and state-based click retries retain their distinct contracts.
+
 ## Scope
 
 This audit covers runtime click behavior under `tools/hauntedroom`, plus the

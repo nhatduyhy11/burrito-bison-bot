@@ -291,3 +291,17 @@ Xóa profile sẽ reset session và có thể làm game quay lại luồng guest
 - Khi hết `timeout_ms` lần đầu, runner ghi `timeout count=1/2`, bỏ phần action còn lại của loop hiện tại và thử lại từ đầu ở loop kế tiếp.
 - Hai loop timeout liên tiếp sẽ dừng runner. Một loop hoàn tất không timeout sẽ reset bộ đếm về `0`.
 - Mỗi lần timeout, runner lưu screenshot cuối vào `.tmp/hauntedroom-timeouts/` và in đường dẫn file trong terminal.
+
+## Template search region
+
+`click_template` accepts an optional `region` field with
+`[left, top, right, bottom]` coordinates. Template matching is limited to that
+rectangle, while the resulting click still uses absolute viewport coordinates:
+
+```json
+{
+  "type": "click_template",
+  "template": "rooms/misc/research_available.png",
+  "region": [120, 390, 520, 600]
+}
+```
