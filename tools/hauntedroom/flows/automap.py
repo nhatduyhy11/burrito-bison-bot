@@ -6,6 +6,7 @@ from typing import Awaitable, Callable, Optional
 import cv2
 import numpy as np
 
+from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
     flow_checkpoint,
     save_screenshot,
@@ -20,10 +21,7 @@ from hauntedroom.core.template import (
 )
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.settings import CAPTURE_HERO_FALLBACK_SCREENSHOTS
-from hauntedroom.flows.automap_support.boss_action import (
-    click as _click,
-    deploy_boss_pet,
-)
+from hauntedroom.flows.automap_support.boss_action import deploy_boss_pet
 from hauntedroom.flows.automap_support.hero_levelup_vision import (
     HERO_LEVELUP_TEMPLATE_PATHS,
     load_hero_levelup_templates,
@@ -63,6 +61,10 @@ from hauntedroom.flows.automap_support.upgrade_action import (
     handle_build_structure as _handle_build_structure,
     handle_level_up as _handle_level_up,
 )
+
+
+async def _click(page, x: int, y: int) -> None:
+    await bot_click(page, (x, y))
 
 
 AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[2] / "rooms" / "automap"

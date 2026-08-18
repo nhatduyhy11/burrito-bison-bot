@@ -6,7 +6,8 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
+from hauntedroom.core.mouse import click_and_wait
+from hauntedroom.core.runtime import flow_checkpoint
 from hauntedroom.core.vision import capture_page_bgr
 
 
@@ -71,13 +72,6 @@ def find_breakthrough_available(
     return BREAKTHROUGH_CLICK_POSITION
 
 
-async def _click(page, position: tuple[int, int]) -> None:
-    await page.evaluate(
-        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-    )
-    await page.mouse.click(*position)
-
-
 async def run_hero_up_available_flow(
     page,
     stop_event: Optional[asyncio.Event] = None,
@@ -98,14 +92,14 @@ async def run_hero_up_available_flow(
                 f"moving right to hero #{hero_change_count + 1}.",
                 flush=True,
             )
-            await _click(page, HERO_ARROW_RIGHT_POSITION)
             print(
                 "Clicked the right arrow; checking the next hero in "
                 f"{hero_change_delay_ms}ms.",
                 flush=True,
             )
-            if not await wait_for_flow_timeout(
+            if not await click_and_wait(
                 page,
+                HERO_ARROW_RIGHT_POSITION,
                 hero_change_delay_ms,
                 stop_event,
             ):
@@ -128,17 +122,17 @@ async def run_hero_up_available_flow(
             f"{breakthrough_repeat_delay_ms}ms gap.",
             flush=True,
         )
-        await _click(page, position)
-        if not await wait_for_flow_timeout(
+        if not await click_and_wait(
             page,
+            position,
             breakthrough_repeat_delay_ms,
             stop_event,
         ):
             print("Hero breakthrough flow stopped; runner is idle.", flush=True)
             return False
-        await _click(page, position)
-        if not await wait_for_flow_timeout(
+        if not await click_and_wait(
             page,
+            position,
             breakthrough_recheck_delay_ms,
             stop_event,
         ):

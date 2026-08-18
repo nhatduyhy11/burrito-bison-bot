@@ -119,24 +119,6 @@ def find_artifact_popup_close(
     return x, y, score
 
 
-async def _click_activation_three_times(
-    page,
-    x: int,
-    y: int,
-    stop_event,
-) -> bool:
-    """Click Activate once plus two repeats, spaced one second apart."""
-    for _ in range(3):
-        if not await click_and_wait(
-            page,
-            (x, y),
-            ARTIFACT_ACTIVATION_REPEAT_MS,
-            stop_event,
-        ):
-            return False
-    return True
-
-
 async def _open_artifact_popup(
     page,
     item: TemplateMatch,
@@ -190,7 +172,13 @@ async def _activate_current_artifact(
             f"{ARTIFACT_ACTIVATION_REPEAT_MS}ms gap.",
             flush=True,
         )
-        if not await _click_activation_three_times(page, x, y, stop_event):
+        if not await click_and_wait(
+            page,
+            (x, y),
+            ARTIFACT_ACTIVATION_REPEAT_MS,
+            stop_event,
+            click_count=3,
+        ):
             return None
 
     print(
@@ -280,8 +268,12 @@ async def _confirm_artifact_idle(
                     f"with a {ARTIFACT_ACTIVATION_REPEAT_MS}ms gap.",
                     flush=True,
                 )
-                if not await _click_activation_three_times(
-                    page, x, y, stop_event
+                if not await click_and_wait(
+                    page,
+                    (x, y),
+                    ARTIFACT_ACTIVATION_REPEAT_MS,
+                    stop_event,
+                    click_count=3,
                 ):
                     return None, extra_activations
                 extra_activations += 1

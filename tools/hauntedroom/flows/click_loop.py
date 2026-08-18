@@ -1,5 +1,7 @@
 import asyncio
 
+from hauntedroom.core.mouse import bot_click
+
 
 CLICK_POSITION = (440, 500)
 CLICK_INTERVAL_MS = 1000
@@ -7,7 +9,7 @@ CLICK_INTERVAL_MS = 1000
 
 async def run_click_loop(page, stop_event: asyncio.Event) -> None:
     while not stop_event.is_set():
-        await page.mouse.click(*CLICK_POSITION)
+        await bot_click(page, CLICK_POSITION)
         if stop_event.is_set():
             break
 

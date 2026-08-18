@@ -6,7 +6,8 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
+from hauntedroom.core.mouse import bot_click, click_and_wait
+from hauntedroom.core.runtime import flow_checkpoint
 from hauntedroom.core.template import find_template, load_bgr_reference
 from hauntedroom.core.terminal import BLUE, colorize
 from hauntedroom.core.vision import (
@@ -33,14 +34,6 @@ PET_MENU_RECHECK_MS = 300
 PET_ACTIVE_TEMPLATE_THRESHOLD = 0.90
 
 
-async def click(page, x: int, y: int) -> None:
-    """Click without recording the bot-generated input as a user action."""
-    await page.evaluate(
-        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-    )
-    await page.mouse.click(x, y)
-
-
 async def activate_boss_spell(
     page,
     boss_position: tuple[int, int],
@@ -57,9 +50,8 @@ async def activate_boss_spell(
         return False
 
     print("Boss spell is ready; selecting it and targeting the boss.", flush=True)
-    await click(page, *SPELL_ACTION_POSITION)
-    await page.wait_for_timeout(BOSS_ACTION_SELECT_DELAY_MS)
-    await click(page, *boss_position)
+    await click_and_wait(page, SPELL_ACTION_POSITION, BOSS_ACTION_SELECT_DELAY_MS)
+    await bot_click(page, boss_position)
     return True
 
 
@@ -100,8 +92,9 @@ async def deploy_boss_pet(
         flush=True,
     )
     while await flow_checkpoint(stop_event):
-        await click(page, *pet_click)
-        if not await wait_for_flow_timeout(page, PET_MENU_RECHECK_MS, stop_event):
+        if not await click_and_wait(
+            page, pet_click, PET_MENU_RECHECK_MS, stop_event
+        ):
             break
 
         popup_frame = await capture_page_bgr(page)
@@ -120,7 +113,7 @@ async def deploy_boss_pet(
                 ),
                 flush=True,
             )
-            await click(page, active_x, active_y)
+            await bot_click(page, (active_x, active_y))
             return True
 
         print(

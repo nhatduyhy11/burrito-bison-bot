@@ -5,10 +5,9 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.mouse import smooth_drag
+from hauntedroom.core.mouse import click_and_wait, smooth_drag
 from hauntedroom.core.terminal import BLUE, colorize
 from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.flows.automap_support.boss_action import click
 
 
 # Coordinates are calibrated for the fixed 640x720 Playwright viewport used by
@@ -165,8 +164,7 @@ async def deploy_initial_gear(
             f"{gear_button[1]} (attempt {attempt}/{GEAR_MENU_OPEN_ATTEMPTS}).",
             flush=True,
         )
-        await click(page, *gear_button)
-        await page.wait_for_timeout(GEAR_MENU_SETTLE_MS)
+        await click_and_wait(page, gear_button, GEAR_MENU_SETTLE_MS)
         popup_frame = await capture_page_bgr(page)
         if gear_menu_is_open(popup_frame):
             break

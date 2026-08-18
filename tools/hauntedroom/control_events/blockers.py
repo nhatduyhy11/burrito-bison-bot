@@ -5,6 +5,7 @@ from typing import Optional
 import numpy as np
 
 from hauntedroom.control_events.new_tab_blocker import close_profile_popup_tabs
+from hauntedroom.core.mouse import click_and_wait
 from hauntedroom.core.runtime import (
     flow_checkpoint,
     flow_time,
@@ -62,11 +63,9 @@ async def clear_blockers(
             )
             if not await wait_for_flow_timeout(page, delay_ms, stop_event):
                 return False
-            await page.evaluate(
-                "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-            )
-            await page.mouse.click(x, y)
-            if not await wait_for_flow_timeout(page, poll_ms, stop_event):
+            if not await click_and_wait(
+                page, (x, y), poll_ms, stop_event
+            ):
                 return False
             deadline = flow_time(stop_event) + timeout_ms / 1000
             continue

@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 from typing import Optional
 
+from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import wait_with_countdown
 from hauntedroom.core.template import (
     find_template,
@@ -83,10 +84,7 @@ async def run_research_flow(
         if not completed:
             print("Research flow stopped; runner is idle.", flush=True)
             return False
-        await page.evaluate(
-            "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-        )
-        await page.mouse.click(x, y)
+        await bot_click(page, (x, y))
 
         active_misses = 0
         while True:
@@ -136,7 +134,4 @@ async def run_research_flow(
                 print("Research flow stopped; runner is idle.", flush=True)
                 return False
 
-            await page.evaluate(
-                "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-            )
-            await page.mouse.click(x, y)
+            await bot_click(page, (x, y))

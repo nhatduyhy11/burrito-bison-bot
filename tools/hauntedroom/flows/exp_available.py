@@ -6,7 +6,8 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
+from hauntedroom.core.mouse import click_and_wait
+from hauntedroom.core.runtime import flow_checkpoint
 from hauntedroom.core.vision import capture_page_bgr
 
 
@@ -21,13 +22,6 @@ EXP_AVAILABLE_MAX_VERTICAL_OFFSET = 45
 EXP_AVAILABLE_CORE_RADIUS = 24
 EXP_AVAILABLE_CORE_MIN_FILL_RATIO = 0.70
 EXP_CLICK_SETTLE_MS = 800
-
-
-async def _click(page, x: int, y: int) -> None:
-    await page.evaluate(
-        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-    )
-    await page.mouse.click(x, y)
 
 
 def find_exp_available_matches(frame_bgr: np.ndarray) -> list[tuple[int, int]]:
@@ -122,8 +116,9 @@ async def run_exp_available_flow(
             f"match and checking again in {delay_ms}ms.",
             flush=True,
         )
-        await _click(page, x, y)
-        if not await wait_for_flow_timeout(page, delay_ms, stop_event):
+        if not await click_and_wait(
+            page, (x, y), delay_ms, stop_event
+        ):
             print("EXP available flow stopped; runner is idle.", flush=True)
             return False
 

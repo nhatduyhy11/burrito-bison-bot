@@ -540,6 +540,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
     async def test_shift_7_clicks_fixed_position_every_second_until_stopped(self):
         page = Mock()
+        page.evaluate = AsyncMock()
         page.mouse = Mock()
         page.mouse.click = AsyncMock()
         stop_event = asyncio.Event()

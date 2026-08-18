@@ -35,6 +35,46 @@ class ClickTest(IsolatedAsyncioTestCase):
         self.page.mouse.click.assert_awaited_once_with(30, 40)
         self.page.wait_for_timeout.assert_awaited_once_with(250)
 
+    async def test_click_and_wait_repeats_click_and_wait(self):
+        continued = await click_and_wait(
+            self.page,
+            (30, 40),
+            250,
+            click_count=3,
+        )
+
+        self.assertTrue(continued)
+        self.assertEqual(self.page.mouse.click.await_count, 3)
+        self.assertEqual(self.page.wait_for_timeout.await_count, 3)
+
+    async def test_click_and_wait_stops_before_next_repeat(self):
+        stop_event = asyncio.Event()
+
+        async def stop_after_first_wait(_ms):
+            stop_event.set()
+
+        self.page.wait_for_timeout.side_effect = stop_after_first_wait
+
+        continued = await click_and_wait(
+            self.page,
+            (30, 40),
+            250,
+            stop_event,
+            click_count=3,
+        )
+
+        self.assertFalse(continued)
+        self.page.mouse.click.assert_awaited_once_with(30, 40)
+
+    async def test_click_and_wait_normalizes_non_positive_click_count(self):
+        continued = await click_and_wait(
+            self.page, (30, 40), 250, click_count=0
+        )
+
+        self.assertTrue(continued)
+        self.page.mouse.click.assert_awaited_once_with(30, 40)
+        self.page.wait_for_timeout.assert_awaited_once_with(250)
+
 
 class SmoothDragTest(IsolatedAsyncioTestCase):
     def setUp(self):

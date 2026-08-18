@@ -28,10 +28,14 @@ async def click_and_wait(
     stop_event=None,
     *,
     button: Optional[str] = None,
+    click_count: int = 1,
 ) -> bool:
-    """Bot-click, then cooperatively wait until the flow may continue."""
-    await bot_click(page, position, button=button)
-    return await wait_for_flow_timeout(page, wait_ms, stop_event)
+    """Bot-click one or more times, waiting cooperatively after each click."""
+    for _ in range(max(1, click_count)):
+        await bot_click(page, position, button=button)
+        if not await wait_for_flow_timeout(page, wait_ms, stop_event):
+            return False
+    return True
 
 
 async def smooth_drag(

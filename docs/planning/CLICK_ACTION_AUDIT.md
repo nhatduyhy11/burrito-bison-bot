@@ -2,257 +2,113 @@
 
 Audit date: 2026-08-18
 
-Implementation update: `core/mouse.py` now owns `bot_click`, `click_and_wait` and
-`smooth_drag`. Artifact and Train use the cooperative helper, while raw waits,
-pre-click waits and state-based click retries retain their distinct contracts.
+## Current result
 
-## Scope
+Runtime mouse gestures under `tools/hauntedroom` have been re-audited against
+`core/mouse.py`.
 
-This audit covers runtime click behavior under `tools/hauntedroom`, plus the
-declarative examples in `tools/hauntedroom_actions.sample.json` and
-`tools/macro_record.json`. Tests, `ref_cv`, generated browser-profile data and
-fixtures are excluded.
+- `bot_click` is the single primitive for automation clicks. It suppresses the
+  user-click logger before forwarding the click to Playwright.
+- `click_and_wait` composes `bot_click` with `wait_for_flow_timeout` and returns
+  whether the flow may continue.
+- `click_and_wait(..., click_count=N)` supports repeated clicks at the same
+  position. A non-positive count is normalized to one click. Each click is
+  followed by the configured cooperative wait; cancellation prevents the next
+  repeat.
+- `smooth_drag` remains the shared drag primitive.
 
-The main question is whether the recurring `click -> wait X` sequence should
-become a shared helper. No runtime behavior is changed by this document.
+The artifact-only `_click_activation_three_times` wrapper was removed. Artifact
+activation now calls `click_and_wait(..., click_count=3)` directly.
 
-## Executive summary
+## Reuse completed
 
-There is a real recurring pattern, but it currently represents several
-different contracts:
-
-1. **Bot click only**: suppress click recording, then issue a Playwright click.
-2. **Click then cancellable settle**: click, wait for UI animation, and stop the
-   flow if the stop/pause control rejects continuation.
-3. **Click then unconditional settle**: click and use raw
-   `page.wait_for_timeout`; stop/pause is not checked.
-4. **Wait then click**: deliberate pre-click delay, often followed by template
-   detection rather than another fixed wait.
-5. **Click then re-detect**: the wait is only part of a state-observation loop.
-6. **`CLICK_RETRY_TEMPLATE`**: click, wait for an explicit expected state, and
-   retry the click when that state does not appear.
-
-The safest first extraction is the lower-level **bot click** primitive. A
-shared `click_and_wait` is viable for group 2, but should not absorb the other
-contracts merely because their call sites look similar.
-
-## Existing click primitives
-
-| Location | Current behavior | Consumers / notes |
+| Area | Shared primitive | Notes |
 | --- | --- | --- |
-| `flows/automap_support/boss_action.py:49` | Suppress next click log, then click `(x, y)` | De facto shared helper imported by auto-map, gear and train. Its ownership is misleading because the behavior is not boss-specific. |
-| `flows/exp_available.py:26` | Local copy of suppress + click | Same behavior, independent signature. |
-| `flows/hero_up_available.py:74` | Local copy accepting a position tuple | Same behavior, independent signature. |
-| `actions/runner.py:128` and `:250` | Inline suppress + click with configurable mouse button | Used by coordinate and template actions. |
-| `control_events/blockers.py:65` | Inline suppress + click | Used while clearing overlays. |
-| `flows/research.py:86` and `:139` | Inline suppress + click | Duplicated twice in one flow. |
-| `flows/click_loop.py:10` | Raw click without suppression | The Shift+7 loop may be intentionally treated differently, but this should be explicit. |
+| Declarative action runner | `bot_click` | Preserves configurable mouse buttons and separate declarative waits. |
+| Artifact | `click_and_wait` | Includes the three-click activation sequence through `click_count=3`. Popup retry and re-detection remain flow-owned. |
+| Train | `click_and_wait` | Entry, battle loading, and hero-selection settles are cooperative. |
+| Clear blockers | `click_and_wait` | The deliberate pre-click delay remains separate; the post-click poll is composed. |
+| EXP available | `click_and_wait` | Replaces the local `_click` plus flow wait. |
+| Hero breakthrough | `click_and_wait` | Removes the local `_click`; the two breakthrough clicks remain separate because their waits differ (`800 ms`, then `1000 ms`). |
+| Boss pet menu | `click_and_wait` | The click/recheck loop still owns template validation and retry policy. |
+| Boss spell | `click_and_wait` then `bot_click` | The first click and its raw `200 ms` settle are composed; the final target click has no local wait. |
+| Gear menu | `click_and_wait` | The helper replaces click + raw settle. Menu detection, target refresh, and bounded retry remain flow-owned. |
+| Auto-map click callback | `bot_click` | Auto-map no longer imports a generic click helper from the boss module. |
+| Research | `bot_click` | Waits are intentionally separate because they occur before a click or at the start of the next detection iteration. |
+| Shift+7 click loop | `bot_click` | Its interruptible `asyncio.wait_for(stop_event.wait())` interval is intentionally not replaced by `click_and_wait`. |
 
-The suppression expression itself appears in multiple runtime files:
+After this normalization, direct `page.mouse.click` calls exist only inside
+`core/mouse.py`. The click logger's own JavaScript state handling in
+`core/runtime.py` is not an input action.
 
-```javascript
-() => { window.__hauntedRoomSuppressNextClickLog = true; }
+## Patterns that should remain distinct
+
+### Click then validate state
+
+Artifact popup opening, boss pet deployment, and gear menu opening use a state
+machine with this contract:
+
+```text
+for each bounded attempt:
+    click and settle
+    capture current state
+    return success when the expected state is present
+return retry exhaustion
 ```
 
-This duplication is independent of the wait question and is already enough to
-justify a reusable `bot_click`/`click` primitive in `core/mouse.py`.
+`click_and_wait` is reusable for the click/settle step, but must not absorb the
+capture, expected-state detector, coordinate refresh, or retry outcome. Those
+rules belong to the owning flow.
 
-## Click followed by a fixed settle wait
+### Injected auto-map actions
 
-### Stop/pause-aware waits
+Hero level-up, level-spin interruption, completion blockers, first-win handling,
+and reward handling receive `click_fn` and `wait_for_flow_timeout_fn` separately.
+They contain several exact click-then-wait pairs, so they could technically be
+changed to receive a composed `click_and_wait_fn`.
 
-These call sites use `wait_for_flow_timeout` (or an injected equivalent) and
-branch on its boolean result where continuation matters.
-
-| Flow | Click | Wait | Result handling |
-| --- | --- | --- | --- |
-| Clear blockers | `control_events/blockers.py:68` | `poll_ms` at `:69` | Returns `False` when stopped; resets the blocker deadline after a successful cycle. There is also a separate pre-click `delay_ms`. |
-| Boss pet menu | `automap_support/boss_action.py:119` | `PET_MENU_RECHECK_MS = 300` | Breaks the retry loop when stopped, otherwise captures and detects the active summon button. |
-| EXP badges | `flows/exp_available.py:125` | Default `800 ms` at `:126` | Returns `False` when stopped, then captures again on the next loop. |
-| Hero change arrow | `flows/hero_up_available.py:101` | Default `2000 ms` at `:107` | Returns `False` when stopped, then verifies the next hero. |
-| Breakthrough first click | `flows/hero_up_available.py:131` | Default `800 ms` at `:132` | Returns `False` when stopped, then performs the second click. |
-| Breakthrough second click | `flows/hero_up_available.py:139` | Default `1000 ms` at `:140` | Returns `False` when stopped, then re-detects availability. |
-| Train challenge | `flows/train.py:127` | `TRAIN_ENTRY_SETTLE_MS = 2000` | Returns `False` when stopped, then waits for the start-battle template. |
-| Train start battle | `flows/train.py:153` | `TRAIN_BATTLE_LOAD_MS = 5000` | Returns `False` when stopped, then enters hero selection. |
-| Train selection | `flows/train.py:196` | `TRAIN_SELECTION_SETTLE_MS = 600` | Returns `False` when stopped, then captures the next selection state. |
-| Hero picker open | `automap_support/hero_action.py:185` | `HERO_LEVELUP_OPTION_SETTLE_MS = 1500` | Returns a handled outcome when stopped. The wait protects against picker animation. |
-| Hero option select | `automap_support/hero_action.py:222`, `:248` | `HERO_LEVELUP_SELECTION_SETTLE_MS = 600` | Return value is currently ignored; the handler returns handled either way. |
-| Level-spin interrupt | `automap_support/upgrade_action.py:53` | `AUTOMAP_POLL_MS = 600` | Return value is ignored; the handler returns `True`. |
-| Completion blocker | `completion_flow/blocker.py:57` | Auto-map `poll_ms` (currently `600`) | Converts the boolean to `CONTINUE` or `STOP`. |
-| First-win checkbox | `completion_flow/first_win.py:122` | `DAILY_FIRST_WIN_CHECK_DELAY_MS = 1000` | Returns `False` when stopped, then captures checkbox state again. |
-| Win reward | `completion_flow/reward.py:64` | `WIN_REWARD_RECHECK_MS = 2000` | Converts the boolean to `CONTINUE` or `STOP`. |
-| Reward-list title | `completion_flow/reward.py:96` | `WIN_REWARD_RECHECK_MS = 2000` | Converts the boolean to `CONTINUE` or `STOP`. |
-| Reward fallback click | `completion_flow/reward.py:114` | `WIN_REWARD_RECHECK_MS = 2000` | Converts the boolean to `CONTINUE` or `STOP`. |
+That migration is not currently worthwhile: it would widen multiple context
+objects and test seams merely to replace two explicit injected calls with one.
+Their click behavior already reaches `bot_click` through auto-map's shared click
+callback, so input mechanics are centralized even though orchestration remains
+explicit.
 
 ### Countdown waits
 
-These use `wait_with_countdown`, which is also stop/pause-aware but adds log
-output and splits long waits into short checkpoints.
-
-| Flow | Sequence | Wait |
-| --- | --- | --- |
-| Level up | Click detected level at `upgrade_action.py:88`, then wait at `:89` | `AUTOMAP_ACTION_DELAY_MS = 800`; afterward capture and either handle level spin or click confirm. |
-| Build structure | Click marker at `upgrade_action.py:133`, then wait at `:134` | `AUTOMAP_ACTION_DELAY_MS = 800`; afterward detect and click an available option. |
-
-Although these waits are currently below the countdown threshold, their log
-and cooperative-cancellation contract differs from a raw timeout.
-
-### Raw Playwright waits
-
-| Flow | Sequence | Risk / distinction |
-| --- | --- | --- |
-| Boss spell | Click spell at `boss_action.py:76`, raw wait `200 ms` at `:77`, click boss at `:78` | Short target-selection gesture; no stop/pause check between the two clicks. |
-| Gear menu | Click gear button in the retry loop at `gear_action.py:167`, raw wait `1000 ms` at `:168` | Capture and verify that the menu opened; if not, refresh the detected button position and click again, up to `GEAR_MENU_OPEN_ATTEMPTS = 3`. This is the current specialized `CLICK_RETRY_TEMPLATE` behavior. |
-| Gear placement | Smooth drag starting at `gear_action.py:200`, raw wait `800 ms` at `:210` | Interaction is drag rather than click, but the same settle concept applies. |
-| Research available/active | Clicks at `research.py:89` and `:142`; the active loop waits `RESEARCH_POLL_MS = 600` before its next capture | Stop is checked after the raw wait, not through `FlowControl.checkpoint()`. |
-
-These should not silently become cancellable or pause-aware as part of a
-mechanical refactor; that would be a behavior change worth testing explicitly.
-
-## `CLICK_RETRY_TEMPLATE`
-
-This pattern is distinct from both `click_and_wait` and a passive template poll.
-Its contract is:
-
-```text
-for attempt in 1..max_attempts:
-    click target
-    wait settle_ms
-    capture current state
-    if expected state is present:
-        return success
-return failure
-```
-
-The expected state must be explicit: normally an `expected_template`, or a
-named detector when the state is not represented by a stable image template.
-The click is retried only while that expected state is absent. A successful
-click must not be inferred merely from the source button disappearing on one
-frame.
-
-The conceptual inputs are:
-
-| Input | Meaning |
-| --- | --- |
-| `click_target` | Position or detected source used for every click attempt. It may be re-detected between attempts. |
-| `expected_state` | Template or detector proving that the click produced the intended UI state. |
-| `settle_ms` | Delay after each click before validating the state. |
-| `max_attempts` | Total bounded click attempts, including the first click. |
-| `stop_event` | Optional cooperative cancellation checked before another attempt. |
-
-The result must distinguish `success`, retry exhaustion, and cancellation so
-the owning flow can decide whether to abort, skip, or continue scanning. Gear
-menu opening is the first concrete instance: `gear_menu_is_open` is the expected
-state, and the flow retries the gear-button click up to three times.
-
-## Related patterns that are not `click -> wait`
+Level-up, build, and research use `wait_with_countdown`. This adds progress
+logging and cooperative checkpoints and is not equivalent to
+`click_and_wait`. Keep the click and countdown calls explicit.
 
 ### Wait before click
 
-| Flow | Sequence |
-| --- | --- |
-| Template actions | `actions/runner.py:222` waits `delay_ms` before each click at `:251`. Repeat clicks optionally re-detect the template after waiting. |
-| Clear blockers | `control_events/blockers.py:63` waits `delay_ms`, clicks, then separately waits `poll_ms`. |
-| Research | `flows/research.py:77` and `:129` wait with countdown before clicking the detected target. |
-| Reward follow-up | `completion_flow/reward.py:139` waits `3000 ms`, then clicks at `:147`; there is no post-click wait inside that handler. |
+Template actions, blocker clearing, research, and reward follow-up contain
+intentional pre-click waits. A post-click helper must not reverse or hide this
+ordering.
 
-### Click with no local fixed wait
+### Declarative click and wait records
 
-| Flow | Notes |
-| --- | --- |
-| Plain `ClickAction` | `actions/runner.py:129` returns immediately. A wait is a separate declarative action. |
-| Boss exit handoff | `boss_flow.py:72` clicks and stops auto-map immediately. |
-| Boss spell target / active pet summon | Final click returns immediately. |
-| Map end | `automap.py:239` clicks, then enters the completion state machine and captures state. |
-| First-win decline | `completion_flow/first_win.py:106` returns success immediately. |
-| Level-up confirm / build option | Final click returns handled immediately. |
+`hauntedroom_actions.sample.json` and `macro_record.json` should retain separate
+click and wait records. Combining them would reduce record count but weaken
+recording, editing, and replay visibility while adding another action schema.
 
-### Declarative files
+## Remaining gesture exception
 
-- `tools/hauntedroom_actions.sample.json` mostly uses `click_template`. Its
-  `delay_ms` is a **pre-click** delay, while the following template action acts
-  as state-based synchronization.
-- `tools/macro_record.json` contains eight literal `click` + `wait` pairs
-  (`800`, `1000`, `1500`, or `30000 ms`). This is the clearest exact repetition,
-  but keeping click and wait as separate action records is useful for recording,
-  editing and replay visibility.
+Gear drag suppression is still performed immediately before `smooth_drag`.
+This is intentional: the logger flag applies to the click event produced by the
+drag gesture, while `smooth_drag` itself remains independent of Haunted Room's
+browser logger. If another flow needs the same suppressed drag contract, add a
+narrow `bot_drag` composition rather than teaching `smooth_drag` about runtime
+logging.
 
-## Extraction options
+## Conclusion
 
-### Option A: extract only `bot_click` now — recommended first step
+The reusable boundary is now:
 
-```python
-async def bot_click(
-    page,
-    position: tuple[int, int],
-    *,
-    button: str = "left",
-) -> None:
-    ...
-```
+1. `bot_click` for click mechanics;
+2. `click_and_wait` for a fixed post-click cooperative settle, including same-
+   coordinate repeats;
+3. `smooth_drag` for drag mechanics;
+4. flow-owned code for pre-click timing, countdown output, template/state
+   validation, retries, and outcome policy.
 
-Place it beside `smooth_drag` in `core/mouse.py`. It owns only input mechanics:
-suppression of the click logger and the Playwright click. It does not know
-about flow state or UI settle timing.
-
-Benefits:
-
-- removes the click-related copies of the suppression JavaScript (the gear
-  drag suppression remains a separate gesture concern);
-- removes the accidental dependency on boss-specific `click` from gear/train;
-- remains usable by flows, action runner and control-event handlers;
-- does not change cancellation or timing behavior.
-
-### Option B: add a narrow `click_and_wait` after click normalization
-
-A useful contract would be:
-
-```python
-async def click_and_wait(
-    page,
-    position: tuple[int, int],
-    wait_ms: int,
-    stop_event=None,
-    *,
-    button: str = "left",
-) -> bool:
-    """Bot-click, then cooperatively wait; return whether flow may continue."""
-```
-
-Only the stop/pause-aware rows in the first table are candidates. Callers must
-still decide what `False` means (`return False`, `STOP`, `break`, or a handled
-outcome), so the helper should return a boolean and never choose flow policy.
-
-There is one architectural issue: `core/mouse.py` currently has no internal
-dependencies, while cooperative waiting lives in `core/runtime.py`; the
-architecture test requires every `core/*.py` module to have no
-`hauntedroom.*` imports. Avoid solving this with duplicated wait logic or an
-injected `wait_fn` parameter solely to satisfy the test.
-
-If Option B is adopted, first choose one explicit boundary:
-
-1. allow a small, directed dependency between core modules and place the
-   composed helper in `core/interaction.py`; or
-2. split flow control/timing out of the oversized `core/runtime.py` into a
-   lower-level module, then let the interaction helper depend on it.
-
-### Option C: add a declarative `click_wait` action — not recommended yet
-
-This would only reduce alternating records in `macro_record.json`. It would
-increase the action schema and loader/runner branches, while ordinary
-`click` + `wait` remains clearer and more composable. Consider it only if
-recording or authoring files becomes a concrete pain point.
-
-## Recommendation
-
-1. Extract and migrate `bot_click` first.
-2. Preserve explicit `click` followed by `wait_for_flow_timeout` while the
-   different return policies remain visible and small.
-3. Normalize raw waits separately, with behavior tests, if pause/stop should be
-   honored during boss spell, gear and research settle periods.
-4. Re-audit after normalization. Add `click_and_wait` only if the remaining
-   stop-aware pairs still create meaningful maintenance cost.
-
-The repeated code is real, but most of the value comes from centralizing bot
-click mechanics. Combining click and wait immediately would save one line at
-many call sites while hiding distinctions that currently matter.
+No additional generic click helper is justified by the remaining call sites.
