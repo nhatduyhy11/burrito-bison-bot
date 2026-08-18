@@ -16,10 +16,11 @@ START_AUTO_HOTKEY_ACTIONS = frozenset(
         "screenshot",
     }
 )
+AUTOMAP_CONTROL_COMMANDS = frozenset({"2", "3"})
 
 
 def validate_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> dict[str, str]:
-    """Validate and copy the configurable Shift+3 control mapping."""
+    """Validate and copy the configurable auto-map control mapping."""
     configured_actions = set(hotkeys)
     if configured_actions != START_AUTO_HOTKEY_ACTIONS:
         missing = sorted(START_AUTO_HOTKEY_ACTIONS - configured_actions)
@@ -75,7 +76,7 @@ async def handle_control_command(
     current_command: Optional[str],
     start_auto_hotkeys: Optional[Mapping[str, str]] = None,
 ) -> bool:
-    if current_command == "3" and flow_task is not None:
+    if current_command in AUTOMAP_CONTROL_COMMANDS and flow_task is not None:
         hotkeys = (
             start_auto_hotkeys
             if start_auto_hotkeys is not None
@@ -99,11 +100,11 @@ async def handle_control_command(
         if action == "pause_resume":
             if stop_event.is_paused:
                 stop_event.resume()
-                print("Start-auto loop resumed.", flush=True)
+                print("Auto-map flow resumed.", flush=True)
             else:
                 stop_event.pause()
                 print(
-                    "Start-auto loop paused. "
+                    "Auto-map flow paused. "
                     f"Press Shift+{hotkeys['pause_resume']} to resume or "
                     f"Shift+{hotkeys['stop']} to stop.",
                     flush=True,
@@ -113,7 +114,7 @@ async def handle_control_command(
         if action == "pause_at_boss":
             if stop_event.pause_at_next_boss(final_only=False):
                 print(
-                    "Start-auto loop will pause at the next boss.",
+                    "Auto-map flow will pause at the next boss.",
                     flush=True,
                 )
             return True
@@ -121,7 +122,7 @@ async def handle_control_command(
         if action == "pause_at_final_boss":
             if stop_event.pause_at_next_boss(final_only=True):
                 print(
-                    "Start-auto loop will pause at the final boss.",
+                    "Auto-map flow will pause at the final boss.",
                     flush=True,
                 )
             return True
@@ -178,7 +179,8 @@ async def run_standby_controller(
         f"{format_flow_menu(flow_commands)}\n"
         "  Shift+8    Capture screenshot\n"
         "  Shift+0    Stop current flow\n"
-        f"  During Shift+3: {format_start_auto_hotkeys(start_auto_hotkeys)}\n"
+        "  During Shift+2/Shift+3: "
+        f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
         "  Ctrl+C     Close runner\n"
         "-------------------------\n"
         "Runner idle.",
@@ -231,7 +233,7 @@ async def run_standby_controller(
 
             try:
                 resolved = command.resolve(actions, dev_reload, actions_path)
-                if command_key == "3":
+                if command_key in AUTOMAP_CONTROL_COMMANDS:
                     start_auto_hotkeys = validate_start_auto_hotkeys(
                         settings.START_AUTO_HOTKEYS
                     )
@@ -242,9 +244,9 @@ async def run_standby_controller(
             stop_event = command.control_factory()
             current_command = command_key
             actions = resolved.actions
-            if command_key == "3":
+            if command_key in AUTOMAP_CONTROL_COMMANDS:
                 print(
-                    "Start-auto controls: "
+                    "Auto-map controls: "
                     f"{format_start_auto_hotkeys(start_auto_hotkeys)}.",
                     flush=True,
                 )

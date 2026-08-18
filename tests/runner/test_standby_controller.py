@@ -65,37 +65,56 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertTrue(control.is_paused)
         self.assertIsNone(control.boss_pause_target)
 
-    async def test_start_auto_hotkeys_arm_boss_pauses_and_ignore_other_flows(self):
+    async def test_automap_hotkeys_arm_boss_pauses_for_shift_2_and_shift_3(self):
+        for current_command in ("2", "3"):
+            with self.subTest(current_command=current_command):
+                control = FlowControl()
+                page = Mock()
+                flow_task = Mock()
+
+                self.assertTrue(
+                    await handle_control_command(
+                        "2", page, flow_task, control, current_command
+                    )
+                )
+                self.assertEqual(
+                    control.boss_pause_target,
+                    FlowControl.PAUSE_AT_ANY_BOSS,
+                )
+
+                self.assertTrue(
+                    await handle_control_command(
+                        "3", page, flow_task, control, current_command
+                    )
+                )
+                self.assertEqual(
+                    control.boss_pause_target,
+                    FlowControl.PAUSE_AT_FINAL_BOSS,
+                )
+
+                self.assertTrue(
+                    await handle_control_command(
+                        "7", page, flow_task, control, current_command
+                    )
+                )
+                self.assertEqual(
+                    control.boss_pause_target,
+                    FlowControl.PAUSE_AT_FINAL_BOSS,
+                )
+
+    async def test_automap_hotkeys_ignore_other_flows(self):
         control = FlowControl()
-        page = Mock()
-        flow_task = Mock()
 
-        self.assertTrue(
-            await handle_control_command("2", page, flow_task, control, "3")
+        self.assertFalse(
+            await handle_control_command("2", Mock(), Mock(), control, "1")
         )
-        self.assertEqual(
-            control.boss_pause_target,
-            FlowControl.PAUSE_AT_ANY_BOSS,
-        )
+        self.assertIsNone(control.boss_pause_target)
 
-        self.assertTrue(
-            await handle_control_command("3", page, flow_task, control, "3")
-        )
-        self.assertEqual(
-            control.boss_pause_target,
-            FlowControl.PAUSE_AT_FINAL_BOSS,
-        )
+    def test_shift_2_and_shift_3_use_the_same_flow_control(self):
+        self.assertIs(FLOW_COMMANDS["2"].control_factory, FlowControl)
+        self.assertIs(FLOW_COMMANDS["3"].control_factory, FlowControl)
 
-        self.assertTrue(
-            await handle_control_command("7", page, flow_task, control, "3")
-        )
-        self.assertEqual(
-            control.boss_pause_target,
-            FlowControl.PAUSE_AT_FINAL_BOSS,
-        )
-
-    async def test_start_auto_hotkeys_can_be_remapped_by_config_values(self):
-        control = FlowControl()
+    async def test_automap_hotkeys_can_be_remapped_by_config_values(self):
         remapped = {
             "pause_resume": "4",
             "pause_at_boss": "5",
@@ -104,36 +123,39 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             "screenshot": "9",
         }
 
-        self.assertTrue(
-            await handle_control_command(
-                "5",
-                Mock(),
-                Mock(),
-                control,
-                "3",
-                remapped,
-            )
-        )
-        self.assertEqual(
-            control.boss_pause_target,
-            FlowControl.PAUSE_AT_ANY_BOSS,
-        )
+        for current_command in ("2", "3"):
+            with self.subTest(current_command=current_command):
+                control = FlowControl()
+                self.assertTrue(
+                    await handle_control_command(
+                        "5",
+                        Mock(),
+                        Mock(),
+                        control,
+                        current_command,
+                        remapped,
+                    )
+                )
+                self.assertEqual(
+                    control.boss_pause_target,
+                    FlowControl.PAUSE_AT_ANY_BOSS,
+                )
 
-        # The old default is now unmapped and must be ignored.
-        self.assertTrue(
-            await handle_control_command(
-                "2",
-                Mock(),
-                Mock(),
-                control,
-                "3",
-                remapped,
-            )
-        )
-        self.assertEqual(
-            control.boss_pause_target,
-            FlowControl.PAUSE_AT_ANY_BOSS,
-        )
+                # The old default is now unmapped and must be ignored.
+                self.assertTrue(
+                    await handle_control_command(
+                        "2",
+                        Mock(),
+                        Mock(),
+                        control,
+                        current_command,
+                        remapped,
+                    )
+                )
+                self.assertEqual(
+                    control.boss_pause_target,
+                    FlowControl.PAUSE_AT_ANY_BOSS,
+                )
 
     def test_start_auto_hotkey_config_rejects_duplicate_digits(self):
         with self.assertRaisesRegex(ValueError, "cannot assign one digit twice"):

@@ -14,8 +14,9 @@ CAPTURE_HERO_FALLBACK_SCREENSHOTS = True
 # This is read at runner startup; changing it requires restarting the runner.
 ENABLE_SCRIPT_INJECTION = False
 
-# Hotkeys intercepted while the Shift+3 start-auto flow is running. Keep the
-# action names unchanged and edit only the digit strings to remap controls.
+# Hotkeys intercepted while the Shift+2 auto-map or Shift+3 start-auto flow is
+# running. Keep the action names unchanged and edit only the digit strings to
+# remap controls.
 # Every action must use a distinct digit from "0" through "9".
 START_AUTO_HOTKEYS = {
     "pause_resume": "1",

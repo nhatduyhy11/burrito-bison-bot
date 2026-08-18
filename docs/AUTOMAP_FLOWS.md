@@ -9,7 +9,7 @@ cho thứ tự ưu tiên, điều kiện và kết quả của cả hai flow.
 |---|---|---|
 | Vào room và bắt đầu trận | Người dùng thực hiện trước | Tự chạy prefix action của `Shift+1` |
 | Auto-map trong trận | Chạy `run_automap_flow()` một lần | Gọi cùng `run_automap_flow()` trong mỗi loop |
-| Hotkey pause khi flow đang chạy | Không | `Shift+1` ngay lập tức; `Shift+2` ở boss kế tiếp; `Shift+3` ở final boss |
+| Hotkey pause khi flow đang chạy | `Shift+1` ngay lập tức; `Shift+2` ở boss kế tiếp; `Shift+3` ở final boss | Giống `Shift+2` |
 | Cooldown giữa map | Không | 2 giây |
 | Đếm win xuyên nhiều map | Không | Có |
 | Handoff đặc biệt ở loop 3 | Không | Có nếu hai loop đầu chưa ghi nhận win |
@@ -184,8 +184,9 @@ Daily-first-win là một sub-flow riêng trong
   limitation này; nếu cần phân loại sau này phải thêm stage signal riêng.
 - Không xử lý riêng khoảnh khắc thanh máu cuối cạn và chuyển đen; flow chấp nhận
   edge case này và pause trong trạng thái boss thông thường còn thanh máu.
-- `Shift+2` arm pause một lần ở boss bất kỳ; `Shift+3` arm pause một lần ở final
-  boss. Khi boss match policy, flow click `rooms/exit_click.png` để pause game,
+- Trong lúc flow `Shift+2` hoặc `Shift+3` đang chạy, `Shift+2` arm pause một lần ở
+  boss bất kỳ; `Shift+3` arm pause một lần ở final boss. Khi boss match policy,
+  flow click `rooms/exit_click.png` để pause game,
   rồi pause script bằng `FlowControl`. Flow vẫn sống và chờ manual resume, không
   bấm `exit_confirm`, không handoff và không trở về idle.
 - Nếu không match được nút pause game hoặc click lỗi, script vẫn pause theo
@@ -270,8 +271,9 @@ Danh sách asset, thứ tự sort, threshold và chi tiết fallback được gi
 ## `Shift+2`: chạy một map
 
 `Shift+2` gọi thẳng `run_automap_flow()`. Người dùng phải vào map và bấm
-`start_battle` trước khi kích hoạt hotkey. Khi core hoàn tất hoặc dừng, runner
-trở về idle và không tự bắt đầu map tiếp theo.
+`start_battle` trước khi kích hoạt hotkey. Trong lúc chạy, flow nhận cùng bộ
+hotkey pause/resume, pause-at-boss, screenshot và stop như `Shift+3`. Khi core
+hoàn tất hoặc dừng, runner trở về idle và không tự bắt đầu map tiếp theo.
 
 ## `Shift+3`: start-auto loop
 
@@ -281,6 +283,7 @@ chạy, `Shift+1` pause ngay và bấm lại để resume đúng state hiện t�
 nhận diện final boss. Hai policy boss có thể thay thế nhau trước khi trigger.
 `Shift+8` vẫn chụp screenshot, `Shift+0` dừng hẳn flow, còn các Shift+digit khác
 bị ignore cho tới khi flow kết thúc. Flow không restart từ đầu sau khi resume.
+Các control trên hoạt động giống nhau khi `Shift+2` hoặc `Shift+3` đang chạy.
 Các số này là giá trị của dict `START_AUTO_HOTKEYS` trong
 `tools/hauntedroom/settings.py`, nên có thể remap mà không sửa controller.
 

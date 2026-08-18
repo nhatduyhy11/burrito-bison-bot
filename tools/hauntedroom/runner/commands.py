@@ -170,6 +170,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "auto-map battle",
             "Auto-map battle",
             resolve_automap,
+            control_factory=FlowControl,
         ),
         "3": FlowCommand(
             "3",

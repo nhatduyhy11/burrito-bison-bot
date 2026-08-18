@@ -94,7 +94,7 @@ async def handle_boss_critical(
                     )
 
         if pause_for_detected_boss(is_final_boss=is_final_boss):
-            print(f"Start-auto loop paused at {boss_kind.lower()}.", flush=True)
+            print(f"Auto-map flow paused at {boss_kind.lower()}.", flush=True)
         return BossCriticalOutcome(True, boss_detection_logged=True)
 
     if is_final_boss and not final_boss_pet_deployed:
