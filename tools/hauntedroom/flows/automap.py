@@ -26,10 +26,8 @@ from hauntedroom.flows.automap_support.hero_levelup_vision import (
     HERO_LEVELUP_TEMPLATE_PATHS,
     load_hero_levelup_templates,
 )
-from hauntedroom.flows.automap_support.gear_action import (
-    deploy_initial_gear,
-    find_gear_button,
-)
+from hauntedroom.flows.automap_support.gear_action import deploy_initial_gear
+from hauntedroom.flows.automap_support.gear_vision import find_gear_button
 from hauntedroom.flows.automap_support.boss_detector import (
     boss_progress_is_full,
     find_boss_health_bar,

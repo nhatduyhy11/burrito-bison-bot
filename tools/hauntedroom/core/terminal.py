@@ -7,9 +7,9 @@ from typing import Optional, TextIO
 
 GREEN = "\033[32m"
 YELLOW = "\033[33m"
-BLUE = "\033[34m"
+RED = "\033[31m"
 ORANGE = "\033[38;5;208m"
-CYAN = "\033[36m"
+BLUE = "\033[36m"
 RESET = "\033[0m"
 
 

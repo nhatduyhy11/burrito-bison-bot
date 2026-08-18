@@ -10,11 +10,7 @@ import numpy as np
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TOOLS_DIR = PROJECT_ROOT / "tools"
 FIXTURES_DIR = (
-    PROJECT_ROOT
-    / "tests"
-    / "fixtures"
-    / "hauntedroom-captures"
-    / "gear_placement"
+    PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures" / "gear_placement"
 )
 sys.path.insert(0, str(TOOLS_DIR))
 
@@ -29,17 +25,15 @@ from hauntedroom.flows.automap_support.gear_action import (
     GEAR_MENU_OPEN_ATTEMPTS,
     GEAR_MENU_SETTLE_MS,
     deploy_initial_gear,
-    find_gear_button,
-    find_gear_drop_position,
-    gear_menu_is_open,
 )
 
 
-class GearDetectorTest(IsolatedAsyncioTestCase):
+class GearActionTest(IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         cls.gear_open = cv2.imread(str(FIXTURES_DIR / "gear_open.png"))
         cls.gear_place = cv2.imread(str(FIXTURES_DIR / "gear_place.png"))
+        cls.miniboss = cv2.imread(str(FIXTURES_DIR.parent / "miniboss_bar.png"))
 
     def setUp(self):
         self.page = Mock()
@@ -50,18 +44,6 @@ class GearDetectorTest(IsolatedAsyncioTestCase):
         self.page.mouse.move = AsyncMock()
         self.page.mouse.down = AsyncMock()
         self.page.mouse.up = AsyncMock()
-
-    def test_detects_available_plus_only_before_placement(self):
-        self.assertEqual(find_gear_button(self.gear_open), (162, 661))
-        self.assertIsNone(find_gear_button(self.gear_place))
-
-    def test_derives_drop_point_from_door_hp_bar(self):
-        self.assertEqual(find_gear_drop_position(self.gear_open), (250, 370))
-        self.assertEqual(find_gear_drop_position(self.gear_place), (250, 370))
-
-    def test_detects_menu_open_and_closed_states(self):
-        self.assertTrue(gear_menu_is_open(self.gear_open))
-        self.assertFalse(gear_menu_is_open(self.gear_place))
 
     @patch(
         "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
@@ -118,15 +100,115 @@ class GearDetectorTest(IsolatedAsyncioTestCase):
         )
 
     @patch(
+        "hauntedroom.flows.automap_support.gear_action.find_gear_drop_position",
+        return_value=None,
+    )
+    @patch(
         "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
         new_callable=AsyncMock,
     )
-    async def test_deploy_stops_after_menu_retry_limit(self, capture):
+    async def test_missing_door_anchor_closes_menu_and_soft_fails_as_placed(
+        self,
+        capture,
+        _find_gear_drop_position,
+    ):
+        capture.side_effect = [self.gear_open, self.gear_place]
+
+        placed = await deploy_initial_gear(self.page, self.gear_open)
+
+        self.assertTrue(placed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(162, 661), call(162, 661)],
+        )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [call(GEAR_MENU_SETTLE_MS), call(GEAR_MENU_SETTLE_MS)],
+        )
+        self.page.mouse.down.assert_not_awaited()
+
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_unverified_drag_closes_open_menu_and_soft_fails_as_placed(
+        self,
+        capture,
+    ):
+        capture.side_effect = [
+            self.gear_open,
+            self.gear_open,
+            self.gear_place,
+        ]
+
+        placed = await deploy_initial_gear(self.page, self.gear_open)
+
+        self.assertTrue(placed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(162, 661), call(162, 661)],
+        )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list[-2:],
+            [call(GEAR_DROP_SETTLE_MS), call(GEAR_MENU_SETTLE_MS)],
+        )
+        self.page.mouse.down.assert_awaited_once_with()
+        self.page.mouse.up.assert_awaited_once_with()
+
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_unverified_drag_does_not_reopen_closed_menu(self, capture):
+        capture.side_effect = [self.gear_open, self.miniboss]
+
+        placed = await deploy_initial_gear(self.page, self.gear_open)
+
+        self.assertTrue(placed)
+        self.page.mouse.click.assert_awaited_once_with(162, 661)
+
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.smooth_drag",
+        new_callable=AsyncMock,
+    )
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_drag_exception_closes_menu_and_soft_fails_as_placed(
+        self,
+        capture,
+        smooth_drag,
+    ):
+        capture.side_effect = [
+            self.gear_open,
+            self.gear_open,
+            self.gear_place,
+        ]
+        smooth_drag.side_effect = RuntimeError("drag failed")
+
+        placed = await deploy_initial_gear(self.page, self.gear_open)
+
+        self.assertTrue(placed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(162, 661), call(162, 661)],
+        )
+        smooth_drag.assert_awaited_once()
+
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_menu_retry_limit_soft_fails_as_placed_when_closed(
+        self,
+        capture,
+    ):
         capture.return_value = np.zeros_like(self.gear_open)
 
         placed = await deploy_initial_gear(self.page, self.gear_open)
 
-        self.assertFalse(placed)
+        self.assertTrue(placed)
         self.assertEqual(
             self.page.mouse.click.await_count,
             GEAR_MENU_OPEN_ATTEMPTS,

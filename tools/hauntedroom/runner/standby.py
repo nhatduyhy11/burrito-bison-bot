@@ -5,7 +5,7 @@ from typing import Mapping, Optional
 from hauntedroom import settings
 from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
-from hauntedroom.core.terminal import GREEN, ORANGE, YELLOW, colorize
+from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
 
 
 START_AUTO_HOTKEY_ACTIONS = frozenset(
@@ -101,7 +101,10 @@ async def handle_control_command(
         if action == "pause_resume":
             if stop_event.is_paused:
                 stop_event.resume()
-                print("Auto-map flow resumed.", flush=True)
+                print(
+                    colorize("Auto-map flow resumed.", BLUE),
+                    flush=True,
+                )
             else:
                 stop_event.pause()
                 print(

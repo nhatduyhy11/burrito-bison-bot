@@ -24,6 +24,7 @@ from hauntedroom.flows.automap_support import (
     completion_flow,
     detectors,
     gear_action,
+    gear_vision,
     hero_action,
     hero_levelup_vision,
     map_completion,
@@ -171,6 +172,7 @@ def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
     importlib.reload(boss_detector)
     importlib.reload(detectors)
     importlib.reload(boss_action)
+    importlib.reload(gear_vision)
     importlib.reload(gear_action)
     importlib.reload(hero_levelup_vision)
     importlib.reload(state)
