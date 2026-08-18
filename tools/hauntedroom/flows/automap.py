@@ -53,9 +53,11 @@ from hauntedroom.flows.automap_support.upgrade_action import (
 from hauntedroom.flows.automap_support.upgrade_action import (
     handle_level_up as _handle_level_up,
 )
-from hauntedroom.flows.automap_support.vision.boss import (
-    boss_progress_is_full,
+from hauntedroom.flows.automap_support.vision.boss_hp import (
     find_boss_health_bar,
+)
+from hauntedroom.flows.automap_support.vision.boss_progress import (
+    boss_progress_is_full,
 )
 from hauntedroom.flows.automap_support.vision.build import (
     find_first_available_build_option,

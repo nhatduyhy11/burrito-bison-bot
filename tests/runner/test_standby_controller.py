@@ -191,7 +191,9 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             state,
         )
         from hauntedroom.flows.automap_support.vision import (
-            boss as boss_vision,
+            boss_controls as boss_controls_vision,
+            boss_hp as boss_hp_vision,
+            boss_progress as boss_progress_vision,
             build as build_vision,
             gear as gear_vision,
             hero_levelup as hero_levelup_vision,
@@ -202,7 +204,9 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         refreshed_automap = Mock(run_automap_flow=refreshed_flow)
         reload_module.side_effect = [
             settings,
-            boss_vision,
+            boss_controls_vision,
+            boss_hp_vision,
+            boss_progress_vision,
             build_vision,
             gear_vision,
             hero_levelup_vision,
@@ -228,7 +232,9 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             reload_module.call_args_list,
             [
                 call(settings),
-                call(boss_vision),
+                call(boss_controls_vision),
+                call(boss_hp_vision),
+                call(boss_progress_vision),
                 call(build_vision),
                 call(gear_vision),
                 call(hero_levelup_vision),

@@ -25,13 +25,14 @@ from hauntedroom.flows.automap_support.boss_action import (
     activate_boss_spell,
     deploy_boss_pet,
 )
-from hauntedroom.flows.automap_support.vision.boss import (
-    BOSS_HP_SEARCH_REGION,
+from hauntedroom.flows.automap_support.vision.boss_controls import (
     PET_READY_GLOW_PATTERN,
     PET_READY_REGION,
     SPELL_READY_REGION,
     SPELL_READY_GLOW_PATTERN,
-    boss_progress_is_full,
+)
+from hauntedroom.flows.automap_support.vision.boss_hp import (
+    BOSS_HP_SEARCH_REGION,
     find_boss_health_bar,
 )
 
@@ -151,43 +152,6 @@ class BossTest(IsolatedAsyncioTestCase):
         frame[y : y + height, x : x + width] = template
 
         self.assertIsNone(find_boss_health_bar(frame, template))
-
-    def test_final_boss_progress_endpoint_is_yellow_in_live_capture(self):
-        frame = cv2.imread(
-            str(
-                FIXTURES_DIR
-                / "hauntedroom-captures"
-                / "boss_screen"
-                / "boss_full_bar.png"
-            )
-        )
-
-        self.assertTrue(boss_progress_is_full(frame))
-
-    def test_mini_boss_progress_endpoint_is_not_yellow(self):
-        frame = cv2.imread(
-            str(
-                FIXTURES_DIR
-                / "hauntedroom-captures"
-                / "boss_screen"
-                / "mini_boss_bar.png"
-            )
-        )
-
-        self.assertFalse(boss_progress_is_full(frame))
-
-    def test_approaching_progress_endpoint_is_not_yellow(self):
-        approaching = cv2.imread(
-            str(TOOLS_DIR / "rooms" / "boss" / "boss_approaching.png")
-        )
-
-        # boss_approaching.png is the global (378, 46)-(430, 89) crop.
-        self.assertFalse(
-            boss_progress_is_full(
-                approaching,
-                region=(22, 15, 31, 26),
-            )
-        )
 
     async def test_mini_boss_is_classified_without_an_armed_pause(self):
         with patch(

@@ -169,10 +169,11 @@ Daily-first-win là một sub-flow riêng trong
 ### 4. Manual boss pause control
 
 - Tìm HP bar trước để phát hiện cả mini-boss lẫn final boss cần pause.
-- Sau khi HP match, phân loại bằng endpoint cố định `(400, 61, 409, 72)`
-  của thanh progress trên cùng: ít nhất `85%` pixel vàng là final boss;
-  progress chưa tới endpoint là mini-boss. Classifier không được dùng để
-  short-circuit HP detection.
+- Sau khi HP match, tìm component đỏ của icon boss trong vùng HUD phía trên,
+  rồi suy ra endpoint của thanh progress ngay trước icon. Cách anchor tương đối
+  này chịu được layout HUD lệch vài pixel. Ít nhất `85%` pixel vàng tại endpoint
+  là final boss; progress chưa tới endpoint là mini-boss. Classifier không được
+  dùng để short-circuit HP detection.
 - Nhận diện các cạnh sọc dọc của `boss/boss_hp_bar.png` ở đúng kích thước
   cố định `61x11`, không phụ thuộc màu thanh HP.
 - Candidate rõ chỉ hợp lệ khi cả anchor trái và phải của toàn thanh đều match;
@@ -197,8 +198,9 @@ Daily-first-win là một sub-flow riêng trong
   search; log này không lặp theo từng frame trong cùng một lần HP hiện diện. Khi
   không có boss pause policy đang được arm, mini-boss chỉ log/no-op; final boss
   vẫn đi qua nhánh deploy pet nếu pet chưa được deploy trong flow hiện tại.
-- Logic nhận diện và action boss hỗ trợ nằm trong
-  `flows/automap_support/boss_detector.py` và `boss_action.py`.
+- Logic nhận diện boss nằm trong `vision/boss_hp.py`,
+  `vision/boss_progress.py` và `vision/boss_controls.py`; thao tác tương ứng nằm
+  trong `boss_action.py` và orchestration nằm trong `boss_flow.py`.
 
 #### Final-boss pet activation
 
@@ -347,12 +349,11 @@ support, các module `flows.automap_support`, rồi `flows.automap`. Các phase
 nội bộ `completion_flow/` chứa `first_win.py`, `reward.py`, `blocker.py` và
 `state.py`; file `state.py` gom shared state/result cùng các runtime context để
 tránh sinh thêm module quá nhỏ. Các helper này chỉ được map-completion consume.
-Các phase khác gồm
-`upgrade_action.py`, `hero_action.py` và `boss_flow.py`; detector/action nền vẫn
-nằm ở `boss_detector.py`, `detectors.py`, `boss_action.py`, `gear_action.py` và
-`hero_levelup_vision.py`. Với `Shift+3`, action JSON cũng được load lại trước khi
-lấy prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở
-trạng thái idle để có thể sửa và thử lại.
+Các phase khác gồm `upgrade_action.py`, `hero_action.py` và `boss_flow.py`;
+detector/action nền nằm trong package `vision/`, `boss_action.py` và
+`gear_action.py`. Với `Shift+3`, action JSON cũng được load lại trước khi lấy
+prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở trạng
+thái idle để có thể sửa và thử lại.
 
 ## Vị trí code và test
 

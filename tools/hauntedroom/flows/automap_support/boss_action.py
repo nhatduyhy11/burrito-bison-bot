@@ -10,7 +10,7 @@ from hauntedroom.core.runtime import flow_checkpoint
 from hauntedroom.core.template import load_bgr_reference
 from hauntedroom.core.terminal import BLUE, colorize
 from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.flows.automap_support.vision.boss import (
+from hauntedroom.flows.automap_support.vision.boss_controls import (
     boss_spell_is_ready,
     find_active_pet_summon,
     find_ready_boss_pet,

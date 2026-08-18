@@ -34,7 +34,13 @@ from hauntedroom.flows.automap_support.completion_flow import (
     state,
 )
 from hauntedroom.flows.automap_support.vision import (
-    boss as boss_vision,
+    boss_controls as boss_controls_vision,
+)
+from hauntedroom.flows.automap_support.vision import (
+    boss_hp as boss_hp_vision,
+)
+from hauntedroom.flows.automap_support.vision import (
+    boss_progress as boss_progress_vision,
 )
 from hauntedroom.flows.automap_support.vision import (
     build as build_vision,
@@ -181,7 +187,9 @@ def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
 
     action_runner = reload_action_modules()
     importlib.reload(settings)
-    importlib.reload(boss_vision)
+    importlib.reload(boss_controls_vision)
+    importlib.reload(boss_hp_vision)
+    importlib.reload(boss_progress_vision)
     importlib.reload(build_vision)
     importlib.reload(gear_vision)
     importlib.reload(hero_levelup_vision)
