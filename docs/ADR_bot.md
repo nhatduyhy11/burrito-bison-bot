@@ -104,6 +104,7 @@ import `actions`, `flows` hay entrypoint.
   phá của `Shift+6`.
 - `flows/click_loop.py`: fixed-position click loop của `Shift+7`.
 - `flows/research.py`: flow research của `Shift+9`.
+- `flows/artifact.py`: flow kích hoạt Artifact của `Shift+Y`.
 - `hauntedroom_runner.py`: composition root và browser bootstrap. Entrypoint nối
   CLI/browser với action runner hoặc standby controller, và inject `FLOW_COMMANDS`
   vào standby.

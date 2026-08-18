@@ -59,3 +59,7 @@ find . -type f -name '*.py' \
   awk '$1 > 100 && $2 != "total" { printf "%4d %s\n", $1, $2 }' |
   head -15
 ```
+
+```bash
+uv run python tools/hauntedroom_runner.py --dev-reload --profile .tmp/p554
+```

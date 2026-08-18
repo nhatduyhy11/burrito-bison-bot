@@ -295,9 +295,15 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         self.assertIs(get_automap_flow(), automap.run_automap_flow)
 
-    def test_hotkey_script_accepts_digits_only(self):
+    def test_hotkey_script_accepts_digits_and_y(self):
         self.assertIn("/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
+        self.assertIn('event.code === "KeyY"', HOTKEY_SCRIPT)
+        self.assertIn('? "y"', HOTKEY_SCRIPT)
         self.assertNotIn('event.code === "Minus"', HOTKEY_SCRIPT)
+
+    def test_shift_y_is_registered_for_artifact_flow(self):
+        self.assertEqual(FLOW_COMMANDS["y"].key, "Y")
+        self.assertEqual(FLOW_COMMANDS["y"].name, "artifact")
 
     def test_shift_8_capture_directory_is_inside_test_fixtures(self):
         self.assertEqual(

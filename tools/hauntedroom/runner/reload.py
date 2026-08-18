@@ -8,6 +8,7 @@ from hauntedroom.control_events import blockers as control_blockers
 from hauntedroom.control_events import new_tab_blocker
 from hauntedroom.core import template, vision
 from hauntedroom.flows import (
+    artifact,
     automap,
     click_loop,
     exp_available,
@@ -15,6 +16,7 @@ from hauntedroom.flows import (
     research,
     train,
 )
+from hauntedroom.flows.artifact import run_artifact_flow
 from hauntedroom.flows.automap_support import (
     boss_action,
     boss_detector,
@@ -97,6 +99,21 @@ def get_research_flow(dev_reload: bool = False):
     run_research_flow = reloaded_research.run_research_flow
     print("Research modules reloaded.", flush=True)
     return run_research_flow
+
+
+def get_artifact_flow(dev_reload: bool = False):
+    global run_artifact_flow
+
+    if not dev_reload:
+        return run_artifact_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(template)
+    importlib.reload(vision)
+    reloaded_artifact = importlib.reload(artifact)
+    run_artifact_flow = reloaded_artifact.run_artifact_flow
+    print("Artifact modules reloaded.", flush=True)
+    return run_artifact_flow
 
 
 def get_exp_available_flow(dev_reload: bool = False):

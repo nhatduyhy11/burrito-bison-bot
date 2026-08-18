@@ -134,6 +134,18 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_artifact(
+        actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        artifact_flow = reload_policy.get_artifact_flow(dev_reload)
+
+        async def run(page, stop_event, _debug: bool):
+            return await artifact_flow(page, stop_event)
+
+        return ResolvedFlow(actions, run)
+
     def resolve_exp_available(
         actions: list[Action],
         dev_reload: bool,
@@ -208,5 +220,11 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "research",
             "Research",
             resolve_research,
+        ),
+        "y": FlowCommand(
+            "Y",
+            "artifact",
+            "Artifact",
+            resolve_artifact,
         ),
     }
