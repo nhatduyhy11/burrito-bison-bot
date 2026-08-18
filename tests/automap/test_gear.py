@@ -26,6 +26,7 @@ from hauntedroom.flows.automap_support.gear_action import (
     GEAR_DROP_HOLD_MS,
     GEAR_DROP_SETTLE_MS,
     GEAR_ITEM_POSITION,
+    GEAR_MENU_OPEN_ATTEMPTS,
     GEAR_MENU_SETTLE_MS,
     deploy_initial_gear,
     find_gear_button,
@@ -95,6 +96,46 @@ class GearDetectorTest(IsolatedAsyncioTestCase):
         )
         self.page.mouse.down.assert_awaited_once_with()
         self.page.mouse.up.assert_awaited_once_with()
+
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_deploy_retries_click_when_menu_does_not_open(self, capture):
+        menu_closed = np.zeros_like(self.gear_open)
+        capture.side_effect = [menu_closed, self.gear_open, self.gear_place]
+
+        placed = await deploy_initial_gear(self.page, self.gear_open)
+
+        self.assertTrue(placed)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(162, 661), call(162, 661)],
+        )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list[:2],
+            [call(GEAR_MENU_SETTLE_MS), call(GEAR_MENU_SETTLE_MS)],
+        )
+
+    @patch(
+        "hauntedroom.flows.automap_support.gear_action.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_deploy_stops_after_menu_retry_limit(self, capture):
+        capture.return_value = np.zeros_like(self.gear_open)
+
+        placed = await deploy_initial_gear(self.page, self.gear_open)
+
+        self.assertFalse(placed)
+        self.assertEqual(
+            self.page.mouse.click.await_count,
+            GEAR_MENU_OPEN_ATTEMPTS,
+        )
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [call(GEAR_MENU_SETTLE_MS)] * GEAR_MENU_OPEN_ATTEMPTS,
+        )
+        self.page.mouse.down.assert_not_awaited()
 
     @patch("hauntedroom.flows.automap.load_template")
     @patch("hauntedroom.flows.automap.deploy_initial_gear", new_callable=AsyncMock)

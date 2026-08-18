@@ -1,6 +1,6 @@
 # Click Action Audit
 
-Audit date: 2026-08-17
+Audit date: 2026-08-18
 
 ## Scope
 
@@ -25,6 +25,8 @@ different contracts:
 4. **Wait then click**: deliberate pre-click delay, often followed by template
    detection rather than another fixed wait.
 5. **Click then re-detect**: the wait is only part of a state-observation loop.
+6. **`CLICK_RETRY_TEMPLATE`**: click, wait for an explicit expected state, and
+   retry the click when that state does not appear.
 
 The safest first extraction is the lower-level **bot click** primitive. A
 shared `click_and_wait` is viable for group 2, but should not absorb the other
@@ -96,12 +98,48 @@ and cooperative-cancellation contract differs from a raw timeout.
 | Flow | Sequence | Risk / distinction |
 | --- | --- | --- |
 | Boss spell | Click spell at `boss_action.py:76`, raw wait `200 ms` at `:77`, click boss at `:78` | Short target-selection gesture; no stop/pause check between the two clicks. |
-| Gear menu | Click gear button at `gear_action.py:164`, raw wait `1000 ms` at `:165` | Then capture and verify that the menu opened. |
-| Gear placement | Smooth drag ending at `gear_action.py:185`, raw wait `800 ms` at `:195` | Interaction is drag rather than click, but the same settle concept applies. |
+| Gear menu | Click gear button in the retry loop at `gear_action.py:167`, raw wait `1000 ms` at `:168` | Capture and verify that the menu opened; if not, refresh the detected button position and click again, up to `GEAR_MENU_OPEN_ATTEMPTS = 3`. This is the current specialized `CLICK_RETRY_TEMPLATE` behavior. |
+| Gear placement | Smooth drag starting at `gear_action.py:200`, raw wait `800 ms` at `:210` | Interaction is drag rather than click, but the same settle concept applies. |
 | Research available/active | Clicks at `research.py:89` and `:142`; the active loop waits `RESEARCH_POLL_MS = 600` before its next capture | Stop is checked after the raw wait, not through `FlowControl.checkpoint()`. |
 
 These should not silently become cancellable or pause-aware as part of a
 mechanical refactor; that would be a behavior change worth testing explicitly.
+
+## `CLICK_RETRY_TEMPLATE`
+
+This pattern is distinct from both `click_and_wait` and a passive template poll.
+Its contract is:
+
+```text
+for attempt in 1..max_attempts:
+    click target
+    wait settle_ms
+    capture current state
+    if expected state is present:
+        return success
+return failure
+```
+
+The expected state must be explicit: normally an `expected_template`, or a
+named detector when the state is not represented by a stable image template.
+The click is retried only while that expected state is absent. A successful
+click must not be inferred merely from the source button disappearing on one
+frame.
+
+The conceptual inputs are:
+
+| Input | Meaning |
+| --- | --- |
+| `click_target` | Position or detected source used for every click attempt. It may be re-detected between attempts. |
+| `expected_state` | Template or detector proving that the click produced the intended UI state. |
+| `settle_ms` | Delay after each click before validating the state. |
+| `max_attempts` | Total bounded click attempts, including the first click. |
+| `stop_event` | Optional cooperative cancellation checked before another attempt. |
+
+The result must distinguish `success`, retry exhaustion, and cancellation so
+the owning flow can decide whether to abort, skip, or continue scanning. Gear
+menu opening is the first concrete instance: `gear_menu_is_open` is the expected
+state, and the flow retries the gear-button click up to three times.
 
 ## Related patterns that are not `click -> wait`
 

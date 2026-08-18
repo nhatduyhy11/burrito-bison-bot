@@ -163,6 +163,8 @@ Daily-first-win là một sub-flow riêng trong
   vòng quét sau.
 - Logic nhận diện button, mở menu và kéo gear nằm trong
   `flows/automap_support/gear_action.py`.
+- Nếu click gear nhưng menu chưa mở, flow click lại tối đa 3 lần trước khi bỏ
+  placement của map hiện tại.
 
 ### 4. Manual boss pause control
 

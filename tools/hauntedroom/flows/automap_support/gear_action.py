@@ -28,6 +28,7 @@ GEAR_MENU_MIN_LOW_SATURATION_RATIO = 0.15
 GEAR_MENU_MAX_CYAN_RATIO = 0.40
 GEAR_ITEM_POSITION = (320, 526)
 GEAR_MENU_SETTLE_MS = 1_000
+GEAR_MENU_OPEN_ATTEMPTS = 3
 GEAR_DROP_SETTLE_MS = 800
 GEAR_DRAG_HOLD_MS = 700
 GEAR_DRAG_STEPS = 12
@@ -156,16 +157,30 @@ async def deploy_initial_gear(
     if gear_button is None:
         return False
 
-    print(
-        f"Initial gear is available; opening menu at {gear_button[0]},"
-        f"{gear_button[1]}.",
-        flush=True,
-    )
-    await click(page, *gear_button)
-    await page.wait_for_timeout(GEAR_MENU_SETTLE_MS)
-    popup_frame = await capture_page_bgr(page)
-    if not gear_menu_is_open(popup_frame):
-        print("Gear menu did not open; aborting one-shot placement.", flush=True)
+    popup_frame = frame_bgr
+    for attempt in range(1, GEAR_MENU_OPEN_ATTEMPTS + 1):
+        print(
+            f"Initial gear is available; opening menu at {gear_button[0]},"
+            f"{gear_button[1]} (attempt {attempt}/{GEAR_MENU_OPEN_ATTEMPTS}).",
+            flush=True,
+        )
+        await click(page, *gear_button)
+        await page.wait_for_timeout(GEAR_MENU_SETTLE_MS)
+        popup_frame = await capture_page_bgr(page)
+        if gear_menu_is_open(popup_frame):
+            break
+
+        if attempt < GEAR_MENU_OPEN_ATTEMPTS:
+            # Refresh the button position in case its animation moved between
+            # clicks. Fall back to the last known center on a transient miss.
+            gear_button = find_gear_button(popup_frame) or gear_button
+            print("Gear menu did not open; retrying gear click.", flush=True)
+    else:
+        print(
+            "Gear menu did not open after "
+            f"{GEAR_MENU_OPEN_ATTEMPTS} attempts; aborting placement.",
+            flush=True,
+        )
         return False
 
     drop_position = find_gear_drop_position(popup_frame)
