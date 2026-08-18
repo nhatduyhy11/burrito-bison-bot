@@ -50,6 +50,18 @@ async def handle_boss_critical(
             flush=True,
         )
 
+    pause_for_detected_boss = getattr(
+        stop_event,
+        "pause_for_detected_boss",
+        None,
+    )
+    if (
+        pause_for_detected_boss is not None
+        and pause_for_detected_boss(is_final_boss=is_final_boss)
+    ):
+        print(f"Start-auto loop paused at {boss_kind.lower()}.", flush=True)
+        return BossCriticalOutcome(True, boss_detection_logged=True)
+
     if click_exit_on_boss:
         exit_x, exit_y, exit_score = find_template_fn(
             frame_gray,

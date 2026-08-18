@@ -48,18 +48,23 @@ HOTKEY_SCRIPT = """
 class FlowControl:
     """Stop signal with an additional cooperative pause/resume gate."""
 
+    PAUSE_AT_ANY_BOSS = "any_boss"
+    PAUSE_AT_FINAL_BOSS = "final_boss"
+
     def __init__(self) -> None:
         self._stop_event = asyncio.Event()
         self._resume_event = asyncio.Event()
         self._resume_event.set()
         self._pause_started: Optional[float] = None
         self._paused_seconds = 0.0
+        self._boss_pause_target: Optional[str] = None
 
     def is_set(self) -> bool:
         return self._stop_event.is_set()
 
     def set(self) -> None:
         self._stop_event.set()
+        self._boss_pause_target = None
         # Release a task blocked in checkpoint() so it can observe the stop.
         self._resume_event.set()
 
@@ -73,6 +78,7 @@ class FlowControl:
     def pause(self) -> bool:
         if self.is_set() or self.is_paused:
             return False
+        self._boss_pause_target = None
         self._resume_event.clear()
         self._pause_started = asyncio.get_running_loop().time()
         return True
@@ -85,6 +91,30 @@ class FlowControl:
         self._pause_started = None
         self._resume_event.set()
         return True
+
+    @property
+    def boss_pause_target(self) -> Optional[str]:
+        return self._boss_pause_target
+
+    def pause_at_next_boss(self, *, final_only: bool) -> bool:
+        """Arm a one-shot pause for the next matching boss detection."""
+        if self.is_set() or self.is_paused:
+            return False
+        self._boss_pause_target = (
+            self.PAUSE_AT_FINAL_BOSS if final_only else self.PAUSE_AT_ANY_BOSS
+        )
+        return True
+
+    def pause_for_detected_boss(self, *, is_final_boss: bool) -> bool:
+        """Pause when a detected boss matches the armed one-shot policy."""
+        target = self._boss_pause_target
+        if target is None:
+            return False
+        if target == self.PAUSE_AT_FINAL_BOSS and not is_final_boss:
+            return False
+
+        self._boss_pause_target = None
+        return self.pause()
 
     def active_time(self) -> float:
         now = asyncio.get_running_loop().time()

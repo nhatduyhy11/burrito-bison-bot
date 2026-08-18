@@ -41,17 +41,39 @@ async def handle_control_command(
             print("Current flow continues.", flush=True)
         return True
 
-    if command == "3" and current_command == "3" and flow_task is not None:
-        if stop_event.is_paused:
-            stop_event.resume()
-            print("Start-auto loop resumed.", flush=True)
-        else:
-            stop_event.pause()
-            print(
-                "Start-auto loop paused. Press Shift+3 to resume or "
-                "Shift+0 to stop.",
-                flush=True,
-            )
+    if current_command == "3" and flow_task is not None:
+        if command == "1":
+            if stop_event.is_paused:
+                stop_event.resume()
+                print("Start-auto loop resumed.", flush=True)
+            else:
+                stop_event.pause()
+                print(
+                    "Start-auto loop paused. Press Shift+1 to resume or "
+                    "Shift+0 to stop.",
+                    flush=True,
+                )
+            return True
+
+        if command == "2":
+            if stop_event.pause_at_next_boss(final_only=False):
+                print(
+                    "Start-auto loop will pause at the next boss.",
+                    flush=True,
+                )
+            return True
+
+        if command == "3":
+            if stop_event.pause_at_next_boss(final_only=True):
+                print(
+                    "Start-auto loop will pause at the final boss.",
+                    flush=True,
+                )
+            return True
+
+        # While start-auto owns the runner, all other Shift+digit flow
+        # commands are intentionally ignored. Shift+0 and Shift+8 were handled
+        # above.
         return True
 
     return False
@@ -85,6 +107,8 @@ async def run_standby_controller(
         f"{format_flow_menu(flow_commands)}\n"
         "  Shift+8    Capture screenshot\n"
         "  Shift+0    Stop current flow\n"
+        "  During Shift+3: Shift+1 pause/resume; Shift+2 pause at boss; "
+        "Shift+3 pause at final boss\n"
         "  Ctrl+C     Close runner\n"
         "-------------------------\n"
         "Runner idle.",

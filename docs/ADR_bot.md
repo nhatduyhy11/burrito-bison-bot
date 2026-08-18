@@ -85,7 +85,8 @@ import `actions`, `flows` hay entrypoint.
   bị treo và retry có giới hạn cho lỗi Playwright timeout transient.
 - `runner/reload.py`: policy hot-reload module Python cho từng nhóm flow.
 - `runner/standby.py`: hotkey standby loop, control command `Shift+0`/`Shift+8`,
-  pause/resume `Shift+3` và lifecycle task. Module này nhận command table từ
+  pause policy `Shift+1`/`Shift+2`/`Shift+3` cho start-auto và lifecycle task.
+  Module này nhận command table từ
   entrypoint thay vì import `runner/commands.py`.
 - `flows/automap.py`: coordinator, state và public API của battle priority
   `Shift+2`.

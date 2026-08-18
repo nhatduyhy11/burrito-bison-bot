@@ -21,7 +21,10 @@ from hauntedroom.flows.click_loop import (
 )
 from hauntedroom.runner.default_commands import FLOW_COMMANDS
 from hauntedroom.runner.reload import AutomapRuntime, get_automap_flow
-from hauntedroom.runner.standby import run_standby_controller
+from hauntedroom.runner.standby import (
+    handle_control_command,
+    run_standby_controller,
+)
 
 
 class StandbyControllerTest(IsolatedAsyncioTestCase):
@@ -45,6 +48,50 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertFalse(await blocked_checkpoint)
         self.assertTrue(control.is_set())
         self.assertFalse(control.is_paused)
+
+    async def test_flow_control_pauses_only_for_armed_boss_kind(self):
+        control = FlowControl()
+
+        self.assertTrue(control.pause_at_next_boss(final_only=True))
+        self.assertEqual(
+            control.boss_pause_target,
+            FlowControl.PAUSE_AT_FINAL_BOSS,
+        )
+        self.assertFalse(control.pause_for_detected_boss(is_final_boss=False))
+        self.assertFalse(control.is_paused)
+
+        self.assertTrue(control.pause_for_detected_boss(is_final_boss=True))
+        self.assertTrue(control.is_paused)
+        self.assertIsNone(control.boss_pause_target)
+
+    async def test_start_auto_hotkeys_arm_boss_pauses_and_ignore_other_flows(self):
+        control = FlowControl()
+        page = Mock()
+        flow_task = Mock()
+
+        self.assertTrue(
+            await handle_control_command("2", page, flow_task, control, "3")
+        )
+        self.assertEqual(
+            control.boss_pause_target,
+            FlowControl.PAUSE_AT_ANY_BOSS,
+        )
+
+        self.assertTrue(
+            await handle_control_command("3", page, flow_task, control, "3")
+        )
+        self.assertEqual(
+            control.boss_pause_target,
+            FlowControl.PAUSE_AT_FINAL_BOSS,
+        )
+
+        self.assertTrue(
+            await handle_control_command("7", page, flow_task, control, "3")
+        )
+        self.assertEqual(
+            control.boss_pause_target,
+            FlowControl.PAUSE_AT_FINAL_BOSS,
+        )
 
     @patch("hauntedroom.runner.reload.reload_action_modules")
     @patch("hauntedroom.runner.reload.importlib.reload")
@@ -357,7 +404,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
     @patch("hauntedroom.runner.default_commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
     @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
-    async def test_shift_3_toggles_pause_and_resume_then_shift_0_stops(
+    async def test_shift_1_toggles_pause_and_resume_then_shift_0_stops(
         self,
         start_hotkey_listener,
         get_automap_runtime,
@@ -387,10 +434,10 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
                 command_queue.put_nowait("3")
                 await started.wait()
                 resumed.clear()
-                command_queue.put_nowait("3")
+                command_queue.put_nowait("1")
                 while not observed_control.is_paused:
                     await asyncio.sleep(0)
-                command_queue.put_nowait("3")
+                command_queue.put_nowait("1")
                 await resumed.wait()
                 command_queue.put_nowait("0")
                 await observed_control.wait()

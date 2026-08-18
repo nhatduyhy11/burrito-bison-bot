@@ -174,7 +174,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         "3": FlowCommand(
             "3",
             "start-auto loop",
-            "Start-auto loop / pause / resume",
+            "Start-auto loop / pause at final boss",
             resolve_start_auto,
             control_factory=FlowControl,
         ),

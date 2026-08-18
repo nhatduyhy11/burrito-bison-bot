@@ -12,6 +12,7 @@ TOOLS_DIR = PROJECT_ROOT / "tools"
 FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
+from hauntedroom.core.runtime import FlowControl
 from hauntedroom.core.vision import region_has_color_component
 from hauntedroom.flows.automap import (
     AutomapConfig,
@@ -297,6 +298,84 @@ class BossTest(IsolatedAsyncioTestCase):
         self.page.mouse.click.assert_awaited_once_with(612, 35)
         deploy_pet.assert_not_awaited()
         self.assertTrue(flow.boss_handoff_requested)
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    async def test_armed_any_boss_pause_happens_before_boss_actions(
+        self,
+        _load_template,
+    ):
+        control = FlowControl()
+        control.pause_at_next_boss(final_only=False)
+        flow = AutomapFlow(
+            self.page,
+            control,
+            AutomapConfig(click_exit_on_boss=True),
+        )
+        with (
+            patch(
+                "hauntedroom.flows.automap.find_boss_health_bar",
+                return_value=(250, 280, 0.90),
+            ),
+            patch(
+                "hauntedroom.flows.automap.boss_progress_is_full",
+                return_value=False,
+            ),
+            patch("hauntedroom.flows.automap.find_template") as find_exit,
+            patch(
+                "hauntedroom.flows.automap.deploy_boss_pet",
+                new_callable=AsyncMock,
+            ) as deploy_pet,
+        ):
+            handled = await flow.handle_boss_critical(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertTrue(handled)
+        self.assertTrue(control.is_paused)
+        find_exit.assert_not_called()
+        deploy_pet.assert_not_awaited()
+        self.page.mouse.click.assert_not_awaited()
+
+    @patch(
+        "hauntedroom.flows.automap.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    async def test_final_boss_pause_ignores_mini_boss_and_remains_armed(
+        self,
+        _load_template,
+    ):
+        control = FlowControl()
+        control.pause_at_next_boss(final_only=True)
+        flow = AutomapFlow(
+            self.page,
+            control,
+            AutomapConfig(click_exit_on_boss=False),
+        )
+        with (
+            patch(
+                "hauntedroom.flows.automap.find_boss_health_bar",
+                return_value=(250, 280, 0.90),
+            ),
+            patch(
+                "hauntedroom.flows.automap.boss_progress_is_full",
+                return_value=False,
+            ),
+        ):
+            handled = await flow.handle_boss_critical(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertFalse(handled)
+        self.assertFalse(control.is_paused)
+        self.assertEqual(
+            control.boss_pause_target,
+            FlowControl.PAUSE_AT_FINAL_BOSS,
+        )
 
     @patch(
         "hauntedroom.flows.automap.load_template",

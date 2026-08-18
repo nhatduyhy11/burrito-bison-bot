@@ -9,7 +9,7 @@ cho thứ tự ưu tiên, điều kiện và kết quả của cả hai flow.
 |---|---|---|
 | Vào room và bắt đầu trận | Người dùng thực hiện trước | Tự chạy prefix action của `Shift+1` |
 | Auto-map trong trận | Chạy `run_automap_flow()` một lần | Gọi cùng `run_automap_flow()` trong mỗi loop |
-| Pause/resume bằng `Shift+3` | Không | Có |
+| Hotkey pause khi flow đang chạy | Không | `Shift+1` ngay lập tức; `Shift+2` ở boss kế tiếp; `Shift+3` ở final boss |
 | Cooldown giữa map | Không | 2 giây |
 | Đếm win xuyên nhiều map | Không | Có |
 | Handoff đặc biệt ở loop 3 | Không | Có nếu hai loop đầu chưa ghi nhận win |
@@ -274,8 +274,11 @@ trở về idle và không tự bắt đầu map tiếp theo.
 ## `Shift+3`: start-auto loop
 
 Khi runner idle, `Shift+3` bắt đầu chạy nhiều map liên tiếp. Trong lúc flow đang
-chạy, bấm lại `Shift+3` để pause và bấm lần nữa để resume đúng state hiện tại;
-flow không restart từ đầu. Khi đang chạy hoặc pause, `Shift+0` dừng hẳn flow.
+chạy, `Shift+1` pause ngay và bấm lại để resume đúng state hiện tại; `Shift+2`
+đặt pause một lần khi nhận diện boss bất kỳ; `Shift+3` đặt pause một lần khi
+nhận diện final boss. Hai policy boss có thể thay thế nhau trước khi trigger.
+`Shift+8` vẫn chụp screenshot, `Shift+0` dừng hẳn flow, còn các Shift+digit khác
+bị ignore cho tới khi flow kết thúc. Flow không restart từ đầu sau khi resume.
 
 Mỗi vòng chạy theo thứ tự:
 
