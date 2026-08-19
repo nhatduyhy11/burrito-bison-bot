@@ -258,7 +258,10 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         await run_actions(self.page, [action], loop_count=1)
 
         clear_blockers.assert_awaited_once()
-        self.assertEqual(clear_blockers.await_args.args[-1], (1.0,))
+        self.assertEqual(
+            clear_blockers.await_args.kwargs["until_template_scales"],
+            (1.0,),
+        )
 
     @patch(
         "hauntedroom.actions.runner.capture_page_grayscale",

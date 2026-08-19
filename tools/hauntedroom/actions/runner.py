@@ -100,12 +100,9 @@ async def wait_for_template(
             return None
 
 
-def note_suffix(note: Optional[str]) -> str:
-    return f" ({note})" if note else ""
-
-
 def action_label(loop_index: int, action_index: int, note: Optional[str]) -> str:
-    return f"{loop_index}.{action_index}{note_suffix(note)}"
+    label = f"{loop_index}.{action_index}"
+    return f"{label} ({note})" if note else label
 
 
 def collect_template_paths(actions: list[Action]) -> set[Path]:
@@ -121,12 +118,6 @@ def collect_template_paths(actions: list[Action]) -> set[Path]:
     return template_paths
 
 
-async def execute_click_action(page, action: ClickAction, label: str) -> bool:
-    print(f"{label}: click {action.x},{action.y}", flush=True)
-    await bot_click(page, (action.x, action.y), button=action.button)
-    return True
-
-
 async def execute_clear_blockers_action(
     page,
     action: ClearBlockersAction,
@@ -135,18 +126,18 @@ async def execute_clear_blockers_action(
     stop_event: Optional[asyncio.Event],
 ) -> bool:
     return await clear_blockers(
-        page,
-        action.blocker_paths,
-        action.until_template_path,
-        templates,
-        action.threshold,
-        action.timeout_ms,
-        action.poll_ms,
-        action.delay_ms,
-        action.click_positions,
-        label,
-        stop_event,
-        action.until_template_scales,
+        page=page,
+        blocker_paths=action.blocker_paths,
+        until_template_path=action.until_template_path,
+        templates=templates,
+        threshold=action.threshold,
+        timeout_ms=action.timeout_ms,
+        poll_ms=action.poll_ms,
+        delay_ms=action.delay_ms,
+        click_positions=action.click_positions,
+        label=label,
+        stop_event=stop_event,
+        until_template_scales=action.until_template_scales,
     )
 
 
@@ -154,8 +145,7 @@ async def execute_click_template_action(
     page,
     action: ClickTemplateAction,
     templates: dict[Path, np.ndarray],
-    loop_index: int,
-    action_index: int,
+    label: str,
     stop_event: Optional[asyncio.Event],
 ) -> bool:
     template_path = action.template_path
@@ -163,8 +153,7 @@ async def execute_click_template_action(
     repeat_delay_ms = action.effective_repeat_delay_ms
 
     print(
-        f"{loop_index}.{action_index}: wait for "
-        f"{template_path.name}{note_suffix(action.note)}",
+        f"{label}: wait for {template_path.name}",
         flush=True,
     )
     match = await wait_for_template(
@@ -193,7 +182,7 @@ async def execute_click_template_action(
             else "skip template"
         )
         print(
-            f"{loop_index}.{action_index}: skip {template_path.name}; "
+            f"{label}: skip {template_path.name}; "
             f"{skip_template_name} already ready",
             flush=True,
         )
@@ -209,7 +198,7 @@ async def execute_click_template_action(
         else f"; click {action.click_count} time(s)"
     )
     print(
-        f"{loop_index}.{action_index}: detected "
+        f"{label}: detected "
         f"{template_path.name} at {x},{y}, score={score:.3f}; "
         f"first click after {action.delay_ms}ms{repeat_summary}",
         flush=True,
@@ -232,16 +221,14 @@ async def execute_click_template_action(
             )
             if score < action.threshold:
                 print(
-                    f"{loop_index}.{action_index}: "
-                    f"{template_path.name} disappeared after "
+                    f"{label}: {template_path.name} disappeared after "
                     f"{click_index} click(s), score={score:.3f}; "
                     "skip remaining repeat clicks",
                     flush=True,
                 )
                 break
             print(
-                f"{loop_index}.{action_index}: "
-                f"{template_path.name} still present at {x},{y}, "
+                f"{label}: {template_path.name} still present at {x},{y}, "
                 f"score={score:.3f}; repeat click",
                 flush=True,
             )
@@ -249,15 +236,6 @@ async def execute_click_template_action(
         await bot_click(page, (x, y), button=action.button)
 
     return True
-
-
-async def execute_wait_action(
-    page,
-    action: WaitAction,
-    label: str,
-    stop_event: Optional[asyncio.Event],
-) -> bool:
-    return await wait_with_countdown(page, action.ms, label, stop_event)
 
 
 async def execute_action(
@@ -270,7 +248,9 @@ async def execute_action(
 ) -> bool:
     label = action_label(loop_index, action_index, action.note)
     if isinstance(action, ClickAction):
-        return await execute_click_action(page, action, label)
+        print(f"{label}: click {action.x},{action.y}", flush=True)
+        await bot_click(page, (action.x, action.y), button=action.button)
+        return True
     if isinstance(action, ClearBlockersAction):
         return await execute_clear_blockers_action(
             page,
@@ -284,12 +264,11 @@ async def execute_action(
             page,
             action,
             templates,
-            loop_index,
-            action_index,
+            label,
             stop_event,
         )
     if isinstance(action, WaitAction):
-        return await execute_wait_action(page, action, label, stop_event)
+        return await wait_with_countdown(page, action.ms, label, stop_event)
 
     raise TypeError(f"Unsupported action object: {action!r}")
 
