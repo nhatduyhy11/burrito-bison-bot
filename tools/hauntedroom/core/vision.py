@@ -1,10 +1,15 @@
 """Generic OpenCV helpers that are not tied to Haunted Room flow rules."""
 
+import base64
 from dataclasses import dataclass
 from typing import Optional
+from weakref import WeakKeyDictionary
 
 import cv2
 import numpy as np
+
+
+_CDP_CAPTURE_SESSIONS = WeakKeyDictionary()
 
 
 @dataclass(frozen=True)
@@ -37,21 +42,66 @@ class ColorComponentMatch:
 
 
 async def capture_page_grayscale(page) -> np.ndarray:
-    screenshot = await page.screenshot(type="png", scale="css")
-    encoded = np.frombuffer(screenshot, dtype=np.uint8)
-    image = cv2.imdecode(encoded, cv2.IMREAD_GRAYSCALE)
-    if image is None:
-        raise RuntimeError("OpenCV could not decode the Playwright screenshot.")
-    return image
+    return await _capture_page(page, cv2.IMREAD_GRAYSCALE)
 
 
 async def capture_page_bgr(page) -> np.ndarray:
-    screenshot = await page.screenshot(type="png", scale="css")
+    return await _capture_page(page, cv2.IMREAD_COLOR)
+
+
+async def _capture_page(page, imread_mode: int) -> np.ndarray:
+    # page.screenshot() captures the compositor surface and transiently shrinks
+    # the visible renderer on headed Chrome/macOS. Capture the current view
+    # through CDP instead, without Playwright's screenshot preparation or clip.
+    session = await _capture_session(page)
+    result = await session.send(
+        "Page.captureScreenshot",
+        {
+            "format": "png",
+            "fromSurface": False,
+            "captureBeyondViewport": False,
+        },
+    )
+    screenshot = base64.b64decode(result["data"])
     encoded = np.frombuffer(screenshot, dtype=np.uint8)
-    image = cv2.imdecode(encoded, cv2.IMREAD_COLOR)
+    image = cv2.imdecode(encoded, imread_mode)
     if image is None:
         raise RuntimeError("OpenCV could not decode the Playwright screenshot.")
-    return image
+    return _normalize_to_viewport(image, page.viewport_size)
+
+
+async def _capture_session(page):
+    session = _CDP_CAPTURE_SESSIONS.get(page)
+    if session is None:
+        session = await page.context.new_cdp_session(page)
+        _CDP_CAPTURE_SESSIONS[page] = session
+    return session
+
+
+def _normalize_to_viewport(
+    image: np.ndarray,
+    viewport_size: Optional[dict[str, int]],
+) -> np.ndarray:
+    """Normalize a device-scale capture back to CSS viewport coordinates."""
+    if viewport_size is None:
+        return image
+
+    target_width = viewport_size["width"]
+    target_height = viewport_size["height"]
+    image_height, image_width = image.shape[:2]
+    if (image_width, image_height) == (target_width, target_height):
+        return image
+
+    interpolation = (
+        cv2.INTER_AREA
+        if image_width > target_width or image_height > target_height
+        else cv2.INTER_LINEAR
+    )
+    return cv2.resize(
+        image,
+        (target_width, target_height),
+        interpolation=interpolation,
+    )
 
 
 def find_color_component(

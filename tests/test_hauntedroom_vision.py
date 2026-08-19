@@ -1,6 +1,8 @@
+import base64
 import sys
 from pathlib import Path
-from unittest import TestCase
+from unittest import IsolatedAsyncioTestCase, TestCase
+from unittest.mock import AsyncMock, Mock
 
 import cv2
 import numpy as np
@@ -15,11 +17,78 @@ from hauntedroom.core.template_matching import (
     find_template_matches,
 )
 from hauntedroom.core.vision import (
+    _CDP_CAPTURE_SESSIONS,
     ColorComponentPattern,
+    capture_page_bgr,
+    capture_page_grayscale,
     find_color_component,
     region_has_color_component,
     region_has_enough_white,
 )
+
+
+class CapturePageTest(IsolatedAsyncioTestCase):
+    def setUp(self):
+        device_frame = np.zeros((8, 10, 3), dtype=np.uint8)
+        device_frame[:, :5] = (10, 80, 240)
+        encoded, png = cv2.imencode(".png", device_frame)
+        self.assertTrue(encoded)
+
+        self.page = Mock()
+        self.page.viewport_size = {"width": 5, "height": 4}
+        self.page.context = Mock()
+        self.session = Mock()
+        self.session.send = AsyncMock(
+            return_value={
+                "data": base64.b64encode(png.tobytes()).decode("ascii")
+            }
+        )
+        self.page.context.new_cdp_session = AsyncMock(
+            return_value=self.session
+        )
+
+    def tearDown(self):
+        _CDP_CAPTURE_SESSIONS.pop(self.page, None)
+
+    async def test_bgr_capture_uses_view_capture_and_normalizes_to_viewport(self):
+        frame = await capture_page_bgr(self.page)
+
+        self.session.send.assert_awaited_once_with(
+            "Page.captureScreenshot",
+            {
+                "format": "png",
+                "fromSurface": False,
+                "captureBeyondViewport": False,
+            },
+        )
+        self.assertEqual(frame.shape, (4, 5, 3))
+        self.assertGreater(int(frame[1, 1, 2]), int(frame[1, 1, 0]))
+
+    async def test_grayscale_capture_normalizes_to_viewport(self):
+        frame = await capture_page_grayscale(self.page)
+
+        self.session.send.assert_awaited_once_with(
+            "Page.captureScreenshot",
+            {
+                "format": "png",
+                "fromSurface": False,
+                "captureBeyondViewport": False,
+            },
+        )
+        self.assertEqual(frame.shape, (4, 5))
+
+    async def test_capture_keeps_device_size_without_emulated_viewport(self):
+        self.page.viewport_size = None
+
+        frame = await capture_page_bgr(self.page)
+
+        self.assertEqual(frame.shape, (8, 10, 3))
+
+    async def test_reuses_one_cdp_session_for_repeated_captures(self):
+        await capture_page_bgr(self.page)
+        await capture_page_bgr(self.page)
+
+        self.page.context.new_cdp_session.assert_awaited_once_with(self.page)
 
 
 class ColorComponentTest(TestCase):
