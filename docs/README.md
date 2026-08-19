@@ -115,10 +115,16 @@ Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
 - `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
 - `Shift+Y`: duyệt bốn tab Artifact từ trái sang phải. Flow tái sử dụng `research_available.png` với scale cố định riêng cho tab/content/nút Kích hoạt và dùng `lubu_close.png` làm state gate: chỉ khi thấy close mới mở rộng vùng quét `!` xuống nút Kích hoạt; khi không có close, flow chỉ quét rarity tabs và 10 item, dừng phía trên navigation `Trang Bị`/`Thánh Khí`/`Di Vật`/`Máy Móc`/`Dị Thú`. Flow retry click card cho tới khi popup xuất hiện; mỗi lần thấy Kích hoạt, flow click lần đầu rồi click thêm hai lần tại đúng vị trí đó, mỗi click cách nhau `1 giây`, sau đó mới kiểm tra tiếp tới khi hết dấu `!`. Flow đóng popup và tiếp tục. Click tab/card/close chờ `800 ms`; flow chỉ kết thúc sau khi không còn dấu `!` lẫn nút close liên tục ít nhất khoảng `2 giây`, poll mỗi `800 ms`. Nếu close vẫn còn, flow click lại và bắt đầu kiểm tra lại cả hai signal.
+- `Shift+G`: chụp một frame và chỉ log screen hiện tại (`home`, `research`,
+  `artifact`, `exp_hero`, `hero_avail`, `train`, `automap` hoặc `unknown`). Lệnh
+  không start/stop flow và không click vào game. Nếu kết quả là `unknown`, runner
+  tái sử dụng live screenshot của `Shift+8` để lưu ảnh vào
+  `tests/fixtures/hauntedroom-captures/` với suffix
+  `screen-detect-unknown.png`, rồi return về state hiện tại.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
-Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Với config mặc định, khi flow `Shift+2` hoặc `Shift+3` đang chạy, chỉ `Shift+1`, `Shift+2`, `Shift+3`, `Shift+8` và `Shift+0` có tác dụng như mô tả ở trên; các Shift+digit khác bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow khi flow đang pause.
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`, `KeyG` và `KeyY`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Với config mặc định, khi flow `Shift+2` hoặc `Shift+3` đang chạy, các control digit vẫn tuân theo mapping bên dưới; `Shift+G` luôn chỉ detect screen. Các Shift+digit không được map bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow khi flow đang pause.
 
 Các số điều khiển trong lúc `Shift+2` hoặc `Shift+3` chạy được cấu hình tại
 `START_AUTO_HOTKEYS` trong `tools/hauntedroom/settings.py`. Giữ nguyên tên action

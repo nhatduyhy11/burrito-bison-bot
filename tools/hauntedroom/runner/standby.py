@@ -6,6 +6,7 @@ from hauntedroom import settings
 from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
 from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
+from hauntedroom.screen_detect import detect_current_screen
 
 
 START_AUTO_HOTKEY_ACTIONS = frozenset(
@@ -189,6 +190,7 @@ async def run_standby_controller(
             "Haunted Room runner ready\n"
             "-------------------------\n"
             f"{format_flow_menu(flow_commands)}\n"
+            "  Shift+G    Detect current screen\n"
             "  Shift+8    Capture screenshot\n"
             "  Shift+0    Stop current flow\n"
             "  During Shift+2/Shift+3: "
@@ -222,6 +224,10 @@ async def run_standby_controller(
 
             command_key = command_task.result()
             command_task = asyncio.create_task(command_queue.get())
+
+            if command_key == "g":
+                await detect_current_screen(page)
+                continue
 
             if await handle_control_command(
                 command_key,

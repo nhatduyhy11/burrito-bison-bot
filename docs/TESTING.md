@@ -67,6 +67,8 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
 - `test_hauntedroom_architecture.py`: dependency rule giữa `core`, `actions`,
   `control_events` và `flows`.
 - `test_hauntedroom_vision.py`: template matching, multi-scale và vị trí click.
+- `test_screen_detect.py`: nhận diện screen từ anchor top/arrow, chống match chéo
+  và fallback `unknown`.
 - `actions/`: action runner, timeout/retry và template wait/skip.
 - `automap/`: boss, build, level-up, map-end và orchestration của `Shift+2`.
 - `control_events/`: blocker ngoài normal flow, gồm profile new-tab guard và

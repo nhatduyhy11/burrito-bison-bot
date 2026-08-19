@@ -306,10 +306,12 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         self.assertIs(get_automap_flow(), automap.run_automap_flow)
 
-    def test_hotkey_script_accepts_digits_and_y(self):
+    def test_hotkey_script_accepts_digits_y_and_g(self):
         self.assertIn("/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
         self.assertIn('event.code === "KeyY"', HOTKEY_SCRIPT)
         self.assertIn('? "y"', HOTKEY_SCRIPT)
+        self.assertIn('event.code === "KeyG"', HOTKEY_SCRIPT)
+        self.assertIn('? "g"', HOTKEY_SCRIPT)
         self.assertNotIn('event.code === "Minus"', HOTKEY_SCRIPT)
 
     def test_shift_y_is_registered_for_artifact_flow(self):
@@ -344,6 +346,35 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             await run_standby_controller(page, [], FLOW_COMMANDS, dev_reload=False)
 
         save_live_screenshot.assert_awaited_once_with(page)
+
+    @patch(
+        "hauntedroom.runner.standby.detect_current_screen",
+        new_callable=AsyncMock,
+    )
+    @patch(
+        "hauntedroom.runner.standby.start_hotkey_listener",
+        new_callable=AsyncMock,
+    )
+    async def test_shift_g_detects_screen_and_stays_idle(
+        self,
+        start_hotkey_listener,
+        detect_current_screen,
+    ):
+        page = Mock()
+
+        async def enqueue_detect(_page, command_queue):
+            command_queue.put_nowait("g")
+
+        async def stop_after_detection(_page):
+            raise RuntimeError("stop test loop")
+
+        start_hotkey_listener.side_effect = enqueue_detect
+        detect_current_screen.side_effect = stop_after_detection
+
+        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+            await run_standby_controller(page, [], FLOW_COMMANDS, dev_reload=False)
+
+        detect_current_screen.assert_awaited_once_with(page)
 
     @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")

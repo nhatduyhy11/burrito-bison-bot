@@ -25,7 +25,9 @@ HOTKEY_SCRIPT = """
                 ? event.code.slice(-1)
                 : event.code === "KeyY"
                     ? "y"
-                    : null;
+                    : event.code === "KeyG"
+                        ? "g"
+                        : null;
             if (
                 !event.shiftKey ||
                 event.ctrlKey ||
