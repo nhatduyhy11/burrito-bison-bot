@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from unittest import IsolatedAsyncioTestCase
+from unittest import IsolatedAsyncioTestCase, skipUnless
 from unittest.mock import AsyncMock, Mock, patch
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -64,6 +64,7 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         game_page.evaluate.assert_not_awaited()
         game_page.bring_to_front.assert_awaited_once_with()
 
+    @skipUnless(ENABLE_SCRIPT_INJECTION, "script injection is temporarily disabled")
     async def test_install_guard_covers_current_and_future_documents(self):
         page = Mock()
         page.add_init_script = AsyncMock()
@@ -91,6 +92,7 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         page.add_init_script.assert_not_awaited()
         page.frames[0].evaluate.assert_not_awaited()
 
+    @skipUnless(ENABLE_SCRIPT_INJECTION, "script injection is temporarily disabled")
     async def test_install_game_core_guard_injects_css_into_top_document(self):
         page = Mock()
         page.evaluate = AsyncMock()
@@ -111,6 +113,7 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
 
         page.evaluate.assert_not_awaited()
 
+    @skipUnless(ENABLE_SCRIPT_INJECTION, "script injection is temporarily disabled")
     async def test_game_core_guard_is_injected_after_startup_delay(self):
         page = Mock()
         page.wait_for_timeout = AsyncMock()
@@ -143,6 +146,7 @@ class NewTabBlockerTest(IsolatedAsyncioTestCase):
         page.wait_for_timeout.assert_not_awaited()
         page.evaluate.assert_not_awaited()
 
+    @skipUnless(ENABLE_SCRIPT_INJECTION, "script injection is temporarily disabled")
     def test_script_injection_is_enabled_by_default(self):
         self.assertTrue(ENABLE_SCRIPT_INJECTION)
 

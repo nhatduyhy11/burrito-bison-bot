@@ -106,21 +106,22 @@ sử dụng typed action/config của `start_battle.png` để vào trận.
 
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
-- `Shift+1`: chạy flow enter-exit room liên tục.
-- `Shift+4`: chạy train mode rồi auto-battle.
-- `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
+- `Shift+T`: tạm thời chạy train mode rồi auto-battle; sau khi flow ổn định sẽ
+  được nhập vào screen auto-switch.
+- `Shift+5`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
-- `Shift+G`: chụp một frame rồi tự chọn flow. `home` chạy start-auto loop;
+- `Shift+1`: chụp một frame rồi tự chọn flow. `home` chạy start-auto loop;
   `automap` chạy đúng một lượt auto-map; `research`, `artifact`, `exp_hero` và
   `hero_avail` chạy flow tương ứng rồi về idle khi xong. `train` và `unknown` chỉ
   được log, không click và không khởi chạy flow.
-- Các entry cũ `Shift+2`, `Shift+3`, `Shift+5`, `Shift+6`, `Shift+9` và `Shift+Y`
-  đã được bỏ. Khi auto-map do `Shift+G` khởi chạy đang active, các Shift+digit
-  được cấu hình vẫn là control pause/resume, pause-at-boss, screenshot và stop.
+- Các entry cũ `Shift+2`, `Shift+3`, `Shift+4`, `Shift+6`, `Shift+7`, `Shift+9`,
+  `Shift+G` và `Shift+Y` đã được bỏ. Khi auto-map do `Shift+1` khởi chạy đang
+  active, các Shift+digit được cấu hình vẫn là control pause/resume,
+  pause-at-boss, screenshot và stop.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
-Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9` và `KeyG`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Các Shift+digit không được map bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow khi flow đang pause.
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9` và `KeyT`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Các Shift+digit không được map bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow khi flow đang pause.
 
 Các số điều khiển trong lúc auto-map/start-auto chạy được cấu hình tại
 `START_AUTO_HOTKEYS` trong `tools/hauntedroom/settings.py`. Giữ nguyên tên action

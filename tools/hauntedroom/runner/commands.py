@@ -25,6 +25,7 @@ class FlowCommand:
     menu_label: str
     resolve: FlowResolver
     control_factory: ControlFactory = asyncio.Event
+    uses_automap_controls: bool = False
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
@@ -171,58 +172,60 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     return {
-        "1": FlowCommand(
-            "1",
+        "enter_exit": FlowCommand(
+            "enter_exit",
             "enter-exit room",
             "Enter / exit room",
             resolve_enter_exit,
         ),
-        "2": FlowCommand(
-            "2",
+        "automap": FlowCommand(
+            "automap",
             "auto-map battle",
             "Auto-map battle",
             resolve_automap,
             control_factory=FlowControl,
+            uses_automap_controls=True,
         ),
-        "3": FlowCommand(
-            "3",
+        "start_auto": FlowCommand(
+            "start_auto",
             "start-auto loop",
             "Start-auto loop / pause at final boss",
             resolve_start_auto,
             control_factory=FlowControl,
+            uses_automap_controls=True,
         ),
-        "4": FlowCommand(
-            "4",
+        "train": FlowCommand(
+            "train",
             "train then auto-battle",
             "Train mode then auto-battle",
             resolve_train,
         ),
-        "5": FlowCommand(
-            "5",
+        "exp_available": FlowCommand(
+            "exp_available",
             "EXP available",
             "EXP available",
             resolve_exp_available,
         ),
-        "6": FlowCommand(
-            "6",
+        "hero_up_available": FlowCommand(
+            "hero_up_available",
             "hero breakthrough available",
             "Hero breakthrough available",
             resolve_hero_up_available,
         ),
-        "7": FlowCommand(
-            "7",
+        "click_loop": FlowCommand(
+            "click_loop",
             "fixed-position click loop",
             "Click (440, 500) every 1s",
             resolve_click_loop,
         ),
-        "9": FlowCommand(
-            "9",
+        "research": FlowCommand(
+            "research",
             "research",
             "Research",
             resolve_research,
         ),
-        "y": FlowCommand(
-            "Y",
+        "artifact": FlowCommand(
+            "artifact",
             "artifact",
             "Artifact",
             resolve_artifact,

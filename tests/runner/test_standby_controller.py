@@ -19,8 +19,9 @@ from hauntedroom.flows.click_loop import (
     CLICK_POSITION,
     run_click_loop,
 )
-from hauntedroom.runner.default_commands import FLOW_COMMANDS
+from hauntedroom.runner.default_commands import FLOW_COMMANDS, SCREEN_FLOW_COMMANDS
 from hauntedroom.runner.reload import AutomapRuntime, get_automap_flow
+from hauntedroom.screen_detect import ScreenName
 from hauntedroom.runner.standby import (
     handle_control_command,
     run_standby_controller,
@@ -66,8 +67,11 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertIsNone(control.boss_pause_target)
 
     async def test_automap_hotkeys_arm_boss_pauses_for_shift_2_and_shift_3(self):
-        for current_command in ("2", "3"):
-            with self.subTest(current_command=current_command):
+        for current_command in (
+            SCREEN_FLOW_COMMANDS[ScreenName.AUTOMAP],
+            SCREEN_FLOW_COMMANDS[ScreenName.HOME],
+        ):
+            with self.subTest(current_command=current_command.name):
                 control = FlowControl()
                 page = Mock()
                 flow_task = Mock()
@@ -106,13 +110,21 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         control = FlowControl()
 
         self.assertFalse(
-            await handle_control_command("2", Mock(), Mock(), control, "1")
+            await handle_control_command(
+                "2", Mock(), Mock(), control, FLOW_COMMANDS["5"]
+            )
         )
         self.assertIsNone(control.boss_pause_target)
 
-    def test_shift_2_and_shift_3_use_the_same_flow_control(self):
-        self.assertIs(FLOW_COMMANDS["2"].control_factory, FlowControl)
-        self.assertIs(FLOW_COMMANDS["3"].control_factory, FlowControl)
+    def test_auto_switch_automap_flows_use_the_same_flow_control(self):
+        self.assertIs(
+            SCREEN_FLOW_COMMANDS[ScreenName.AUTOMAP].control_factory,
+            FlowControl,
+        )
+        self.assertIs(
+            SCREEN_FLOW_COMMANDS[ScreenName.HOME].control_factory,
+            FlowControl,
+        )
 
     async def test_automap_hotkeys_can_be_remapped_by_config_values(self):
         remapped = {
@@ -123,8 +135,11 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             "screenshot": "9",
         }
 
-        for current_command in ("2", "3"):
-            with self.subTest(current_command=current_command):
+        for current_command in (
+            SCREEN_FLOW_COMMANDS[ScreenName.AUTOMAP],
+            SCREEN_FLOW_COMMANDS[ScreenName.HOME],
+        ):
+            with self.subTest(current_command=current_command.name):
                 control = FlowControl()
                 self.assertTrue(
                     await handle_control_command(
@@ -306,17 +321,38 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         self.assertIs(get_automap_flow(), automap.run_automap_flow)
 
-    def test_hotkey_script_accepts_digits_y_and_g(self):
+    def test_hotkey_script_accepts_digits_and_t_but_not_removed_letters(self):
         self.assertIn("/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
-        self.assertIn('event.code === "KeyY"', HOTKEY_SCRIPT)
-        self.assertIn('? "y"', HOTKEY_SCRIPT)
-        self.assertIn('event.code === "KeyG"', HOTKEY_SCRIPT)
-        self.assertIn('? "g"', HOTKEY_SCRIPT)
+        self.assertNotIn('event.code === "KeyY"', HOTKEY_SCRIPT)
+        self.assertNotIn('? "y"', HOTKEY_SCRIPT)
+        self.assertNotIn('event.code === "KeyG"', HOTKEY_SCRIPT)
+        self.assertNotIn('? "g"', HOTKEY_SCRIPT)
+        self.assertIn('event.code === "KeyT"', HOTKEY_SCRIPT)
+        self.assertIn('? "t"', HOTKEY_SCRIPT)
         self.assertNotIn('event.code === "Minus"', HOTKEY_SCRIPT)
 
-    def test_shift_y_is_registered_for_artifact_flow(self):
-        self.assertEqual(FLOW_COMMANDS["y"].key, "Y")
-        self.assertEqual(FLOW_COMMANDS["y"].name, "artifact")
+    def test_replaced_hotkeys_are_only_available_through_auto_switch(self):
+        self.assertEqual(set(FLOW_COMMANDS), {"t", "5"})
+        self.assertEqual(FLOW_COMMANDS["t"].key, "T")
+        self.assertEqual(FLOW_COMMANDS["t"].name, "train then auto-battle")
+        self.assertEqual(FLOW_COMMANDS["5"].key, "5")
+        self.assertEqual(FLOW_COMMANDS["5"].name, "fixed-position click loop")
+        self.assertEqual(
+            {
+                screen: command.name
+                for screen, command in SCREEN_FLOW_COMMANDS.items()
+            },
+            {
+                ScreenName.HOME: "start-auto loop",
+                ScreenName.RESEARCH: "research",
+                ScreenName.ARTIFACT: "artifact",
+                ScreenName.EXP_HERO: "EXP available",
+                ScreenName.HERO_AVAILABLE: "hero breakthrough available",
+                ScreenName.AUTOMAP: "auto-map battle",
+            },
+        )
+        self.assertNotIn(ScreenName.TRAIN, SCREEN_FLOW_COMMANDS)
+        self.assertNotIn(ScreenName.UNKNOWN, SCREEN_FLOW_COMMANDS)
 
     def test_shift_8_capture_directory_is_inside_test_fixtures(self):
         self.assertEqual(
@@ -355,7 +391,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         "hauntedroom.runner.standby.start_hotkey_listener",
         new_callable=AsyncMock,
     )
-    async def test_shift_g_detects_screen_and_stays_idle(
+    async def test_shift_1_detects_screen_and_stays_idle(
         self,
         start_hotkey_listener,
         detect_current_screen,
@@ -363,7 +399,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         page = Mock()
 
         async def enqueue_detect(_page, command_queue):
-            command_queue.put_nowait("g")
+            command_queue.put_nowait("1")
 
         async def stop_after_detection(_page):
             raise RuntimeError("stop test loop")
@@ -377,54 +413,16 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         detect_current_screen.assert_awaited_once_with(page)
 
     @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
-    @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")
-    @patch("hauntedroom.runner.default_commands.reload_policy.get_action_runner")
-    @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
-    async def test_dev_reload_reloads_actions_file_before_shift_1(
-        self,
-        start_hotkey_listener,
-        get_action_runner,
-        load_actions,
-        save_live_screenshot,
-    ):
-        page = Mock()
-        original_actions = [{"type": "old-action"}]
-        reloaded_actions = [{"type": "new-action"}]
-        action_runner = AsyncMock(return_value=True)
-        get_action_runner.return_value = action_runner
-        load_actions.return_value = reloaded_actions
-
-        async def enqueue_commands(_page, command_queue):
-            command_queue.put_nowait("1")
-            command_queue.put_nowait("8")
-
-        start_hotkey_listener.side_effect = enqueue_commands
-        save_live_screenshot.side_effect = RuntimeError("stop test loop")
-
-        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
-            await run_standby_controller(
-                page,
-                original_actions,
-                FLOW_COMMANDS,
-                dev_reload=True,
-                actions_path=Path("tools/hauntedroom_actions.sample.json"),
-            )
-
-        get_action_runner.assert_called_once_with(True)
-        load_actions.assert_called_once_with(Path("tools/hauntedroom_actions.sample.json"))
-        action_runner.assert_awaited_once_with(
-            page,
-            reloaded_actions,
-            loop_count=None,
-            stop_event=action_runner.await_args.kwargs["stop_event"],
-        )
-
-    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
     @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
-    async def test_shift_3_starts_combined_loop_with_automap(
+    @patch(
+        "hauntedroom.runner.standby.detect_current_screen",
+        new_callable=AsyncMock,
+    )
+    async def test_shift_1_on_home_starts_combined_loop_with_automap(
         self,
+        detect_current_screen,
         start_hotkey_listener,
         get_automap_runtime,
         run_start_automap_loop,
@@ -437,7 +435,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         get_automap_runtime.return_value = AutomapRuntime(automap_flow, action_runner)
 
         async def enqueue_commands(_page, command_queue):
-            command_queue.put_nowait("3")
+            command_queue.put_nowait("1")
             command_queue.put_nowait("8")
 
         async def wait_until_controller_stops(
@@ -452,6 +450,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             return False
 
         start_hotkey_listener.side_effect = enqueue_commands
+        detect_current_screen.return_value = ScreenName.HOME
         run_start_automap_loop.side_effect = wait_until_controller_stops
         save_live_screenshot.side_effect = RuntimeError("stop test loop")
 
@@ -475,7 +474,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
     @patch("hauntedroom.runner.default_commands.reload_policy.get_train_flow")
     @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
     @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
-    async def test_shift_4_starts_train_then_automap_flow(
+    async def test_shift_t_starts_train_then_automap_flow(
         self,
         start_hotkey_listener,
         get_automap_runtime,
@@ -493,7 +492,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         load_actions.return_value = reloaded_actions
 
         async def enqueue_commands(_page, command_queue):
-            command_queue.put_nowait("4")
+            command_queue.put_nowait("t")
             command_queue.put_nowait("8")
 
         async def wait_until_stopped(
@@ -528,8 +527,13 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
     @patch("hauntedroom.runner.default_commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
     @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
-    async def test_shift_1_toggles_pause_and_resume_then_shift_0_stops(
+    @patch(
+        "hauntedroom.runner.standby.detect_current_screen",
+        new_callable=AsyncMock,
+    )
+    async def test_auto_switched_home_flow_can_pause_resume_and_stop(
         self,
+        detect_current_screen,
         start_hotkey_listener,
         get_automap_runtime,
         run_start_automap_loop,
@@ -555,7 +559,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         async def enqueue_commands(_page, command_queue):
             async def produce_commands():
-                command_queue.put_nowait("3")
+                command_queue.put_nowait("1")
                 await started.wait()
                 resumed.clear()
                 command_queue.put_nowait("1")
@@ -570,6 +574,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             asyncio.create_task(produce_commands())
 
         start_hotkey_listener.side_effect = enqueue_commands
+        detect_current_screen.return_value = ScreenName.HOME
         run_start_automap_loop.side_effect = controllable_flow
         save_live_screenshot.side_effect = RuntimeError("stop test loop")
 
@@ -580,7 +585,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertTrue(observed_control.is_set())
         run_start_automap_loop.assert_awaited_once()
 
-    async def test_shift_7_clicks_fixed_position_every_second_until_stopped(self):
+    async def test_shift_5_clicks_fixed_position_every_second_until_stopped(self):
         page = Mock()
         page.evaluate = AsyncMock()
         page.mouse = Mock()

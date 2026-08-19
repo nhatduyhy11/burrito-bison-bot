@@ -6,7 +6,8 @@ from hauntedroom import settings
 from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
 from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
-from hauntedroom.screen_detect import detect_current_screen
+from hauntedroom.runner.commands import FlowCommand
+from hauntedroom.screen_detect import ScreenName, detect_current_screen
 
 
 START_AUTO_HOTKEY_ACTIONS = frozenset(
@@ -18,7 +19,6 @@ START_AUTO_HOTKEY_ACTIONS = frozenset(
         "screenshot",
     }
 )
-AUTOMAP_CONTROL_COMMANDS = frozenset({"2", "3"})
 
 
 def validate_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> dict[str, str]:
@@ -75,10 +75,14 @@ async def handle_control_command(
     page,
     flow_task,
     stop_event,
-    current_command: Optional[str],
+    current_command: Optional[FlowCommand],
     start_auto_hotkeys: Optional[Mapping[str, str]] = None,
 ) -> bool:
-    if current_command in AUTOMAP_CONTROL_COMMANDS and flow_task is not None:
+    if (
+        current_command is not None
+        and current_command.uses_automap_controls
+        and flow_task is not None
+    ):
         hotkeys = (
             start_auto_hotkeys
             if start_auto_hotkeys is not None
@@ -176,7 +180,15 @@ async def run_standby_controller(
     dev_reload: bool = False,
     debug: bool = False,
     actions_path: Optional[Path] = None,
+    screen_flow_commands: Optional[Mapping[ScreenName, FlowCommand]] = None,
 ) -> None:
+    if screen_flow_commands is None:
+        # Keep callers which inject only the public command table working while
+        # the production entrypoint passes this mapping explicitly.
+        from hauntedroom.runner.default_commands import SCREEN_FLOW_COMMANDS
+
+        screen_flow_commands = SCREEN_FLOW_COMMANDS
+
     start_auto_hotkeys = validate_start_auto_hotkeys(settings.START_AUTO_HOTKEYS)
     command_queue: asyncio.Queue[str] = asyncio.Queue()
     await start_hotkey_listener(page, command_queue)
@@ -190,10 +202,10 @@ async def run_standby_controller(
             "Haunted Room runner ready\n"
             "-------------------------\n"
             f"{format_flow_menu(flow_commands)}\n"
-            "  Shift+G    Detect current screen\n"
+            "  Shift+1    Detect screen and run its flow\n"
             "  Shift+8    Capture screenshot\n"
             "  Shift+0    Stop current flow\n"
-            "  During Shift+2/Shift+3: "
+            "  During auto-map/start-auto: "
             f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
             "  Ctrl+C     Close runner\n"
             "-------------------------\n"
@@ -225,9 +237,32 @@ async def run_standby_controller(
             command_key = command_task.result()
             command_task = asyncio.create_task(command_queue.get())
 
-            if command_key == "g":
-                await detect_current_screen(page)
-                continue
+            if command_key == "1" and flow_task is None:
+                screen = await detect_current_screen(page)
+                command = screen_flow_commands.get(screen)
+                if command is None:
+                    print(
+                        f"[autoswitch] screen={screen.value}; no flow started.",
+                        flush=True,
+                    )
+                    continue
+
+                print(
+                    f"[autoswitch] screen={screen.value} -> {command.name}",
+                    flush=True,
+                )
+            else:
+                command = flow_commands.get(command_key)
+                if (
+                    command_key == "1"
+                    and flow_task is not None
+                    and not current_command.uses_automap_controls
+                ):
+                    print(
+                        "Runner busy; press Shift+0 before using Shift+1.",
+                        flush=True,
+                    )
+                    continue
 
             if await handle_control_command(
                 command_key,
@@ -239,7 +274,6 @@ async def run_standby_controller(
             ):
                 continue
 
-            command = flow_commands.get(command_key)
             if command is None:
                 print(f"Shift+{command_key}: no flow configured.", flush=True)
                 continue
@@ -253,7 +287,7 @@ async def run_standby_controller(
 
             try:
                 resolved = command.resolve(actions, dev_reload, actions_path)
-                if command_key in AUTOMAP_CONTROL_COMMANDS:
+                if command.uses_automap_controls:
                     start_auto_hotkeys = validate_start_auto_hotkeys(
                         settings.START_AUTO_HOTKEYS
                     )
@@ -262,9 +296,9 @@ async def run_standby_controller(
                 continue
 
             stop_event = command.control_factory()
-            current_command = command_key
+            current_command = command
             actions = resolved.actions
-            if command_key in AUTOMAP_CONTROL_COMMANDS:
+            if command.uses_automap_controls:
                 print(
                     "Auto-map controls: "
                     f"{format_start_auto_hotkeys(start_auto_hotkeys)}.",

@@ -1,4 +1,4 @@
-"""Shift+4 train entry, five hero selections, then normal auto-battle."""
+"""Shift+T train entry, five hero selections, then normal auto-battle."""
 
 import asyncio
 from typing import Awaitable, Callable, Optional

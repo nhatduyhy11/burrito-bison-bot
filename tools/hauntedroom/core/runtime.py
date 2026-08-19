@@ -24,11 +24,9 @@ HOTKEY_SCRIPT = """
         (event) => {
             const command = /^Digit[0-9]$/.test(event.code)
                 ? event.code.slice(-1)
-                : event.code === "KeyY"
-                    ? "y"
-                    : event.code === "KeyG"
-                        ? "g"
-                        : null;
+                : event.code === "KeyT"
+                    ? "t"
+                    : null;
             if (
                 !event.shiftKey ||
                 event.ctrlKey ||

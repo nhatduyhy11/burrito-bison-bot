@@ -15,7 +15,7 @@ from hauntedroom.core.runtime import (
     start_user_click_logger,
     wait_for_ctrl_c,
 )
-from hauntedroom.runner.default_commands import FLOW_COMMANDS
+from hauntedroom.runner.default_commands import FLOW_COMMANDS, SCREEN_FLOW_COMMANDS
 from hauntedroom.runner.navigation import navigate_to_game
 from hauntedroom.runner.standby import run_standby_controller
 
@@ -60,6 +60,7 @@ async def main() -> None:
                     args.dev_reload,
                     args.debug,
                     Path(args.actions),
+                    SCREEN_FLOW_COMMANDS,
                 )
             else:
                 await run_actions(page, actions)

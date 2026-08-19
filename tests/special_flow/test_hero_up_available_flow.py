@@ -20,7 +20,11 @@ from hauntedroom.flows.hero_up_available import (  # noqa: E402
     find_breakthrough_available,
     run_hero_up_available_flow,
 )
-from hauntedroom.runner.default_commands import FLOW_COMMANDS  # noqa: E402
+from hauntedroom.runner.default_commands import (  # noqa: E402
+    FLOW_COMMANDS,
+    SCREEN_FLOW_COMMANDS,
+)
+from hauntedroom.screen_detect import ScreenName  # noqa: E402
 
 
 AVAILABLE_FIXTURE_PATH = (
@@ -157,10 +161,10 @@ class HeroUpAvailableFlowTest(IsolatedAsyncioTestCase):
         capture_page_bgr.assert_not_awaited()
         self.page.mouse.click.assert_not_awaited()
 
-    def test_flow_is_registered_as_shift_6(self):
-        self.assertIn("6", FLOW_COMMANDS)
+    def test_flow_is_registered_for_auto_switch_only(self):
+        self.assertNotIn("6", FLOW_COMMANDS)
         self.assertEqual(
-            FLOW_COMMANDS["6"].menu_label,
+            SCREEN_FLOW_COMMANDS[ScreenName.HERO_AVAILABLE].menu_label,
             "Hero breakthrough available",
         )
 
@@ -168,12 +172,14 @@ class HeroUpAvailableFlowTest(IsolatedAsyncioTestCase):
         "hauntedroom.runner.default_commands.reload_policy."
         "get_hero_up_available_flow"
     )
-    async def test_shift_6_resolves_reloadable_flow(self, get_flow):
+    async def test_auto_switch_resolves_reloadable_flow(self, get_flow):
         flow = AsyncMock(return_value=True)
         get_flow.return_value = flow
         stop_event = asyncio.Event()
 
-        resolved = FLOW_COMMANDS["6"].resolve([], True, None)
+        resolved = SCREEN_FLOW_COMMANDS[ScreenName.HERO_AVAILABLE].resolve(
+            [], True, None
+        )
         completed = await resolved.run(self.page, stop_event, False)
 
         self.assertTrue(completed)

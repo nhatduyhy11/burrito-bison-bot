@@ -75,16 +75,16 @@ class ScreenDetectionTest(TestCase):
 
 class CurrentScreenDetectionTest(IsolatedAsyncioTestCase):
     @patch(
-        "hauntedroom.screen_detect.save_live_screenshot",
+        "hauntedroom.screen_detect.save_fallback_screenshot",
         new_callable=AsyncMock,
     )
     @patch("hauntedroom.screen_detect.capture_page_bgr", new_callable=AsyncMock)
     @patch("builtins.print")
-    async def test_known_screen_does_not_save_a_screenshot(
+    async def test_known_screen_does_not_save_a_fallback_screenshot(
         self,
         print_mock,
         capture_page_bgr,
-        save_live_screenshot,
+        save_fallback_screenshot,
     ):
         frame = cv2.imread(
             str(
@@ -106,19 +106,19 @@ class CurrentScreenDetectionTest(IsolatedAsyncioTestCase):
             "[screen_detect] screen=artifact",
             flush=True,
         )
-        save_live_screenshot.assert_not_awaited()
+        save_fallback_screenshot.assert_not_awaited()
 
     @patch(
-        "hauntedroom.screen_detect.save_live_screenshot",
+        "hauntedroom.screen_detect.save_fallback_screenshot",
         new_callable=AsyncMock,
     )
     @patch("hauntedroom.screen_detect.capture_page_bgr", new_callable=AsyncMock)
     @patch("builtins.print")
-    async def test_unknown_screen_reuses_live_screenshot_capture(
+    async def test_unknown_screen_saves_a_fallback_screenshot(
         self,
         print_mock,
         capture_page_bgr,
-        save_live_screenshot,
+        save_fallback_screenshot,
     ):
         frame = np.zeros((720, 640, 3), dtype=np.uint8)
         capture_page_bgr.return_value = frame
@@ -132,7 +132,7 @@ class CurrentScreenDetectionTest(IsolatedAsyncioTestCase):
             "[screen_detect] screen=unknown",
             flush=True,
         )
-        save_live_screenshot.assert_awaited_once_with(
+        save_fallback_screenshot.assert_awaited_once_with(
             page,
             label="screen-detect-unknown",
         )
