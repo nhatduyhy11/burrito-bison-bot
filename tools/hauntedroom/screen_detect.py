@@ -11,6 +11,7 @@ import numpy as np
 
 from hauntedroom.core.runtime import save_fallback_screenshot
 from hauntedroom.core.template import find_template, load_template
+from hauntedroom.core.terminal import GREEN, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.vision.boss_progress import (
     find_boss_progress_anchor,
@@ -137,7 +138,10 @@ async def detect_current_screen(page) -> ScreenName:
     """Capture once, detect once, and log the result."""
     frame = await capture_page_bgr(page)
     screen = detect_screen(frame)
-    print(f"[screen_detect] screen={screen.value}", flush=True)
+    print(
+        colorize(f"[screen_detect] screen={screen.value}", GREEN),
+        flush=True,
+    )
     if screen is ScreenName.UNKNOWN:
         await save_fallback_screenshot(page, label="screen-detect-unknown")
     return screen

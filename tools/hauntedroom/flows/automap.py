@@ -18,7 +18,7 @@ from hauntedroom.core.template import (
     find_template_matches,
     load_template,
 )
-from hauntedroom.core.terminal import GREEN, colorize
+from hauntedroom.core.terminal import GREEN, RED, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.boss_action import deploy_boss_pet
 from hauntedroom.flows.automap_support.boss_flow import (
@@ -454,7 +454,10 @@ class AutomapFlow:
                     self.page, AUTOMAP_POLL_MS, self.stop_event
                 )
 
-        print("Auto-map flow stopped; runner is idle.", flush=True)
+        print(
+            colorize("Auto-map flow stopped; runner is idle.", RED),
+            flush=True,
+        )
         return False
 
 

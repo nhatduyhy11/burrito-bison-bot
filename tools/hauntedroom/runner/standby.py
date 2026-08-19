@@ -5,7 +5,7 @@ from typing import Mapping, Optional
 from hauntedroom import settings
 from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
-from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
+from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, RED, YELLOW, colorize
 from hauntedroom.runner.commands import FlowCommand
 from hauntedroom.screen_detect import ScreenName, detect_current_screen
 
@@ -158,7 +158,7 @@ async def handle_control_command(
     if command == "8":
         await save_live_screenshot(page)
         if flow_task is None:
-            print("Runner idle.", flush=True)
+            print(colorize("Runner idle.", RED), flush=True)
         else:
             print("Current flow continues.", flush=True)
         return True
@@ -209,7 +209,7 @@ async def run_standby_controller(
             f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
             "  Ctrl+C     Close runner\n"
             "-------------------------\n"
-            "Runner idle.",
+            f"{colorize('Runner idle.', RED)}",
             GREEN,
         ),
         flush=True,
@@ -229,7 +229,7 @@ async def run_standby_controller(
                 flow_task = None
                 stop_event = None
                 current_command = None
-                print("Runner idle.", flush=True)
+                print(colorize("Runner idle.", RED), flush=True)
 
             if command_task not in done:
                 continue
@@ -242,13 +242,19 @@ async def run_standby_controller(
                 command = screen_flow_commands.get(screen)
                 if command is None:
                     print(
-                        f"[autoswitch] screen={screen.value}; no flow started.",
+                        colorize(
+                            f"[autoswitch] screen={screen.value}; no flow started.",
+                            GREEN,
+                        ),
                         flush=True,
                     )
                     continue
 
                 print(
-                    f"[autoswitch] screen={screen.value} -> {command.name}",
+                    colorize(
+                        f"[autoswitch] screen={screen.value} -> {command.name}",
+                        GREEN,
+                    ),
                     flush=True,
                 )
             else:
@@ -300,8 +306,11 @@ async def run_standby_controller(
             actions = resolved.actions
             if command.uses_automap_controls:
                 print(
-                    "Auto-map controls: "
-                    f"{format_start_auto_hotkeys(start_auto_hotkeys)}.",
+                    colorize(
+                        "Auto-map controls: "
+                        f"{format_start_auto_hotkeys(start_auto_hotkeys)}.",
+                        BLUE,
+                    ),
                     flush=True,
                 )
             flow_task = start_resolved_flow(

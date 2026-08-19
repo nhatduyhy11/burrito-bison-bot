@@ -9,9 +9,9 @@ Accepted.
 Haunted Room runner có ba nhóm trách nhiệm:
 
 - Khởi tạo CLI/browser và các primitive dùng chung.
-- Load và thực thi flow action-driven `Shift+1` từ JSON.
-- Thực thi các flow theo hotkey như auto-map, train, EXP available, hero
-  breakthrough và research.
+- Load và thực thi flow enter/exit action-driven từ JSON.
+- Nhận diện màn hình để dispatch auto-map, start-auto, EXP available, hero
+  breakthrough, research hoặc artifact; train và click-loop vẫn có hotkey riêng.
 
 Khi tất cả module nằm trực tiếp trong `hauntedroom/`, dependency vẫn có thể không
 cycle nhưng khó nhìn ra module nào là nền tảng và module nào là business flow.
@@ -27,8 +27,10 @@ tools/hauntedroom/
 ├── core/
 │   ├── __init__.py
 │   ├── cli.py
+│   ├── mouse.py
 │   ├── runtime.py
 │   ├── template.py
+│   ├── terminal.py
 │   └── vision.py
 ├── actions/
 │   ├── __init__.py
@@ -47,10 +49,12 @@ tools/hauntedroom/
 │   ├── navigation.py
 │   ├── reload.py
 │   └── standby.py
+├── screen_detect.py
 └── flows/
     ├── __init__.py
     ├── automap_support/
     ├── automap.py
+    ├── artifact.py
     ├── click_loop.py
     ├── exp_available.py
     ├── hero_up_available.py
@@ -67,9 +71,11 @@ import `actions`, `flows` hay entrypoint.
 ### Trách nhiệm
 
 - `core/cli.py`: argparse, default launch config, profile và chuẩn bị actions.
+- `core/mouse.py`: click/drag primitive dùng chung cho browser automation.
 - `core/runtime.py`: hotkey, wait/countdown, screenshot lỗi, click logger và
   runtime lifecycle.
 - `core/template.py`: load template và template matching.
+- `core/terminal.py`: màu và format output terminal.
 - `core/vision.py`: capture ảnh và OpenCV helper thuần không gắn business rule.
 - `actions/loader.py`: parse, validate và resolve action JSON.
 - `actions/runner.py`: thực thi action, retry và stop mềm.
@@ -80,39 +86,43 @@ import `actions`, `flows` hay entrypoint.
 - `runner/commands.py`: dataclass/factory thuần cho hotkey command spec; module
   này không import `runner/reload.py`, `runner/standby.py` hay flow implementation.
 - `runner/default_commands.py`: wiring mặc định nối `commands.py`,
-  `runner/reload.py` và `flows/start_auto.py` để tạo `FLOW_COMMANDS`.
+  `runner/reload.py` và `flows/start_auto.py`; tạo `FLOW_DEFINITIONS`, bảng
+  direct hotkey `FLOW_COMMANDS` và bảng dispatch theo màn hình
+  `SCREEN_FLOW_COMMANDS`.
 - `runner/navigation.py`: startup navigation policy; chờ tới `commit`, thay page khi
   bị treo và retry có giới hạn cho lỗi Playwright timeout transient.
 - `runner/reload.py`: policy hot-reload module Python cho từng nhóm flow.
-- `runner/standby.py`: hotkey standby loop, control command `Shift+0`/`Shift+8`,
-  pause policy `Shift+1`/`Shift+2`/`Shift+3` cho start-auto và lifecycle task.
-  Module này nhận command table từ
-  entrypoint thay vì import `runner/commands.py`.
+- `runner/standby.py`: hotkey standby loop, `Shift+1` screen auto-switch,
+  control command `Shift+0`/`Shift+8`, pause policy
+  `Shift+1`/`Shift+2`/`Shift+3` trong auto-map/start-auto và lifecycle task.
+  Module này nhận direct-command table và screen-command table từ entrypoint.
+- `screen_detect.py`: nhận diện màn hình hiện tại và lưu fallback screenshot khi
+  không xác định được screen; không tự quyết định flow sẽ chạy.
 - `flows/automap.py`: coordinator, state và public API của battle priority
-  `Shift+2`.
+  auto-map một trận.
 - `flows/automap_support/`: detector, action và phase orchestration của
   auto-map; `train_select.py` là support module cho composite train.
-- `flows/start_auto.py`: composite flow của `Shift+3`, tái dùng prefix action
+- `flows/start_auto.py`: composite start-auto, tái dùng prefix action
   `start_battle.png`, gọi auto-map và cooldown giữa map.
-- `flows/train.py`: composite flow của `Shift+4`; kiểm tra lượt train, vào trận,
-  chọn hero năm vòng rồi bàn giao cho auto-map.
+- `flows/train.py`: composite flow tạm chạy trực tiếp bằng `Shift+T`; kiểm tra
+  lượt train, vào trận, chọn hero năm vòng rồi bàn giao cho auto-map.
 - `flows/automap_support/train_select.py`: detector/matcher card dùng riêng cho
   hero picker của train.
-- `flows/exp_available.py`: detector HSV theo slot và click loop thu EXP của
-  `Shift+5`.
+- `flows/exp_available.py`: detector HSV theo slot và click loop thu EXP được
+  dispatch từ màn hình `exp_hero`.
 - `flows/hero_up_available.py`: detector nút vàng + dấu `!` đỏ và click loop đột
-  phá của `Shift+6`.
-- `flows/click_loop.py`: fixed-position click loop của `Shift+7`.
-- `flows/research.py`: flow research của `Shift+9`.
-- `flows/artifact.py`: flow kích hoạt Artifact của `Shift+Y`.
+  phá được dispatch từ màn hình `hero_avail`.
+- `flows/click_loop.py`: fixed-position click loop chạy trực tiếp bằng `Shift+5`.
+- `flows/research.py`: flow được dispatch từ màn hình `research`.
+- `flows/artifact.py`: flow được dispatch từ màn hình `artifact`.
 - `hauntedroom_runner.py`: composition root và browser bootstrap. Entrypoint nối
-  CLI/browser với action runner hoặc standby controller, và inject `FLOW_COMMANDS`
-  vào standby.
+  CLI/browser với action runner hoặc standby controller, và inject
+  `FLOW_COMMANDS` cùng `SCREEN_FLOW_COMMANDS` vào standby.
 
 Validation liên quan schema action, bao gồm `validate_threshold`, nằm trong
 `actions/loader.py`; `core/vision.py` không biết raw action dictionary.
 
-Chi tiết business rule và thứ tự xử lý của `Shift+2`/`Shift+3` được giữ riêng
+Chi tiết business rule và thứ tự xử lý của auto-map/start-auto được giữ riêng
 tại [`AUTOMAP_FLOWS.md`](AUTOMAP_FLOWS.md).
 
 ## Dependency rule
@@ -167,7 +177,7 @@ Các rule cụ thể:
    `automap_support/train_select.py`, nhưng nhận auto-map callable từ command
    resolver thay vì import `automap.py` trực tiếp.
 4. `automap.py` chỉ import các module con thuộc `flows/automap_support/`; các
-   special flow `Shift+5`/`Shift+6` không phụ thuộc auto-map implementation.
+   special flow EXP/hero breakthrough không phụ thuộc auto-map implementation.
 5. `runner` là nơi nối hotkey với flow và action runner; module tầng dưới không
    import ngược `hauntedroom_runner`.
 6. Entrypoint không chứa business flow policy; nó bootstrap browser, chọn
@@ -179,7 +189,7 @@ chung thật, abstraction sẽ được thiết kế dựa trên behavior thực
 
 ## Action-driven flow
 
-Flow `Shift+1` giữ ranh giới hai bước:
+Flow enter/exit action-driven giữ ranh giới hai bước:
 
 ```text
 JSON action file
@@ -203,17 +213,17 @@ riêng và nhận auto-map callable qua dependency injection.
 
 ## Hot-reload
 
-Dev mode reload module Python trước khi bắt đầu flow mới, trong khi browser và
-session hiện tại vẫn được giữ nguyên. Policy nằm trong `runner/reload.py`.
-`Shift+2`/`Shift+3`/`Shift+4` reload `core.vision`, action support,
-`flows.automap_support` rồi `flows.automap` để các import by-value bind lại
-function/constant mới. `Shift+4` reload thêm `train_select.py` và `train.py`.
-`Shift+5`, `Shift+6`, `Shift+7` và `Shift+9` reload module flow tương ứng.
-`Shift+1`/`Shift+3`/`Shift+4` cũng load lại action JSON trước khi chạy.
+Dev mode reload module Python khi resolve flow mới, trong khi browser và session
+hiện tại vẫn được giữ nguyên. Policy nằm trong `runner/reload.py`. Auto-map và
+start-auto reload `core.vision`, action support, toàn bộ detector/orchestrator
+trong `flows.automap_support` rồi `flows.automap` để các import by-value bind lại
+function/constant mới. Train reload thêm vision/select logic và `train.py`.
+Click-loop, EXP, hero breakthrough, research và artifact reload module flow tương
+ứng. Enter/exit, start-auto và train cũng load lại action JSON trước khi chạy.
 `runner.reload.get_automap_runtime()` trả về cặp auto-map flow/action
 runner hiện tại; command table trong `runner/default_commands.py` truyền action
 runner đó vào `flows.start_auto.run_start_automap_loop()`, nên entry actions của
-`Shift+3` dùng runner đã reload mà flow module không cần import `actions`.
+start-auto dùng runner đã reload mà flow module không cần import `actions`.
 
 ## Hệ quả
 
@@ -238,9 +248,9 @@ runner đó vào `flows.start_auto.run_start_automap_loop()`, nên entry actions
 
 ## Tiêu chí mở rộng
 
-- Thêm hotkey flow: tạo module mới trong `flows/`, thêm command spec factory
-  trong `runner/commands.py` và nối dependency mặc định trong
-  `runner/default_commands.py`.
+- Thêm flow: tạo module mới trong `flows/`, thêm command spec factory trong
+  `runner/commands.py`, rồi nối vào direct hotkey hoặc `SCREEN_FLOW_COMMANDS`
+  trong `runner/default_commands.py`.
 - Thêm action type: cập nhật `actions/loader.py` và `actions/runner.py`.
 - Thêm foundational capability: chỉ đặt trong `core` nếu capability không biết
   feature nào đang sử dụng nó và không import lên `actions`/`flows`.

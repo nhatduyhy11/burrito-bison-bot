@@ -24,17 +24,14 @@ Chạy toàn bộ suite chính:
 uv run --with pytest pytest tests -q
 ```
 
-Snapshot ngày 2026-08-15:
+Snapshot ngày 2026-08-19:
 
 ```text
-1 collection error
+217 passed, 4 skipped, 36 subtests passed in 14.16s
 ```
 
-Full suite hiện dừng khi `tests/automap/test_level_up.py` còn import
-`LV_SPIN_CLICK_OFFSET_X` và `UPGRADE_CONFIRM_CLICK` từ
-`hauntedroom.flows.automap` thay vì module owner
-`hauntedroom.flows.automap_support.upgrade_action`. Hai module special-flow vẫn
-chạy độc lập và có tổng cộng 16 test pass.
+Snapshot trên được lấy bằng đúng lệnh full-suite ở root. Số `subtests` được
+pytest báo riêng, không cộng vào con số `217 passed`.
 
 Lệnh `unittest discover` vẫn dùng được khi cần debug theo standard library:
 
@@ -49,17 +46,22 @@ uv run python -m unittest tests.test_hauntedroom_architecture -v
 uv run python -m unittest tests.test_hauntedroom_vision -v
 uv run python -m unittest tests.actions.test_runner -v
 uv run python -m unittest tests.automap.test_boss -v
+uv run python -m unittest tests.automap.test_boss_flow -v
 uv run python -m unittest tests.hero_select.test_hero_select -v
 uv run python -m unittest tests.hero_select.test_hero_fallback -v
+uv run python -m unittest tests.runner.test_standby_controller -v
+uv run python -m unittest tests.runner.test_train_flow -v
 uv run python -m unittest tests.research.test_research_flow -v
+uv run python -m unittest tests.special_flow.test_artifact_flow -v
 uv run python -m unittest tests.special_flow.test_exp_available_flow -v
 uv run python -m unittest tests.special_flow.test_hero_up_available_flow -v
+uv run python -m unittest tests.test_screen_detect -v
 ```
 
 Chạy một test cụ thể:
 
 ```shell
-uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_clicks_followup_once_before_checking_home -v
+uv run python -m unittest tests.automap.test_map_reward.MapRewardTest.test_map_end_clicks_followup_twice_before_checking_home -v
 ```
 
 ## Phạm vi
@@ -67,10 +69,14 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
 - `test_hauntedroom_architecture.py`: dependency rule giữa `core`, `actions`,
   `control_events` và `flows`.
 - `test_hauntedroom_vision.py`: template matching, multi-scale và vị trí click.
+- `test_hauntedroom_mouse.py`: click/wait, smooth drag và bảo đảm nhả chuột khi
+  thao tác lỗi.
 - `test_screen_detect.py`: nhận diện screen từ anchor top/arrow, chống match chéo
-  và fallback `unknown`.
+  và fallback `unknown`, gồm cả việc lưu screenshot chẩn đoán.
+- `test_capture_paths.py`: đường dẫn lưu fallback screenshot dưới `.tmp/`.
 - `actions/`: action runner, timeout/retry và template wait/skip.
-- `automap/`: boss, build, level-up, map-end và orchestration của `Shift+2`.
+- `automap/`: boss HP/progress/control/action, gear, build, level-up, reward,
+  daily-first-win, map completion và orchestration one-map.
 - `control_events/`: blocker ngoài normal flow, gồm profile new-tab guard và
   game-core iframe CSS guard có startup delay.
 - `hero_select/test_hero_select.py`: template priority, ascend và interaction
@@ -80,14 +86,17 @@ uv run python -m unittest tests.automap.test_map_end.MapEndTest.test_map_end_cli
   Asset và selection contract được mô tả tại
   [`tools/rooms/automap/hero_levelup/README.md`](../tools/rooms/automap/hero_levelup/README.md).
 - `research/`: polling và interaction của flow research.
-- `special_flow/`: detector ảnh, click loop, stop event, command registration và
-  dev-reload wiring của `Shift+5` EXP available và `Shift+6` hero breakthrough.
+- `special_flow/`: detector ảnh, interaction, stop event và dev-reload wiring
+  của artifact, EXP available và hero breakthrough.
 - `runner/`: standby controller, command specs, hotkey, live capture, dev reload và
-  startup navigation retry.
+  startup navigation retry; gồm screen auto-switch của `Shift+1` và direct flow
+  `Shift+T`/`Shift+5`.
 - `runner/test_navigation.py`: bỏ page bị kẹt và retry trên page mới khi lần
   navigation đầu timeout, giới hạn số lần thử và validation cấu hình attempts.
 - `runner/test_start_automap_loop.py`: regression cho composite flow
   `tools/hauntedroom/flows/start_auto.py`.
+- `runner/test_train_flow.py`: nhận diện lượt train, challenge, chọn đủ năm hero
+  rồi handoff sang auto-map.
 - `tests/fixtures/`: screenshot cố định cho các test nhận diện ảnh.
 
 Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
@@ -96,12 +105,14 @@ Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
 ## Fixture ảnh
 
 - Fixture đã chọn và ổn định nằm trong `tests/fixtures/`.
-- Fixture của hai flow mới nằm trong `tests/fixtures/special_flow/`, gồm cả
-  trường hợp available/unavailable, artwork vàng/cam gây nhiễu và grid EXP đã
-  scroll.
+- Fixture của các special flow nằm trong `tests/fixtures/special_flow/`, gồm
+  artifact, EXP available và hero breakthrough; có cả trường hợp
+  available/unavailable, artwork gây nhiễu và grid EXP đã scroll.
 - `Shift+8` chụp viewport live vào
   `tests/fixtures/hauntedroom-captures/` mà không dừng flow hiện tại.
 - Screenshot timeout mới được lưu tạm trong `.tmp/hauntedroom-timeouts/`.
+- Screenshot fallback của screen detector và hero selection được lưu trong
+  `.tmp/hauntedroom-fallbacks/`.
 - Chỉ commit ảnh cần thiết để tái hiện một behavior; tránh đưa toàn bộ ảnh debug
   vào suite.
 

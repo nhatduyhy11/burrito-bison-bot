@@ -1,31 +1,34 @@
-# Auto-map flows: `Shift+2` và `Shift+3`
+# Auto-map flows: one-map và start-auto
 
-`Shift+2` chạy business core auto-map cho một trận. `Shift+3` không có một
-implementation auto-map riêng; nó là wrapper tự vào trận, gọi cùng business
-core, chờ cooldown rồi lặp sang map tiếp theo. Tài liệu này là nguồn mô tả chính
-cho thứ tự ưu tiên, điều kiện và kết quả của cả hai flow.
+Khi runner idle, `Shift+1` nhận diện màn hình rồi dispatch flow. Màn hình
+`automap` chạy business core cho đúng một trận; màn hình `home` chạy start-auto.
+Start-auto không có implementation auto-map riêng: nó là wrapper tự vào trận,
+gọi cùng business core, chờ cooldown rồi lặp sang map tiếp theo. Tài liệu này là
+nguồn mô tả chính cho thứ tự ưu tiên, điều kiện và kết quả của cả hai flow.
 
-| Hành vi | `Shift+2` | `Shift+3` |
+| Hành vi | One-map (`automap`) | Start-auto (`home`) |
 |---|---|---|
-| Vào room và bắt đầu trận | Người dùng thực hiện trước | Tự chạy prefix action của `Shift+1` |
+| Cách khởi chạy khi idle | `Shift+1` trên màn hình `automap` | `Shift+1` trên màn hình `home` |
+| Vào room và bắt đầu trận | Người dùng thực hiện trước | Tự chạy prefix action enter/exit từ JSON |
 | Auto-map trong trận | Chạy `run_automap_flow()` một lần | Gọi cùng `run_automap_flow()` trong mỗi loop |
-| Hotkey pause khi flow đang chạy | `Shift+1` ngay lập tức; `Shift+2` ở boss kế tiếp; `Shift+3` ở final boss | Giống `Shift+2` |
+| Hotkey pause khi flow đang chạy | `Shift+1` ngay lập tức; `Shift+2` ở boss kế tiếp; `Shift+3` ở final boss | Giống one-map |
 | Cooldown giữa map | Không | 2 giây |
 | Đếm win xuyên nhiều map | Không | Có |
-| Handoff đặc biệt ở loop 3 | Không | Có nếu hai loop đầu chưa ghi nhận win |
 
 ## Business core dùng chung
 
-Trước khi core bắt đầu, trận đã được khởi động: người dùng làm thủ công khi dùng
-`Shift+2`, còn wrapper của `Shift+3` tự chạy các entry action. Core chụp viewport
-liên tục, chạy các handler theo priority và chỉ xử lý tình huống đầu tiên match
-trong mỗi vòng quét.
+Trước khi core bắt đầu, trận đã được khởi động: người dùng làm thủ công với
+one-map, còn wrapper start-auto tự chạy các entry action. Core chụp viewport liên
+tục, chạy các handler theo priority và chỉ xử lý tình huống đầu tiên match trong
+mỗi vòng quét.
 
 Core kết thúc khi:
 
 - map hoàn tất và màn hình home đã sẵn sàng;
-- boss vào vùng critical, bot handoff để người dùng xử lý thủ công; hoặc
 - người dùng bấm `Shift+0` để dừng mềm và đưa runner về idle.
+
+Pause ở boss không kết thúc core: flow click pause trong game, chờ người dùng
+resume bằng `Shift+1`, rồi tiếp tục đúng state hiện tại.
 
 ### Priority loop
 
@@ -60,7 +63,7 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 
 Map-end không kết thúc ngay khi `automap/map_end.png` xuất hiện. Match này chỉ
 bắt đầu **win-map completion bridge**: đóng toàn bộ reward/prompt/blocker, xác
-nhận home đã thật sự sẵn sàng rồi mới cho `Shift+3` chạy map kế tiếp.
+nhận home đã thật sự sẵn sàng rồi mới cho start-auto chạy map kế tiếp.
 
 Xem [Map-completion bridge](MAP_COMPLETION_BRIDGE.md) để có call chain, state
 machine đầy đủ và review các nhánh retry có thể làm bridge bị stuck.
@@ -72,7 +75,7 @@ machine đầy đủ và review các nhánh retry có thể làm bridge bị stu
 - Bridge trả `completed=True` chỉ khi `rooms/start_home.png` match threshold
   `0.90`. Việc đã thấy reward hoặc đã tăng win count không đủ để hoàn tất map.
 - Nếu bridge bị stop, một wait bị ngắt hoặc daily-first-win không hoàn thành,
-  bridge trả `completed=False` và `Shift+3` dừng, không chạy entry action của
+  bridge trả `completed=False` và start-auto dừng, không chạy entry action của
   map tiếp theo.
 
 #### Thứ tự kiểm tra của win-map bridge
@@ -118,7 +121,7 @@ flowchart TD
 | `reward_list_title.png` còn hiện | Tìm trong region `(180, 200, 460, 300)`, click top-middle, đánh dấu `title_seen` và kiểm tra lại sau `2 giây`. Nếu popup vẫn còn thì click lại. | Chỉ khi title biến mất mới tiến tới home/fallback check. |
 | Không thấy reward và title | Chờ `3 giây` rồi click `(220, 560)`, tối đa hai lần. | Cho UI có cơ hội đóng animation/popup trước khi kiểm tra blocker và home. |
 | Có post-map blocker | Sau hai fallback click, tìm các template trong `rooms/blocker/`, click blocker đầu tiên match rồi scan lại. `overlay_newbie.png` dùng vị trí `top_middle`; blocker khác dùng tâm. | Không đánh dấu hoàn tất khi blocker còn che home. |
-| Home xuất hiện mà không thấy reward | Vẫn có thể trả `completed=True` sau fallback/blocker cleanup. `win_recorded` giữ `False`, vì vậy win count không tăng. | `Shift+3` vẫn có thể tiếp tục map sau vì completion và win-count là hai contract độc lập. |
+| Home xuất hiện mà không thấy reward | Vẫn có thể trả `completed=True` sau fallback/blocker cleanup. `win_recorded` giữ `False`, vì vậy win count không tăng. | Start-auto vẫn có thể tiếp tục map sau vì completion và win-count là hai contract độc lập. |
 
 #### Daily first-win
 
@@ -144,15 +147,15 @@ Daily-first-win là một sub-flow riêng trong
 
 | Field | Ý nghĩa |
 |---|---|
-| `completed` | Chỉ `True` khi home template đã match; đây là tín hiệu quyết định `Shift+3` có được nối sang map tiếp theo hay không. |
+| `completed` | Chỉ `True` khi home template đã match; đây là tín hiệu quyết định start-auto có được nối sang map tiếp theo hay không. |
 | `win_recorded` | Reward của map hiện tại đã gọi `on_win()` hay chưa. |
-| `total_win` | Tổng win do wrapper `Shift+3` quản lý; không dùng để quyết định completion. |
+| `total_win` | Tổng win do wrapper start-auto quản lý; không dùng để quyết định completion. |
 | `first_win_done` | Không cần xử lý lại daily-first-win trong các map sau của process hiện tại. |
 
 ### 3. Initial gear setup
 
-- Gear setup thuộc business core của `Shift+2`; `Shift+3` dùng cùng behavior vì
-  gọi lại `run_automap_flow()` cho từng map.
+- Gear setup thuộc business core one-map; start-auto dùng cùng behavior vì gọi
+  lại `run_automap_flow()` cho từng map.
 - Flow chỉ thử setup gear sau khi đã unlock qua một upgrade milestone ổn định
   như level-up confirm hoặc chọn hero level-up option.
 - Nếu gear chưa unlock, đã thử setup trong map hiện tại, hoặc không thấy gear
@@ -187,8 +190,8 @@ Daily-first-win là một sub-flow riêng trong
   limitation này; nếu cần phân loại sau này phải thêm stage signal riêng.
 - Không xử lý riêng khoảnh khắc thanh máu cuối cạn và chuyển đen; flow chấp nhận
   edge case này và pause trong trạng thái boss thông thường còn thanh máu.
-- Trong lúc flow `Shift+2` hoặc `Shift+3` đang chạy, `Shift+2` arm pause một lần ở
-  boss bất kỳ; `Shift+3` arm pause một lần ở final boss. Khi boss match policy,
+- Trong lúc one-map hoặc start-auto đang chạy, `Shift+2` arm pause một lần ở boss
+  bất kỳ; `Shift+3` arm pause một lần ở final boss. Khi boss match policy,
   flow click `rooms/exit_click.png` để pause game,
   rồi pause script bằng `FlowControl`. Flow vẫn sống và chờ manual resume, không
   bấm `exit_confirm`, không handoff và không trở về idle.
@@ -208,7 +211,7 @@ Daily-first-win là một sub-flow riêng trong
 flowchart TD
     A[Final boss được nhận diện] --> B{Đã deploy pet<br/>trong flow này?}
     B -- Có --> Z[Bỏ qua pet đến hết flow]
-    B -- Chưa --> C{Match pet_ready?}
+    B -- Chưa --> C{Thấy ready glow?}
     C -- Không --> R[Trả về automap] --> A
     C -- Có --> D[Click pet_ready]
     D --> E[Chờ 300 ms<br/>chụp lại viewport]
@@ -222,10 +225,11 @@ flowchart TD
     I --> Z
 ```
 
-Contract: chỉ final boss dùng nhánh này; mini-boss bỏ qua. Hai template là
-`boss/pet_ready.png` và `boss/pet_active.png`; cờ deployed thuộc từng auto-map
-flow. Retry mở menu không có timeout/max-attempt riêng và chỉ dừng khi summon
-thành công hoặc nhận `stop_event`.
+Contract: chỉ final boss dùng nhánh này; mini-boss bỏ qua. Trạng thái ready được
+nhận diện bằng vùng glow màu trong `vision/boss_controls.py`; chỉ popup active
+dùng template `boss/pet_active.png`. Cờ deployed thuộc từng auto-map flow. Retry
+mở menu không có timeout/max-attempt riêng; nó dừng khi summon thành công, nhận
+`stop_event`, hoặc popup active không còn được nhận diện.
 
 ### 5. Level up
 
@@ -271,39 +275,45 @@ Danh sách asset, thứ tự sort, threshold và chi tiết fallback được gi
   lại. Khi không template nào match, fallback ưu tiên card vàng hợp lệ đầu tiên,
   rồi card tím, cuối cùng mới chọn card đỏ. Log ghi rõ màu fallback đã chọn.
   Card priority `99` chỉ được dùng khi không còn lựa chọn khác.
+- Nếu fallback thấy đủ ba card nhưng không card nào vàng hoặc tím, bot lưu một
+  screenshot chẩn đoán dưới `.tmp/hauntedroom-fallbacks/`. Có thể tắt bằng
+  `CAPTURE_HERO_FALLBACK_SCREENSHOTS`; layout chưa đủ ba card không bị capture.
 
-## `Shift+2`: chạy một map
+## One-map: chạy một map
 
-`Shift+2` gọi thẳng `run_automap_flow()`. Người dùng phải vào map và bấm
-`start_battle` trước khi kích hoạt hotkey. Trong lúc chạy, flow nhận cùng bộ
-hotkey pause/resume, pause-at-boss, screenshot và stop như `Shift+3`. Khi core
-hoàn tất hoặc dừng, runner trở về idle và không tự bắt đầu map tiếp theo.
+Khi runner idle, `Shift+1` nhận diện màn hình `automap` và gọi
+`run_automap_flow()`. Người dùng phải vào map và bấm `start_battle` trước khi
+kích hoạt auto-switch. Trong lúc chạy, flow nhận bộ control pause/resume,
+pause-at-boss, screenshot và stop giống start-auto. Khi core hoàn tất hoặc dừng,
+runner trở về idle và không tự bắt đầu map tiếp theo.
 
-## `Shift+3`: start-auto loop
+## Start-auto loop
 
-Khi runner idle, `Shift+3` bắt đầu chạy nhiều map liên tiếp. Trong lúc flow đang
-chạy, `Shift+1` pause ngay và bấm lại để resume đúng state hiện tại; `Shift+2`
-đặt pause một lần khi nhận diện boss bất kỳ; `Shift+3` đặt pause một lần khi
-nhận diện final boss. Hai policy boss có thể thay thế nhau trước khi trigger.
+Khi runner idle, `Shift+1` trên màn hình `home` bắt đầu chạy nhiều map liên tiếp.
+Trong lúc flow đang chạy, `Shift+1` pause ngay và bấm lại để resume đúng state
+hiện tại; `Shift+2` đặt pause một lần khi nhận diện boss bất kỳ; `Shift+3` đặt
+pause một lần khi nhận diện final boss. Hai policy boss có thể thay thế nhau
+trước khi trigger.
 `Shift+8` vẫn chụp screenshot, `Shift+0` dừng hẳn flow, còn các Shift+digit khác
 bị ignore cho tới khi flow kết thúc. Flow không restart từ đầu sau khi resume.
-Các control trên hoạt động giống nhau khi `Shift+2` hoặc `Shift+3` đang chạy.
+Các control trên hoạt động giống nhau trong one-map và start-auto.
 Các số này là giá trị của dict `START_AUTO_HOTKEYS` trong
 `tools/hauntedroom/settings.py`, nên có thể remap mà không sửa controller.
 
 Mỗi vòng chạy theo thứ tự:
 
-1. Tái sử dụng các action của flow `Shift+1` từ đầu tới hết action click
+1. Tái sử dụng các action enter/exit từ đầu tới hết action click
    `start_battle.png`; các action exit không được chạy. Entry actions được thử
    tối đa 2 lần khi timeout và dừng ngay sau lần đầu tiên hoàn thành thành công.
-2. Gọi `run_automap_flow()` để chạy trọn một lượt business core giống `Shift+2`.
+2. Gọi `run_automap_flow()` để chạy trọn một lượt business core giống one-map.
    Khi map-end match, lời gọi này chỉ trả thành công sau khi win-map completion
    bridge đã dọn UI và xác nhận home.
 3. Nếu completion bridge trả `False`, dừng toàn bộ start-auto loop ngay; không
    chạy loss check, cooldown hoặc entry action mới.
 4. Nếu completion bridge trả `True`, kiểm tra map có thất bại hay không. Nếu
    `win_count` không tăng trong map vừa xong, coi đó là một loss và tự arm policy
-   pause một lần ở boss đầu tiên cho map kế tiếp (tương đương `Shift+2`).
+   pause một lần ở boss đầu tiên cho map kế tiếp (cùng policy với control
+   `Shift+2`).
 5. Chờ 2 giây rồi bắt đầu vòng tiếp theo.
 
 Contract nối loop là:
@@ -312,13 +322,13 @@ Contract nối loop là:
 start battle
     -> run_automap_flow()
     -> finish_map_from_home()
-       -> completed=False: stop Shift+3
+       -> completed=False: stop start-auto
        -> completed=True: loss check
           -> không thấy reward: arm pause ở boss đầu tiên của map kế
           -> cooldown 2 giây -> start battle kế tiếp
 ```
 
-Flow giữ `win_count` trong suốt một lần chạy `Shift+3`. Khi auto-map nhận diện
+Flow giữ `win_count` trong suốt một lần chạy start-auto. Khi auto-map nhận diện
 `win_reward.png` lần đầu tiên trong màn reward của một map, `win_count` tăng 1;
 các reward còn lại trong cùng màn không làm tăng thêm count. Ngay trước log hoàn
 thành auto-map, flow in tổng hiện tại theo format `>>> [total_win] win`.
@@ -342,8 +352,9 @@ uv run python tools/hauntedroom_runner.py --dev-reload
 ```
 
 Vòng lặp phát triển là `Shift+0` → sửa code/template/action JSON → bắt đầu lại
-flow. Runner giữ nguyên browser và session, nhưng reload module Python liên quan
-tới flow mới. Với `Shift+2`/`Shift+3`, runner reload `core.vision`, action
+flow bằng `Shift+1`. Runner giữ nguyên browser và session, nhưng reload module
+Python liên quan tới flow mới. Với one-map/start-auto, runner reload
+`core.vision`, action
 support, các module `flows.automap_support`, rồi `flows.automap`. Các phase
 `map_completion.py` giữ priority orchestration tổng cùng home detection. Package
 nội bộ `completion_flow/` chứa `first_win.py`, `reward.py`, `blocker.py` và
@@ -351,14 +362,14 @@ nội bộ `completion_flow/` chứa `first_win.py`, `reward.py`, `blocker.py` v
 tránh sinh thêm module quá nhỏ. Các helper này chỉ được map-completion consume.
 Các phase khác gồm `upgrade_action.py`, `hero_action.py` và `boss_flow.py`;
 detector/action nền nằm trong package `vision/`, `boss_action.py` và
-`gear_action.py`. Với `Shift+3`, action JSON cũng được load lại trước khi lấy
+`gear_action.py`. Với start-auto, action JSON cũng được load lại trước khi lấy
 prefix `start_battle`. Nếu reload lỗi syntax/import/JSON, runner vẫn mở ở trạng
 thái idle để có thể sửa và thử lại.
 
 ## Vị trí code và test
 
 - Auto-map coordinator/public API: `tools/hauntedroom/flows/automap.py`.
-- Wrapper/composite flow `Shift+3`: `tools/hauntedroom/flows/start_auto.py`.
+- Wrapper/composite start-auto: `tools/hauntedroom/flows/start_auto.py`.
 - Hotkey standby/controller: `tools/hauntedroom/runner/standby.py`.
 - Command spec factory: `tools/hauntedroom/runner/commands.py`.
 - Default command wiring: `tools/hauntedroom/runner/default_commands.py`.

@@ -13,7 +13,7 @@ Audit này tách rõ hai khái niệm thường cùng được gọi là “capt
 |---|---|---|---|---|
 | Action runner | `ClickTemplateAction` hết timeout | `save_timeout_screenshot` | `.tmp/hauntedroom-timeouts/` | Có |
 | Blocker clearer | Hết timeout khi clear blocker/chờ template đích | `save_timeout_screenshot` | `.tmp/hauntedroom-timeouts/` | Có |
-| Screen detect / `Shift+G` | Detector trả về `unknown` | `save_fallback_screenshot` | `.tmp/hauntedroom-fallbacks/` | Có |
+| Screen detect / `Shift+1` | Detector trả về `unknown` | `save_fallback_screenshot` | `.tmp/hauntedroom-fallbacks/` | Có |
 | Auto-map hero fallback | Đủ 3 card nhưng không match priority, yellow hoặc purple; setting `CAPTURE_HERO_FALLBACK_SCREENSHOTS=True` | `save_fallback_screenshot` | `.tmp/hauntedroom-fallbacks/` | Có |
 | Standby/auto-map control | Người dùng bấm hotkey screenshot, mặc định `Shift+8` | `save_live_screenshot` | `tests/fixtures/hauntedroom-captures/` | Không, chỉ theo lệnh người dùng |
 
@@ -29,7 +29,7 @@ working tree.
 
 | Flow / subsystem | Màu | Capture để làm gì | Có tự ghi file không? |
 |---|---|---|---|
-| `screen_detect` / `Shift+G` | BGR | Phân loại `home`, special flow, train, automap hoặc unknown | Chỉ khi kết quả là `unknown` |
+| `screen_detect` / `Shift+1` | BGR | Phân loại `home`, special flow, train, automap hoặc unknown | Chỉ khi kết quả là `unknown` |
 | Action runner | Grayscale | Poll template, skip-template và action checkpoint | Chỉ khi timeout, theo bảng trên |
 | Blocker clearer | Grayscale | Tìm blocker và template đích | Chỉ khi timeout, theo bảng trên |
 | Research | Grayscale | Poll badge available và trạng thái active | Không |
