@@ -2,538 +2,253 @@
 
 File được audit: `tools/hauntedroom/actions/runner.py`
 
-`runner.py` hiện có 11 function, cộng thêm một sentinel constant. Nội dung dưới đây liệt kê lần lượt từng thành phần, role hiện tại và khả năng tách sang file khác.
+Tài liệu này chỉ ghi nhận các issue còn tồn tại trong code hiện tại.
 
-## 0. `SKIP_TEMPLATE_MATCHED`
+## Current responsibility
 
-Không phải function. Đây là sentinel để biểu diễn trường hợp template chính chưa xuất hiện, nhưng `skip_if_template` đã xuất hiện nên action được xem là không cần chạy nữa.
+`runner.py` hiện vừa điều phối action loop, vừa chuẩn bị template resources, vừa thực thi action và áp dụng timeout policy.
 
-`wait_for_template()` có thể trả:
-
-- `(x, y, score)` khi template chính match.
-- `SKIP_TEMPLATE_MATCHED` khi skip-template match.
-- `None` khi flow bị stop.
-- Raise `TimeoutError` khi hết timeout.
-
-Có thể tách cùng `wait_for_template()` sang `template_waiter.py`.
-
-## 1. `wait_for_template()`
-
-### Nó làm gì?
-
-Function này liên tục chụp màn hình và tìm template cho đến khi xảy ra một trong bốn trường hợp:
-
-1. Template chính đạt threshold: trả tọa độ và score.
-2. Skip-template đạt threshold: trả `SKIP_TEMPLATE_MATCHED`.
-3. Flow bị stop: trả `None`.
-4. Hết timeout: lưu screenshot rồi raise `TimeoutError`.
-
-### Luồng chi tiết
+Luồng chính:
 
 ```text
-flow checkpoint
-→ capture screenshot grayscale
-→ tìm template chính
-→ nếu đủ threshold: return match
-→ nếu có skip template: tìm skip template
-→ nếu skip đủ threshold: return sentinel
-→ nếu hết deadline: save screenshot + raise
-→ chờ poll_ms
-→ lặp lại
+actions
+→ collect và preload templates
+→ chạy action loop
+→ dispatch từng action
+→ thực thi browser side effects
+→ xử lý stop, timeout và retry
 ```
 
-Nó còn:
+## 1. `collect_template_paths()` — resource preparation nằm trong runner
 
-- Tính deadline bằng `flow_time()` để thời gian pause không bị tính vào timeout.
-- Theo dõi `best_score` để báo score tốt nhất khi timeout.
-- Theo dõi `best_skip_score`.
-- Hỗ trợ nhiều scale.
-- Hỗ trợ giới hạn search region.
-- Hỗ trợ các click position khác nhau.
+### Nó đang làm gì?
 
-### Có thể tách không?
+Duyệt toàn bộ actions để tìm các template cần preload:
 
-Rất nên tách sang:
+- `ClickTemplateAction`: lấy `template_path` và `skip_if_template_path`.
+- `ClearBlockersAction`: lấy `blocker_paths` và `until_template_path`.
+- Dùng `set[Path]` để tránh load trùng template.
 
-```text
-actions/template_waiter.py
-```
+`run_actions()` sau đó trực tiếp load các path này thành `dict[Path, np.ndarray]`.
 
-Không nên đưa thẳng vào `core/template.py`, vì function này không chỉ làm vision; nó còn biết flow control, polling, timeout screenshot và skip-action semantics.
+### Issue còn tồn tại
 
-## 2. `note_suffix()`
+Runner phải biết:
 
-### Nó làm gì?
+- Action type nào sử dụng template.
+- Template nằm ở field nào của từng action.
+- Template được load bằng cách nào.
+- Template cache sử dụng `Path` và NumPy array.
 
-Format note dùng trong log:
+Đây là resource preparation, không phải loop orchestration. Khi thêm action type mới có template, cả resource collector và action dispatcher đều phải được cập nhật.
+
+### Breakdown đề xuất
+
+Chuyển sang `actions/resources.py`:
 
 ```python
-note_suffix(None)       # ""
-note_suffix("buy gear") # " (buy gear)"
+def collect_template_paths(actions: list[Action]) -> set[Path]: ...
+
+def load_action_templates(
+    actions: list[Action],
+) -> dict[Path, np.ndarray]: ...
 ```
 
-### Có thể tách không?
-
-Có thể, nhưng function quá nhỏ nên không đáng tạo file riêng.
-
-Các lựa chọn hợp lý:
-
-- Giữ gần code logging.
-- Chuyển logic trực tiếp vào `action_label()`.
-- Chuyển sang `actions/logging.py` nếu sau này có nhiều helper format log.
-
-Có thể đơn giản hóa thành:
+Runner khi đó chỉ cần:
 
 ```python
-def action_label(loop_index, action_index, note):
-    suffix = f" ({note})" if note else ""
-    return f"{loop_index}.{action_index}{suffix}"
+templates = load_action_templates(actions)
 ```
 
-Sau đó xóa `note_suffix()`.
+## 2. `execute_clear_blockers_action()` — action adapter nằm trong runner
 
-## 3. `action_label()`
+### Nó đang làm gì?
 
-### Nó làm gì?
-
-Tạo label cho một action dựa trên:
-
-- Số thứ tự loop.
-- Số thứ tự action.
-- Note tùy chọn.
-
-Ví dụ:
-
-```python
-action_label(2, 3, None)
-# "2.3"
-
-action_label(2, 3, "open shop")
-# "2.3 (open shop)"
-```
-
-Label này được dùng trong log và timeout screenshot.
-
-### Có thể tách không?
-
-Có thể chuyển cùng executor sang `actions/executor.py`, hoặc để trong runner nếu runner chịu trách nhiệm tạo execution context. Không đáng tạo file riêng chỉ cho function này.
-
-## 4. `collect_template_paths()`
-
-### Nó làm gì?
-
-Duyệt toàn bộ action để thu thập các file template cần preload.
-
-Với `ClickTemplateAction`, nó lấy:
-
-- `template_path`.
-- `skip_if_template_path`, nếu có.
-
-Với `ClearBlockersAction`, nó lấy:
-
-- Tất cả `blocker_paths`.
-- `until_template_path`.
-
-`ClickAction` và `WaitAction` không cần template nên bị bỏ qua. Function dùng `set[Path]` để tránh load trùng template.
-
-Sau đó `run_actions()` dùng tập path này để load toàn bộ ảnh vào memory:
-
-```python
-templates = {path: load_template(path) for path in template_paths}
-```
-
-### Có thể tách không?
-
-Nên tách vì đây là resource preparation, không phải loop orchestration:
-
-```text
-actions/resources.py
-```
-
-Có thể gom cả collect và load:
-
-```python
-def load_action_templates(actions: list[Action]) -> dict[Path, np.ndarray]:
-    paths = collect_template_paths(actions)
-    return {path: load_template(path) for path in paths}
-```
-
-Khi đó runner không cần biết `Path`, NumPy hay cách từng loại action tham chiếu template.
-
-## 5. `execute_click_action()`
-
-### Nó làm gì?
-
-Thực thi `ClickAction` đơn giản:
-
-1. Log tọa độ click.
-2. Gọi `bot_click()`.
-3. Trả `True`.
-
-Nó không delay, recheck, template match hoặc kiểm tra stop event trực tiếp. Checkpoint đã được runner gọi trước khi execute action.
-
-### Có thể tách không?
-
-Có. Chuyển sang `actions/executor.py`. Đây là một action handler.
-
-## 6. `execute_clear_blockers_action()`
-
-### Nó làm gì?
-
-Function này chủ yếu là adapter giữa `ClearBlockersAction` và function `clear_blockers()`.
-
-Nó unpack các field từ action:
+Nhận `ClearBlockersAction`, unpack toàn bộ configuration rồi delegate sang `clear_blockers()`:
 
 - Blocker paths.
 - Until-template path.
 - Threshold.
-- Timeout và polling.
-- Click delay.
-- Click positions.
-- Label.
-- Stop event.
-- Template scales.
+- Timeout và polling interval.
+- Click delay và click positions.
+- Stop event và template scales.
 
-Sau đó truyền toàn bộ vào `clear_blockers()`.
+Business behavior chính nằm trong `control_events/blockers.py`; function này là adapter từ action model sang API đó.
 
-Business behavior thật nằm trong `tools/hauntedroom/control_events/blockers.py`. Function trong runner gần như không có logic riêng, chỉ chuyển object thành một danh sách argument dài.
+### Issue còn tồn tại
 
-### Có thể tách không?
+Đây là action execution concern. Nó không tham gia điều khiển loop, retry hay sequence nhưng vẫn nằm trong runner.
 
-Nên chuyển sang `actions/executor.py`.
+### Breakdown đề xuất
 
-Có thể giảm argument plumbing bằng cách đổi API thành nhận `ClearBlockersAction`, nhưng như vậy `control_events/blockers.py` sẽ phụ thuộc vào action model. Phương án trung lập là giữ adapter trong `executor.py`.
+Chuyển function sang `actions/executor.py`. Giữ adapter này giúp `control_events/blockers.py` không cần phụ thuộc trực tiếp vào `ClearBlockersAction`.
 
-## 7. `execute_click_template_action()`
+## 3. `execute_click_template_action()` — execution behavior lớn nhất vẫn nằm trong runner
 
-Đây là function lớn nhất và chứa phần lớn behavior của một `ClickTemplateAction`.
+### Nó đang làm gì?
 
-### Phase 1: Chuẩn bị
+Function này chịu trách nhiệm toàn bộ lifecycle của `ClickTemplateAction`:
 
-Nó lấy từ action:
+1. Chuẩn bị template chính, skip-template và repeat delay.
+2. Gọi `wait_for_template()`.
+3. Xử lý `MATCHED`, `ALTERNATIVE_MATCHED` và `STOPPED`.
+4. Delay trước click.
+5. Click một hoặc nhiều lần.
+6. Tùy chọn capture và recheck template trước repeat click.
+7. Cập nhật tọa độ click nếu template dịch chuyển.
+8. Dừng repeat clicks nếu template biến mất.
 
-- Template chính.
-- Skip-template.
-- Repeat delay.
-
-Sau đó log rằng runner đang đợi template.
-
-### Phase 2: Chờ template
-
-Nó gọi `wait_for_template()` với:
-
-- Template image đã preload.
-- Threshold.
-- Timeout.
-- Poll interval.
-- Stop event.
-- Skip-template.
-- Click position.
-- Scale.
-- Region.
-
-### Phase 3: Xử lý kết quả
-
-Nếu skip-template match:
-
-- Log rằng step đã sẵn sàng.
-- Không click.
-- Trả `True`.
-
-Nếu flow bị stop và nhận `None`:
-
-- Trả `False`.
-
-Nếu template chính match:
-
-- Lấy `(x, y, score)`.
-- Log vị trí, score và click configuration.
-
-Nếu timeout:
-
-- `wait_for_template()` raise exception.
-- Function này không catch.
-- Exception đi lên `run_actions()`.
-
-### Phase 4: Click
-
-Nó chạy từ `0` đến `click_count - 1`.
-
-Trước mỗi click:
-
-- Click đầu chờ `delay_ms`.
-- Click sau chờ `repeat_delay_ms`.
-
-Nếu flow stop trong lúc delay, function trả `False`.
-
-### Phase 5: Recheck trước repeat click
-
-Nếu đây không phải click đầu và `recheck_before_repeat=True`:
-
-1. Chụp screenshot mới.
-2. Tìm lại template.
-3. Nếu template biến mất, log và bỏ các repeat click còn lại.
-4. Nếu template vẫn còn, cập nhật tọa độ mới và log repeat click.
-
-Cuối cùng gọi `bot_click()`.
-
-### Output
+Return contract:
 
 - `True`: action hoàn thành hoặc được skip hợp lệ.
 - `False`: flow bị stop.
-- `TimeoutError`: không thấy template trong thời gian cho phép.
+- `TimeoutError`: không tìm thấy template trong timeout.
 
-### Có thể tách không?
+### Issue còn tồn tại
 
-Rất nên chuyển sang `actions/executor.py`.
+Đây là browser execution behavior, không phải runner orchestration. Function cũng là phần lớn nhất trong file và kéo các dependency sau vào runner:
 
-Nếu cần breakdown sâu hơn, có thể tách nội bộ thành:
+- Mouse control.
+- Screenshot capture.
+- Template matching và detection.
+- NumPy template cache.
+- Repeat-click policy.
+
+### Breakdown đề xuất
+
+Chuyển sang `actions/executor.py`.
+
+Nếu cần giảm độ dài bên trong executor, có thể extract helper cho repeat click:
 
 ```python
-async def execute_click_template_action(...)
-async def click_template_repeatedly(...)
-def describe_repeat_policy(...)
+async def click_template_repeatedly(...): ...
 ```
 
-Chưa cần tạo thêm file ngoài `executor.py`.
+Không cần tạo thêm file riêng cho helper này.
 
-## 8. `execute_wait_action()`
+## 4. `execute_action()` — dispatcher và side effects nằm trong runner
 
-### Nó làm gì?
+### Nó đang làm gì?
 
-Adapter cho `WaitAction`:
+Tạo action label rồi dispatch theo runtime type:
+
+```text
+ClickAction          → log và click trực tiếp
+ClearBlockersAction  → execute_clear_blockers_action()
+ClickTemplateAction  → execute_click_template_action()
+WaitAction           → wait_with_countdown() trực tiếp
+```
+
+Nếu gặp action type không được hỗ trợ, function raise `TypeError`.
+
+### Issue còn tồn tại
+
+Runner đang biết chi tiết thực thi của mọi action type. Thêm action mới yêu cầu sửa dispatcher trong runner, đồng thời có thể phải thêm dependency browser/vision mới vào cùng file.
+
+`ClickAction` và `WaitAction` đủ nhỏ để xử lý inline trong dispatcher; không cần tạo wrapper function riêng. Issue nằm ở vị trí của dispatcher, không phải số lượng handler.
+
+### Breakdown đề xuất
+
+Chuyển dispatcher cùng các action handlers sang `actions/executor.py`:
 
 ```python
-return await wait_with_countdown(
+async def execute_action(
     page,
-    action.ms,
-    label,
+    action,
+    templates,
+    loop_index,
+    action_index,
     stop_event,
-)
+) -> bool: ...
 ```
 
-`wait_with_countdown()` mới là nơi:
+Chưa cần handler registry hoặc visitor. Với bốn action types, `isinstance` explicit vẫn dễ đọc và debug.
 
-- Chia wait thành các step ngắn.
-- In countdown nếu wait dài.
-- Kiểm tra pause/stop giữa các step.
+## 5. `log_action_timeout()` — tên và return contract chưa phản ánh behavior
 
-### Có thể tách không?
+### Nó đang làm gì?
 
-Chuyển sang `actions/executor.py` cùng các handler khác.
+Function này:
 
-## 9. `execute_action()`
+- Log timeout count.
+- Raise lại `TimeoutError` khi timeout count đạt 2.
+- Log finite loop đã hết retry hay loop tiếp theo sẽ retry.
+- Luôn trả `True` nếu không raise.
 
-### Nó làm gì?
+Giá trị `True` được gán vào `loop_timed_out`.
 
-Đây là dispatcher.
+### Issue còn tồn tại
 
-Nó:
+Tên `log_action_timeout()` cho thấy đây là logging helper, nhưng function còn áp dụng retry policy và có thể raise exception.
 
-1. Tạo action label.
-2. Kiểm tra runtime type của action.
-3. Gọi đúng executor.
+Return value cũng không mang thông tin quyết định vì mọi non-error path đều trả `True`.
 
-Mapping hiện tại:
+### Breakdown đề xuất
 
-```text
-ClickAction          → execute_click_action
-ClearBlockersAction  → execute_clear_blockers_action
-ClickTemplateAction  → execute_click_template_action
-WaitAction           → execute_wait_action
-```
+Giữ timeout policy trong `runner.py`, nhưng đổi tên thành `handle_action_timeout()`.
 
-Nếu object không thuộc loại được hỗ trợ, nó raise `TypeError`.
-
-### Role thật
-
-Đây là entry point của action execution layer:
-
-```text
-Action model → action handler
-```
-
-### Có thể tách không?
-
-Nên chuyển sang `actions/executor.py`.
-
-Không cần đổi thành registry hoặc visitor ngay. Với bốn action types, `isinstance` rõ ràng và dễ debug.
-
-## 10. `log_action_timeout()`
-
-Tên function hơi thiếu vì nó không chỉ log; nó còn áp dụng timeout policy.
-
-### Nó làm gì?
-
-Đầu tiên log timeout count:
-
-```text
-timeout count=1/2
-```
-
-Nếu `timeout_count >= 2`:
-
-- Log `Second timeout; stopping runner.`
-- Raise lại `TimeoutError`.
-
-Nếu đây là loop cuối:
-
-- Log rằng không còn retry.
-- Phần còn lại của action loop sẽ bị bỏ qua.
-
-Nếu vẫn còn loop:
-
-- Log rằng bỏ phần còn lại của loop hiện tại.
-- Loop sau sẽ retry từ action đầu tiên.
-
-Cuối cùng trả `True`, và giá trị này được gán vào `loop_timed_out`.
-
-### Vấn đề về role
-
-Function mang tên `log_...`, nhưng thực tế nó:
-
-- Log.
-- Kiểm tra retry limit.
-- Quyết định dừng.
-- Raise exception.
-- Báo cho runner rằng loop bị timeout.
-
-Đây là retry/error policy, không đơn thuần là logger.
-
-### Có thể tách không?
-
-Có hai lựa chọn:
-
-- Giữ trong `runner.py`, vì retry policy đúng là trách nhiệm của runner.
-- Tách thành `actions/retry.py` nếu policy sẽ phức tạp hơn.
-
-Hiện tại nên giữ trong runner nhưng đổi tên, ví dụ `handle_action_timeout()`. Chưa cần một file riêng chỉ cho function này.
-
-## 11. `run_actions()`
-
-Đây là function runner chính.
-
-### Phase 1: Preload resources
-
-Nó:
-
-1. Thu thập template paths từ actions.
-2. Load toàn bộ template vào dictionary.
-
-Template chỉ được load một lần trước các loop.
-
-### Phase 2: Khởi tạo state
-
-Nó quản lý:
-
-- `timeout_count`: số timeout liên tiếp qua các loop.
-- `loop_index`: loop hiện tại.
-- `loop_count`: số loop tối đa, hoặc `None` để chạy vô hạn.
-
-### Phase 3: Bắt đầu loop
-
-Điều kiện:
+Có thể bỏ return value:
 
 ```python
-while loop_count is None or loop_index < loop_count:
+handle_action_timeout(...)
+loop_timed_out = True
 ```
 
-Mỗi loop:
+Nếu policy phát triển thêm nhiều outcome, dùng enum như `RetryDecision` thay vì boolean.
 
-1. Kiểm tra flow checkpoint.
-2. Tăng loop index.
-3. Log loop start.
-4. Reset `loop_timed_out=False`.
+Chưa cần tách `actions/retry.py` với policy hiện tại.
 
-### Phase 4: Chạy từng action
+## 6. `run_actions()` — orchestration đúng role nhưng đang làm thêm resource setup
 
-Với mỗi action:
+### Nó đang làm gì?
 
-1. Kiểm tra flow checkpoint.
-2. Tạo label.
-3. Gọi `execute_action()`.
+`run_actions()` hiện chịu trách nhiệm:
 
-Nếu executor trả `False`:
+1. Collect và preload templates.
+2. Quản lý số loop.
+3. Kiểm tra cooperative stop/pause.
+4. Chạy tuần tự từng action.
+5. Bỏ phần còn lại của loop khi action timeout.
+6. Retry từ action đầu ở loop kế tiếp.
+7. Raise ở timeout lần hai.
+8. Reset timeout count sau một loop thành công.
+9. Dừng sau lần thành công đầu nếu `stop_after_success=True`.
 
-- Xem như flow đã stop.
-- Log idle.
-- Return `False`.
+### Issue còn tồn tại
 
-Nếu executor raise `TimeoutError`:
+Phần loop, stop và retry đúng là trách nhiệm của runner. Phần collect/load template nên được chuyển sang resource layer.
 
-- Tăng `timeout_count`.
-- Gọi timeout handler.
-- Break khỏi action loop.
+Sau khi tách resource preparation và action execution, `run_actions()` chỉ nên phối hợp hai dependency đó và giữ nguyên behavior hiện tại.
 
-Điểm quan trọng: timeout ở giữa sequence làm bỏ toàn bộ action còn lại, và lần retry sau bắt đầu lại từ action đầu tiên.
-
-### Phase 5: Xử lý loop timeout
-
-Nếu loop vừa timeout:
-
-- Nếu đó là finite loop cuối: return `False`.
-- Nếu còn retry: bắt đầu loop mới.
-
-### Phase 6: Xử lý loop thành công
-
-Nếu trước đó từng timeout nhưng loop hiện tại hoàn thành:
-
-- Reset `timeout_count` về zero.
-
-Sau đó:
-
-- Log loop finish.
-- Nếu `stop_after_success=True`: return `True`.
-- Nếu không: chạy loop tiếp theo.
-
-Khi đủ số loop, return `True`.
-
-### Có thể tách không?
-
-Function này nên ở lại `runner.py`, nhưng chỉ giữ orchestration.
-
-Sau khi chuyển các phần khác đi, runner chỉ còn:
-
-- Loop control.
-- Sequence control.
-- Stop handling.
-- Timeout/retry policy.
-- Success/failure result.
-
-## Breakdown đề xuất
-
-| Thành phần | File đề xuất |
-|---|---|
-| `wait_for_template`, sentinel/result | `actions/template_waiter.py` |
-| `collect_template_paths`, load templates | `actions/resources.py` |
-| Bốn action handlers | `actions/executor.py` |
-| `execute_action` dispatch | `actions/executor.py` |
-| `note_suffix`, `action_label` | Giữ gần executor hoặc execution context |
-| `log_action_timeout` | Giữ trong `runner.py` |
-| `run_actions` | Giữ trong `runner.py` |
-
-Layout sau khi breakdown:
+## Target breakdown
 
 ```text
-runner.py
-    run_actions()
-    handle_action_timeout()
-    action loop/retry policy
-
-executor.py
-    execute_action()
-    execute_click_action()
-    execute_click_template_action()
-    execute_clear_blockers_action()
-    execute_wait_action()
-
-template_waiter.py
-    wait_for_template()
-    TemplateWaitResult
-
-resources.py
+actions/resources.py
     collect_template_paths()
     load_action_templates()
+
+actions/executor.py
+    execute_action()
+    execute_clear_blockers_action()
+    execute_click_template_action()
+
+actions/runner.py
+    action_label()
+    handle_action_timeout()
+    run_actions()
 ```
 
-Đây là breakdown theo responsibility. `runner.py` lúc đó đúng nghĩa chỉ điều phối sequence và retry.
+Dependency direction:
+
+```text
+runner
+├── resources
+└── executor
+    ├── core.template_detection
+    ├── core.template_matching
+    ├── core.mouse
+    ├── core.runtime
+    └── control_events.blockers
+```
+
+Sau breakdown, `runner.py` chỉ còn sequence, loop, stop và retry policy.
