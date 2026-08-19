@@ -230,7 +230,9 @@ nhóm test và biết quy ước quản lý screenshot.
 - [Testing](TESTING.md)
 - [Troubleshooting](TROUBLESHOOTING.md)
 - [Capture audit](CAPTURE_AUDIT.md)
-- [ADR: cấu trúc `core / actions / flows`](ADR_bot.md)
+- [Kiến trúc hiện tại](ARCHITECTURE.md)
+- [ADR-001: Haunted Room package boundaries](adr/ADR-001-hauntedroom-package-boundaries.md)
+- [Framework extraction backlog](planning/FRAMEWORK_EXTRACTION_HANDOVER.md)
 - [Vision template audit](planning/VISION_TEMPLATE_AUDIT.md)
 
 ## Giới hạn và lưu ý

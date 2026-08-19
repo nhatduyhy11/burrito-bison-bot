@@ -139,18 +139,16 @@ Nên patch module-level setting sang `True` bên trong ba happy-path test cần 
 tra injection, bỏ `skipUnless`, và đổi test default thành assert `False`. Mục
 tiêu là giữ runtime default-off nhưng cả nhánh enabled lẫn disabled đều được test.
 
-### 2. Mở rộng architecture guardrail và đồng bộ ADR
+### 2. Mở rộng architecture guardrail
 
 `tests/test_hauntedroom_architecture.py` chủ yếu dùng `glob("*.py")`, nên chưa
 quét recursive toàn bộ `flows/automap_support/` và `completion_flow/`. Test cũng
 chưa khóa dependency rule cho `runner/`, entrypoint hay module top-level mới
 `screen_detect.py`.
 
-`docs/ADR_bot.md` vẫn mô tả hotkey và wiring cũ: `Shift+1` là action JSON,
-auto-map/start-auto là `Shift+2`/`Shift+3`, và `standby.py` không import
-`runner.commands`. Code hiện đã chuyển sang semantic flow definitions,
-`SCREEN_FLOW_COMMANDS` và screen auto-switch. Cần cập nhật ADR cùng lúc với rule
-test để rule được viết theo architecture hiện hành, không theo tên hotkey cũ.
+Dependency rule hiện hành được mô tả trong `docs/ARCHITECTURE.md`. Khi mở rộng
+test, dùng source tree và tài liệu sống này làm chuẩn; ADR chỉ là historical
+decision record, không phải inventory của wiring hiện tại.
 
 Khi mở rộng test, cần giữ các composite dependency đã được cho phép, đặc biệt
 `train.py`, wiring trong `runner/`, và dependency có chủ đích từ
@@ -217,15 +215,15 @@ cần registry tổng quát hay Clean Architecture đầy đủ.
 ## Thứ tự đề xuất
 
 1. Đổi bốn script-injection test từ skip sang test rõ hai trạng thái on/off.
-2. Đồng bộ `docs/ADR_bot.md`, sau đó mở rộng architecture test cho subtree,
-   `runner/`, entrypoint và `screen_detect.py`.
+2. Mở rộng architecture test cho subtree, `runner/`, entrypoint và
+   `screen_detect.py`; đồng bộ `docs/ARCHITECTURE.md` nếu boundary thay đổi.
 3. Hoàn thiện validation tại action loader boundary.
 4. Chỉ sau đó mới cân nhắc research helpers, tách test lớn hoặc `BlockerConfig`.
 
 ## Nguyên tắc khi refactor
 
-- Giữ dependency rule trong `docs/ADR_bot.md`, nhưng cập nhật ADR trước khi dùng
-  nó làm guardrail cho screen-routing architecture mới.
+- Giữ dependency rule trong `docs/ARCHITECTURE.md` và khóa invariant quan trọng
+  bằng architecture test; không dùng ADR như tài liệu sống.
 - Sau mỗi bước, chạy `uv run --with pytest pytest -q` từ root.
 - Ưu tiên baseline không skip nhánh quan trọng và input boundary chặt hơn việc
   chia file theo line count.

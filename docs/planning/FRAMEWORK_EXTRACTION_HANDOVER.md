@@ -1,5 +1,11 @@
 # Framework extraction — backlog handover
 
+Kiến trúc Haunted Room hiện hành được mô tả tại
+[`ARCHITECTURE.md`](../ARCHITECTURE.md). Quyết định package boundary ban đầu được
+lưu riêng tại
+[`ADR-001-hauntedroom-package-boundaries.md`](../adr/ADR-001-hauntedroom-package-boundaries.md).
+Tài liệu này chỉ là backlog/định hướng và chưa supersede ADR đó.
+
 ## Status
 
 Đây là backlog cho một phase refactor lớn trong tương lai, không phải kế hoạch
