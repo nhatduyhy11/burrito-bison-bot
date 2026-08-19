@@ -9,7 +9,7 @@ import numpy as np
 from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
     flow_checkpoint,
-    save_screenshot,
+    save_fallback_screenshot,
     wait_for_flow_timeout,
     wait_with_countdown,
 )
@@ -303,7 +303,7 @@ class AutomapFlow:
             hero_levelup_templates=self.hero_levelup_templates,
             hero_levelup_price_is_available_fn=hero_levelup_price_is_available,
             capture_page_bgr_fn=capture_page_bgr,
-            save_screenshot_fn=save_screenshot,
+            save_fallback_screenshot_fn=save_fallback_screenshot,
             click_fn=_click,
             wait_for_flow_timeout_fn=wait_for_flow_timeout,
             flow_checkpoint_fn=flow_checkpoint,

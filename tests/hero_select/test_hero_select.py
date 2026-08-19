@@ -114,10 +114,10 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             ],
         )
 
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_hero_levelup_does_not_fallback_before_opening_picker(
         self,
-        save_screenshot,
+        save_fallback_screenshot,
     ):
         battle_frame = np.zeros((720, 640, 3), dtype=np.uint8)
         battle_frame[610:655, 120:520] = (80, 20, 60)
@@ -130,7 +130,7 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         )
 
         self.assertFalse(handled)
-        save_screenshot.assert_not_awaited()
+        save_fallback_screenshot.assert_not_awaited()
         self.page.mouse.click.assert_not_awaited()
         self.page.wait_for_timeout.assert_not_awaited()
 

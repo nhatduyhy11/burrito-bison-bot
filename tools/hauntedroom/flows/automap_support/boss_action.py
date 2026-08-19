@@ -8,7 +8,7 @@ import numpy as np
 from hauntedroom.core.mouse import bot_click, click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint
 from hauntedroom.core.template import load_bgr_reference
-from hauntedroom.core.terminal import ORANGE, colorize
+from hauntedroom.core.terminal import GREEN, ORANGE, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.vision.boss_controls import (
     boss_spell_is_ready,
@@ -95,7 +95,7 @@ async def deploy_boss_pet(
                 colorize(
                     f"Pet summon is active at {active_x},{active_y}, "
                     f"score={active_score:.3f}; clicking it.",
-                    ORANGE,
+                    GREEN,
                 ),
                 flush=True,
             )

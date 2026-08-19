@@ -6,8 +6,9 @@ flow starts. Page injection is startup-only because already injected scripts
 cannot be replaced cleanly in the active document.
 """
 
-# Capture diagnostic screenshots when hero selection falls back to a
-# non-priority, non-purple three-card layout.
+# Capture diagnostic screenshots under .tmp/hauntedroom-fallbacks when hero
+# selection falls back to a three-card layout with no priority, yellow or
+# purple.
 CAPTURE_HERO_FALLBACK_SCREENSHOTS = True
 
 # Install JavaScript/CSS guards for profile popup blocking and the H5 SDK iframe.

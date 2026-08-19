@@ -10,6 +10,7 @@ TOOLS_DIR = PROJECT_ROOT / "tools"
 CAPTURES_DIR = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
 sys.path.insert(0, str(TOOLS_DIR))
 
+from hauntedroom.core.terminal import GREEN
 from hauntedroom.flows.automap_support.boss_action import (
     SPELL_ACTION_POSITION,
     activate_boss_spell,
@@ -55,10 +56,13 @@ class BossActionTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.boss_action.capture_page_bgr",
         new_callable=AsyncMock,
     )
+    @patch("hauntedroom.flows.automap_support.boss_action.colorize")
     async def test_deploy_boss_pet_opens_menu_and_clicks_active_summon(
         self,
+        colorize_mock,
         capture_page_bgr,
     ):
+        colorize_mock.side_effect = lambda message, _color: message
         ready_frame = self._load_capture("boss_screen/pet-spell-ready.png")
         capture_page_bgr.return_value = self._load_capture(
             "boss_screen/pet_menu_open.png"
@@ -70,6 +74,10 @@ class BossActionTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(321, 604), call(463, 455)],
+        )
+        colorize_mock.assert_any_call(
+            "Pet summon is active at 463,455, score=1.000; clicking it.",
+            GREEN,
         )
 
     @patch(

@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 
 from hauntedroom.core.runtime import flow_checkpoint, wait_with_countdown
+from hauntedroom.core.terminal import ORANGE, colorize
 
 
 START_BATTLE_TEMPLATE_NAME = "start_battle.png"
@@ -96,9 +97,12 @@ async def run_start_automap_loop(
                 )
             elif pause_at_next_boss(final_only=False):
                 print(
-                    "Map completed without a detected win reward; treating "
-                    "it as a loss and arming a one-shot pause at the first "
-                    "boss of the next map.",
+                    colorize(
+                        "Map completed without a detected win reward; treating "
+                        "it as a loss and arming a one-shot pause at the first "
+                        "boss of the next map.",
+                        ORANGE,
+                    ),
                     flush=True,
                 )
 

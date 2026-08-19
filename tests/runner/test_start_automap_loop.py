@@ -10,6 +10,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.actions.models import ClickTemplateAction
 from hauntedroom.core.runtime import FlowControl
+from hauntedroom.core.terminal import ORANGE
 from hauntedroom.flows.start_auto import (
     BETWEEN_MAPS_WAIT_MS,
     get_start_battle_actions,
@@ -175,6 +176,11 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         return_value=True,
     )
     @patch(
+        "hauntedroom.flows.start_auto.colorize",
+        return_value="orange loss log",
+    )
+    @patch("builtins.print")
+    @patch(
         "hauntedroom.flows.start_auto.map_was_lost",
         new_callable=AsyncMock,
         side_effect=[False, True],
@@ -182,6 +188,8 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
     async def test_missing_reward_arms_pause_at_first_boss_of_next_map(
         self,
         _map_was_lost,
+        print_mock,
+        colorize_mock,
         _wait_with_countdown,
     ):
         stop_event = FlowControl()
@@ -207,6 +215,13 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(completed)
         self.assertEqual(complete_map.call_count, 2)
+        colorize_mock.assert_called_once_with(
+            "Map completed without a detected win reward; treating it as a "
+            "loss and arming a one-shot pause at the first boss of the next "
+            "map.",
+            ORANGE,
+        )
+        print_mock.assert_any_call("orange loss log", flush=True)
 
     @patch(
         "hauntedroom.flows.start_auto.wait_with_countdown",

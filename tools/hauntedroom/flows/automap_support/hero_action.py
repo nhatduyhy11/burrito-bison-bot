@@ -20,7 +20,6 @@ HERO_LEVELUP_OPTION_SETTLE_MS = 1_500
 HERO_LEVELUP_OPTION_POLL_MS = 200
 HERO_LEVELUP_OPTION_MAX_POLLS = 10
 HERO_LEVELUP_SELECTION_SETTLE_MS = 600
-HERO_FALLBACK_SCREENSHOT_DIR = Path(".tmp/hauntedroom-hero-fallbacks")
 HERO_IGNORED_PRIORITY = 99.0
 
 
@@ -50,6 +49,7 @@ class HeroLevelupChoice:
     priority: Optional[float] = None
     fallback_color: Optional[str] = None
     fallback_option_count: Optional[int] = None
+    fallback_has_yellow: Optional[bool] = None
     fallback_has_purple: Optional[bool] = None
 
     @property
@@ -150,6 +150,9 @@ def choose_hero_levelup_option(
                 y=y,
                 fallback_color=fallback_color,
                 fallback_option_count=len(options),
+                fallback_has_yellow=any(
+                    option[2] == "yellow" for option in options
+                ),
                 fallback_has_purple=any(
                     option[2] == "purple" for option in options
                 ),
@@ -166,7 +169,7 @@ async def handle_hero_levelup(
     hero_levelup_templates,
     hero_levelup_price_is_available_fn,
     capture_page_bgr_fn,
-    save_screenshot_fn,
+    save_fallback_screenshot_fn,
     click_fn,
     wait_for_flow_timeout_fn,
     flow_checkpoint_fn,
@@ -226,18 +229,19 @@ async def handle_hero_levelup(
 
     if choice is not None:
         # TEMP FALLBACK TRACKING: capture only a complete three-card layout
-        # with no purple option. Partial layouts are expected while cards
-        # animate in and are not useful tracking evidence.
+        # with neither yellow nor purple. Partial layouts are expected while
+        # cards animate in and are not useful tracking evidence. Reuse the
+        # Persist this diagnostic under .tmp so runtime evidence never lands
+        # beside curated test fixtures.
         if (
             capture_fallback_screenshots
             and choice.fallback_option_count == 3
+            and not choice.fallback_has_yellow
             and not choice.fallback_has_purple
         ):
-            await save_screenshot_fn(
+            await save_fallback_screenshot_fn(
                 page,
-                "no-priority-no-purple-hero-option",
-                HERO_FALLBACK_SCREENSHOT_DIR,
-                "Hero fallback tracking",
+                label="hero-fallback-no-priority-no-yellow-or-purple",
             )
         print(
             f"No prioritized hero option matched; falling back to "

@@ -21,7 +21,6 @@ from hauntedroom.flows.automap import (
     AutomapFlow,
 )
 from hauntedroom.flows.automap_support.hero_action import (
-    HERO_FALLBACK_SCREENSHOT_DIR,
     HERO_LEVELUP_OPEN_CLICK,
     choose_hero_levelup_option,
 )
@@ -219,10 +218,10 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
                 self.assertEqual((choice.x, choice.y), purple_centers[0])
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_no_purple_partial_layout_is_not_captured(
         self,
-        save_screenshot,
+        save_fallback_screenshot,
         capture_page_bgr,
     ):
         popup = cv2.imread(
@@ -238,7 +237,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(handled)
-        save_screenshot.assert_not_awaited()
+        save_fallback_screenshot.assert_not_awaited()
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(319, 632)],
@@ -246,10 +245,10 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
 
     @patch("builtins.print")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
-    async def test_no_purple_three_options_saves_tracking_screenshot(
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    async def test_no_yellow_or_purple_three_options_saves_fallback_screenshot(
         self,
-        save_screenshot,
+        save_fallback_screenshot,
         capture_page_bgr,
         print_mock,
     ):
@@ -270,11 +269,9 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(handled)
-        save_screenshot.assert_awaited_once_with(
+        save_fallback_screenshot.assert_awaited_once_with(
             self.page,
-            "no-priority-no-purple-hero-option",
-            HERO_FALLBACK_SCREENSHOT_DIR,
-            "Hero fallback tracking",
+            label="hero-fallback-no-priority-no-yellow-or-purple",
         )
         self.assertEqual(
             self.page.mouse.click.await_args_list,
@@ -288,10 +285,10 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
 
     @patch("builtins.print")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_yellow_fallback_logs_color_and_clicks_yellow_card(
         self,
-        _save_screenshot,
+        save_fallback_screenshot,
         capture_page_bgr,
         print_mock,
     ):
@@ -308,6 +305,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(handled)
+        save_fallback_screenshot.assert_not_awaited()
         print_mock.assert_any_call(
             "No prioritized hero option matched; falling back to yellow "
             "hero card at 319,632.",
@@ -319,10 +317,10 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_yellow_fallback_with_purple_does_not_save_tracking_screenshot(
         self,
-        save_screenshot,
+        save_fallback_screenshot,
         capture_page_bgr,
     ):
         popup = cv2.imread(
@@ -342,17 +340,17 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(handled)
-        save_screenshot.assert_not_awaited()
+        save_fallback_screenshot.assert_not_awaited()
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(446, 632)],
         )
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_hero_fallback_capture_can_be_disabled(
         self,
-        save_screenshot,
+        save_fallback_screenshot,
         capture_page_bgr,
     ):
         popup = cv2.imread(
@@ -375,7 +373,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(handled)
-        save_screenshot.assert_not_awaited()
+        save_fallback_screenshot.assert_not_awaited()
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(193, 632)],
@@ -383,10 +381,10 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
 
     @patch("builtins.print")
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_purple_fallback_does_not_save_tracking_screenshot(
         self,
-        save_screenshot,
+        save_fallback_screenshot,
         capture_page_bgr,
         print_mock,
     ):
@@ -407,7 +405,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(handled)
-        save_screenshot.assert_not_awaited()
+        save_fallback_screenshot.assert_not_awaited()
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(193, 632)],
@@ -419,10 +417,10 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
     @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_debug_partial_fallback_does_not_save_screenshot(
         self,
-        save_screenshot,
+        save_fallback_screenshot,
         capture_page_bgr,
     ):
         popup = cv2.imread(
@@ -442,7 +440,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
         self.assertTrue(handled)
-        save_screenshot.assert_not_awaited()
+        save_fallback_screenshot.assert_not_awaited()
         self.assertEqual(
             self.page.mouse.click.await_args_list,
             [call(*HERO_LEVELUP_OPEN_CLICK), call(319, 632)],

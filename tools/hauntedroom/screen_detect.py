@@ -9,8 +9,8 @@ from typing import Optional
 import cv2
 import numpy as np
 
+from hauntedroom.core.runtime import save_fallback_screenshot
 from hauntedroom.core.template import find_template, load_template
-from hauntedroom.core.runtime import save_live_screenshot
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.vision.boss_progress import (
     find_boss_progress_anchor,
@@ -134,10 +134,10 @@ def detect_screen(frame_bgr: np.ndarray) -> ScreenName:
 
 
 async def detect_current_screen(page) -> ScreenName:
-    """Capture once, detect once, and log without changing runner state."""
+    """Capture once, detect once, and log the result."""
     frame = await capture_page_bgr(page)
     screen = detect_screen(frame)
     print(f"[screen_detect] screen={screen.value}", flush=True)
     if screen is ScreenName.UNKNOWN:
-        await save_live_screenshot(page, label="screen-detect-unknown")
+        await save_fallback_screenshot(page, label="screen-detect-unknown")
     return screen

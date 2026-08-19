@@ -10,6 +10,7 @@ ACTION_LOOP_COUNT = 0
 COUNTDOWN_WAIT_THRESHOLD_MS = 10000
 
 TIMEOUT_SCREENSHOT_DIR = Path(".tmp/hauntedroom-timeouts")
+FALLBACK_SCREENSHOT_DIR = Path(".tmp/hauntedroom-fallbacks")
 LIVE_SCREENSHOT_DIR = Path("tests/fixtures/hauntedroom-captures")
 HOTKEY_SCRIPT = """
 () => {
@@ -202,6 +203,10 @@ async def save_screenshot(
 
 async def save_timeout_screenshot(page, label: str) -> Optional[Path]:
     return await save_screenshot(page, label, TIMEOUT_SCREENSHOT_DIR, "Timeout")
+
+
+async def save_fallback_screenshot(page, label: str) -> Optional[Path]:
+    return await save_screenshot(page, label, FALLBACK_SCREENSHOT_DIR, "Fallback")
 
 
 async def save_live_screenshot(page, label: str = "live") -> Optional[Path]:

@@ -11,6 +11,7 @@ Tài liệu liên quan:
 - [Map-completion bridge và các điểm có thể stuck](MAP_COMPLETION_BRIDGE.md)
 - [Hero level-up selection assets](../tools/rooms/automap/hero_levelup/README.md)
 - [Testing](TESTING.md)
+- [Capture audit](CAPTURE_AUDIT.md)
 - [ADR cấu trúc `core / actions / flows`](ADR_bot.md)
 - [Refactor review](REFACTOR.md)
 - [Audit template phụ thuộc ngôn ngữ](planning/VISION_TEMPLATE_AUDIT.md)
@@ -106,27 +107,22 @@ sử dụng typed action/config của `start_battle.png` để vào trận.
 Khi `ACTION_LOOP_COUNT = 0`, runner load action rồi vào chế độ standby:
 
 - `Shift+1`: chạy flow enter-exit room liên tục.
-- `Shift+2`: chạy business-core auto-map sau khi đã vào map và bấm `start_battle` thủ công. Xem [tài liệu auto-map](AUTOMAP_FLOWS.md) để biết priority, điều kiện và hành vi của từng phase.
-- `Shift+3`: khi idle, bắt đầu loop start room → auto-map → chờ 2 giây → start map tiếp theo. Trong lúc loop chạy, dùng cùng bộ control với `Shift+2`: `Shift+1` pause script ngay (bấm lại để resume), `Shift+2` đặt pause một lần ở boss kế tiếp, và `Shift+3` đặt pause một lần ở final boss. Hai boss trigger sẽ click nút pause trong game rồi pause script tại đúng state; flow không stop/handoff. Nếu một map hoàn tất nhưng không nhận diện được win reward, runner coi map đó là loss và tự arm hành vi `Shift+2` cho boss đầu tiên của map kế tiếp. Đoạn start tái sử dụng action của `Shift+1` tới hết `start_battle.png` và bỏ qua đoạn exit. Detector map thua riêng hiện là placeholder luôn trả về `False`; xem [tài liệu auto-map](AUTOMAP_FLOWS.md).
 - `Shift+4`: chạy train mode rồi auto-battle.
-- `Shift+5`: click lần lượt các badge EXP vàng còn khả dụng, chờ 800 ms và chụp lại sau mỗi click; về idle khi không còn badge.
-- `Shift+6`: chỉ xem nút `Đột phá` trong popup là available khi có dấu `!` đỏ trên nút (màu vàng của nút không đủ để kết luận và tên tab phía dưới luôn bị loại trừ). Khi available, flow click nút, chờ 800 ms, click lại đúng vị trí đó, chờ 1 giây rồi detect lại. Khi hết dấu `!`, flow click mũi tên phải một lần, chờ 2 giây rồi kiểm tra hero tiếp theo; nếu hero tiếp theo cũng không có dấu `!` thì về idle.
 - `Shift+7`: click `(440, 500)` trong browser mỗi 1 giây cho đến khi bấm `Shift+0`.
 - `Shift+8`: lưu screenshot live của viewport hiện tại vào `tests/fixtures/hauntedroom-captures/` rồi tiếp tục trạng thái hiện tại. Nếu runner đang idle thì vẫn idle; nếu flow đang chạy thì flow vẫn chạy.
-- `Shift+9`: dùng threshold riêng `0.6` và chỉ match scale `1.0`. Runner thử tìm badge `rooms/misc/research_available.png` tối đa 4 lần, cách nhau 600 ms; nếu thấy thì chờ 600 ms và click góc dưới-trái để mở mục nghiên cứu. Sau đó runner click center `research_active.png`. Khi active miss 4 lần, flow quay lại tìm available; chỉ về idle khi available cũng miss đủ 4 lần.
-- `Shift+Y`: duyệt bốn tab Artifact từ trái sang phải. Flow tái sử dụng `research_available.png` với scale cố định riêng cho tab/content/nút Kích hoạt và dùng `lubu_close.png` làm state gate: chỉ khi thấy close mới mở rộng vùng quét `!` xuống nút Kích hoạt; khi không có close, flow chỉ quét rarity tabs và 10 item, dừng phía trên navigation `Trang Bị`/`Thánh Khí`/`Di Vật`/`Máy Móc`/`Dị Thú`. Flow retry click card cho tới khi popup xuất hiện; mỗi lần thấy Kích hoạt, flow click lần đầu rồi click thêm hai lần tại đúng vị trí đó, mỗi click cách nhau `1 giây`, sau đó mới kiểm tra tiếp tới khi hết dấu `!`. Flow đóng popup và tiếp tục. Click tab/card/close chờ `800 ms`; flow chỉ kết thúc sau khi không còn dấu `!` lẫn nút close liên tục ít nhất khoảng `2 giây`, poll mỗi `800 ms`. Nếu close vẫn còn, flow click lại và bắt đầu kiểm tra lại cả hai signal.
-- `Shift+G`: chụp một frame và chỉ log screen hiện tại (`home`, `research`,
-  `artifact`, `exp_hero`, `hero_avail`, `train`, `automap` hoặc `unknown`). Lệnh
-  không start/stop flow và không click vào game. Nếu kết quả là `unknown`, runner
-  tái sử dụng live screenshot của `Shift+8` để lưu ảnh vào
-  `tests/fixtures/hauntedroom-captures/` với suffix
-  `screen-detect-unknown.png`, rồi return về state hiện tại.
+- `Shift+G`: chụp một frame rồi tự chọn flow. `home` chạy start-auto loop;
+  `automap` chạy đúng một lượt auto-map; `research`, `artifact`, `exp_hero` và
+  `hero_avail` chạy flow tương ứng rồi về idle khi xong. `train` và `unknown` chỉ
+  được log, không click và không khởi chạy flow.
+- Các entry cũ `Shift+2`, `Shift+3`, `Shift+5`, `Shift+6`, `Shift+9` và `Shift+Y`
+  đã được bỏ. Khi auto-map do `Shift+G` khởi chạy đang active, các Shift+digit
+  được cấu hình vẫn là control pause/resume, pause-at-boss, screenshot và stop.
 - `Shift+0`: dừng mềm flow hiện tại và quay lại standby; browser vẫn mở.
 - `Ctrl+C` trong terminal: đóng runner và browser.
 
-Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9`, `KeyG` và `KeyY`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Với config mặc định, khi flow `Shift+2` hoặc `Shift+3` đang chạy, các control digit vẫn tuân theo mapping bên dưới; `Shift+G` luôn chỉ detect screen. Các Shift+digit không được map bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow khi flow đang pause.
+Hotkey dùng vị trí phím vật lý (`Digit0` đến `Digit9` và `KeyG`), hoạt động trên Windows/macOS và chỉ điều khiển trang browser đang focus. Các Shift+digit không được map bị ignore. `Shift+8` chỉ chụp screenshot và không đổi trạng thái flow. `Shift+0` vẫn dừng hẳn được flow khi flow đang pause.
 
-Các số điều khiển trong lúc `Shift+2` hoặc `Shift+3` chạy được cấu hình tại
+Các số điều khiển trong lúc auto-map/start-auto chạy được cấu hình tại
 `START_AUTO_HOTKEYS` trong `tools/hauntedroom/settings.py`. Giữ nguyên tên action
 và chỉ đổi các chuỗi số; năm action phải dùng năm số khác nhau. Ví dụ:
 
