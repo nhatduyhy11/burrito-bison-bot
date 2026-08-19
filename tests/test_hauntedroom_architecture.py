@@ -60,6 +60,9 @@ class HauntedRoomDependencyTest(TestCase):
 
     def test_flows_are_independent_from_actions_and_each_other(self):
         allowed_support_imports = {
+            "artifact.py": {
+                "hauntedroom.flows.artifact_vision",
+            },
             "automap.py": {
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.boss_flow",

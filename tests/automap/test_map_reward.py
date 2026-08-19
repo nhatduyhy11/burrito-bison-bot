@@ -20,13 +20,15 @@ from hauntedroom.core.template_matching import load_template as load_real_templa
 from hauntedroom.flows import automap
 from hauntedroom.flows.automap import (
     REWARD_LIST_TITLE_TEMPLATE_PATH,
+    WIN_REWARD_TEMPLATE_PATH,
+    run_automap_flow,
+)
+from hauntedroom.flows.automap_support.completion_flow.reward import (
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     WIN_REWARD_EMPTY_DELAY_MS,
     WIN_REWARD_FOLLOWUP_CLICK,
     WIN_REWARD_RECHECK_MS,
-    WIN_REWARD_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_THRESHOLD,
-    run_automap_flow,
 )
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_LEVELUP_PRICE_REGION,
