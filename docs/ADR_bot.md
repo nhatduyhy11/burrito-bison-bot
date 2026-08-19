@@ -55,7 +55,6 @@ tools/hauntedroom/
     ├── automap_support/
     ├── automap.py
     ├── artifact.py
-    ├── click_loop.py
     ├── exp_available.py
     ├── hero_up_available.py
     ├── research.py
@@ -112,7 +111,8 @@ import `actions`, `flows` hay entrypoint.
   dispatch từ màn hình `exp_hero`.
 - `flows/hero_up_available.py`: detector nút vàng + dấu `!` đỏ và click loop đột
   phá được dispatch từ màn hình `hero_avail`.
-- `flows/click_loop.py`: fixed-position click loop chạy trực tiếp bằng `Shift+5`.
+- `Shift+5` được nối trực tiếp với action loader/runner: mỗi lần bắt đầu sẽ đọc
+  lại file `--actions` rồi chạy danh sách action lặp vô hạn.
 - `flows/research.py`: flow được dispatch từ màn hình `research`.
 - `flows/artifact.py`: flow được dispatch từ màn hình `artifact`.
 - `hauntedroom_runner.py`: composition root và browser bootstrap. Entrypoint nối
@@ -189,7 +189,7 @@ chung thật, abstraction sẽ được thiết kế dựa trên behavior thực
 
 ## Action-driven flow
 
-Flow enter/exit action-driven giữ ranh giới hai bước:
+Flow `Shift+5` action-driven giữ ranh giới hai bước:
 
 ```text
 JSON action file
@@ -206,10 +206,10 @@ actions.runner.run_actions
   - click / wait / retry
 ```
 
-`run_actions` giả định input đã qua `load_actions`. Auto-map, EXP available,
-hero breakthrough và research không dùng action JSON. Train chỉ lấy typed
-`start_battle.png` action/config từ danh sách đã load, sau đó chạy logic Python
-riêng và nhận auto-map callable qua dependency injection.
+`run_actions` giả định input đã qua `load_actions`. JSON chỉ được lazy-load khi
+`Shift+5` bắt đầu. Auto-map/start-auto, train, EXP available, hero breakthrough
+và research không đọc action JSON; entry actions của start-auto và cấu hình
+`start_battle.png` của train nằm cố định trong Python.
 
 ## Hot-reload
 
@@ -219,7 +219,8 @@ start-auto reload `core.vision`, action support, toàn bộ detector/orchestrato
 trong `flows.automap_support` rồi `flows.automap` để các import by-value bind lại
 function/constant mới. Train reload thêm vision/select logic và `train.py`.
 Click-loop, EXP, hero breakthrough, research và artifact reload module flow tương
-ứng. Enter/exit, start-auto và train cũng load lại action JSON trước khi chạy.
+ứng. `Shift+5` luôn load lại action JSON trước khi chạy, không phụ thuộc
+`--dev-reload`.
 `runner.reload.get_automap_runtime()` trả về cặp auto-map flow/action
 runner hiện tại; command table trong `runner/default_commands.py` truyền action
 runner đó vào `flows.start_auto.run_start_automap_loop()`, nên entry actions của

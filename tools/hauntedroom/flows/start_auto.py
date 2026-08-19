@@ -1,29 +1,10 @@
 import asyncio
-from pathlib import Path
-from typing import Any
 
 from hauntedroom.core.runtime import flow_checkpoint, wait_with_countdown
 from hauntedroom.core.terminal import ORANGE, colorize
 
 
-START_BATTLE_TEMPLATE_NAME = "start_battle.png"
 BETWEEN_MAPS_WAIT_MS = 2_000
-
-
-def get_start_battle_actions(actions: list[Any]) -> list[Any]:
-    """Return the shared start-room prefix, including the Start Battle click."""
-    for index, action in enumerate(actions):
-        template_path = getattr(action, "template_path", None)
-        if (
-            getattr(action, "type", None) == "click_template"
-            and isinstance(template_path, Path)
-            and template_path.name == START_BATTLE_TEMPLATE_NAME
-        ):
-            return actions[: index + 1]
-
-    raise ValueError(
-        f"Actions do not contain a click_template for {START_BATTLE_TEMPLATE_NAME}."
-    )
 
 
 async def map_was_lost(page) -> bool:
@@ -33,14 +14,13 @@ async def map_was_lost(page) -> bool:
 
 async def run_start_automap_loop(
     page,
-    actions: list[Any],
+    start_actions,
     automap_flow,
     stop_event: asyncio.Event,
     action_runner,
     debug: bool = False,
 ) -> bool:
     """Loop start-room -> auto-map -> loss check -> two-second cooldown."""
-    start_actions = get_start_battle_actions(actions)
     loop_index = 0
     win_count = 0
 

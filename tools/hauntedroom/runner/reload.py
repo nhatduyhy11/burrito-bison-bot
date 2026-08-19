@@ -10,7 +10,6 @@ from hauntedroom.core import template, vision
 from hauntedroom.flows import (
     artifact,
     automap,
-    click_loop,
     exp_available,
     hero_up_available,
     research,
@@ -54,7 +53,6 @@ from hauntedroom.flows.automap_support.vision import (
 from hauntedroom.flows.automap_support.vision import (
     train as train_vision,
 )
-from hauntedroom.flows.click_loop import run_click_loop
 from hauntedroom.flows.exp_available import run_exp_available_flow
 from hauntedroom.flows.hero_up_available import run_hero_up_available_flow
 from hauntedroom.flows.research import run_research_flow
@@ -89,19 +87,6 @@ def get_action_runner(dev_reload: bool = False):
     if not dev_reload:
         return run_actions
     return reload_action_modules()
-
-
-def get_click_loop_flow(dev_reload: bool = False):
-    global run_click_loop
-
-    if not dev_reload:
-        return run_click_loop
-
-    importlib.invalidate_caches()
-    reloaded_click_loop = importlib.reload(click_loop)
-    run_click_loop = reloaded_click_loop.run_click_loop
-    print("Click-loop module reloaded.", flush=True)
-    return run_click_loop
 
 
 def get_research_flow(dev_reload: bool = False):

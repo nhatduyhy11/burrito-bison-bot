@@ -1,16 +1,20 @@
 """Shift+T train entry, five hero selections, then normal auto-battle."""
 
 import asyncio
+from pathlib import Path
 from typing import Awaitable, Callable, Optional
 
 import cv2
 import numpy as np
 
-from hauntedroom.actions.models import Action, ClickTemplateAction
 from hauntedroom.actions.runner import wait_for_template
 from hauntedroom.core.mouse import click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint, flow_time, wait_for_flow_timeout
-from hauntedroom.core.template import load_template
+from hauntedroom.core.template import (
+    DEFAULT_TEMPLATE_THRESHOLD,
+    TEMPLATE_SCALES,
+    load_template,
+)
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.train_select import TrainHeroMatcher
 
@@ -31,10 +35,15 @@ TRAIN_CHALLENGE_MIN_HEIGHT = 20
 TRAIN_CHALLENGE_MAX_HEIGHT = 50
 TRAIN_ENTRY_SETTLE_MS = 2_000
 TRAIN_BATTLE_LOAD_MS = 5_000
+TRAIN_START_BATTLE_TIMEOUT_MS = 30_000
+TRAIN_START_BATTLE_POLL_MS = 600
 TRAIN_SELECTION_ROUNDS = 5
 TRAIN_SELECTION_POLL_MS = 200
 TRAIN_SELECTION_SETTLE_MS = 600
 TRAIN_SELECTION_TIMEOUT_MS = 30_000
+TRAIN_START_BATTLE_TEMPLATE_PATH = (
+    Path(__file__).resolve().parents[2] / "rooms" / "start_battle.png"
+)
 
 
 def train_is_available(frame_bgr: np.ndarray) -> bool:
@@ -87,19 +96,8 @@ def find_train_challenge_click(
     return left + x + width // 2, top + y + height // 2
 
 
-def get_start_battle_action(actions: list[Action]) -> ClickTemplateAction:
-    for action in actions:
-        if (
-            isinstance(action, ClickTemplateAction)
-            and action.template_path.name == "start_battle.png"
-        ):
-            return action
-    raise ValueError("Actions do not contain start_battle.png for train mode.")
-
-
 async def run_train_flow(
     page,
-    actions: list[Action],
     automap_flow: Callable[..., Awaitable[bool]],
     stop_event: Optional[asyncio.Event] = None,
     debug: bool = False,
@@ -129,18 +127,16 @@ async def run_train_flow(
     ):
         return False
 
-    action = get_start_battle_action(actions)
-    template_path = action.template_path
+    template_path = TRAIN_START_BATTLE_TEMPLATE_PATH
     match = await wait_for_template(
         page,
         load_template(template_path),
         template_path.name,
-        float(action.threshold),
-        int(action.timeout_ms),
-        int(action.poll_ms),
+        DEFAULT_TEMPLATE_THRESHOLD,
+        TRAIN_START_BATTLE_TIMEOUT_MS,
+        TRAIN_START_BATTLE_POLL_MS,
         stop_event,
-        click_position=action.click_position,
-        template_scales=action.template_scales,
+        template_scales=TEMPLATE_SCALES,
     )
     if match is None:
         return False

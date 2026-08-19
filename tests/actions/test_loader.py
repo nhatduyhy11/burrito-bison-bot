@@ -19,7 +19,9 @@ from hauntedroom.actions.models import (
 
 class ActionLoaderTest(TestCase):
     def test_load_actions_returns_typed_normalized_actions(self):
-        actions = load_actions(PROJECT_ROOT / "tools/hauntedroom_actions.sample.json")
+        actions = load_actions(
+            PROJECT_ROOT / "tools/json_macro/hauntedroom_actions.sample.json"
+        )
 
         self.assertIsInstance(actions[0], ClearBlockersAction)
         self.assertIsInstance(actions[1], ClickTemplateAction)
@@ -29,6 +31,16 @@ class ActionLoaderTest(TestCase):
         self.assertEqual(actions[1].template_scales, (1.0,))
         self.assertIsInstance(actions[-1], ClearBlockersAction)
         self.assertEqual(actions[-1].until_template_path.name, "start_home.png")
+
+    def test_load_tracked_macro_examples(self):
+        simple = load_actions(PROJECT_ROOT / "tools/json_macro/macro_simple.json")
+        recorded = load_actions(PROJECT_ROOT / "tools/json_macro/macro_record.json")
+
+        self.assertEqual(simple[0], ClickAction(440, 500, note="Fixed click"))
+        self.assertEqual(
+            simple[1], WaitAction(1000, note="One-second interval")
+        )
+        self.assertEqual(len(recorded), 16)
 
     def test_load_actions_supports_click_and_wait_actions(self):
         with TemporaryDirectory() as tmpdir:

@@ -46,7 +46,7 @@ làm detector fail.
 ### Vị trí khai báo và sử dụng
 
 - Flow Shift+1 và prefix của Shift+3 được khai báo trong
-  `tools/hauntedroom_actions.sample.json`; `Shift+4` tái sử dụng typed
+  `tools/json_macro/hauntedroom_actions.sample.json`; `Shift+4` tái sử dụng typed
   `start_battle.png` action/config từ cùng file để vào train battle.
 - Đường dẫn `map_end.png`, `map_win/reward_list_title.png` và nhóm
   `map_win/daily_first_win*.png` được cấu hình/load trong

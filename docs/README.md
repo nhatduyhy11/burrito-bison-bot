@@ -37,7 +37,7 @@ khi tab game đang focus:
 | --- | --- |
 | `Shift+1` | Chụp một frame, nhận diện màn hình hiện tại và chạy flow phù hợp. |
 | `Shift+T` | Chạy train mode rồi auto-battle. |
-| `Shift+5` | Click `(440, 500)` mỗi giây cho đến khi dừng. |
+| `Shift+5` | Lazy-load `--actions` rồi chạy action JSON lặp vô hạn cho đến khi dừng. |
 | `Shift+8` | Lưu screenshot vào `tests/fixtures/hauntedroom-captures/`; không đổi trạng thái flow. |
 | `Shift+0` | Dừng mềm flow hiện tại và quay lại standby. |
 | `Ctrl+C` | Đóng runner và browser. |
@@ -77,7 +77,7 @@ Ví dụ thường dùng:
 uv run python tools/hauntedroom_runner.py --dev-reload
 
 # Dùng action JSON khác
-uv run python tools/hauntedroom_runner.py --actions tools/my_actions.json
+uv run python tools/hauntedroom_runner.py --actions tools/json_macro/macro_simple.json
 
 # Dùng Edge hoặc Chromium do Playwright quản lý
 uv run python tools/hauntedroom_runner.py --browser msedge
@@ -89,7 +89,16 @@ uv run python tools/hauntedroom_runner.py --debug
 
 Các option hiện có:
 
-- `--actions`: action JSON, mặc định `tools/hauntedroom_actions.sample.json`.
+- `--actions`: action JSON được load khi bấm `Shift+5`, mặc định
+  `tools/json_macro/macro.env.json`. File local này bị Git ignore; khởi tạo từ
+  `macro_simple.json` và chỉnh tự do theo máy/phiên chạy.
+
+Các macro tham khảo được track trong `tools/json_macro/`:
+
+- `macro_simple.json`: click `(440, 500)` rồi đợi một giây.
+- `macro_record.json`: chuỗi click/wait dài được ghi lại trước đây.
+- `hauntedroom_actions.sample.json`: ví dụ phức tạp dùng template matching và
+  blocker clearing.
 - `--profile`: browser profile, mặc định `.tmp/hauntedroom-profile`.
 - `--url`: URL game.
 - `--browser {chrome,msedge,chromium}`: Chrome là mặc định; `chromium` cần
@@ -99,8 +108,6 @@ Các option hiện có:
 - `--dev-reload`: reload flow, vision, template và action liên quan mỗi lần
   `Shift+1` dispatch; các direct flow cũng reload module tương ứng.
 - `--debug`: truyền debug mode vào train/auto-map/start-auto.
-- `--keep-open`: chỉ có ý nghĩa khi sửa `ACTION_LOOP_COUNT` thành số lớn hơn
-  `0`; standby mặc định vốn đã giữ browser mở.
 
 Xem help trực tiếp để tránh lệch với CLI:
 

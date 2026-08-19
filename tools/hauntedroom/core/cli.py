@@ -1,6 +1,5 @@
 import argparse
 from pathlib import Path
-from typing import Any, Callable
 
 
 GAME_URL = "https://hauntedroomvnh5.joynetgame.com/"
@@ -10,9 +9,7 @@ DEFAULT_BROWSER = "chrome"
 DEFAULT_PROFILE_DIR = Path(".tmp/hauntedroom-profile")
 
 
-def prepare_runner(
-    action_loader: Callable[[Path], list[Any]],
-) -> tuple[argparse.Namespace, list[Any], Path]:
+def prepare_runner() -> tuple[argparse.Namespace, Path]:
     parser = argparse.ArgumentParser(
         description=(
             "Run template/click/wait automation for Haunted Room in a "
@@ -21,8 +18,8 @@ def prepare_runner(
     )
     parser.add_argument(
         "--actions",
-        default="tools/hauntedroom_actions.sample.json",
-        help="JSON file containing template, blocker, click, or wait actions.",
+        default="tools/json_macro/macro.env.json",
+        help="JSON action file loaded lazily whenever Shift+5 starts.",
     )
     parser.add_argument(
         "--profile",
@@ -46,11 +43,6 @@ def prepare_runner(
     parser.add_argument("--width", type=int, default=DEFAULT_VIEWPORT_WIDTH)
     parser.add_argument("--height", type=int, default=DEFAULT_VIEWPORT_HEIGHT)
     parser.add_argument(
-        "--keep-open",
-        action="store_true",
-        help="Keep the browser open after actions finish.",
-    )
-    parser.add_argument(
         "--dev-reload",
         action="store_true",
         help=(
@@ -65,8 +57,6 @@ def prepare_runner(
     )
     args = parser.parse_args()
 
-    # Standby mode still needs the actions so a hotkey can start the flow later.
-    actions = action_loader(Path(args.actions))
     profile_dir = Path(args.profile)
     profile_dir.mkdir(parents=True, exist_ok=True)
-    return args, actions, profile_dir
+    return args, profile_dir

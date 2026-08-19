@@ -8,33 +8,26 @@ from unittest.mock import ANY, AsyncMock, Mock, call, patch
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.actions.models import ClickTemplateAction
+from hauntedroom.actions.models import ClearBlockersAction, ClickTemplateAction
 from hauntedroom.core.runtime import FlowControl
 from hauntedroom.core.terminal import ORANGE
 from hauntedroom.flows.start_auto import (
     BETWEEN_MAPS_WAIT_MS,
-    get_start_battle_actions,
     map_was_lost,
     run_start_automap_loop,
 )
+from hauntedroom.runner.commands import build_start_battle_actions
 
 
 class StartAutomapLoopTest(IsolatedAsyncioTestCase):
-    def setUp(self):
-        self.start_home = ClickTemplateAction(Path("rooms/start_home.png"))
-        self.start_battle = ClickTemplateAction(Path("rooms/start_battle.png"))
-        self.exit_click = ClickTemplateAction(Path("rooms/exit_click.png"))
-        self.actions = [self.start_home, self.start_battle, self.exit_click]
-
-    def test_start_actions_reuse_prefix_and_exclude_exit_actions(self):
-        self.assertEqual(
-            get_start_battle_actions(self.actions),
-            [self.start_home, self.start_battle],
-        )
-
-    def test_start_actions_require_start_battle_checkpoint(self):
-        with self.assertRaisesRegex(ValueError, "start_battle.png"):
-            get_start_battle_actions([self.start_home])
+    def test_start_actions_are_fixed_in_python(self):
+        actions = build_start_battle_actions()
+        self.assertEqual(len(actions), 4)
+        self.assertIsInstance(actions[0], ClearBlockersAction)
+        self.assertIsInstance(actions[1], ClickTemplateAction)
+        self.assertEqual(actions[1].template_path.name, "start_home.png")
+        self.assertIsInstance(actions[3], ClickTemplateAction)
+        self.assertEqual(actions[3].template_path.name, "start_battle.png")
 
     async def test_loss_detector_is_currently_a_false_placeholder(self):
         self.assertFalse(await map_was_lost(Mock()))
@@ -61,7 +54,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         completed = await run_start_automap_loop(
             page,
-            self.actions,
+            build_start_battle_actions(),
             automap_flow,
             stop_event,
             action_runner,
@@ -74,14 +67,14 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             [
                 call(
                     page,
-                    [self.start_home, self.start_battle],
+                    build_start_battle_actions(),
                     loop_count=2,
                     stop_event=stop_event,
                     stop_after_success=True,
                 ),
                 call(
                     page,
-                    [self.start_home, self.start_battle],
+                    build_start_battle_actions(),
                     loop_count=2,
                     stop_event=stop_event,
                     stop_after_success=True,
@@ -125,7 +118,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         completed = await run_start_automap_loop(
             Mock(),
-            self.actions,
+            build_start_battle_actions(),
             automap_flow,
             asyncio.Event(),
             action_runner,
@@ -161,7 +154,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         completed = await run_start_automap_loop(
             Mock(),
-            self.actions,
+            build_start_battle_actions(),
             automap_flow,
             asyncio.Event(),
             action_runner,
@@ -207,7 +200,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         completed = await run_start_automap_loop(
             Mock(),
-            self.actions,
+            build_start_battle_actions(),
             AsyncMock(side_effect=complete_map),
             stop_event,
             AsyncMock(return_value=True),
@@ -246,7 +239,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
 
         completed = await run_start_automap_loop(
             Mock(),
-            self.actions,
+            build_start_battle_actions(),
             AsyncMock(side_effect=complete_winning_map),
             stop_event,
             AsyncMock(return_value=True),

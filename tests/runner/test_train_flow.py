@@ -12,14 +12,12 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 
 from hauntedroom.flows.automap_support.train_select import TrainChoice
-from hauntedroom.actions.models import ClickTemplateAction
 from hauntedroom.flows.train import (
     TRAIN_BATTLE_LOAD_MS,
     TRAIN_ENTRY_SETTLE_MS,
     TRAIN_SELECTION_ROUNDS,
     TRAIN_SELECTION_SETTLE_MS,
     find_train_challenge_click,
-    get_start_battle_action,
     run_train_flow,
     train_is_available,
 )
@@ -32,14 +30,6 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         self.page.mouse = Mock()
         self.page.mouse.click = AsyncMock()
         self.page.wait_for_timeout = AsyncMock()
-        self.start_battle_path = Path("rooms/start_battle.png")
-        self.actions = [
-            ClickTemplateAction(
-                self.start_battle_path,
-                threshold=0.91,
-                template_scales=(1.0, 0.67),
-            )
-        ]
 
     def test_available_fixture_is_detected(self):
         frame = cv2.imread(str(FIXTURES / "train_available.png"))
@@ -55,9 +45,6 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         frame[620:680, 320:480] = 0
 
         self.assertIsNone(find_train_challenge_click(frame))
-
-    def test_reuses_start_battle_action_configuration(self):
-        self.assertIs(get_start_battle_action(self.actions), self.actions[0])
 
     @patch("hauntedroom.flows.train.TrainHeroMatcher")
     @patch("hauntedroom.flows.train.load_template")
@@ -90,7 +77,6 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
 
         result = await run_train_flow(
             self.page,
-            self.actions,
             automap_flow,
             stop_event,
             debug=True,

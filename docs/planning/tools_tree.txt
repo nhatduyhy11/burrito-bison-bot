@@ -119,7 +119,9 @@ tools/
 │   ├── boss/
 │   └── misc/
 ├── debug_template_match.py
-├── hauntedroom_actions.sample.json
+├── json_macro
+│   ├── hauntedroom_actions.sample.json
+│   ├── macro_record.json
+│   └── macro_simple.json
 ├── hauntedroom_runner.py
-├── macro_record.json
 └── utils.js

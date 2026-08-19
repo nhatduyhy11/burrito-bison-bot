@@ -12,7 +12,7 @@ FLOW_DEFINITIONS = build_flow_commands(reload_policy, start_auto)
 # kept private so screen auto-switching can reuse its resolvers and reload policy.
 FLOW_COMMANDS = {
     "t": replace(FLOW_DEFINITIONS["train"], key="T"),
-    "5": replace(FLOW_DEFINITIONS["click_loop"], key="5"),
+    "5": replace(FLOW_DEFINITIONS["json_actions"], key="5"),
 }
 
 SCREEN_FLOW_COMMANDS = {

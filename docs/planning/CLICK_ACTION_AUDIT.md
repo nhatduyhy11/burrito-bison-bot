@@ -87,7 +87,7 @@ ordering.
 
 ### Declarative click and wait records
 
-`hauntedroom_actions.sample.json` and `macro_record.json` should retain separate
+`json_macro/hauntedroom_actions.sample.json` and `json_macro/macro_record.json` should retain separate
 click and wait records. Combining them would reduce record count but weaken
 recording, editing, and replay visibility while adding another action schema.
 

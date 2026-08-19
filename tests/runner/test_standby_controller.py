@@ -14,11 +14,6 @@ from hauntedroom.core.runtime import (
     LIVE_SCREENSHOT_DIR,
     start_hotkey_listener,
 )
-from hauntedroom.flows.click_loop import (
-    CLICK_INTERVAL_MS,
-    CLICK_POSITION,
-    run_click_loop,
-)
 from hauntedroom.runner.default_commands import FLOW_COMMANDS, SCREEN_FLOW_COMMANDS
 from hauntedroom.runner.reload import AutomapRuntime, get_automap_flow
 from hauntedroom.screen_detect import ScreenName
@@ -336,7 +331,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertEqual(FLOW_COMMANDS["t"].key, "T")
         self.assertEqual(FLOW_COMMANDS["t"].name, "train then auto-battle")
         self.assertEqual(FLOW_COMMANDS["5"].key, "5")
-        self.assertEqual(FLOW_COMMANDS["5"].name, "fixed-position click loop")
+        self.assertEqual(FLOW_COMMANDS["5"].name, "JSON action loop")
         self.assertEqual(
             {
                 screen: command.name
@@ -412,6 +407,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         detect_current_screen.assert_awaited_once_with(page)
 
+    @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")
     @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
@@ -427,6 +423,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         get_automap_runtime,
         run_start_automap_loop,
         save_live_screenshot,
+        load_actions,
     ):
         page = Mock()
         actions = [{"type": "test-action"}]
@@ -440,7 +437,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
 
         async def wait_until_controller_stops(
             _page,
-            _actions,
+            _start_actions,
             _automap,
             stop_event,
             _action_runner,
@@ -465,12 +462,13 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         get_automap_runtime.assert_called_once_with(True)
         run_start_automap_loop.assert_awaited_once()
         self.assertIs(run_start_automap_loop.await_args.args[0], page)
-        self.assertIs(run_start_automap_loop.await_args.args[1], actions)
+        self.assertEqual(len(run_start_automap_loop.await_args.args[1]), 4)
         self.assertIs(run_start_automap_loop.await_args.args[2], automap_flow)
         self.assertIs(run_start_automap_loop.await_args.args[4], action_runner)
+        load_actions.assert_not_called()
 
-    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")
+    @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.reload_policy.get_train_flow")
     @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
     @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
@@ -479,24 +477,22 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         start_hotkey_listener,
         get_automap_runtime,
         get_train_flow,
-        load_actions,
         save_live_screenshot,
+        load_actions,
     ):
         page = Mock()
         original_actions = [{"type": "old-action"}]
-        reloaded_actions = [{"type": "new-action"}]
         automap_flow = AsyncMock()
         train_flow = AsyncMock()
         get_automap_runtime.return_value = AutomapRuntime(automap_flow, AsyncMock())
         get_train_flow.return_value = train_flow
-        load_actions.return_value = reloaded_actions
 
         async def enqueue_commands(_page, command_queue):
             command_queue.put_nowait("t")
             command_queue.put_nowait("8")
 
         async def wait_until_stopped(
-            _page, _actions, _automap, stop_event, _debug
+            _page, _automap, stop_event, _debug
         ):
             await stop_event.wait()
             return False
@@ -511,17 +507,17 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
                 original_actions,
                 FLOW_COMMANDS,
                 dev_reload=True,
-                actions_path=Path("tools/hauntedroom_actions.sample.json"),
+                actions_path=Path("tools/json_macro/macro.env.json"),
             )
 
         get_automap_runtime.assert_called_once_with(True)
         get_train_flow.assert_called_once_with(True)
-        load_actions.assert_called_once_with(Path("tools/hauntedroom_actions.sample.json"))
         train_flow.assert_awaited_once()
         self.assertEqual(
-            train_flow.await_args.args[:3],
-            (page, reloaded_actions, automap_flow),
+            train_flow.await_args.args[:2],
+            (page, automap_flow),
         )
+        load_actions.assert_not_called()
 
     @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
     @patch("hauntedroom.runner.default_commands.start_auto.run_start_automap_loop", new_callable=AsyncMock)
@@ -546,7 +542,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         get_automap_runtime.return_value = AutomapRuntime(AsyncMock(), AsyncMock())
 
         async def controllable_flow(
-            _page, _actions, _automap, flow_control, _action_runner, _debug
+            _page, _start_actions, _automap, flow_control, _action_runner, _debug
         ):
             nonlocal observed_control
             observed_control = flow_control
@@ -585,35 +581,31 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertTrue(observed_control.is_set())
         run_start_automap_loop.assert_awaited_once()
 
-    async def test_shift_5_clicks_fixed_position_every_second_until_stopped(self):
+    @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_action_runner")
+    async def test_shift_5_loads_json_and_runs_actions_forever(
+        self, get_action_runner, load_actions
+    ):
         page = Mock()
-        page.evaluate = AsyncMock()
-        page.mouse = Mock()
-        page.mouse.click = AsyncMock()
         stop_event = asyncio.Event()
+        action_path = Path("tools/json_macro/macro.env.json")
+        loaded_actions = [Mock(), Mock()]
+        action_runner = AsyncMock(return_value=False)
+        load_actions.return_value = loaded_actions
+        get_action_runner.return_value = action_runner
 
-        async def stop_after_second_click(*_args):
-            if page.mouse.click.await_count == 2:
-                stop_event.set()
+        resolved = FLOW_COMMANDS["5"].resolve([], False, action_path)
+        completed = await resolved.run(page, stop_event, False)
 
-        page.mouse.click.side_effect = stop_after_second_click
-
-        async def finish_interval(awaitable, **_kwargs):
-            awaitable.close()
-            raise asyncio.TimeoutError
-
-        with patch("hauntedroom.flows.click_loop.asyncio.wait_for") as wait_for:
-            wait_for.side_effect = finish_interval
-            await run_click_loop(page, stop_event)
-
-        self.assertEqual(CLICK_POSITION, (440, 500))
-        self.assertEqual(CLICK_INTERVAL_MS, 1000)
-        self.assertEqual(
-            page.mouse.click.await_args_list,
-            [call(440, 500), call(440, 500)],
+        self.assertFalse(completed)
+        load_actions.assert_called_once_with(action_path)
+        get_action_runner.assert_called_once_with(False)
+        action_runner.assert_awaited_once_with(
+            page,
+            loaded_actions,
+            loop_count=None,
+            stop_event=stop_event,
         )
-        self.assertEqual(wait_for.await_count, 1)
-        self.assertEqual(wait_for.await_args.kwargs["timeout"], 1)
 
     async def test_stop_event_ends_flow_without_clicking(self):
         page = Mock()

@@ -1,0 +1,4 @@
+[
+  { "type": "click", "x": 440, "y": 500, "note": "Fixed click" },
+  { "type": "wait", "ms": 1000, "note": "One-second interval" }
+]

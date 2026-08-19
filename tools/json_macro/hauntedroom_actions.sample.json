@@ -1,0 +1,10 @@
+[
+  { "type": "clear_blockers", "templates_dir": "../rooms/blocker", "until_template": "../rooms/start_home.png", "until_template_scales": [1.0], "priority": ["lubu_close.png", "overlay_close.png", "overlay_close_2.png", "overlay_newbie.png"], "click_positions": { "overlay_newbie.png": "top_middle" }, "note": "Before Start HOME" },
+  { "type": "click_template", "template": "../rooms/start_home.png", "click_position": "mid_left", "scales": [1.0], "click_count": 3, "recheck_before_repeat": true, "repeat_delay_ms": 1000, "note": "Start HOME" },
+  { "type": "clear_blockers", "templates_dir": "../rooms/blocker", "until_template": "../rooms/start_battle.png", "priority": ["lubu_close.png", "overlay_close.png", "overlay_close_2.png", "overlay_newbie.png"], "click_positions": { "overlay_newbie.png": "top_middle" }, "note": "Before Start Battle" },
+  { "type": "click_template", "template": "../rooms/start_battle.png", "note": "Start Battle" },
+  { "type": "click_template", "template": "../rooms/exit_click.png", "timeout_ms": 60000, "note": "Exit click" },
+  { "type": "click_template", "template": "../rooms/exit_confirm.png", "note": "Exit confirm" },
+  { "type": "click_template", "template": "../rooms/exit_back.png", "threshold": 0.75, "skip_if_template": "../rooms/start_home.png", "skip_template_scales": [1.0], "note": "Exit Back" },
+  { "type": "clear_blockers", "templates_dir": "../rooms/blocker", "until_template": "../rooms/start_home.png", "until_template_scales": [1.0], "priority": ["lubu_close.png", "overlay_close.png", "overlay_close_2.png", "overlay_newbie.png"], "click_positions": { "overlay_newbie.png": "top_middle" }, "note": "After Exit Back" }
+]

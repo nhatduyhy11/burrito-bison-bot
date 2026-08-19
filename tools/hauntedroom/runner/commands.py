@@ -3,13 +3,60 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Awaitable, Callable, Optional
 
-from hauntedroom.actions.models import Action
+from hauntedroom.actions.models import (
+    Action,
+    ClearBlockersAction,
+    ClickTemplateAction,
+)
 from hauntedroom.core.runtime import FlowControl
 
 
 FlowStarter = Callable[[object, object, bool], Awaitable[object]]
 FlowResolver = Callable[[list[Action], bool, Optional[Path]], "ResolvedFlow"]
 ControlFactory = Callable[[], object]
+ROOMS_DIR = Path(__file__).resolve().parents[2] / "rooms"
+BLOCKER_PRIORITY = (
+    "lubu_close.png",
+    "overlay_close.png",
+    "overlay_close_2.png",
+    "overlay_newbie.png",
+)
+
+
+def build_start_battle_actions() -> list[Action]:
+    """Build Shift+1 HOME entry actions from fixed Python configuration."""
+    blocker_paths = tuple(
+        ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
+    )
+    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
+    return [
+        ClearBlockersAction(
+            blocker_paths=blocker_paths,
+            until_template_path=ROOMS_DIR / "start_home.png",
+            click_positions=blocker_click_positions,
+            until_template_scales=(1.0,),
+            note="Before Start HOME",
+        ),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "start_home.png",
+            click_position="mid_left",
+            template_scales=(1.0,),
+            click_count=3,
+            recheck_before_repeat=True,
+            repeat_delay_ms=1_000,
+            note="Start HOME",
+        ),
+        ClearBlockersAction(
+            blocker_paths=blocker_paths,
+            until_template_path=ROOMS_DIR / "start_battle.png",
+            click_positions=blocker_click_positions,
+            note="Before Start Battle",
+        ),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "start_battle.png",
+            note="Start Battle",
+        ),
+    ]
 
 
 @dataclass(frozen=True)
@@ -29,36 +76,6 @@ class FlowCommand:
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
-    def reload_actions_for_dev(
-        actions: list[Action],
-        dev_reload: bool,
-        actions_path: Optional[Path],
-    ) -> list[Action]:
-        if not dev_reload or actions_path is None:
-            return actions
-
-        reloaded_actions = reload_policy.load_actions(actions_path)
-        print(f"Actions reloaded from {actions_path}.", flush=True)
-        return reloaded_actions
-
-    def resolve_enter_exit(
-        actions: list[Action],
-        dev_reload: bool,
-        actions_path: Optional[Path],
-    ) -> ResolvedFlow:
-        action_runner = reload_policy.get_action_runner(dev_reload)
-        actions = reload_actions_for_dev(actions, dev_reload, actions_path)
-
-        async def run(page, stop_event, _debug: bool):
-            return await action_runner(
-                page,
-                actions,
-                loop_count=None,
-                stop_event=stop_event,
-            )
-
-        return ResolvedFlow(actions, run)
-
     def resolve_automap(
         actions: list[Action],
         dev_reload: bool,
@@ -74,15 +91,15 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
     def resolve_start_auto(
         actions: list[Action],
         dev_reload: bool,
-        actions_path: Optional[Path],
+        _actions_path: Optional[Path],
     ) -> ResolvedFlow:
         automap_runtime = reload_policy.get_automap_runtime(dev_reload)
-        actions = reload_actions_for_dev(actions, dev_reload, actions_path)
+        start_actions = build_start_battle_actions()
 
         async def run(page, stop_event, debug: bool):
             return await start_auto_flow.run_start_automap_loop(
                 page,
-                actions,
+                start_actions,
                 automap_runtime.automap_flow,
                 stop_event,
                 automap_runtime.action_runner,
@@ -94,16 +111,14 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
     def resolve_train(
         actions: list[Action],
         dev_reload: bool,
-        actions_path: Optional[Path],
+        _actions_path: Optional[Path],
     ) -> ResolvedFlow:
         automap_runtime = reload_policy.get_automap_runtime(dev_reload)
         train_flow = reload_policy.get_train_flow(dev_reload)
-        actions = reload_actions_for_dev(actions, dev_reload, actions_path)
 
         async def run(page, stop_event, debug: bool):
             return await train_flow(
                 page,
-                actions,
                 automap_runtime.automap_flow,
                 stop_event,
                 debug,
@@ -111,15 +126,24 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
-    def resolve_click_loop(
+    def resolve_json_actions(
         actions: list[Action],
         dev_reload: bool,
-        _actions_path: Optional[Path],
+        actions_path: Optional[Path],
     ) -> ResolvedFlow:
-        click_loop_flow = reload_policy.get_click_loop_flow(dev_reload)
+        if actions_path is None:
+            raise ValueError("Shift+5 requires an action JSON path.")
+        action_runner = reload_policy.get_action_runner(dev_reload)
+        actions = reload_policy.load_actions(actions_path)
+        print(f"Actions loaded from {actions_path}.", flush=True)
 
         async def run(page, stop_event, _debug: bool):
-            return await click_loop_flow(page, stop_event)
+            return await action_runner(
+                page,
+                actions,
+                loop_count=None,
+                stop_event=stop_event,
+            )
 
         return ResolvedFlow(actions, run)
 
@@ -172,12 +196,6 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     return {
-        "enter_exit": FlowCommand(
-            "enter_exit",
-            "enter-exit room",
-            "Enter / exit room",
-            resolve_enter_exit,
-        ),
         "automap": FlowCommand(
             "automap",
             "auto-map battle",
@@ -212,11 +230,11 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "Hero breakthrough available",
             resolve_hero_up_available,
         ),
-        "click_loop": FlowCommand(
-            "click_loop",
-            "fixed-position click loop",
-            "Click (440, 500) every 1s",
-            resolve_click_loop,
+        "json_actions": FlowCommand(
+            "json_actions",
+            "JSON action loop",
+            "Run JSON actions in a loop",
+            resolve_json_actions,
         ),
         "research": FlowCommand(
             "research",
