@@ -8,7 +8,12 @@ from unittest.mock import AsyncMock, Mock, call
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.core.mouse import bot_click, click_and_wait, smooth_drag
+from hauntedroom.core.mouse import (
+    SUPPORTED_MOUSE_BUTTONS,
+    bot_click,
+    click_and_wait,
+    smooth_drag,
+)
 
 
 class ClickTest(IsolatedAsyncioTestCase):
@@ -18,6 +23,12 @@ class ClickTest(IsolatedAsyncioTestCase):
         self.page.wait_for_timeout = AsyncMock()
         self.page.mouse = Mock()
         self.page.mouse.click = AsyncMock()
+
+    def test_supported_buttons_match_browser_mouse_contract(self):
+        self.assertEqual(
+            SUPPORTED_MOUSE_BUTTONS,
+            frozenset({"left", "middle", "right"}),
+        )
 
     async def test_bot_click_suppresses_logging_and_forwards_button(self):
         await bot_click(self.page, (10, 20), button="right")

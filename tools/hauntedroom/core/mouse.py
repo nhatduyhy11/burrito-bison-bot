@@ -1,15 +1,21 @@
 """Reusable mouse gestures for browser automation."""
 
-from typing import Optional
+from typing import Literal, Optional
 
 from .runtime import wait_for_flow_timeout
+
+
+MouseButton = Literal["left", "middle", "right"]
+SUPPORTED_MOUSE_BUTTONS: frozenset[MouseButton] = frozenset(
+    {"left", "middle", "right"}
+)
 
 
 async def bot_click(
     page,
     position: tuple[int, int],
     *,
-    button: Optional[str] = None,
+    button: Optional[MouseButton] = None,
 ) -> None:
     """Click without recording the bot-generated input as a user action."""
     await page.evaluate(
@@ -27,7 +33,7 @@ async def click_and_wait(
     wait_ms: int,
     stop_event=None,
     *,
-    button: Optional[str] = None,
+    button: Optional[MouseButton] = None,
     click_count: int = 1,
 ) -> bool:
     """Bot-click one or more times, waiting cooperatively after each click."""

@@ -1,5 +1,6 @@
 from typing import Optional, cast
 
+from hauntedroom.core.mouse import MouseButton, SUPPORTED_MOUSE_BUTTONS
 from hauntedroom.core.template_matching import (
     DEFAULT_TEMPLATE_THRESHOLD,
     SUPPORTED_CLICK_POSITIONS,
@@ -7,9 +8,6 @@ from hauntedroom.core.template_matching import (
     ClickPosition,
     Region,
 )
-
-
-SUPPORTED_MOUSE_BUTTONS = {"left", "middle", "right"}
 
 
 def parse_int(value: object, index: int, field: str) -> int:
@@ -33,11 +31,11 @@ def parse_float(value: object, index: int, field: str) -> float:
         raise ValueError(f"Action #{index} {field} must be a number.") from error
 
 
-def load_button(action: dict, index: int) -> str:
+def load_button(action: dict, index: int) -> MouseButton:
     button = action.get("button", "left")
     if not isinstance(button, str) or button not in SUPPORTED_MOUSE_BUTTONS:
         raise ValueError(f"Action #{index} unsupported mouse button: {button!r}.")
-    return button
+    return cast(MouseButton, button)
 
 
 def load_click_position(value: object, index: int) -> ClickPosition:
