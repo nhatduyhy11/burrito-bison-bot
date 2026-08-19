@@ -6,7 +6,7 @@ from hauntedroom.actions import loader as actions_loader
 from hauntedroom.actions import runner as actions_runner
 from hauntedroom.control_events import blockers as control_blockers
 from hauntedroom.control_events import new_tab_blocker
-from hauntedroom.core import template, vision
+from hauntedroom.core import template, template_detection, vision
 from hauntedroom.flows import (
     artifact,
     automap,
@@ -73,6 +73,7 @@ def reload_action_modules():
     importlib.invalidate_caches()
     importlib.reload(template)
     importlib.reload(vision)
+    importlib.reload(template_detection)
     importlib.reload(new_tab_blocker)
     importlib.reload(control_blockers)
     reloaded_loader = importlib.reload(actions_loader)

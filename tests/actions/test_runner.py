@@ -13,9 +13,10 @@ from hauntedroom.actions.models import (
     ClickAction,
     ClickTemplateAction,
 )
-from hauntedroom.actions.runner import (
-    SKIP_TEMPLATE_MATCHED,
-    run_actions,
+from hauntedroom.actions.runner import run_actions
+from hauntedroom.core.template_detection import (
+    TemplateWaitResult,
+    TemplateWaitStatus,
     wait_for_template,
 )
 
@@ -49,7 +50,7 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
     ):
         wait_for_template.side_effect = [
             TimeoutError("first timeout"),
-            (30, 40, 0.95),
+            TemplateWaitResult(TemplateWaitStatus.MATCHED, (30, 40, 0.95)),
         ]
 
         await run_actions(self.page, self.actions, loop_count=2)
@@ -81,7 +82,10 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
     async def test_stop_after_success_does_not_repeat_successful_actions(
         self, wait_for_template, _load_template
     ):
-        wait_for_template.return_value = (30, 40, 0.95)
+        wait_for_template.return_value = TemplateWaitResult(
+            TemplateWaitStatus.MATCHED,
+            (30, 40, 0.95),
+        )
 
         completed = await run_actions(
             self.page,
@@ -123,7 +127,7 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
     ):
         wait_for_template.side_effect = [
             TimeoutError("first timeout"),
-            (30, 40, 0.95),
+            TemplateWaitResult(TemplateWaitStatus.MATCHED, (30, 40, 0.95)),
             TimeoutError("timeout after recovery"),
             TimeoutError("consecutive timeout"),
         ]
@@ -153,7 +157,9 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             skip_template_scales=(0.5,),
             region=(10, 20, 300, 400),
         )
-        wait_for_template.return_value = SKIP_TEMPLATE_MATCHED
+        wait_for_template.return_value = TemplateWaitResult(
+            TemplateWaitStatus.ALTERNATIVE_MATCHED
+        )
 
         await run_actions(self.page, self.actions, loop_count=1)
 
@@ -212,7 +218,10 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             recheck_before_repeat=True,
             region=(1, 2, 9, 10),
         )
-        wait_for_template.return_value = (10, 20, 0.95)
+        wait_for_template.return_value = TemplateWaitResult(
+            TemplateWaitStatus.MATCHED,
+            (10, 20, 0.95),
+        )
         capture_page_grayscale.return_value = np.zeros((10, 10), dtype=np.uint8)
         find_template.side_effect = [(30, 40, 0.96), (0, 0, 0.40)]
 
@@ -264,11 +273,11 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         )
 
     @patch(
-        "hauntedroom.actions.runner.capture_page_grayscale",
+        "hauntedroom.core.template_detection.capture_page_grayscale",
         new_callable=AsyncMock,
     )
-    @patch("hauntedroom.actions.runner.find_template")
-    async def test_wait_for_template_returns_skip_when_skip_template_matches(
+    @patch("hauntedroom.core.template_detection.find_template")
+    async def test_wait_for_template_returns_alternative_status_when_it_matches(
         self, find_template, capture_page_grayscale
     ):
         capture_page_grayscale.return_value = np.zeros((10, 10), dtype=np.uint8)
@@ -285,5 +294,6 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             skip_template_name="start_home.png",
         )
 
-        self.assertIs(result, SKIP_TEMPLATE_MATCHED)
+        self.assertIs(result.status, TemplateWaitStatus.ALTERNATIVE_MATCHED)
+        self.assertIsNone(result.match)
         self.page.wait_for_timeout.assert_not_awaited()

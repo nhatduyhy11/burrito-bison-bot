@@ -16,88 +16,18 @@ from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
     ACTION_LOOP_COUNT,
     flow_checkpoint,
-    flow_time,
-    save_timeout_screenshot,
     wait_for_flow_timeout,
     wait_with_countdown,
 )
+from hauntedroom.core.template_detection import (
+    TemplateWaitStatus,
+    wait_for_template,
+)
 from hauntedroom.core.template import (
-    TEMPLATE_SCALES,
-    Region,
     find_template,
     load_template,
 )
 from hauntedroom.core.vision import capture_page_grayscale
-
-
-SKIP_TEMPLATE_MATCHED = object()
-
-
-async def wait_for_template(
-    page,
-    template: np.ndarray,
-    template_name: str,
-    threshold: float,
-    timeout_ms: int,
-    poll_ms: int,
-    stop_event: Optional[asyncio.Event] = None,
-    skip_template: Optional[np.ndarray] = None,
-    skip_template_name: Optional[str] = None,
-    click_position: str = "center",
-    template_scales: tuple[float, ...] = TEMPLATE_SCALES,
-    skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES,
-    region: Optional[Region] = None,
-) -> object:
-    deadline = flow_time(stop_event) + timeout_ms / 1000
-    best_score = -1.0
-    best_skip_score = -1.0
-
-    while True:
-        if not await flow_checkpoint(stop_event):
-            return None
-        screenshot = await capture_page_grayscale(page)
-        center_x, center_y, score = find_template(
-            screenshot,
-            template,
-            template_name,
-            click_position,
-            scales=template_scales,
-            region=region,
-        )
-        best_score = max(best_score, score)
-
-        if score >= threshold:
-            return center_x, center_y, score
-
-        if skip_template is not None and skip_template_name is not None:
-            _, _, skip_score = find_template(
-                screenshot,
-                skip_template,
-                skip_template_name,
-                scales=skip_template_scales,
-            )
-            best_skip_score = max(best_skip_score, skip_score)
-            if skip_score >= threshold:
-                return SKIP_TEMPLATE_MATCHED
-
-        if flow_time(stop_event) >= deadline:
-            screenshot_path = await save_timeout_screenshot(page, template_name)
-            screenshot_suffix = (
-                f", screenshot={screenshot_path}" if screenshot_path else ""
-            )
-            skip_suffix = (
-                f", best {skip_template_name} score={best_skip_score:.3f}"
-                if skip_template_name is not None
-                else ""
-            )
-            raise TimeoutError(
-                f"Timed out waiting for {template_name!r}; "
-                f"best score={best_score:.3f}, threshold={threshold:.3f}"
-                f"{skip_suffix}{screenshot_suffix}."
-            )
-
-        if not await wait_for_flow_timeout(page, poll_ms, stop_event):
-            return None
 
 
 def action_label(loop_index: int, action_index: int, note: Optional[str]) -> str:
@@ -156,7 +86,7 @@ async def execute_click_template_action(
         f"{label}: wait for {template_path.name}",
         flush=True,
     )
-    match = await wait_for_template(
+    result = await wait_for_template(
         page,
         templates[template_path],
         template_path.name,
@@ -175,7 +105,7 @@ async def execute_click_template_action(
         skip_template_scales=action.skip_template_scales,
         region=action.region,
     )
-    if match is SKIP_TEMPLATE_MATCHED:
+    if result.status is TemplateWaitStatus.ALTERNATIVE_MATCHED:
         skip_template_name = (
             skip_template_path.name
             if skip_template_path is not None
@@ -187,10 +117,11 @@ async def execute_click_template_action(
             flush=True,
         )
         return True
-    if match is None:
+    if result.status is TemplateWaitStatus.STOPPED:
         return False
 
-    x, y, score = match
+    assert result.match is not None
+    x, y, score = result.match
     repeat_summary = (
         f"; up to {action.click_count - 1} repeat(s), recheck after "
         f"{repeat_delay_ms}ms"

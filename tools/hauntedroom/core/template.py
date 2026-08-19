@@ -1,4 +1,8 @@
-"""Template loading and matching helpers."""
+"""Low-level template loading and image-matching primitives.
+
+Dependency direction: ``template_detection`` may import this module; this
+module must not import ``template_detection`` or browser/runtime concerns.
+"""
 
 from pathlib import Path
 from typing import Optional
