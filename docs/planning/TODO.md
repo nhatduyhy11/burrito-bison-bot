@@ -4,6 +4,11 @@ Planning notes only. Do not treat these as current implementation tasks.
 
 ## Pending Tasks
 
+- [ ] Teach the normal auto-map flow to stop when it detects a special game-mode
+  end signal instead of a traditional map-completion screen.
+  - [ ] Support the `blood_mode` and `udo_mode` signals.
+  - [ ] Complete and validate the currently staged reference images before
+    implementing the detectors.
 - [ ] Stabilize the train flow on its temporary `Shift+T` binding, cover the
   reused priority-template scale `0.8`, then merge it into `Shift+1` screen
   auto-switching.
