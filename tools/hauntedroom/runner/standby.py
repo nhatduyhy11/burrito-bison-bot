@@ -5,7 +5,7 @@ from typing import Mapping, Optional
 from hauntedroom import settings
 from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
-from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, RED, YELLOW, colorize
+from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
 from hauntedroom.runner.commands import FlowCommand
 from hauntedroom.screen_detect import ScreenName, detect_current_screen
 
@@ -55,6 +55,17 @@ def format_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> str:
         f"Shift+{hotkeys['pause_at_final_boss']} pause at final boss; "
         f"Shift+{hotkeys['screenshot']} screenshot; "
         f"Shift+{hotkeys['stop']} stop"
+    )
+
+
+def format_start_auto_control_guide(hotkeys: Mapping[str, str]) -> str:
+    return (
+        "Auto-map controls:\n"
+        f"  Shift+{hotkeys['pause_resume']} pause/resume\n"
+        f"  Shift+{hotkeys['pause_at_boss']} pause at boss\n"
+        f"  Shift+{hotkeys['pause_at_final_boss']} pause at final boss\n"
+        f"  Shift+{hotkeys['screenshot']} screenshot\n"
+        f"  Shift+{hotkeys['stop']} stop"
     )
 
 
@@ -117,7 +128,7 @@ async def handle_control_command(
                         "Auto-map flow paused. "
                         f"Press Shift+{hotkeys['pause_resume']} to resume or "
                         f"Shift+{hotkeys['stop']} to stop.",
-                        GREEN,
+                        ORANGE,
                     ),
                     flush=True,
                 )
@@ -127,7 +138,7 @@ async def handle_control_command(
             if stop_event.pause_at_next_boss(final_only=False):
                 print(
                     colorize(
-                        "Auto-map flow will pause at the next boss.", ORANGE
+                        "Auto-map flow will pause at the next boss.", YELLOW
                     ),
                     flush=True,
                 )
@@ -149,7 +160,7 @@ async def handle_control_command(
 
     if command == "0":
         if flow_task is None:
-            print("Runner is already idle.", flush=True)
+            print(colorize("Runner is already idle.", ORANGE), flush=True)
         else:
             print("Stopping current flow...", flush=True)
             stop_event.set()
@@ -158,7 +169,7 @@ async def handle_control_command(
     if command == "8":
         await save_live_screenshot(page)
         if flow_task is None:
-            print(colorize("Runner idle.", RED), flush=True)
+            print(colorize("Runner idle.", ORANGE), flush=True)
         else:
             print("Current flow continues.", flush=True)
         return True
@@ -209,8 +220,8 @@ async def run_standby_controller(
             f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
             "  Ctrl+C     Close runner\n"
             "-------------------------\n"
-            f"{colorize('Runner idle.', RED)}",
-            GREEN,
+            f"{colorize('Runner idle.', ORANGE)}",
+            BLUE,
         ),
         flush=True,
     )
@@ -229,7 +240,7 @@ async def run_standby_controller(
                 flow_task = None
                 stop_event = None
                 current_command = None
-                print(colorize("Runner idle.", RED), flush=True)
+                print(colorize("Runner idle.", ORANGE), flush=True)
 
             if command_task not in done:
                 continue
@@ -307,8 +318,7 @@ async def run_standby_controller(
             if command.uses_automap_controls:
                 print(
                     colorize(
-                        "Auto-map controls: "
-                        f"{format_start_auto_hotkeys(start_auto_hotkeys)}.",
+                        format_start_auto_control_guide(start_auto_hotkeys),
                         BLUE,
                     ),
                     flush=True,

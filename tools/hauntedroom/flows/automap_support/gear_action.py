@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 
 from hauntedroom.core.mouse import click_and_wait, smooth_drag
-from hauntedroom.core.terminal import BLUE, RED, colorize
+from hauntedroom.core.terminal import BLUE, ORANGE, RED, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.vision.gear import (
     find_gear_button,
@@ -24,8 +24,8 @@ GEAR_DRAG_STEP_DELAY_MS = 50
 GEAR_DROP_HOLD_MS = 150
 
 
-def _print_gear_error(message: str) -> None:
-    print(colorize(message, RED), flush=True)
+def _print_gear_error(message: str, color: str = RED) -> None:
+    print(colorize(message, color), flush=True)
 
 
 async def _soft_fail_initial_gear(
@@ -37,7 +37,12 @@ async def _soft_fail_initial_gear(
     menu_was_open: bool = False,
 ) -> bool:
     """Best-effort close the gear popup, then let auto-map continue."""
-    _print_gear_error(reason)
+    reason_color = (
+        ORANGE
+        if reason.startswith("Initial gear placement could not")
+        else RED
+    )
+    _print_gear_error(reason, reason_color)
 
     menu_open = menu_was_open
     if frame_bgr is not None:

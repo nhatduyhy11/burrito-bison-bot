@@ -8,7 +8,7 @@ import numpy as np
 from hauntedroom.core.mouse import bot_click, click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint
 from hauntedroom.core.template import load_bgr_reference
-from hauntedroom.core.terminal import GREEN, ORANGE, colorize
+from hauntedroom.core.terminal import GREEN, YELLOW, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.vision.boss_controls import (
     boss_spell_is_ready,
@@ -71,7 +71,7 @@ async def deploy_boss_pet(
             f"Final-boss pet has a full glowing bar at "
             f"{ready_bar_x},{ready_bar_y}; opening its menu at "
             f"{pet_click[0]},{pet_click[1]}.",
-            ORANGE,
+            YELLOW,
         ),
         flush=True,
     )

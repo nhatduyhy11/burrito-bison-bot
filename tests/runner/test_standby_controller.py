@@ -18,6 +18,7 @@ from hauntedroom.runner.default_commands import FLOW_COMMANDS, SCREEN_FLOW_COMMA
 from hauntedroom.runner.reload import AutomapRuntime, get_automap_flow
 from hauntedroom.screen_detect import ScreenName
 from hauntedroom.runner.standby import (
+    format_start_auto_control_guide,
     handle_control_command,
     run_standby_controller,
     validate_start_auto_hotkeys,
@@ -25,6 +26,25 @@ from hauntedroom.runner.standby import (
 
 
 class StandbyControllerTest(IsolatedAsyncioTestCase):
+
+    def test_start_auto_control_guide_formats_each_control_on_its_own_line(self):
+        self.assertEqual(
+            format_start_auto_control_guide(
+                {
+                    "pause_resume": "1",
+                    "pause_at_boss": "2",
+                    "pause_at_final_boss": "3",
+                    "screenshot": "8",
+                    "stop": "0",
+                }
+            ),
+            "Auto-map controls:\n"
+            "  Shift+1 pause/resume\n"
+            "  Shift+2 pause at boss\n"
+            "  Shift+3 pause at final boss\n"
+            "  Shift+8 screenshot\n"
+            "  Shift+0 stop",
+        )
 
     async def test_flow_control_pauses_resumes_and_stops_while_paused(self):
         control = FlowControl()

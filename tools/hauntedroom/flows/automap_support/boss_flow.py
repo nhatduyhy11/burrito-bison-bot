@@ -44,9 +44,14 @@ async def handle_boss_critical(
     boss_kind = "Final boss" if is_final_boss else "Mini-boss"
     should_log_detection = not boss_detection_logged
     if should_log_detection:
-        print(
+        detection_message = (
             f"{boss_kind} HP entered upper search region at {x},{y}, "
-            f"score={score:.3f}.",
+            f"score={score:.3f}."
+        )
+        print(
+            colorize(detection_message, YELLOW)
+            if is_final_boss
+            else detection_message,
             flush=True,
         )
 
