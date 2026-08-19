@@ -5,7 +5,7 @@ module must not import ``template_detection`` or browser/runtime concerns.
 """
 
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 import cv2
 import numpy as np
@@ -15,6 +15,10 @@ DEFAULT_TEMPLATE_THRESHOLD = 0.9
 TEMPLATE_SCALES = (1.0, 0.67)
 Region = tuple[int, int, int, int]
 TemplateMatch = tuple[int, int, float]
+ClickPosition = Literal["bottom_left", "center", "mid_left", "top_middle"]
+SUPPORTED_CLICK_POSITIONS: frozenset[ClickPosition] = frozenset(
+    {"bottom_left", "center", "mid_left", "top_middle"}
+)
 
 
 def load_template(path: Path) -> np.ndarray:
@@ -36,7 +40,7 @@ def find_template(
     screenshot: np.ndarray,
     template: np.ndarray,
     template_name: str,
-    click_position: str = "center",
+    click_position: ClickPosition = "center",
     scales: tuple[float, ...] = TEMPLATE_SCALES,
     region: Optional[Region] = None,
 ) -> TemplateMatch:
@@ -127,7 +131,7 @@ def find_template_in_region(
     template_name: str,
     region: Region,
     threshold: float = DEFAULT_TEMPLATE_THRESHOLD,
-    click_position: str = "center",
+    click_position: ClickPosition = "center",
     scales: tuple[float, ...] = TEMPLATE_SCALES,
 ) -> Optional[TemplateMatch]:
     """Return an above-threshold match restricted to a screenshot region."""

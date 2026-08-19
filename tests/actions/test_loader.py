@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -101,3 +102,104 @@ class ActionLoaderTest(TestCase):
 
             with self.assertRaisesRegex(ValueError, "increasing bounds"):
                 load_actions(action_path)
+
+    def test_load_actions_rejects_invalid_numeric_fields_with_context(self):
+        with TemporaryDirectory() as tmpdir:
+            directory = Path(tmpdir)
+            (directory / "target.png").write_bytes(b"fixture")
+            action_path = directory / "actions.json"
+            cases = (
+                ({"type": "click", "x": True, "y": 20}, "x"),
+                ({"type": "wait", "ms": False}, "ms"),
+                (
+                    {
+                        "type": "click_template",
+                        "template": "target.png",
+                        "threshold": "high",
+                    },
+                    "threshold",
+                ),
+                (
+                    {
+                        "type": "click_template",
+                        "template": "target.png",
+                        "timeout_ms": "soon",
+                    },
+                    "timeout_ms",
+                ),
+                (
+                    {
+                        "type": "click_template",
+                        "template": "target.png",
+                        "click_count": True,
+                    },
+                    "click_count",
+                ),
+                (
+                    {
+                        "type": "click_template",
+                        "template": "target.png",
+                        "scales": [True],
+                    },
+                    "scales",
+                ),
+                (
+                    {
+                        "type": "click_template",
+                        "template": "target.png",
+                        "region": [True, 0, 100, 100],
+                    },
+                    "region",
+                ),
+            )
+
+            for raw_action, field in cases:
+                with self.subTest(field=field):
+                    action_path.write_text(
+                        json.dumps([raw_action]),
+                        encoding="utf-8",
+                    )
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        rf"Action #1 {re.escape(field)}",
+                    ):
+                        load_actions(action_path)
+
+    def test_load_actions_rejects_unsupported_mouse_buttons(self):
+        with TemporaryDirectory() as tmpdir:
+            directory = Path(tmpdir)
+            (directory / "target.png").write_bytes(b"fixture")
+            action_path = directory / "actions.json"
+            actions = (
+                {"type": "click", "x": 10, "y": 20, "button": "rigth"},
+                {"type": "click", "x": 10, "y": 20, "button": ["left"]},
+                {
+                    "type": "click_template",
+                    "template": "target.png",
+                    "button": "primary",
+                },
+            )
+
+            for raw_action in actions:
+                with self.subTest(action_type=raw_action["type"]):
+                    action_path.write_text(
+                        json.dumps([raw_action]),
+                        encoding="utf-8",
+                    )
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        "Action #1 unsupported mouse button",
+                    ):
+                        load_actions(action_path)
+
+    def test_load_wait_preserves_negative_duration_behavior(self):
+        with TemporaryDirectory() as tmpdir:
+            action_path = Path(tmpdir) / "actions.json"
+            action_path.write_text(
+                json.dumps([{"type": "wait", "ms": -250}]),
+                encoding="utf-8",
+            )
+
+            actions = load_actions(action_path)
+
+        self.assertEqual(actions, [WaitAction(-250)])

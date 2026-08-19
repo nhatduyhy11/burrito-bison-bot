@@ -14,6 +14,7 @@ from hauntedroom.core.runtime import (
 )
 from hauntedroom.core.template_matching import (
     TEMPLATE_SCALES,
+    ClickPosition,
     find_template,
 )
 from hauntedroom.core.vision import capture_page_grayscale
@@ -28,7 +29,7 @@ async def clear_blockers(
     timeout_ms: int,
     poll_ms: int,
     delay_ms: int,
-    click_positions: dict[str, str],
+    click_positions: dict[str, ClickPosition],
     label: str,
     stop_event: Optional[asyncio.Event] = None,
     until_template_scales: tuple[float, ...] = TEMPLATE_SCALES,

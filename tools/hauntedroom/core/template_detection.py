@@ -19,6 +19,7 @@ from hauntedroom.core.runtime import (
 )
 from hauntedroom.core.template_matching import (
     TEMPLATE_SCALES,
+    ClickPosition,
     Region,
     TemplateMatch,
     find_template,
@@ -48,7 +49,7 @@ async def wait_for_template(
     stop_event: Optional[asyncio.Event] = None,
     skip_template: Optional[np.ndarray] = None,
     skip_template_name: Optional[str] = None,
-    click_position: str = "center",
+    click_position: ClickPosition = "center",
     template_scales: tuple[float, ...] = TEMPLATE_SCALES,
     skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES,
     region: Optional[Region] = None,

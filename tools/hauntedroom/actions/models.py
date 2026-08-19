@@ -5,6 +5,7 @@ from typing import ClassVar, Literal, Optional, Union
 from hauntedroom.core.template_matching import (
     DEFAULT_TEMPLATE_THRESHOLD,
     TEMPLATE_SCALES,
+    ClickPosition,
     Region,
 )
 
@@ -38,7 +39,7 @@ class ClickTemplateAction:
     button: str = "left"
     note: Optional[str] = None
     skip_if_template_path: Optional[Path] = None
-    click_position: str = "center"
+    click_position: ClickPosition = "center"
     template_scales: tuple[float, ...] = TEMPLATE_SCALES
     skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES
     region: Optional[Region] = None
@@ -58,7 +59,7 @@ class ClearBlockersAction:
     timeout_ms: int = DEFAULT_TEMPLATE_TIMEOUT_MS
     poll_ms: int = DEFAULT_TEMPLATE_POLL_MS
     delay_ms: int = DEFAULT_CLICK_DELAY_MS
-    click_positions: dict[str, str] = field(default_factory=dict)
+    click_positions: dict[str, ClickPosition] = field(default_factory=dict)
     note: Optional[str] = None
     until_template_scales: tuple[float, ...] = TEMPLATE_SCALES
 
