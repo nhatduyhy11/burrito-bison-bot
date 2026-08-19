@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import ClassVar, Literal, Optional, Union
 
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     DEFAULT_TEMPLATE_THRESHOLD,
     TEMPLATE_SCALES,
     Region,

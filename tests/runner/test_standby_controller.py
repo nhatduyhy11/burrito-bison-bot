@@ -289,7 +289,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         from hauntedroom.actions import runner as actions_runner
         from hauntedroom.control_events import blockers as control_blockers
         from hauntedroom.control_events import new_tab_blocker
-        from hauntedroom.core import template, template_detection, vision
+        from hauntedroom.core import template_detection, template_matching, vision
         from hauntedroom.runner import reload as reload_policy
 
         refreshed_load_actions = Mock()
@@ -297,7 +297,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         refreshed_loader = Mock(load_actions=refreshed_load_actions)
         refreshed_runner = Mock(run_actions=refreshed_run_actions)
         reload_module.side_effect = [
-            template,
+            template_matching,
             vision,
             template_detection,
             new_tab_blocker,
@@ -322,7 +322,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             reload_module.call_args_list,
             [
-                call(template),
+                call(template_matching),
                 call(vision),
                 call(template_detection),
                 call(new_tab_blocker),

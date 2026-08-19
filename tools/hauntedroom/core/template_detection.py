@@ -1,7 +1,7 @@
 """Detect templates over time against live browser-page captures.
 
-Dependency direction: this module builds on ``template``; that lower-level
-matching module must never import this higher-level detection module.
+Dependency direction: this module builds on ``template_matching``; matching
+must never import this higher-level detection module.
 """
 
 import asyncio
@@ -17,7 +17,7 @@ from hauntedroom.core.runtime import (
     save_timeout_screenshot,
     wait_for_flow_timeout,
 )
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     TEMPLATE_SCALES,
     Region,
     TemplateMatch,

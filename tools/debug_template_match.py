@@ -5,7 +5,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from hauntedroom.core.template import TEMPLATE_SCALES, find_template
+from hauntedroom.core.template_matching import TEMPLATE_SCALES, find_template
 
 
 def parse_scales(raw: str) -> tuple[float, ...]:

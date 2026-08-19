@@ -17,8 +17,8 @@ MAP_WIN_FIXTURES_DIR = (
 )
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.core.template import find_template as find_real_template
-from hauntedroom.core.template import load_template as load_real_template
+from hauntedroom.core.template_matching import find_template as find_real_template
+from hauntedroom.core.template_matching import load_template as load_real_template
 from hauntedroom.flows.automap import (
     DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
     DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,

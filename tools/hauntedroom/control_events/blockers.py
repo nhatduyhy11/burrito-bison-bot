@@ -12,7 +12,7 @@ from hauntedroom.core.runtime import (
     save_timeout_screenshot,
     wait_for_flow_timeout,
 )
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     TEMPLATE_SCALES,
     find_template,
 )

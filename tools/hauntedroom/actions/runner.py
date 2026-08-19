@@ -23,7 +23,7 @@ from hauntedroom.core.template_detection import (
     TemplateWaitStatus,
     wait_for_template,
 )
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     find_template,
     load_template,
 )

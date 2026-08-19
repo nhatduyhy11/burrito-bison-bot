@@ -5,7 +5,7 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.template import find_template
+from hauntedroom.core.template_matching import find_template
 from hauntedroom.core.vision import (
     ColorComponentMatch,
     ColorComponentPattern,

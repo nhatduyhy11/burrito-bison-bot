@@ -12,11 +12,11 @@ FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 MAP_WIN_FIXTURES_DIR = FIXTURES_DIR / "hauntedroom-captures" / "map_win"
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.core.template import find_template as find_real_template
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import find_template as find_real_template
+from hauntedroom.core.template_matching import (
     find_template_matches as find_real_template_matches,
 )
-from hauntedroom.core.template import load_template as load_real_template
+from hauntedroom.core.template_matching import load_template as load_real_template
 from hauntedroom.flows import automap
 from hauntedroom.flows.automap import (
     REWARD_LIST_TITLE_TEMPLATE_PATH,

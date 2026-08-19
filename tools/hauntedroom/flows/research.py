@@ -4,7 +4,7 @@ from typing import Optional
 
 from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import wait_with_countdown
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     find_template,
     load_template,
 )

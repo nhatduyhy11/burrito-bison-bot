@@ -9,7 +9,7 @@ TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     find_template,
     find_template_in_region,
     find_template_matches,

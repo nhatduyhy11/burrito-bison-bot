@@ -14,7 +14,7 @@ from hauntedroom.actions.defaults import (
     DEFAULT_TEMPLATE_POLL_MS,
     DEFAULT_TEMPLATE_TIMEOUT_MS,
 )
-from hauntedroom.core.template import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES, Region
+from hauntedroom.core.template_matching import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES, Region
 
 
 SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "mid_left", "top_middle"}

@@ -11,8 +11,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.core.template import find_template as find_real_template
-from hauntedroom.core.template import load_template as load_real_template
+from hauntedroom.core.template_matching import find_template as find_real_template
+from hauntedroom.core.template_matching import load_template as load_real_template
 from hauntedroom.flows import automap
 from hauntedroom.flows.automap import (
     MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS,

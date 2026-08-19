@@ -23,7 +23,7 @@ class HauntedRoomDependencyTest(TestCase):
             "runtime.py": {"hauntedroom.core.terminal"},
             "template_detection.py": {
                 "hauntedroom.core.runtime",
-                "hauntedroom.core.template",
+                "hauntedroom.core.template_matching",
                 "hauntedroom.core.vision",
             },
         }
@@ -78,7 +78,7 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.actions.runner",
                 "hauntedroom.core.runtime",
                 "hauntedroom.core.template_detection",
-                "hauntedroom.core.template",
+                "hauntedroom.core.template_matching",
                 "hauntedroom.core.vision",
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.train_select",

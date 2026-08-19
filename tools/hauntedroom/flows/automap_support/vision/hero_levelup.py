@@ -6,7 +6,7 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     find_template,
     find_template_matches,
     load_template,

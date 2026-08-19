@@ -8,7 +8,7 @@ import numpy as np
 
 from hauntedroom.core.mouse import click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
-from hauntedroom.core.template import TemplateMatch, load_template
+from hauntedroom.core.template_matching import TemplateMatch, load_template
 from hauntedroom.core.vision import capture_page_grayscale
 from hauntedroom.flows.artifact_vision import (
     ARTIFACT_CLOSE_TEMPLATE_PATH,
