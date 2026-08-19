@@ -11,11 +11,6 @@ from hauntedroom.actions.models import (
     ClickTemplateAction,
     WaitAction,
 )
-from hauntedroom.actions.defaults import (
-    DEFAULT_CLICK_DELAY_MS,
-    DEFAULT_TEMPLATE_POLL_MS,
-    DEFAULT_TEMPLATE_TIMEOUT_MS,
-)
 from hauntedroom.control_events.blockers import clear_blockers
 from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
@@ -27,7 +22,6 @@ from hauntedroom.core.runtime import (
     wait_with_countdown,
 )
 from hauntedroom.core.template import (
-    DEFAULT_TEMPLATE_THRESHOLD,
     TEMPLATE_SCALES,
     Region,
     find_template,

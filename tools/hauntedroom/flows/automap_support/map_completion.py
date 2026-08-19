@@ -17,15 +17,6 @@ from hauntedroom.flows.automap_support.completion_flow import (
     first_win,
     reward,
 )
-from hauntedroom.flows.automap_support.completion_flow.reward import (
-    REWARD_LIST_TITLE_SEARCH_REGION,
-    REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
-    WIN_REWARD_EMPTY_DELAY_MS,
-    WIN_REWARD_FOLLOWUP_CLICK,
-    WIN_REWARD_FOLLOWUP_CLICK_COUNT,
-    WIN_REWARD_RECHECK_MS,
-    WIN_REWARD_TEMPLATE_THRESHOLD,
-)
 
 MAP_END_TEMPLATE_THRESHOLD = 0.90
 MAP_END_CHECK_INTERVAL_SEC = 5.0

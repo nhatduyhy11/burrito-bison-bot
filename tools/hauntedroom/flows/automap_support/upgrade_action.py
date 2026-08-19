@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from hauntedroom.core.terminal import BLUE, YELLOW, colorize
+from hauntedroom.core.terminal import BLUE, colorize
 
 
 BUILT_TEMPLATE_THRESHOLD = 0.80
