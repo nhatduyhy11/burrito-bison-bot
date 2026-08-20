@@ -1,31 +1,6 @@
 # Refactor Review
 
-Lần review gần nhất: 2026-08-19, theo code tại commit `de02453`.
-
-## Kết luận
-
-Structure hiện tại vẫn hợp lý cho một bot local, khoảng **7/10**. Ranh giới
-`core / actions / control_events / flows / runner` nhìn chung rõ, dependency
-direction cơ bản đúng, và `hauntedroom_runner.py` vẫn là composition root gọn
-(80 dòng).
-
-Các đợt refactor gần đây đã hoàn tất những phần chính sau:
-
-- Auto-map vision đã được chia theo concern trong `automap_support/vision/`.
-- Map completion đã có orchestrator và owner riêng cho first-win, reward và
-  blocker.
-- Test boss và map completion đã được chia theo boundary tương ứng.
-- Root pytest đã được giới hạn vào `tests/`, không còn collect project tham khảo
-  độc lập `ref_cv/`.
-- Standby đã có screen auto-switch: `Shift+1` capture đúng một frame, nhận diện
-  màn hình và dispatch flow tương ứng.
-- Command definition đã dùng semantic key và metadata
-  `uses_automap_controls`, không còn gắn policy auto-map vào các phím cứng
-  `Shift+2`/`Shift+3`.
-- Screenshot fallback đã được gom dưới `.tmp/hauntedroom-fallbacks/` và có test
-  khóa đường dẫn.
-
-Các hạng mục đã hoàn tất không còn nằm trong backlog bên dưới.
+Lần review gần nhất: 2026-08-20, theo code tại commit `95c1caa`.
 
 ## Test baseline
 
@@ -35,10 +10,10 @@ Suite chính, chạy từ root:
 uv run --with pytest pytest -q
 ```
 
-Kết quả ngày 2026-08-19:
+Kết quả ngày 2026-08-20:
 
 ```text
-217 passed, 4 skipped, 36 subtests passed in 24.99s
+222 passed, 4 skipped, 46 subtests passed in 12.31s
 ```
 
 `pyproject.toml` đã đặt `testpaths = ["tests"]`, nên lệnh trên không còn collect
@@ -50,75 +25,39 @@ tên `test_script_injection_is_enabled_by_default` đang dùng
 `@skipUnless(ENABLE_SCRIPT_INJECTION, ...)`. Suite đã xanh nhưng contract của
 default-off chưa được assert trực tiếp và happy path chưa chạy trong baseline.
 
-## Structure hiện tại
-
-```text
-tools/hauntedroom/
-├── core/                    # runtime, CLI, mouse, template, vision primitives
-├── actions/                 # JSON loader/runner + typed action models
-├── control_events/          # blocker/new-tab handling
-├── runner/                  # standby, command specs/wiring, navigation, reload
-├── screen_detect.py         # screen enum, anchor detection và capture wrapper
-├── flows/                   # business flows do command resolver khởi chạy
-│   ├── automap.py           # auto-map coordinator/public API/state
-│   ├── automap_support/
-│   │   ├── completion_flow/ # first-win, reward, blocker, shared state
-│   │   └── vision/          # boss, build, gear, hero và train detectors
-│   ├── start_auto.py        # home -> start room -> auto-map loop
-│   ├── train.py             # train + handoff sang auto-map
-│   ├── exp_available.py
-│   ├── hero_up_available.py
-│   ├── artifact.py
-│   ├── click_loop.py
-│   └── research.py
-└── settings.py              # source-level runtime switches
-```
-
-Screen routing hiện được chia thành ba phần:
-
-- `screen_detect.py`: `ScreenName`, detector anchor và `detect_current_screen`.
-- `runner/default_commands.py`: giữ toàn bộ semantic flow definition, public
-  direct commands và mapping `ScreenName -> FlowCommand`.
-- `runner/standby.py`: xử lý `Shift+1`, detect một lần rồi resolve/start flow;
-  `train` và `unknown` hiện chỉ log, không dispatch.
-
-Direct binding còn lại là `Shift+T` cho train và `Shift+5` cho fixed-position
-click loop. Auto-map/start-auto do screen routing khởi chạy vẫn dùng bộ control
-cấu hình trong `START_AUTO_HOTKEYS`.
-
-## Snapshot line-count (2026-08-19)
+## Snapshot line-count (2026-08-20)
 
 Runtime/non-test files từ 200 dòng trở lên:
 
 ```text
- 516 tools/hauntedroom/flows/automap.py
- 413 tools/hauntedroom/flows/artifact.py
- 407 tools/hauntedroom/actions/runner.py
- 319 tools/hauntedroom/runner/standby.py
- 319 tools/hauntedroom/actions/loader.py
- 300 tools/hauntedroom/core/runtime.py
+ 513 tools/hauntedroom/flows/automap.py
+ 338 tools/hauntedroom/runner/standby.py
+ 320 tools/hauntedroom/flows/artifact.py
+ 311 tools/hauntedroom/actions/runner.py
+ 305 tools/hauntedroom/core/runtime.py
  271 tools/hauntedroom/flows/automap_support/vision/hero_levelup.py
  258 tools/hauntedroom/flows/automap_support/hero_action.py
- 233 tools/hauntedroom/runner/commands.py
- 222 tools/hauntedroom/flows/automap_support/map_completion.py
- 215 tools/hauntedroom/core/template.py
- 209 tools/hauntedroom/runner/reload.py
+ 251 tools/hauntedroom/runner/commands.py
+ 250 tools/hauntedroom/actions/loader.py
+ 223 tools/hauntedroom/core/template_matching.py
+ 213 tools/hauntedroom/flows/automap_support/map_completion.py
  205 tools/hauntedroom/flows/train.py
 ```
 
 Test files từ 200 dòng trở lên:
 
 ```text
- 652 tests/runner/test_standby_controller.py
+ 685 tests/runner/test_standby_controller.py
  447 tests/hero_select/test_hero_fallback.py
  404 tests/hero_select/test_hero_select.py
- 286 tests/actions/test_runner.py
- 274 tests/automap/test_map_reward.py
+ 299 tests/actions/test_runner.py
+ 276 tests/automap/test_map_reward.py
  262 tests/special_flow/test_artifact_flow.py
- 256 tests/runner/test_start_automap_loop.py
+ 249 tests/runner/test_start_automap_loop.py
  243 tests/automap/test_gear.py
  237 tests/automap/test_level_up.py
  222 tests/test_hauntedroom_vision.py
+ 205 tests/actions/test_loader.py
 ```
 
 Line count không tự động đồng nghĩa over-responsibility. Runtime cần theo dõi
@@ -154,26 +93,14 @@ Khi mở rộng test, cần giữ các composite dependency đã được cho ph
 `train.py`, wiring trong `runner/`, và dependency có chủ đích từ
 `screen_detect.py` sang detector boss-progress của auto-map.
 
-### 3. Đóng kín validation của action loader
-
-`load_actions` đã trả `list[Action]` và runner dùng typed fields trực tiếp. Phần
-còn thiếu nằm ở input boundary:
-
-- `wait.ms` chưa chặn giá trị âm và lỗi sai kiểu vẫn rò trực tiếp từ `int()`.
-- `click.x`/`click.y` ép bằng `int()` nhưng error message sai kiểu chưa thân thiện.
-- `button` của `click` và `click_template` chưa giới hạn vào giá trị Playwright
-  hợp lệ.
-- Một số numeric field được ép kiểu trong cả `validate_timing_fields` và loader,
-  tạo validation trùng và thông báo lỗi không đồng nhất.
-
-### 4. Làm phẳng state loop của research
+### 3. Làm phẳng state loop của research
 
 `run_research_flow` vẫn chứa các nested loop cho state
 `available -> active -> available`. Nếu flow này tiếp tục có thêm state, nên tách
 helper như `wait_for_research_available` và `drain_active_research`, rồi giữ
 `run_research_flow` làm coordinator.
 
-### 5. Chỉ tạo config object cho blocker khi signature tiếp tục lớn
+### 4. Chỉ tạo config object cho blocker khi signature tiếp tục lớn
 
 `clear_blockers` có signature dài và `timeout_ms` hiện mang nghĩa inactivity
 timeout vì deadline được reset sau mỗi blocker click. Nếu thêm option mới, nên
@@ -217,8 +144,7 @@ cần registry tổng quát hay Clean Architecture đầy đủ.
 1. Đổi bốn script-injection test từ skip sang test rõ hai trạng thái on/off.
 2. Mở rộng architecture test cho subtree, `runner/`, entrypoint và
    `screen_detect.py`; đồng bộ `docs/ARCHITECTURE.md` nếu boundary thay đổi.
-3. Hoàn thiện validation tại action loader boundary.
-4. Chỉ sau đó mới cân nhắc research helpers, tách test lớn hoặc `BlockerConfig`.
+3. Chỉ sau đó mới cân nhắc research helpers, tách test lớn hoặc `BlockerConfig`.
 
 ## Nguyên tắc khi refactor
 

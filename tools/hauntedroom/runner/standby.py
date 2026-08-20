@@ -50,11 +50,11 @@ def validate_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> dict[str, str]:
 
 def format_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> str:
     return (
-        f"Shift+{hotkeys['pause_resume']} pause/resume; "
-        f"Shift+{hotkeys['pause_at_boss']} pause at boss; "
-        f"Shift+{hotkeys['pause_at_final_boss']} pause at final boss; "
-        f"Shift+{hotkeys['screenshot']} screenshot; "
-        f"Shift+{hotkeys['stop']} stop"
+        f"    Shift+{hotkeys['pause_resume']} pause/resume\n"
+        f"    Shift+{hotkeys['pause_at_boss']} pause at boss\n"
+        f"    Shift+{hotkeys['pause_at_final_boss']} pause at final boss\n"
+        f"    Shift+{hotkeys['screenshot']} screenshot\n"
+        f"    Shift+{hotkeys['stop']} stop"
     )
 
 
@@ -216,7 +216,7 @@ async def run_standby_controller(
             "  Shift+1    Detect screen and run its flow\n"
             "  Shift+8    Capture screenshot\n"
             "  Shift+0    Stop current flow\n"
-            "  During auto-map/start-auto: "
+            "  During auto-map/start-auto:\n"
             f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
             "  Ctrl+C     Close runner\n"
             "-------------------------\n"

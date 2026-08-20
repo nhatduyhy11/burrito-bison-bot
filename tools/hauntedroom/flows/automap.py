@@ -13,7 +13,7 @@ from hauntedroom.core.runtime import (
     wait_for_flow_timeout,
     wait_with_countdown,
 )
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     find_template,
     find_template_matches,
     load_template,

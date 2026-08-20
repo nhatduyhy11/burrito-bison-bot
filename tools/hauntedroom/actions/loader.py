@@ -1,7 +1,11 @@
 import json
 from pathlib import Path
-from typing import Optional
 
+from hauntedroom.actions.defaults import (
+    DEFAULT_CLICK_DELAY_MS,
+    DEFAULT_TEMPLATE_POLL_MS,
+    DEFAULT_TEMPLATE_TIMEOUT_MS,
+)
 from hauntedroom.actions.models import (
     Action,
     ClearBlockersAction,
@@ -9,61 +13,15 @@ from hauntedroom.actions.models import (
     ClickTemplateAction,
     WaitAction,
 )
-from hauntedroom.actions.defaults import (
-    DEFAULT_CLICK_DELAY_MS,
-    DEFAULT_TEMPLATE_POLL_MS,
-    DEFAULT_TEMPLATE_TIMEOUT_MS,
+from hauntedroom.actions.validation import (
+    load_button,
+    load_click_position,
+    load_non_negative_int,
+    load_region,
+    load_scales,
+    load_threshold,
+    parse_int,
 )
-from hauntedroom.core.template import DEFAULT_TEMPLATE_THRESHOLD, TEMPLATE_SCALES, Region
-
-
-SUPPORTED_CLICK_POSITIONS = {"bottom_left", "center", "mid_left", "top_middle"}
-
-
-def validate_threshold(action: dict, index: int) -> None:
-    threshold = float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD))
-    if not 0 < threshold <= 1:
-        raise ValueError(
-            f"Action #{index} threshold must be greater than 0 and at most 1."
-        )
-
-
-def validate_timing_fields(action: dict, index: int) -> None:
-    for field in ("timeout_ms", "poll_ms", "delay_ms", "repeat_delay_ms"):
-        if field in action and int(action[field]) < 0:
-            raise ValueError(f"Action #{index} {field} cannot be negative.")
-
-
-def load_scales(action: dict, index: int, field: str) -> tuple[float, ...]:
-    raw_scales = action.get(field)
-    if raw_scales is None:
-        return TEMPLATE_SCALES
-    if not isinstance(raw_scales, list) or not raw_scales:
-        raise ValueError(f"Action #{index} {field} must be a non-empty array.")
-
-    scales = tuple(float(scale) for scale in raw_scales)
-    if any(scale <= 0 for scale in scales):
-        raise ValueError(f"Action #{index} {field} must contain positive numbers.")
-    return scales
-
-
-def load_region(action: dict, index: int) -> Optional[Region]:
-    raw_region = action.get("region")
-    if raw_region is None:
-        return None
-    if not isinstance(raw_region, list) or len(raw_region) != 4:
-        raise ValueError(f"Action #{index} region must be a four-number array.")
-    try:
-        left, top, right, bottom = (int(value) for value in raw_region)
-    except (TypeError, ValueError) as error:
-        raise ValueError(
-            f"Action #{index} region must be a four-number array."
-        ) from error
-    if left < 0 or top < 0 or left >= right or top >= bottom:
-        raise ValueError(
-            f"Action #{index} region must have non-negative, increasing bounds."
-        )
-    return left, top, right, bottom
 
 
 def resolve_template_file(path: Path, raw_template: str, index: int, label: str) -> Path:
@@ -73,34 +31,13 @@ def resolve_template_file(path: Path, raw_template: str, index: int, label: str)
     return template_path
 
 
-def load_threshold(action: dict, index: int) -> float:
-    validate_threshold(action, index)
-    return float(action.get("threshold", DEFAULT_TEMPLATE_THRESHOLD))
-
-
-def load_non_negative_int(
-    action: dict,
-    index: int,
-    field: str,
-    default: Optional[int] = None,
-) -> int:
-    if field not in action:
-        if default is None:
-            raise ValueError(f"Action #{index} requires {field}.")
-        return default
-    value = int(action[field])
-    if value < 0:
-        raise ValueError(f"Action #{index} {field} cannot be negative.")
-    return value
-
-
 def load_click_action(action: dict, index: int) -> ClickAction:
     if "x" not in action or "y" not in action:
         raise ValueError(f"Action #{index} click requires x and y.")
     return ClickAction(
-        x=int(action["x"]),
-        y=int(action["y"]),
-        button=action.get("button", "left"),
+        x=parse_int(action["x"], index, "x"),
+        y=parse_int(action["y"], index, "y"),
+        button=load_button(action, index),
         note=action.get("note"),
     )
 
@@ -131,20 +68,18 @@ def load_click_template_action(
         )
 
     threshold = load_threshold(action, index)
-    validate_timing_fields(action, index)
     template_scales = load_scales(action, index, "scales")
     skip_template_scales = load_scales(action, index, "skip_template_scales")
-    click_count = int(action.get("click_count", 1))
+    click_count = parse_int(action.get("click_count", 1), index, "click_count")
     if click_count < 1:
         raise ValueError(f"Action #{index} click_count must be at least 1.")
     recheck_before_repeat = action.get("recheck_before_repeat", False)
     if not isinstance(recheck_before_repeat, bool):
         raise ValueError(f"Action #{index} recheck_before_repeat must be a boolean.")
-    click_position = action.get("click_position", "center")
-    if click_position not in SUPPORTED_CLICK_POSITIONS:
-        raise ValueError(
-            f"Action #{index} unsupported click position: {click_position!r}."
-        )
+    click_position = load_click_position(
+        action.get("click_position", "center"),
+        index,
+    )
 
     return ClickTemplateAction(
         template_path=template_path,
@@ -174,7 +109,7 @@ def load_click_template_action(
         ),
         click_count=click_count,
         recheck_before_repeat=recheck_before_repeat,
-        button=action.get("button", "left"),
+        button=load_button(action, index),
         note=action.get("note"),
         skip_if_template_path=skip_if_template_path,
         click_position=click_position,
@@ -249,12 +184,8 @@ def load_clear_blockers_action(
                 f"Action #{index} click_positions references unknown blocker: "
                 f"{template_name}"
             )
-        if click_position not in SUPPORTED_CLICK_POSITIONS:
-            raise ValueError(
-                f"Action #{index} unsupported click position: {click_position!r}."
-            )
+        click_positions[template_name] = load_click_position(click_position, index)
 
-    validate_timing_fields(action, index)
     return ClearBlockersAction(
         blocker_paths=tuple(blocker_paths),
         until_template_path=until_template_path,
@@ -287,7 +218,7 @@ def load_wait_action(action: dict, index: int) -> WaitAction:
     if "ms" not in action:
         raise ValueError(f"Action #{index} wait requires ms.")
     return WaitAction(
-        ms=int(action["ms"]),
+        ms=parse_int(action["ms"], index, "ms"),
         note=action.get("note"),
     )
 

@@ -9,7 +9,7 @@ import numpy as np
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.core.template import load_template
+from hauntedroom.core.template_matching import load_template
 from hauntedroom.flows.artifact import (
     ARTIFACT_CLOSE_TEMPLATE_PATH,
     ARTIFACT_MARK_TEMPLATE_PATH,

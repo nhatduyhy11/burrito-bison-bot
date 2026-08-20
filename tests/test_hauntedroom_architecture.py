@@ -19,8 +19,20 @@ def internal_imports(path: Path) -> set[str]:
 
 class HauntedRoomDependencyTest(TestCase):
     def test_core_is_foundational(self):
+        allowed_core_imports = {
+            "runtime.py": {"hauntedroom.core.terminal"},
+            "template_detection.py": {
+                "hauntedroom.core.runtime",
+                "hauntedroom.core.template_matching",
+                "hauntedroom.core.vision",
+            },
+        }
         for path in (PACKAGE_DIR / "core").glob("*.py"):
-            self.assertEqual(internal_imports(path), set(), path.name)
+            self.assertEqual(
+                internal_imports(path),
+                allowed_core_imports.get(path.name, set()),
+                path.name,
+            )
 
     def test_actions_do_not_depend_on_flows(self):
         for path in (PACKAGE_DIR / "actions").glob("*.py"):
@@ -48,6 +60,9 @@ class HauntedRoomDependencyTest(TestCase):
 
     def test_flows_are_independent_from_actions_and_each_other(self):
         allowed_support_imports = {
+            "artifact.py": {
+                "hauntedroom.flows.artifact_vision",
+            },
             "automap.py": {
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.boss_flow",
@@ -65,7 +80,8 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.actions.models",
                 "hauntedroom.actions.runner",
                 "hauntedroom.core.runtime",
-                "hauntedroom.core.template",
+                "hauntedroom.core.template_detection",
+                "hauntedroom.core.template_matching",
                 "hauntedroom.core.vision",
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.train_select",

@@ -5,7 +5,7 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.template import find_template
+from hauntedroom.core.template_matching import find_template
 
 # Upper battlefield above the room entrance, expressed with exclusive x2/y2
 # viewport coordinates. Bosses enter from the top or right, so their complete

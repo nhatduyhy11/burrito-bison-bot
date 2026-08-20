@@ -19,6 +19,7 @@ from hauntedroom.runner.reload import AutomapRuntime, get_automap_flow
 from hauntedroom.screen_detect import ScreenName
 from hauntedroom.runner.standby import (
     format_start_auto_control_guide,
+    format_start_auto_hotkeys,
     handle_control_command,
     run_standby_controller,
     validate_start_auto_hotkeys,
@@ -26,6 +27,24 @@ from hauntedroom.runner.standby import (
 
 
 class StandbyControllerTest(IsolatedAsyncioTestCase):
+
+    def test_start_auto_hotkeys_format_each_control_on_its_own_line(self):
+        self.assertEqual(
+            format_start_auto_hotkeys(
+                {
+                    "pause_resume": "1",
+                    "pause_at_boss": "2",
+                    "pause_at_final_boss": "3",
+                    "screenshot": "8",
+                    "stop": "0",
+                }
+            ),
+            "    Shift+1 pause/resume\n"
+            "    Shift+2 pause at boss\n"
+            "    Shift+3 pause at final boss\n"
+            "    Shift+8 screenshot\n"
+            "    Shift+0 stop",
+        )
 
     def test_start_auto_control_guide_formats_each_control_on_its_own_line(self):
         self.assertEqual(
@@ -289,7 +308,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         from hauntedroom.actions import runner as actions_runner
         from hauntedroom.control_events import blockers as control_blockers
         from hauntedroom.control_events import new_tab_blocker
-        from hauntedroom.core import template, vision
+        from hauntedroom.core import template_detection, template_matching, vision
         from hauntedroom.runner import reload as reload_policy
 
         refreshed_load_actions = Mock()
@@ -297,8 +316,9 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         refreshed_loader = Mock(load_actions=refreshed_load_actions)
         refreshed_runner = Mock(run_actions=refreshed_run_actions)
         reload_module.side_effect = [
-            template,
+            template_matching,
             vision,
+            template_detection,
             new_tab_blocker,
             control_blockers,
             refreshed_loader,
@@ -321,8 +341,9 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             reload_module.call_args_list,
             [
-                call(template),
+                call(template_matching),
                 call(vision),
+                call(template_detection),
                 call(new_tab_blocker),
                 call(control_blockers),
                 call(actions_loader),

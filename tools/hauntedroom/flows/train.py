@@ -7,10 +7,13 @@ from typing import Awaitable, Callable, Optional
 import cv2
 import numpy as np
 
-from hauntedroom.actions.runner import wait_for_template
 from hauntedroom.core.mouse import click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint, flow_time, wait_for_flow_timeout
-from hauntedroom.core.template import (
+from hauntedroom.core.template_detection import (
+    TemplateWaitStatus,
+    wait_for_template,
+)
+from hauntedroom.core.template_matching import (
     DEFAULT_TEMPLATE_THRESHOLD,
     TEMPLATE_SCALES,
     load_template,
@@ -128,7 +131,7 @@ async def run_train_flow(
         return False
 
     template_path = TRAIN_START_BATTLE_TEMPLATE_PATH
-    match = await wait_for_template(
+    wait_result = await wait_for_template(
         page,
         load_template(template_path),
         template_path.name,
@@ -138,10 +141,11 @@ async def run_train_flow(
         stop_event,
         template_scales=TEMPLATE_SCALES,
     )
-    if match is None:
+    if wait_result.status is TemplateWaitStatus.STOPPED:
         return False
 
-    x, y, score = match
+    assert wait_result.match is not None
+    x, y, score = wait_result.match
     print(
         f"Train start battle detected at {x},{y}, "
         f"score={score:.3f}; clicking.",

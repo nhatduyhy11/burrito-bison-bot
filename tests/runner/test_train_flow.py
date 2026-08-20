@@ -12,6 +12,10 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 
 from hauntedroom.flows.automap_support.train_select import TrainChoice
+from hauntedroom.core.template_detection import (
+    TemplateWaitResult,
+    TemplateWaitStatus,
+)
 from hauntedroom.flows.train import (
     TRAIN_BATTLE_LOAD_MS,
     TRAIN_ENTRY_SETTLE_MS,
@@ -59,7 +63,10 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
     ):
         available = cv2.imread(str(FIXTURES / "train_available.png"))
         capture_page_bgr.return_value = available
-        wait_for_template.return_value = (401, 644, 0.95)
+        wait_for_template.return_value = TemplateWaitResult(
+            TemplateWaitStatus.MATCHED,
+            (401, 644, 0.95),
+        )
         load_template.return_value = Mock()
         matcher = matcher_type.return_value
         choices = []

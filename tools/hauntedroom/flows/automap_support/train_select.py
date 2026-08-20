@@ -6,7 +6,7 @@ from typing import Optional
 
 import numpy as np
 
-from hauntedroom.core.template import load_template
+from hauntedroom.core.template_matching import load_template
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_ASCEND_TEMPLATE_NAME,
     HERO_LEVELUP_TEMPLATE_PATHS,

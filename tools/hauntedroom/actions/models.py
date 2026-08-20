@@ -2,9 +2,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import ClassVar, Literal, Optional, Union
 
-from hauntedroom.core.template import (
+from hauntedroom.core.mouse import MouseButton
+from hauntedroom.core.template_matching import (
     DEFAULT_TEMPLATE_THRESHOLD,
     TEMPLATE_SCALES,
+    ClickPosition,
     Region,
 )
 
@@ -19,7 +21,7 @@ from .defaults import (
 class ClickAction:
     x: int
     y: int
-    button: str = "left"
+    button: MouseButton = "left"
     note: Optional[str] = None
 
     type: ClassVar[Literal["click"]] = "click"
@@ -35,10 +37,10 @@ class ClickTemplateAction:
     repeat_delay_ms: Optional[int] = None
     click_count: int = 1
     recheck_before_repeat: bool = False
-    button: str = "left"
+    button: MouseButton = "left"
     note: Optional[str] = None
     skip_if_template_path: Optional[Path] = None
-    click_position: str = "center"
+    click_position: ClickPosition = "center"
     template_scales: tuple[float, ...] = TEMPLATE_SCALES
     skip_template_scales: tuple[float, ...] = TEMPLATE_SCALES
     region: Optional[Region] = None
@@ -58,7 +60,7 @@ class ClearBlockersAction:
     timeout_ms: int = DEFAULT_TEMPLATE_TIMEOUT_MS
     poll_ms: int = DEFAULT_TEMPLATE_POLL_MS
     delay_ms: int = DEFAULT_CLICK_DELAY_MS
-    click_positions: dict[str, str] = field(default_factory=dict)
+    click_positions: dict[str, ClickPosition] = field(default_factory=dict)
     note: Optional[str] = None
     until_template_scales: tuple[float, ...] = TEMPLATE_SCALES
 

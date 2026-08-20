@@ -6,7 +6,7 @@ from hauntedroom.actions import loader as actions_loader
 from hauntedroom.actions import runner as actions_runner
 from hauntedroom.control_events import blockers as control_blockers
 from hauntedroom.control_events import new_tab_blocker
-from hauntedroom.core import template, vision
+from hauntedroom.core import template_detection, template_matching, vision
 from hauntedroom.flows import (
     artifact,
     automap,
@@ -71,8 +71,9 @@ def reload_action_modules():
     global load_actions, run_actions
 
     importlib.invalidate_caches()
-    importlib.reload(template)
+    importlib.reload(template_matching)
     importlib.reload(vision)
+    importlib.reload(template_detection)
     importlib.reload(new_tab_blocker)
     importlib.reload(control_blockers)
     reloaded_loader = importlib.reload(actions_loader)
@@ -96,7 +97,7 @@ def get_research_flow(dev_reload: bool = False):
         return run_research_flow
 
     importlib.invalidate_caches()
-    importlib.reload(template)
+    importlib.reload(template_matching)
     importlib.reload(vision)
     reloaded_research = importlib.reload(research)
     run_research_flow = reloaded_research.run_research_flow
@@ -111,7 +112,7 @@ def get_artifact_flow(dev_reload: bool = False):
         return run_artifact_flow
 
     importlib.invalidate_caches()
-    importlib.reload(template)
+    importlib.reload(template_matching)
     importlib.reload(vision)
     reloaded_artifact = importlib.reload(artifact)
     run_artifact_flow = reloaded_artifact.run_artifact_flow

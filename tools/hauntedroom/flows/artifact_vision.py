@@ -5,7 +5,7 @@ from typing import Optional
 
 import numpy as np
 
-from hauntedroom.core.template import (
+from hauntedroom.core.template_matching import (
     TemplateMatch,
     find_template,
     find_template_in_region,
