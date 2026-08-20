@@ -19,6 +19,8 @@ async def run_start_automap_loop(
     stop_event: asyncio.Event,
     action_runner,
     debug: bool = False,
+    *,
+    run_context: object,
 ) -> bool:
     """Loop start-room -> auto-map -> loss check -> two-second cooldown."""
     loop_index = 0
@@ -55,6 +57,7 @@ async def run_start_automap_loop(
             stop_event,
             debug=debug,
             on_win=record_win,
+            run_context=run_context,
         )
         if not map_completed:
             return False

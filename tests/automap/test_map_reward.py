@@ -17,12 +17,12 @@ from hauntedroom.core.template_matching import (
     find_template_matches as find_real_template_matches,
 )
 from hauntedroom.core.template_matching import load_template as load_real_template
-from hauntedroom.flows import automap
 from hauntedroom.flows.automap import (
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_PATH,
     run_automap_flow,
 )
+from hauntedroom.flows.automap_support.state import AutomapRunContext
 from hauntedroom.flows.automap_support.completion_flow.reward import (
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     WIN_REWARD_EMPTY_DELAY_MS,
@@ -37,7 +37,6 @@ from hauntedroom.flows.automap_support.vision.hero_levelup import (
 
 class MapRewardTest(IsolatedAsyncioTestCase):
     def setUp(self):
-        automap.FIRST_WIN_DONE = False
         self.page = Mock()
         self.page.evaluate = AsyncMock()
         self.page.wait_for_timeout = AsyncMock()
@@ -87,15 +86,17 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         ]
 
         on_win = Mock(return_value=1)
+        run_context = AutomapRunContext()
         with patch("builtins.print") as print_mock:
             completed = await run_automap_flow(
                 self.page,
                 asyncio.Event(),
                 on_win=on_win,
+                run_context=run_context,
             )
 
         self.assertTrue(completed)
-        self.assertTrue(automap.FIRST_WIN_DONE)
+        self.assertTrue(run_context.daily_first_win_done)
         on_win.assert_called_once_with()
         messages = [print_call.args[0] for print_call in print_mock.call_args_list]
         self.assertLess(

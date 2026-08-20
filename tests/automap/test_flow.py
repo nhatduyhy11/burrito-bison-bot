@@ -19,6 +19,7 @@ from hauntedroom.flows.automap import (
     AutomapState,
     AutomapTemplates,
 )
+from hauntedroom.flows.automap_support.state import AutomapRunContext
 
 
 class AutomapFlowTest(IsolatedAsyncioTestCase):
@@ -66,6 +67,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             hero_levelup={},
         )
         state = AutomapState(initial_gear_unlocked=True)
+        run_context = AutomapRunContext(daily_first_win_done=True)
 
         flow = AutomapFlow(
             self.page,
@@ -73,10 +75,13 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             AutomapConfig(),
             templates=templates,
             state=state,
+            run_context=run_context,
         )
 
         self.assertIs(flow.templates, templates)
         self.assertIs(flow.state, state)
+        self.assertIs(flow.run_context, run_context)
+        self.assertTrue(flow.run_context.daily_first_win_done)
         self.assertTrue(flow.state.initial_gear_unlocked)
         load_template.assert_not_called()
 

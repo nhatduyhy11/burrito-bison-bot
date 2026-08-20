@@ -483,6 +483,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             stop_event,
             _action_runner,
             _debug,
+            **_kwargs,
         ):
             await stop_event.wait()
             return False
@@ -533,7 +534,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             command_queue.put_nowait("8")
 
         async def wait_until_stopped(
-            _page, _automap, stop_event, _debug
+            _page, _automap, stop_event, _debug, **_kwargs
         ):
             await stop_event.wait()
             return False
@@ -583,7 +584,13 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         get_automap_runtime.return_value = AutomapRuntime(AsyncMock(), AsyncMock())
 
         async def controllable_flow(
-            _page, _start_actions, _automap, flow_control, _action_runner, _debug
+            _page,
+            _start_actions,
+            _automap,
+            flow_control,
+            _action_runner,
+            _debug,
+            **_kwargs,
         ):
             nonlocal observed_control
             observed_control = flow_control

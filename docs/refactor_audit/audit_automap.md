@@ -9,14 +9,11 @@ public facade:
 - Làm adapter cho boss, hero, gear, upgrade và map completion.
 - Tự load `AutomapTemplates` trong constructor khi caller không inject.
 - Giữ callback runtime `on_win` bên trong `AutomapConfig`.
-- Duy trì `FIRST_WIN_DONE` bằng module global qua dev reload.
 - Rate-limit map-end, detect map-end, gọi completion flow và cập nhật win state.
 
 Các boundary còn chưa sạch:
 
 - `AutomapConfig` đang trộn configuration data với callback runtime `on_win`.
-- `AutomapState.first_win_done` nhận giá trị từ module global dù state này có
-  lifetime dài hơn một map và chưa có reset semantics rõ ràng.
 - `AutomapFlow.__init__` vừa nhận loaded templates vừa có thể tự load chúng, nên
   composition root chưa phải owner duy nhất của resource loading.
 - Test vẫn patch `hauntedroom.flows.automap.load_template`, giữ facade phụ thuộc
@@ -71,16 +68,16 @@ tại qua nhiều map.
 
 ## Daily/run state và callback
 
-`FIRST_WIN_DONE` không nên là module global. Cần xác định owner và reset semantics
-trước khi thay thế:
+Daily/run state đã được chuyển sang `AutomapRunContext` với field
+`daily_first_win_done`. Runner tạo context mới cho mỗi command invocation:
 
-- Scope theo một lần chạy bot, login, account hay game-day.
-- Thời điểm reset và khả năng restore sau reload.
-- Runner nào chia sẻ context giữa các lần gọi `run_automap_flow()`.
+- One-map và train dùng context riêng cho lượt command đó.
+- Start-auto truyền cùng một context qua mọi lần gọi `run_automap_flow()`.
+- Context reset khi command kết thúc và command mới được khởi chạy; hiện không
+  restore qua lần khởi động lại bot.
 
-Context tối thiểu có thể bắt đầu bằng một field `daily_first_win_done`, nhưng
-object phải do game composition root/runner sở hữu. `AutomapState` chỉ giữ state
-theo map; không copy daily state vào map state rồi ghi ngược vào module global.
+`AutomapState` giờ chỉ giữ state theo một map. Module global `FIRST_WIN_DONE` đã
+được xóa; completion outcome cập nhật trực tiếp context được inject.
 
 `on_win` là dependency theo invocation. Truyền callback trực tiếp vào
 `AutomapFlow` hoặc map-completion context, không đặt trong `AutomapConfig`.
@@ -137,16 +134,14 @@ thúc; không tự đồng bộ từng field completion hoặc module global.
 
 ## Thứ tự refactor còn lại
 
-1. Xác định game-owned daily/run context và reset semantics.
-2. Đưa `on_win` ra khỏi `AutomapConfig`; bỏ `FIRST_WIN_DONE` module global và
-   `AutomapState.first_win_done` nếu daily state đã có owner riêng.
-3. Bỏ template-loading fallback khỏi `AutomapFlow.__init__`; chuyển caller/test
+1. Đưa `on_win` ra khỏi `AutomapConfig` và truyền như dependency theo invocation.
+2. Bỏ template-loading fallback khỏi `AutomapFlow.__init__`; chuyển caller/test
    sang inject `AutomapTemplates`.
-4. Chuyển `AutomapFlow` sang `automap_support/flow.py`, giữ re-export từ
+3. Chuyển `AutomapFlow` sang `automap_support/flow.py`, giữ re-export từ
    `automap.py`.
-5. Chuyển map-end/completion adapter sang `map_completion.py`.
-6. Cập nhật architecture allowlist và test patch targets theo owner mới.
-7. Chạy test automap, hero selection, runner và dev reload.
+4. Chuyển map-end/completion adapter sang `map_completion.py`.
+5. Cập nhật architecture allowlist và test patch targets theo owner mới.
+6. Chạy test automap, hero selection, runner và dev reload.
 
 ## Ranh giới không nên mở rộng
 

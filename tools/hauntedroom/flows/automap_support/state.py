@@ -11,9 +11,15 @@ class AutomapState:
     map_completed: bool = False
     win_recorded: bool = False
     total_win: int | None = None
-    first_win_done: bool = False
     final_boss_pet_deployed: bool = False
     boss_detection_logged: bool = False
     initial_gear_unlocked: bool = False
     initial_gear_attempted: bool = False
     initial_gear_placed: bool = False
+
+
+@dataclass
+class AutomapRunContext:
+    """State shared by every map in one runner-owned command invocation."""
+
+    daily_first_win_done: bool = False

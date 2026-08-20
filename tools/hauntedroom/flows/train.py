@@ -104,6 +104,8 @@ async def run_train_flow(
     automap_flow: Callable[..., Awaitable[bool]],
     stop_event: Optional[asyncio.Event] = None,
     debug: bool = False,
+    *,
+    run_context: Optional[object] = None,
 ) -> bool:
     """Enter an available train, select 2 cards five times, then auto-battle."""
     frame_bgr = await capture_page_bgr(page)
@@ -202,4 +204,9 @@ async def run_train_flow(
             return False
 
     print("All 5 train selections confirmed; starting normal auto-battle.", flush=True)
-    return await automap_flow(page, stop_event, debug=debug)
+    return await automap_flow(
+        page,
+        stop_event,
+        debug=debug,
+        run_context=run_context,
+    )

@@ -136,10 +136,13 @@ Daily-first-win là một sub-flow riêng trong
 - Nếu chưa nhận diện chắc chắn checked/unchecked, chỉ chờ và chụp lại, không
   click mù.
 - Nếu reward xuất hiện mà daily prompt không xuất hiện, bridge đặt
-  `first_win_done=True` để không tiếp tục tìm prompt trong process hiện tại.
-- `FIRST_WIN_DONE` được giữ qua các map trong cùng process. `win_recorded` là state
-  riêng của từng map và chỉ ngăn `on_win()` bị gọi nhiều lần trên cùng reward
-  screen.
+  `daily_first_win_done=True` trên `AutomapRunContext` để không tiếp tục tìm
+  prompt trong command run hiện tại.
+- Runner tạo một `AutomapRunContext` cho mỗi command invocation. Start-auto dùng
+  chung context đó qua mọi map; context được reset khi dừng và khởi chạy command
+  mới. State này không được lưu qua lần khởi động lại bot. `win_recorded` vẫn là
+  state riêng của từng map và chỉ ngăn `on_win()` bị gọi nhiều lần trên cùng
+  reward screen.
 
 #### Điều kiện kết thúc và dữ liệu trả về
 
@@ -150,7 +153,7 @@ Daily-first-win là một sub-flow riêng trong
 | `completed` | Chỉ `True` khi home template đã match; đây là tín hiệu quyết định start-auto có được nối sang map tiếp theo hay không. |
 | `win_recorded` | Reward của map hiện tại đã gọi `on_win()` hay chưa. |
 | `total_win` | Tổng win do wrapper start-auto quản lý; không dùng để quyết định completion. |
-| `first_win_done` | Không cần xử lý lại daily-first-win trong các map sau của process hiện tại. |
+| `first_win_done` | Giá trị mới để cập nhật `AutomapRunContext` cho các map sau trong cùng command invocation. |
 
 ### 3. Initial gear setup
 

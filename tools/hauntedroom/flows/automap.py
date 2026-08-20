@@ -53,7 +53,7 @@ from hauntedroom.flows.automap_support.map_completion import (
 from hauntedroom.flows.automap_support.map_completion import (
     finish_map_from_home as _finish_map_from_home,
 )
-from hauntedroom.flows.automap_support.state import AutomapState
+from hauntedroom.flows.automap_support.state import AutomapRunContext, AutomapState
 from hauntedroom.flows.automap_support.templates import AutomapTemplates
 from hauntedroom.flows.automap_support.upgrade_action import (
     AUTOMAP_POLL_MS,
@@ -86,6 +86,7 @@ from hauntedroom.settings import CAPTURE_HERO_FALLBACK_SCREENSHOTS
 __all__ = [
     "AutomapConfig",
     "AutomapFlow",
+    "AutomapRunContext",
     "run_automap_flow",
 ]
 
@@ -95,8 +96,6 @@ async def _click(page, x: int, y: int) -> None:
 
 
 BOSS_RECHECK_INTERVAL_MS = 400
-# Keep the process-lifetime blocker across --dev-reload module refreshes.
-FIRST_WIN_DONE = globals().get("FIRST_WIN_DONE", False)
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -115,6 +114,7 @@ class AutomapFlow:
         config: AutomapConfig,
         templates: AutomapTemplates | None = None,
         state: AutomapState | None = None,
+        run_context: AutomapRunContext | None = None,
     ) -> None:
         self.page = page
         self.stop_event = stop_event
@@ -122,7 +122,8 @@ class AutomapFlow:
         self.templates = templates or AutomapTemplates.load(
             config, load_template_fn=load_template
         )
-        self.state = state or AutomapState(first_win_done=FIRST_WIN_DONE)
+        self.state = state or AutomapState()
+        self.run_context = run_context or AutomapRunContext()
         self.loop = asyncio.get_running_loop()
 
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
@@ -174,8 +175,6 @@ class AutomapFlow:
         return True
 
     async def finish_map_from_home(self) -> bool:
-        global FIRST_WIN_DONE
-
         outcome = await _finish_map_from_home(
             self.page,
             self.stop_event,
@@ -196,7 +195,7 @@ class AutomapFlow:
             daily_first_win_checked_template_path=(
                 self.config.daily_first_win_checked_template_path
             ),
-            first_win_done=self.state.first_win_done,
+            first_win_done=self.run_context.daily_first_win_done,
             win_recorded=self.state.win_recorded,
             total_win=self.state.total_win,
             on_win=self.config.on_win,
@@ -211,8 +210,7 @@ class AutomapFlow:
         )
         self.state.win_recorded = outcome.win_recorded
         self.state.total_win = outcome.total_win
-        self.state.first_win_done = outcome.first_win_done
-        FIRST_WIN_DONE = outcome.first_win_done
+        self.run_context.daily_first_win_done = outcome.first_win_done
         return outcome.completed
 
     async def hero_levelup(
@@ -409,6 +407,7 @@ async def run_automap_flow(
     capture_hero_fallback_screenshots: bool = CAPTURE_HERO_FALLBACK_SCREENSHOTS,
     debug: bool = False,
     on_win: Callable[[], int] | None = None,
+    run_context: AutomapRunContext | None = None,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -432,11 +431,12 @@ async def run_automap_flow(
         on_win=on_win,
     )
     templates = AutomapTemplates.load(config, load_template_fn=load_template)
-    state = AutomapState(first_win_done=FIRST_WIN_DONE)
+    state = AutomapState()
     return await AutomapFlow(
         page,
         stop_event,
         config,
         templates=templates,
         state=state,
+        run_context=run_context,
     ).run()

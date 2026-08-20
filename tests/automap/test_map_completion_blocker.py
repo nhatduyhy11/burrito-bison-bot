@@ -13,7 +13,6 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.core.template_matching import find_template as find_real_template
 from hauntedroom.core.template_matching import load_template as load_real_template
-from hauntedroom.flows import automap
 from hauntedroom.flows.automap import (
     MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS,
     run_automap_flow,
@@ -33,7 +32,6 @@ from hauntedroom.flows.automap_support.vision.hero_levelup import (
 
 class MapCompletionBlockerTest(IsolatedAsyncioTestCase):
     def setUp(self):
-        automap.FIRST_WIN_DONE = False
         self.page = Mock()
         self.page.evaluate = AsyncMock()
         self.page.wait_for_timeout = AsyncMock()

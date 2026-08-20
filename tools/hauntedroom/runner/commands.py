@@ -9,6 +9,7 @@ from hauntedroom.actions.models import (
     ClickTemplateAction,
 )
 from hauntedroom.core.runtime import FlowControl
+from hauntedroom.flows.automap_support.state import AutomapRunContext
 
 
 FlowStarter = Callable[[object, object, bool], Awaitable[object]]
@@ -84,7 +85,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         automap_runtime = reload_policy.get_automap_runtime(dev_reload)
 
         async def run(page, stop_event, debug: bool):
-            return await automap_runtime.automap_flow(page, stop_event, debug=debug)
+            run_context = AutomapRunContext()
+            return await automap_runtime.automap_flow(
+                page,
+                stop_event,
+                debug=debug,
+                run_context=run_context,
+            )
 
         return ResolvedFlow(actions, run)
 
@@ -97,6 +104,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         start_actions = build_start_battle_actions()
 
         async def run(page, stop_event, debug: bool):
+            run_context = AutomapRunContext()
             return await start_auto_flow.run_start_automap_loop(
                 page,
                 start_actions,
@@ -104,6 +112,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
                 stop_event,
                 automap_runtime.action_runner,
                 debug,
+                run_context=run_context,
             )
 
         return ResolvedFlow(actions, run)
@@ -117,11 +126,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         train_flow = reload_policy.get_train_flow(dev_reload)
 
         async def run(page, stop_event, debug: bool):
+            run_context = AutomapRunContext()
             return await train_flow(
                 page,
                 automap_runtime.automap_flow,
                 stop_event,
                 debug,
+                run_context=run_context,
             )
 
         return ResolvedFlow(actions, run)
