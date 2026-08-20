@@ -38,6 +38,6 @@ class BossAutomapAdapterTest(IsolatedAsyncioTestCase):
             )
 
         self.assertTrue(handled)
-        self.assertTrue(flow.final_boss_pet_deployed)
-        self.assertTrue(flow.boss_detection_logged)
+        self.assertTrue(flow.state.final_boss_pet_deployed)
+        self.assertTrue(flow.state.boss_detection_logged)
         handle_boss.assert_awaited_once()

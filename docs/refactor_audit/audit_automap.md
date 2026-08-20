@@ -1,119 +1,112 @@
 # Audit `automap.py`
 
-## Hiện trạng
+## Hiện trạng cần xử lý
 
-`tools/hauntedroom/flows/automap.py` đang dài khoảng 500 dòng. Vấn đề chính không chỉ là số dòng mà là `AutomapFlow` đang giữ nhiều trách nhiệm cùng lúc:
+`tools/hauntedroom/flows/automap.py` vẫn giữ các trách nhiệm chưa thuộc về một
+public facade:
 
-- Khai báo đường dẫn và default config.
-- Load toàn bộ image template.
-- Giữ mutable state của một trận.
-- Làm adapter gọi các action trong `automap_support`.
-- Điều phối handler theo priority.
-- Xử lý lifecycle hoàn thành map.
-- Duy trì `FIRST_WIN_DONE` xuyên qua dev reload.
+- Định nghĩa `AutomapFlow` và toàn bộ priority scheduler.
+- Làm adapter cho boss, hero, gear, upgrade và map completion.
+- Tự load `AutomapTemplates` trong constructor khi caller không inject.
+- Giữ callback runtime `on_win` bên trong `AutomapConfig`.
+- Duy trì `FIRST_WIN_DONE` bằng module global qua dev reload.
+- Rate-limit map-end, detect map-end, gọi completion flow và cập nhật win state.
 
-Project đã có `automap_support`, vì vậy nên tiếp tục dùng package này thay vì tách mỗi method thành một file riêng.
+Các boundary còn chưa sạch:
 
-## Breakdown đề xuất
+- `AutomapConfig` đang trộn configuration data với callback runtime `on_win`.
+- `AutomapState.first_win_done` nhận giá trị từ module global dù state này có
+  lifetime dài hơn một map và chưa có reset semantics rõ ràng.
+- `AutomapFlow.__init__` vừa nhận loaded templates vừa có thể tự load chúng, nên
+  composition root chưa phải owner duy nhất của resource loading.
+- Test vẫn patch `hauntedroom.flows.automap.load_template`, giữ facade phụ thuộc
+  vào implementation detail của template loading.
+- `handle_map_end()` và `finish_map_from_home()` vẫn làm flow orchestration phụ
+  thuộc trực tiếp vào policy completion.
+
+## Kiến trúc đích
 
 ```text
+game composition root / runner
+        ├── owns ─────> Daily/Run State
+        ├── creates ──> AutomapConfig
+        ├── loads ────> AutomapTemplates
+        └── invokes ──> AutomapFlow
+                           ├── owns ──> AutomapState (per map)
+                           └── calls ─> MapCompletion
+
 flows/
-├── automap.py                         # public facade
+├── automap.py                         # compatibility facade
 └── automap_support/
-    ├── config.py                      # paths, constants, AutomapConfig
-    ├── state.py                       # mutable state của một lần chạy
-    ├── templates.py                   # load và giữ image templates
     ├── flow.py                        # AutomapFlow và priority scheduler
-    ├── map_completion.py              # map-end/win lifecycle
-    ├── boss_flow.py
-    ├── upgrade_action.py
+    ├── map_completion.py              # map-end/win lifecycle adapter
     └── ...
 ```
 
-### `config.py`
-
-Giữ cấu hình game-specific của automap. Config phải immutable và được tạo theo
-từng invocation/flow; không tạo global singleton để tránh đóng cứng giả định chỉ
-có một Automap config trong process:
+`flows/automap.py` chỉ nên re-export public API và tạo dependency cho một lần
+chạy:
 
 ```python
-@dataclass(frozen=True)
-class AutomapConfig:
-    threshold: float = 0.8
-    debug: bool = False
-    # template paths, polling intervals, feature flags, ...
+from hauntedroom.flows.automap_support.flow import AutomapFlow
+
+
+async def run_automap_flow(page, stop_event=None, *, on_win=None) -> bool:
+    config = AutomapConfig()
+    templates = AutomapTemplates.load(config)
+    state = AutomapState()
+    return await AutomapFlow(
+        page,
+        stop_event,
+        config=config,
+        templates=templates,
+        state=state,
+        on_win=on_win,
+        run_context=game_owned_run_context,
+    ).run()
 ```
 
-`run_automap_flow()` build một `AutomapConfig`, sau đó truyền object đó vào
-`AutomapTemplates.load(config)` và `AutomapFlow`. Cách này giữ dependency rõ,
-cho phép test hoặc chạy đồng thời nhiều instance với config khác nhau, và tránh
-phụ thuộc vào module state khi dev reload.
+Ví dụ trên chỉ mô tả dependency boundary. Composition root thực tế phải truyền
+`run_context`; facade không được tạo context mới cho từng map nếu state cần tồn
+tại qua nhiều map.
 
-`AutomapConfig` chỉ chứa dữ liệu cấu hình như asset path, threshold, interval và
-feature flag. Không đặt `page`, `stop_event`, callback `on_win`, loaded image hoặc
-mutable runtime state trong config.
+## Daily/run state và callback
 
-### `state.py`
+`FIRST_WIN_DONE` không nên là module global. Cần xác định owner và reset semantics
+trước khi thay thế:
 
-State thay đổi trong một trận không thuộc config:
+- Scope theo một lần chạy bot, login, account hay game-day.
+- Thời điểm reset và khả năng restore sau reload.
+- Runner nào chia sẻ context giữa các lần gọi `run_automap_flow()`.
 
-```python
-@dataclass
-class AutomapState:
-    last_map_end_check: float | None = None
-    map_completed: bool = False
-    win_recorded: bool = False
-    total_win: int | None = None
-    final_boss_pet_deployed: bool = False
-    boss_detection_logged: bool = False
-    initial_gear_unlocked: bool = False
-    initial_gear_attempted: bool = False
-    initial_gear_placed: bool = False
-```
+Context tối thiểu có thể bắt đầu bằng một field `daily_first_win_done`, nhưng
+object phải do game composition root/runner sở hữu. `AutomapState` chỉ giữ state
+theo map; không copy daily state vào map state rồi ghi ngược vào module global.
 
-Mỗi `AutomapFlow` tạo một `AutomapState` mới. Không để các field này trong config
-vì state của lần chạy trước có thể rò sang lần chạy sau.
+`on_win` là dependency theo invocation. Truyền callback trực tiếp vào
+`AutomapFlow` hoặc map-completion context, không đặt trong `AutomapConfig`.
 
-State có lifetime dài hơn một map phải nằm ở context riêng do game composition
-root/runner sở hữu. Ví dụ `daily_first_win_done` có thể có scope theo run, login,
-account hoặc game-day; không giữ bằng module global qua dev reload. Trước khi có
-daily state store hoàn chỉnh, dùng một run-scoped context tối thiểu nhưng giữ API
-đủ để bổ sung reset/persistence sau này.
+## Template loading
 
-### `templates.py`
+`AutomapFlow` chỉ nhận `AutomapTemplates` đã load. Bỏ fallback
+`AutomapTemplates.load()` khỏi constructor sau khi chuyển toàn bộ caller sang
+composition root.
 
-Tách việc load resource khỏi constructor của flow:
+Test cần một factory/fixture tạo `AutomapTemplates` fake và inject trực tiếp.
+Test riêng cho loader patch tại nơi symbol được dùng trong
+`automap_support.templates`, không patch facade. Loader của hero templates cũng
+nên đi qua cùng injection seam nếu test cần kiểm soát toàn bộ resource loading.
 
-```python
-@dataclass
-class AutomapTemplates:
-    lv_up: np.ndarray
-    built: np.ndarray
-    boss_hp: np.ndarray
-    # ...
+## `flow.py`
 
-    @classmethod
-    def load(cls, config: AutomapConfig) -> "AutomapTemplates":
-        return cls(
-            lv_up=load_template(config.lv_up_template_path),
-            built=load_template(config.built_template_path),
-            boss_hp=load_template(config.boss_hp_template_path),
-        )
-```
+Chuyển `AutomapFlow` và `SituationHandler` sang `automap_support/flow.py`.
+`AutomapFlow` chỉ điều phối:
 
-Việc này làm `AutomapFlow.__init__` ngắn hơn và cho phép test truyền fake templates mà không phải patch `load_template` trên toàn module.
-
-### `flow.py`
-
-`AutomapFlow` chỉ nên chịu trách nhiệm orchestration:
-
-- Capture frame.
-- Convert grayscale.
+- Capture và grayscale frame.
 - Chạy handler theo priority.
 - Chờ poll/recheck interval.
-- Quyết định khi nào flow kết thúc.
+- Kết thúc khi map complete hoặc flow bị stop.
 
-Priority order hiện tại nên tiếp tục được thể hiện rõ bằng một tuple tĩnh:
+Priority order tiếp tục dùng tuple tĩnh:
 
 ```python
 handlers = (
@@ -127,90 +120,37 @@ handlers = (
 )
 ```
 
-Chưa cần tạo event bus hoặc framework handler tổng quát; danh sách tĩnh dễ đọc và phù hợp với quy mô hiện tại.
+Không cần event bus hoặc framework handler tổng quát.
 
-### `map_completion.py`
+## `map_completion.py`
 
-`handle_map_end()` và `finish_map_from_home()` là một cụm chức năng độc lập. Nên gom các phần sau vào `map_completion.py` hiện có:
+Gom lifecycle map-end vào boundary này:
 
 - Rate-limit việc detect map end.
-- Detect `map_end` template.
-- Click về home.
-- Xử lý reward/daily first win/blocker.
-- Cập nhật win state.
+- Detect và click `map_end`.
+- Xử lý reward, daily first win và blocker.
+- Gọi `on_win`.
+- Cập nhật map state và run/daily context.
 
-## Public facade
+`AutomapFlow` chỉ gọi adapter và nhận outcome đủ để quyết định tiếp tục hay kết
+thúc; không tự đồng bộ từng field completion hoặc module global.
 
-Giữ `flows/automap.py` làm API ổn định:
+## Thứ tự refactor còn lại
 
-```python
-from hauntedroom.flows.automap_support.flow import AutomapFlow
-from hauntedroom.flows.automap_support.config import AutomapConfig
-from hauntedroom.flows.automap_support.state import AutomapState
-from hauntedroom.flows.automap_support.templates import AutomapTemplates
+1. Xác định game-owned daily/run context và reset semantics.
+2. Đưa `on_win` ra khỏi `AutomapConfig`; bỏ `FIRST_WIN_DONE` module global và
+   `AutomapState.first_win_done` nếu daily state đã có owner riêng.
+3. Bỏ template-loading fallback khỏi `AutomapFlow.__init__`; chuyển caller/test
+   sang inject `AutomapTemplates`.
+4. Chuyển `AutomapFlow` sang `automap_support/flow.py`, giữ re-export từ
+   `automap.py`.
+5. Chuyển map-end/completion adapter sang `map_completion.py`.
+6. Cập nhật architecture allowlist và test patch targets theo owner mới.
+7. Chạy test automap, hero selection, runner và dev reload.
 
+## Ranh giới không nên mở rộng
 
-async def run_automap_flow(page, stop_event=None, *, on_win=None) -> bool:
-    config = AutomapConfig()
-    templates = AutomapTemplates.load(config)
-    return await AutomapFlow(
-        page,
-        stop_event,
-        config=config,
-        templates=templates,
-        state=AutomapState(),
-        on_win=on_win,
-    ).run()
-```
-
-Nên re-export `AutomapConfig` và `AutomapFlow` từ file này vì các test hiện đang import trực tiếp từ `hauntedroom.flows.automap`.
-
-## Ranh giới dependency
-
-Phân loại đề xuất:
-
-- Cấu hình và feature flag: nằm trong immutable `AutomapConfig` theo flow.
-- Template đã load: nằm trong `AutomapTemplates`.
-- State thay đổi trong trận: nằm trong `AutomapState` của flow.
-- Daily/login/account state: nằm trong game-owned context có scope và reset
-  semantics riêng, không nằm trong module global.
-- `page` và `stop_event`: thuộc runtime của flow.
-- Callback như `on_win`: truyền theo lần chạy, không đặt global.
-- Hàm cần mock như capture/click/time: có thể giữ dependency injection khi thực sự giúp test, không cần truyền mọi constant/config value.
-
-`on_win` không nên nằm trong global config vì callback do caller tạo ra và có lifetime theo từng lần chạy. Đặt global có nguy cơ giữ callback cũ cho lần chạy tiếp theo.
-
-## Thứ tự refactor an toàn
-
-1. Extract immutable, per-flow `AutomapConfig`, giữ re-export/API cũ.
-2. Extract map-scoped `AutomapState`.
-3. Extract `AutomapTemplates` và cho phép inject templates trong test.
-4. Đưa `on_win` ra khỏi config; thay `FIRST_WIN_DONE` module global bằng
-   game-owned run/daily context tối thiểu.
-5. Move `AutomapFlow` sang `automap_support/flow.py`, vẫn re-export từ `automap.py`.
-6. Chuyển adapter map completion vào `map_completion.py`.
-7. Cập nhật architecture allowlist và patch target trong test.
-8. Chạy toàn bộ test automap, hero selection và runner reload.
-
-## Kết luận
-
-Automap là Haunted Room game business, không phải reusable framework. Refactor
-trước mắt nên tạo boundary để sau này chuyển nguyên package sang
-`games/hauntedroom` và chỉ đổi import capability/composition wiring, không phải
-viết lại business logic.
-
-Điểm cân bằng phù hợp là:
-
-```text
-game composition root
-        ├── creates ──> AutomapConfig (per flow, immutable)
-        ├── owns ─────> Daily/Run State
-        └── invokes ──> AutomapFlow
-                           ├── owns ──> AutomapState (per map)
-                           └─────────> AutomapTemplates (game assets)
-```
-
-Cách tách này đưa `automap.py` về đúng vai trò compatibility facade. Static
-handler priority và toàn bộ boss/hero/gear/reward/map-completion policy tiếp tục
-thuộc game package. Framework sau này chỉ cung cấp vision, capture, timing,
-cancellation, diagnostics và runner contracts.
+Automap là Haunted Room game business, không phải reusable framework. Boss,
+hero, gear, reward và map-completion policy tiếp tục thuộc game package. Không
+tạo event framework hoặc generic flow abstraction chỉ để giảm số dòng của
+`automap.py`.

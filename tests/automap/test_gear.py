@@ -233,7 +233,7 @@ class GearActionTest(IsolatedAsyncioTestCase):
         self.assertFalse(
             await flow.handle_initial_gear(self.gear_open, np.empty((0, 0)))
         )
-        flow.initial_gear_unlocked = True
+        flow.state.initial_gear_unlocked = True
         self.assertTrue(
             await flow.handle_initial_gear(self.gear_open, np.empty((0, 0)))
         )

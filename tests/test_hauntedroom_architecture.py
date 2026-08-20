@@ -2,7 +2,6 @@ import ast
 from pathlib import Path
 from unittest import TestCase
 
-
 PACKAGE_DIR = Path(__file__).resolve().parents[1] / "tools" / "hauntedroom"
 
 
@@ -66,9 +65,12 @@ class HauntedRoomDependencyTest(TestCase):
             "automap.py": {
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.boss_flow",
+                "hauntedroom.flows.automap_support.config",
                 "hauntedroom.flows.automap_support.gear_action",
                 "hauntedroom.flows.automap_support.hero_action",
                 "hauntedroom.flows.automap_support.map_completion",
+                "hauntedroom.flows.automap_support.state",
+                "hauntedroom.flows.automap_support.templates",
                 "hauntedroom.flows.automap_support.upgrade_action",
                 "hauntedroom.flows.automap_support.vision.boss_hp",
                 "hauntedroom.flows.automap_support.vision.boss_progress",

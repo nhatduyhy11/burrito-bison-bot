@@ -16,11 +16,11 @@ from hauntedroom.flows.automap import (
     DAILY_FIRST_WIN_TEMPLATE_PATH,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
-    MAP_WIN_TEMPLATE_DIR,
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_PATH,
     run_automap_flow,
 )
+from hauntedroom.flows.automap_support.config import MAP_WIN_TEMPLATE_DIR
 
 
 class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
@@ -83,8 +83,7 @@ class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
             ["map_end.png"],
         )
         matched_template_names = [
-            call_args.args[2]
-            for call_args in find_template_matches.call_args_list
+            call_args.args[2] for call_args in find_template_matches.call_args_list
         ]
         self.assertEqual(matched_template_names.count("lv_up.png"), 2)
         self.assertEqual(matched_template_names.count("built.png"), 2)
