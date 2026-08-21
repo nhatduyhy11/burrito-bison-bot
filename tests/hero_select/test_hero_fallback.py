@@ -33,7 +33,7 @@ from hauntedroom.flows.automap_support.vision.hero_levelup import (
     load_hero_levelup_templates,
     prepare_hero_levelup_frame,
 )
-from tests.automap.fakes import fake_automap_templates
+from tests.automap.template_factory import build_test_automap_templates
 
 
 def find_choice(frame_bgr, template_paths=None):
@@ -218,8 +218,8 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
                 self.assertEqual(choice.fallback_option_count, 3)
                 self.assertEqual((choice.x, choice.y), purple_centers[0])
 
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_no_purple_partial_layout_is_not_captured(
         self,
         save_fallback_screenshot,
@@ -234,7 +234,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(),
-            fake_automap_templates(load_hero_templates=True),
+            build_test_automap_templates(load_hero_templates=True),
         )
 
         handled = await flow.hero_levelup(
@@ -250,8 +250,8 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
     @patch("builtins.print")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_no_yellow_or_purple_three_options_saves_fallback_screenshot(
         self,
         save_fallback_screenshot,
@@ -267,7 +267,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(hero_levelup_template_paths=()),
-            fake_automap_templates(),
+            build_test_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -291,8 +291,8 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
     @patch("builtins.print")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_yellow_fallback_logs_color_and_clicks_yellow_card(
         self,
         save_fallback_screenshot,
@@ -308,7 +308,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(),
-            fake_automap_templates(load_hero_templates=True),
+            build_test_automap_templates(load_hero_templates=True),
         )
 
         handled = await flow.hero_levelup(
@@ -328,8 +328,8 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             [call(*HERO_LEVELUP_OPEN_CLICK), call(319, 632)],
         )
 
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_yellow_fallback_with_purple_does_not_save_tracking_screenshot(
         self,
         save_fallback_screenshot,
@@ -344,7 +344,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(hero_levelup_template_paths=()),
-            fake_automap_templates(),
+            build_test_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -359,8 +359,8 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             [call(*HERO_LEVELUP_OPEN_CLICK), call(446, 632)],
         )
 
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_hero_fallback_capture_can_be_disabled(
         self,
         save_fallback_screenshot,
@@ -378,7 +378,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
                 hero_levelup_template_paths=(),
                 capture_hero_fallback_screenshots=False,
             ),
-            fake_automap_templates(),
+            build_test_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -394,8 +394,8 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
 
     @patch("builtins.print")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_purple_fallback_does_not_save_tracking_screenshot(
         self,
         save_fallback_screenshot,
@@ -411,7 +411,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(hero_levelup_template_paths=()),
-            fake_automap_templates(),
+            build_test_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -431,8 +431,8 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             flush=True,
         )
 
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.save_fallback_screenshot", new_callable=AsyncMock)
     async def test_debug_partial_fallback_does_not_save_screenshot(
         self,
         save_fallback_screenshot,
@@ -447,7 +447,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(debug=True),
-            fake_automap_templates(load_hero_templates=True),
+            build_test_automap_templates(load_hero_templates=True),
         )
 
         handled = await flow.hero_levelup(

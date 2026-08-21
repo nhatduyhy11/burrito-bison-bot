@@ -105,7 +105,7 @@ async def run_train_flow(
     stop_event: Optional[asyncio.Event] = None,
     debug: bool = False,
     *,
-    run_context: Optional[object] = None,
+    run_state: Optional[object] = None,
 ) -> bool:
     """Enter an available train, select 2 cards five times, then auto-battle."""
     frame_bgr = await capture_page_bgr(page)
@@ -208,5 +208,5 @@ async def run_train_flow(
         page,
         stop_event,
         debug=debug,
-        run_context=run_context,
+        run_state=run_state,
     )

@@ -226,7 +226,7 @@ nhóm test và biết quy ước quản lý screenshot.
 ## Tài liệu liên quan
 
 - [Auto-map internals](AUTOMAP_FLOWS.md)
-- [Map-completion bridge](MAP_COMPLETION_BRIDGE.md)
+- [Map lifecycle](MAP_LIFECYCLE.md)
 - [Hero level-up selection](../tools/rooms/automap/hero_levelup/README.md)
 - [Testing](TESTING.md)
 - [Troubleshooting](TROUBLESHOOTING.md)

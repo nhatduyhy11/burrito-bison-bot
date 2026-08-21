@@ -1,4 +1,4 @@
-"""Immutable, per-flow configuration for auto-map."""
+"""Immutable template configuration for one auto-map flow."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from hauntedroom.flows.automap_support.vision.hero_levelup import (
 )
 from hauntedroom.settings import CAPTURE_HERO_FALLBACK_SCREENSHOTS
 
-AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "rooms" / "automap"
+AUTOMAP_TEMPLATE_DIR = Path(__file__).resolve().parents[4] / "rooms" / "automap"
 MAP_WIN_TEMPLATE_DIR = AUTOMAP_TEMPLATE_DIR / "map_win"
 ROOM_TEMPLATE_DIR = AUTOMAP_TEMPLATE_DIR.parent
 BOSS_TEMPLATE_DIR = ROOM_TEMPLATE_DIR / "boss"
@@ -31,7 +31,7 @@ DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH = (
 BOSS_HP_TEMPLATE_PATH = BOSS_TEMPLATE_DIR / "boss_hp_bar.png"
 START_HOME_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "start_home.png"
 EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
-MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS = tuple(
+MAP_BLOCKER_TEMPLATE_PATHS = tuple(
     BLOCKER_TEMPLATE_DIR / name
     for name in (
         "lubu_close.png",
@@ -65,9 +65,7 @@ class AutomapConfig:
     boss_hp_template_path: Path = BOSS_HP_TEMPLATE_PATH
     start_home_template_path: Path = START_HOME_TEMPLATE_PATH
     exit_click_template_path: Path = EXIT_CLICK_TEMPLATE_PATH
-    map_completion_blocker_template_paths: tuple[Path, ...] = (
-        MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS
-    )
+    map_blocker_template_paths: tuple[Path, ...] = MAP_BLOCKER_TEMPLATE_PATHS
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS
     capture_hero_fallback_screenshots: bool = CAPTURE_HERO_FALLBACK_SCREENSHOTS
     debug: bool = False

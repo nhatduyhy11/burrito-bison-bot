@@ -62,55 +62,28 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 ### 2. Map end
 
 Map-end không kết thúc ngay khi `automap/map_end.png` xuất hiện. Match này chỉ
-bắt đầu **win-map completion bridge**: đóng toàn bộ reward/prompt/blocker, xác
+bắt đầu **map lifecycle**: đóng toàn bộ reward/prompt/blocker, xác
 nhận home đã thật sự sẵn sàng rồi mới cho start-auto chạy map kế tiếp.
 
-Xem [Map-completion bridge](MAP_COMPLETION_BRIDGE.md) để có call chain, state
+Xem [Map lifecycle](MAP_LIFECYCLE.md) để có call chain, state
 machine đầy đủ và review các nhánh retry có thể làm bridge bị stuck.
 
 - Tìm `automap/map_end.png` với threshold `0.90`; phép kiểm tra được throttle
   tối đa một lần mỗi 5 giây.
 - Khi match, click để rời battle và chuyển quyền điều khiển sang
-  `finish_map_from_home()`.
-- Bridge trả `completed=True` chỉ khi `rooms/start_home.png` match threshold
+  `MapLifecycle`.
+- Lifecycle trả `completed=True` chỉ khi `rooms/start_home.png` match threshold
   `0.90`. Việc đã thấy reward hoặc đã tăng win count không đủ để hoàn tất map.
-- Nếu bridge bị stop, một wait bị ngắt hoặc daily-first-win không hoàn thành,
-  bridge trả `completed=False` và start-auto dừng, không chạy entry action của
+- Nếu lifecycle bị stop, một wait bị ngắt hoặc daily-first-win không hoàn thành,
+  lifecycle trả `completed=False` và start-auto dừng, không chạy entry action của
   map tiếp theo.
 
-#### Thứ tự kiểm tra của win-map bridge
+#### Thứ tự kiểm tra của map lifecycle
 
-Mỗi vòng bridge chỉ xử lý nhánh đầu tiên match rồi chụp frame mới. Thứ tự này là
-contract vì popup phía trên phải được dọn trước khi kiểm tra home phía dưới.
-
-```mermaid
-flowchart TD
-    A[map_end match<br/>click rời battle] --> B[Chụp frame]
-    B --> C{Win reward lần đầu?}
-    C -- Có --> D[Ghi nhận win một lần<br/>click mép trên reward<br/>chờ 2 giây]
-    D --> B
-    C -- Không --> E{Daily first-win<br/>còn pending và đang hiện?}
-    E -- Có --> F[Check/tick checkbox<br/>click decline]
-    F --> B
-    E -- Không --> G{Reward-list title<br/>đang hiện?}
-    G -- Có --> H[Click title<br/>đánh dấu title seen<br/>chờ 2 giây]
-    H --> B
-    G -- Không --> I{Đã lưu vị trí reward<br/>nhưng chưa từng thấy title?}
-    I -- Có --> J[Click lại vị trí reward cũ<br/>chờ 2 giây]
-    J --> B
-    I -- Không --> K{Title đã từng hiện<br/>và home đã sẵn sàng?}
-    K -- Có --> Z[completed = true]
-    K -- Không --> L{Đã đủ 2 fallback click?}
-    L -- Chưa --> M[Chờ 3 giây<br/>click 220,560]
-    M --> B
-    L -- Đủ --> N{Có post-map blocker?}
-    N -- Có --> O[Click blocker<br/>chờ poll interval]
-    O --> B
-    N -- Không --> P{Home đã sẵn sàng?}
-    P -- Có --> Z
-    P -- Không --> Q[Chờ poll interval]
-    Q --> B
-```
+Lifecycle dọn theo priority `win reward -> daily first-win -> reward-list/retry
+-> fallback/blocker -> home-ready`. Mỗi handler đã action thì lifecycle chụp
+frame mới; chỉ `start_home.png` cho phép trả `completed=True`. State machine và
+các nhánh retry canonical nằm trong [Map lifecycle](MAP_LIFECYCLE.md).
 
 #### Các nhánh reward và fallback
 
@@ -125,35 +98,21 @@ flowchart TD
 
 #### Daily first-win
 
-Daily-first-win là một sub-flow riêng trong
-`flows/automap_support/completion_flow/first_win.py` và chỉ được kiểm tra khi
-`first_win_done=False`.
-
-- Nếu checkbox đang unchecked, click checkbox, chờ `1 giây`, chụp lại và chỉ
-  tiếp tục khi template checked đã được xác nhận.
-- Nếu checkbox đã checked, không toggle lại; click nút decline theo offset từ
-  label rồi trả quyền điều khiển cho win-map bridge.
-- Nếu chưa nhận diện chắc chắn checked/unchecked, chỉ chờ và chụp lại, không
-  click mù.
-- Nếu reward xuất hiện mà daily prompt không xuất hiện, bridge đặt
-  `daily_first_win_done=True` trên `AutomapRunContext` để không tiếp tục tìm
-  prompt trong command run hiện tại.
-- Runner tạo một `AutomapRunContext` cho mỗi command invocation. Start-auto dùng
-  chung context đó qua mọi map; context được reset khi dừng và khởi chạy command
-  mới. State này không được lưu qua lần khởi động lại bot. `win_recorded` vẫn là
-  state riêng của từng map và chỉ ngăn `on_win()` bị gọi nhiều lần trên cùng
-  reward screen.
+Handler chỉ xử lý prompt khi first-win còn pending: bảo đảm checkbox đã checked
+rồi mới decline và không click khi visual chưa rõ. Khi xử lý xong hoặc reward
+cho thấy prompt không còn cần thiết, trạng thái done được dùng lại cho các map
+trong cùng command run; command mới sẽ reset trạng thái này.
 
 #### Điều kiện kết thúc và dữ liệu trả về
 
-`MapCompletionOutcome` mang bốn giá trị về `AutomapFlow`:
+`MapOutcome` mang bốn giá trị về `AutomapFlow`:
 
 | Field | Ý nghĩa |
 |---|---|
 | `completed` | Chỉ `True` khi home template đã match; đây là tín hiệu quyết định start-auto có được nối sang map tiếp theo hay không. |
 | `win_recorded` | Reward của map hiện tại đã gọi `on_win()` hay chưa. |
-| `total_win` | Tổng win do wrapper start-auto quản lý; không dùng để quyết định completion. |
-| `first_win_done` | Giá trị mới để cập nhật `AutomapRunContext` cho các map sau trong cùng command invocation. |
+| `total_win` | Tổng win do wrapper start-auto quản lý; không dùng để quyết định map đã hoàn tất. |
+| `first_win_done` | Giá trị mới để cập nhật `MapRunState` cho các map sau trong cùng command invocation. |
 
 ### 3. Initial gear setup
 
@@ -359,10 +318,10 @@ flow bằng `Shift+1`. Runner giữ nguyên browser và session, nhưng reload m
 Python liên quan tới flow mới. Với one-map/start-auto, runner reload
 `core.vision`, action
 support, các module `flows.automap_support`, rồi `flows.automap`. Các phase
-`map_completion.py` giữ priority orchestration tổng cùng home detection. Package
-nội bộ `completion_flow/` chứa `first_win.py`, `reward.py`, `blocker.py` và
-`state.py`; file `state.py` gom shared state/result cùng các runtime context để
-tránh sinh thêm module quá nhỏ. Các helper này chỉ được map-completion consume.
+Package `automap_support/map/` giữ map lifecycle và home detection:
+`lifecycle.py`, `model_state.py`, `first_win.py`, `reward.py` và `blocker.py`.
+`MapState` là mutable state duy nhất của một map; `MapRunState` sống xuyên nhiều
+map trong cùng command invocation.
 Các phase khác gồm `upgrade_action.py`, `hero_action.py` và `boss_flow.py`;
 detector/action nền nằm trong package `vision/`, `boss_action.py` và
 `gear_action.py`. Với start-auto, action JSON cũng được load lại trước khi lấy

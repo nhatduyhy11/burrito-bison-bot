@@ -13,14 +13,14 @@ sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.flows.automap import (
     BOSS_RECHECK_INTERVAL_MS,
-    MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS,
+    MAP_BLOCKER_TEMPLATE_PATHS,
     AutomapConfig,
     AutomapFlow,
-    AutomapState,
+    MapState,
     AutomapTemplates,
 )
-from hauntedroom.flows.automap_support.state import AutomapRunContext
-from tests.automap.fakes import fake_automap_templates
+from hauntedroom.flows.automap_support.map.model_state import MapRunState
+from tests.automap.template_factory import build_test_automap_templates
 
 
 class AutomapFlowTest(IsolatedAsyncioTestCase):
@@ -44,7 +44,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             load_template.call_count,
             12
-            + len(MAP_COMPLETION_BLOCKER_TEMPLATE_PATHS)
+            + len(MAP_BLOCKER_TEMPLATE_PATHS)
             + len(config.hero_levelup_template_paths),
         )
 
@@ -67,11 +67,11 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             boss_hp=image,
             start_home=image,
             exit_click=image,
-            map_completion_blockers=(),
+            map_blockers=(),
             hero_levelup={},
         )
-        state = AutomapState(initial_gear_unlocked=True)
-        run_context = AutomapRunContext(daily_first_win_done=True)
+        state = MapState(initial_gear_unlocked=True)
+        run_state = MapRunState(daily_first_win_done=True)
 
         flow = AutomapFlow(
             self.page,
@@ -79,13 +79,13 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             AutomapConfig(),
             templates=templates,
             state=state,
-            run_context=run_context,
+            run_state=run_state,
         )
 
         self.assertIs(flow.templates, templates)
         self.assertIs(flow.state, state)
-        self.assertIs(flow.run_context, run_context)
-        self.assertTrue(flow.run_context.daily_first_win_done)
+        self.assertIs(flow.run_state, run_state)
+        self.assertTrue(flow.run_state.daily_first_win_done)
         self.assertTrue(flow.state.initial_gear_unlocked)
         load_template.assert_not_called()
 
@@ -101,24 +101,33 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(),
-            fake_automap_templates(),
+            build_test_automap_templates(),
             on_win=on_win,
         )
 
         with patch(
-            "hauntedroom.flows.automap._finish_map_from_home",
+            "hauntedroom.flows.automap_support.map.lifecycle.finish_map",
             new_callable=AsyncMock,
             return_value=outcome,
         ) as finish_map:
-            completed = await flow.finish_map_from_home()
+            with patch(
+                "hauntedroom.flows.automap_support.map.lifecycle.find_template",
+                return_value=(10, 20, 0.99),
+            ):
+                result = await flow.map_lifecycle.handle_map_end(
+                    np.zeros((2, 2), dtype=np.uint8)
+                )
 
-        self.assertTrue(completed)
+        self.assertTrue(result.completed)
         self.assertIs(finish_map.await_args.kwargs["on_win"], on_win)
         self.assertTrue(flow.state.win_recorded)
         self.assertEqual(flow.state.total_win, 3)
-        self.assertTrue(flow.run_context.daily_first_win_done)
+        self.assertTrue(flow.run_state.daily_first_win_done)
 
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap_support.flow.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
     async def test_boss_handler_throttles_next_capture(
         self,
         capture_page_bgr,
@@ -130,7 +139,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             self.page,
             stop_event,
             AutomapConfig(),
-            fake_automap_templates(),
+            build_test_automap_templates(),
         )
         flow.handle_level_spin_interrupt = AsyncMock(return_value=False)
         flow.handle_map_end = AsyncMock(return_value=False)

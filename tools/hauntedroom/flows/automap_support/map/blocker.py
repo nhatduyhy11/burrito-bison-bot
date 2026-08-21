@@ -1,22 +1,19 @@
-"""Post-map blocker detection and cleanup."""
+"""Map blocker detection and cleanup."""
 
 from pathlib import Path
 from typing import Optional
 
 import numpy as np
 
-from hauntedroom.flows.automap_support.completion_flow.state import (
-    CompletionStep,
-    MapCompletionBlockerContext,
-)
+from .model_state import MapBlockerContext, MapLifecycleStep
 
-MAP_COMPLETION_BLOCKER_THRESHOLD = 0.90
-MAP_COMPLETION_BLOCKER_CLICK_POSITIONS = {
+MAP_BLOCKER_THRESHOLD = 0.90
+MAP_BLOCKER_CLICK_POSITIONS = {
     "overlay_newbie.png": "top_middle",
 }
 
 
-def find_map_completion_blocker(
+def find_map_blocker(
     frame_gray: np.ndarray,
     blocker_templates: tuple[tuple[Path, np.ndarray], ...],
     find_template_fn,
@@ -26,31 +23,31 @@ def find_map_completion_blocker(
             frame_gray,
             blocker_template,
             blocker_path.name,
-            click_position=MAP_COMPLETION_BLOCKER_CLICK_POSITIONS.get(
+            click_position=MAP_BLOCKER_CLICK_POSITIONS.get(
                 blocker_path.name,
                 "center",
             ),
         )
-        if score >= MAP_COMPLETION_BLOCKER_THRESHOLD:
+        if score >= MAP_BLOCKER_THRESHOLD:
             return x, y, score, blocker_path
     return None
 
 
-async def handle_completion_blocker(
-    context: MapCompletionBlockerContext,
+async def handle_map_blocker(
+    context: MapBlockerContext,
     frame_gray: np.ndarray,
-) -> CompletionStep:
-    blocker_match = find_map_completion_blocker(
+) -> MapLifecycleStep:
+    blocker_match = find_map_blocker(
         frame_gray,
         context.blocker_templates,
         context.find_template_fn,
     )
     if blocker_match is None:
-        return CompletionStep.NOT_HANDLED
+        return MapLifecycleStep.NOT_HANDLED
 
     blocker_x, blocker_y, blocker_score, blocker_path = blocker_match
     print(
-        f"Post-map blocker {blocker_path.name} at "
+        f"Map blocker {blocker_path.name} at "
         f"{blocker_x},{blocker_y}, score={blocker_score:.3f}; clearing.",
         flush=True,
     )
@@ -60,4 +57,4 @@ async def handle_completion_blocker(
         context.poll_ms,
         context.stop_event,
     )
-    return CompletionStep.CONTINUE if ready else CompletionStep.STOP
+    return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP

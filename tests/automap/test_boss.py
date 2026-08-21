@@ -11,7 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.flows.automap import AutomapConfig, AutomapFlow
 from hauntedroom.flows.automap_support.boss_flow import BossCriticalOutcome
-from tests.automap.fakes import fake_automap_templates
+from tests.automap.template_factory import build_test_automap_templates
 
 
 class BossAutomapAdapterTest(IsolatedAsyncioTestCase):
@@ -26,11 +26,11 @@ class BossAutomapAdapterTest(IsolatedAsyncioTestCase):
             page,
             asyncio.Event(),
             AutomapConfig(),
-            fake_automap_templates(),
+            build_test_automap_templates(),
         )
 
         with patch(
-            "hauntedroom.flows.automap._handle_boss_critical",
+            "hauntedroom.flows.automap_support.flow._handle_boss_critical",
             new_callable=AsyncMock,
             return_value=outcome,
         ) as handle_boss:

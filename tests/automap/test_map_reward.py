@@ -22,8 +22,8 @@ from hauntedroom.flows.automap import (
     WIN_REWARD_TEMPLATE_PATH,
     run_automap_flow,
 )
-from hauntedroom.flows.automap_support.state import AutomapRunContext
-from hauntedroom.flows.automap_support.completion_flow.reward import (
+from hauntedroom.flows.automap_support.map.model_state import MapRunState
+from hauntedroom.flows.automap_support.map.reward import (
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     WIN_REWARD_EMPTY_DELAY_MS,
     WIN_REWARD_FOLLOWUP_CLICK,
@@ -54,7 +54,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
 
     @patch("hauntedroom.flows.automap_support.templates.load_template")
     @patch(
-        "hauntedroom.flows.automap.find_template",
+        "hauntedroom.flows.automap_support.flow.find_template",
         side_effect=[
             (0, 0, 0.0),
             (300, 400, 0.91),
@@ -64,8 +64,8 @@ class MapRewardTest(IsolatedAsyncioTestCase):
             (50, 600, 0.95),
         ],
     )
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_map_end_reclicks_reward_position_until_title_appears(
         self,
         capture_page_bgr,
@@ -86,17 +86,17 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         ]
 
         on_win = Mock(return_value=1)
-        run_context = AutomapRunContext()
+        run_state = MapRunState()
         with patch("builtins.print") as print_mock:
             completed = await run_automap_flow(
                 self.page,
                 asyncio.Event(),
                 on_win=on_win,
-                run_context=run_context,
+                run_state=run_state,
             )
 
         self.assertTrue(completed)
-        self.assertTrue(run_context.daily_first_win_done)
+        self.assertTrue(run_state.daily_first_win_done)
         on_win.assert_called_once_with()
         messages = [print_call.args[0] for print_call in print_mock.call_args_list]
         self.assertLess(
@@ -177,9 +177,9 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template")
-    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template")
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_map_end_clicks_followup_twice_before_checking_home(
         self,
         capture_page_bgr,
@@ -222,7 +222,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
 
     @patch("hauntedroom.flows.automap_support.templates.load_template")
     @patch(
-        "hauntedroom.flows.automap.find_template",
+        "hauntedroom.flows.automap_support.flow.find_template",
         side_effect=[
             (0, 0, 0.0),
             (300, 400, 0.91),
@@ -232,8 +232,8 @@ class MapRewardTest(IsolatedAsyncioTestCase):
             (50, 600, 0.95),
         ],
     )
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_map_end_reclicks_reward_list_title_until_it_disappears(
         self,
         capture_page_bgr,

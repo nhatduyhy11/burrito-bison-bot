@@ -21,12 +21,11 @@ For `Shift+2`, `Shift+3`, and `Shift+4`, the runner reloads:
 - `hauntedroom.flows.automap_support.boss_action`
 - `hauntedroom.flows.automap_support.gear_action`
 - `hauntedroom.flows.automap_support.hero_levelup_vision`
-- `hauntedroom.flows.automap_support.completion_flow.state`
-- `hauntedroom.flows.automap_support.completion_flow.first_win`
-- `hauntedroom.flows.automap_support.completion_flow.reward`
-- `hauntedroom.flows.automap_support.completion_flow.blocker`
-- `hauntedroom.flows.automap_support.completion_flow`
-- `hauntedroom.flows.automap_support.map_completion`
+- `hauntedroom.flows.automap_support.map.model_state`
+- `hauntedroom.flows.automap_support.map.first_win`
+- `hauntedroom.flows.automap_support.map.reward`
+- `hauntedroom.flows.automap_support.map.blocker`
+- `hauntedroom.flows.automap_support.map.lifecycle`
 - `hauntedroom.flows.automap_support.upgrade_action`
 - `hauntedroom.flows.automap_support.hero_action`
 - `hauntedroom.flows.automap_support.boss_flow`
@@ -80,10 +79,10 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Area | File | Constants / config | Notes |
 | --- | --- | --- | --- |
 | Auto-map coordinator/templates | `tools/hauntedroom/flows/automap.py` | `*_TEMPLATE_PATH`, `AUTOMAP_TEMPLATE_DIR`, `ROOM_TEMPLATE_DIR`, `BOSS_TEMPLATE_DIR`, `AUTOMAP_TEMPLATE_THRESHOLD`, `AutomapConfig` | New flow loads templates in `AutomapFlow.__init__`. Running flow keeps old loaded images. Phase constants imported from support modules are re-exported here for compatibility. |
-| Daily first win | `tools/hauntedroom/flows/automap_support/completion_flow/first_win.py` | `DAILY_FIRST_WIN_*`, prompt/checkbox handlers | Internal completion helper reloaded before `map_completion`; owns the full first-win lifecycle including the completion-step adapter. |
-| Map reward | `tools/hauntedroom/flows/automap_support/completion_flow/reward.py` | `WIN_REWARD_*`, `REWARD_LIST_TITLE_*` | Internal completion helper reloaded before `map_completion`; owns reward popup, reward-list and fallback clicks. |
-| Map blocker | `tools/hauntedroom/flows/automap_support/completion_flow/blocker.py` | `MAP_COMPLETION_BLOCKER_*`, blocker detector/handler | Internal completion helper reloaded before `map_completion`; owns post-map blocker matching and cleanup. |
-| Map completion | `tools/hauntedroom/flows/automap_support/map_completion.py`, `completion_flow/state.py` | `MAP_END_*`, `START_HOME_TEMPLATE_THRESHOLD`, runtime contexts and shared completion state | Helper modules are reloaded before the top-level orchestrator; `map_completion.py` remains the only completion entry point consumed by `automap`. |
+| Daily first win | `tools/hauntedroom/flows/automap_support/map/first_win.py` | `DAILY_FIRST_WIN_*`, prompt/checkbox handlers | Reloaded before `map/lifecycle.py`; owns the daily-first-win branch. |
+| Map reward | `tools/hauntedroom/flows/automap_support/map/reward.py` | `WIN_REWARD_*`, `REWARD_LIST_TITLE_*` | Reloaded before `map/lifecycle.py`; owns reward popup, reward-list and fallback clicks. |
+| Map blocker | `tools/hauntedroom/flows/automap_support/map/blocker.py` | `MAP_BLOCKER_*`, blocker detector/handler | Reloaded before `map/lifecycle.py`; owns blocker matching and cleanup. |
+| Map lifecycle | `tools/hauntedroom/flows/automap_support/map/lifecycle.py`, `map/model_state.py` | `MAP_END_*`, `START_HOME_TEMPLATE_THRESHOLD`, runtime contexts and shared map state | Model and helper modules are reloaded before lifecycle, then scheduler and public facade. |
 | Upgrade/build actions | `tools/hauntedroom/flows/automap_support/upgrade_action.py` | `BUILT_TEMPLATE_THRESHOLD`, `AUTOMAP_POLL_MS`, `AUTOMAP_ACTION_DELAY_MS`, `LV_SPIN_*`, `UPGRADE_CONFIRM_CLICK` | Explicitly reloaded before `automap`; newly started auto-map imports the refreshed constants/functions. |
 | Boss detectors | `tools/hauntedroom/flows/automap_support/vision/boss_hp.py`, `tools/hauntedroom/flows/automap_support/vision/boss_progress.py`, `tools/hauntedroom/flows/automap_support/vision/boss_controls.py` | `BOSS_HP_*`, `BOSS_PROGRESS_*`, pet/spell ready regions and color-component patterns | Explicitly reloaded before `automap`. |
 | Boss flow policy | `tools/hauntedroom/flows/automap_support/boss_flow.py` | `EXIT_CLICK_TEMPLATE_THRESHOLD`, manual boss pause/deploy orchestration | Explicitly reloaded before `automap`. |

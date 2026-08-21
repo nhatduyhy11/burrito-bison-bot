@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from hauntedroom.flows.automap_support.config import AutomapConfig
+from hauntedroom.flows.automap_support.vision.template_config import AutomapConfig
 from hauntedroom.flows.automap_support.templates import AutomapTemplates
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
     load_hero_levelup_templates,
 )
 
 
-def fake_automap_templates(
+def build_test_automap_templates(
     config: AutomapConfig | None = None,
     *,
     load_hero_templates: bool = False,
@@ -35,6 +35,6 @@ def fake_automap_templates(
         boss_hp=image,
         start_home=image,
         exit_click=image,
-        map_completion_blockers=(),
+        map_blockers=(),
         hero_levelup=hero_levelup,
     )

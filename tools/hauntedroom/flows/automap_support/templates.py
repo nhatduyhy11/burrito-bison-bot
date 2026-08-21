@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 
 from hauntedroom.core.template_matching import load_template
-from hauntedroom.flows.automap_support.config import AutomapConfig
+from hauntedroom.flows.automap_support.vision.template_config import AutomapConfig
 
 TemplateLoader = Callable[[Path], np.ndarray]
 
@@ -28,7 +28,7 @@ class AutomapTemplates:
     boss_hp: np.ndarray
     start_home: np.ndarray
     exit_click: np.ndarray
-    map_completion_blockers: tuple[tuple[Path, np.ndarray], ...]
+    map_blockers: tuple[tuple[Path, np.ndarray], ...]
     hero_levelup: dict[Path, np.ndarray]
 
     @classmethod
@@ -57,9 +57,9 @@ class AutomapTemplates:
             boss_hp=loader(config.boss_hp_template_path),
             start_home=loader(config.start_home_template_path),
             exit_click=loader(config.exit_click_template_path),
-            map_completion_blockers=tuple(
+            map_blockers=tuple(
                 (path, loader(path))
-                for path in config.map_completion_blocker_template_paths
+                for path in config.map_blocker_template_paths
             ),
             hero_levelup={
                 path: loader(path) for path in config.hero_levelup_template_paths

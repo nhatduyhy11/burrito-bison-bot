@@ -98,9 +98,9 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(200, 20, 0.92))
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template", return_value=(200, 20, 0.92))
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_level_spin_interrupt_clicks_left_offset_before_protect_gate(
         self,
         capture_page_bgr,
@@ -133,11 +133,11 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch(
-        "hauntedroom.flows.automap.find_template",
+        "hauntedroom.flows.automap_support.flow.find_template",
         side_effect=[(0, 0, 0.0), (0, 0, 0.0), (200, 20, 0.92)],
     )
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_level_up_rechecks_level_spin_before_confirm_click(
         self,
         capture_page_bgr,
@@ -175,9 +175,9 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_level_up_uses_largest_y_and_rechecks_before_confirm(
         self,
         capture_page_bgr,

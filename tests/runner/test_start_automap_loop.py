@@ -16,7 +16,7 @@ from hauntedroom.flows.start_auto import (
     map_was_lost,
     run_start_automap_loop,
 )
-from hauntedroom.flows.automap_support.state import AutomapRunContext
+from hauntedroom.flows.automap_support.map.model_state import MapRunState
 from hauntedroom.runner.commands import build_start_battle_actions
 
 
@@ -50,7 +50,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         stop_event = asyncio.Event()
         automap_flow = AsyncMock(return_value=True)
         action_runner = AsyncMock(return_value=True)
-        run_context = AutomapRunContext()
+        run_state = MapRunState()
         map_was_lost_mock.side_effect = [False, True]
         wait_with_countdown_mock.return_value = True
 
@@ -60,7 +60,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             automap_flow,
             stop_event,
             action_runner,
-            run_context=run_context,
+            run_state=run_state,
         )
 
         self.assertTrue(completed)
@@ -92,14 +92,14 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
                     stop_event,
                     debug=False,
                     on_win=ANY,
-                    run_context=run_context,
+                    run_state=run_state,
                 ),
                 call(
                     page,
                     stop_event,
                     debug=False,
                     on_win=ANY,
-                    run_context=run_context,
+                    run_state=run_state,
                 ),
             ],
         )
@@ -127,7 +127,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             automap_flow,
             asyncio.Event(),
             action_runner,
-            run_context=AutomapRunContext(),
+            run_state=MapRunState(),
         )
 
         self.assertFalse(completed)
@@ -164,7 +164,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             automap_flow,
             asyncio.Event(),
             action_runner,
-            run_context=AutomapRunContext(),
+            run_state=MapRunState(),
         )
 
         self.assertTrue(completed)
@@ -211,7 +211,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             AsyncMock(side_effect=complete_map),
             stop_event,
             AsyncMock(return_value=True),
-            run_context=AutomapRunContext(),
+            run_state=MapRunState(),
         )
 
         self.assertTrue(completed)
@@ -251,7 +251,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             AsyncMock(side_effect=complete_winning_map),
             stop_event,
             AsyncMock(return_value=True),
-            run_context=AutomapRunContext(),
+            run_state=MapRunState(),
         )
 
         self.assertTrue(completed)

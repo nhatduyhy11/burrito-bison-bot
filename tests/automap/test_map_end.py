@@ -20,7 +20,9 @@ from hauntedroom.flows.automap import (
     WIN_REWARD_TEMPLATE_PATH,
     run_automap_flow,
 )
-from hauntedroom.flows.automap_support.config import MAP_WIN_TEMPLATE_DIR
+from hauntedroom.flows.automap_support.vision.template_config import (
+    MAP_WIN_TEMPLATE_DIR,
+)
 
 
 class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
@@ -50,9 +52,9 @@ class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
-    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_map_end_is_checked_at_most_once_per_interval(
         self,
         capture_page_bgr,

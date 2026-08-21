@@ -1,15 +1,11 @@
-"""Daily first-win handling for the post-map completion flow."""
+"""Daily first-win handling within the map lifecycle."""
 
 from pathlib import Path
 from typing import Optional
 
 import numpy as np
 
-from hauntedroom.flows.automap_support.completion_flow.state import (
-    CompletionStep,
-    FirstWinContext,
-    MapCompletionState,
-)
+from .model_state import FirstWinContext, MapLifecycleStep, MapState
 
 DAILY_FIRST_WIN_TEMPLATE_THRESHOLD = 0.90
 DAILY_FIRST_WIN_CHECKBOX_THRESHOLD = 0.95
@@ -132,8 +128,6 @@ async def handle_daily_first_win(
             )
             continue
 
-        # Neither explicit state is reliable on this frame. Re-capture without
-        # clicking so a transition/animation can never toggle a checked box.
         ready = await context.wait_for_flow_timeout_fn(
             context.page,
             context.poll_ms,
@@ -150,11 +144,11 @@ async def handle_daily_first_win(
 
 async def handle_first_win(
     context: FirstWinContext,
-    state: MapCompletionState,
+    state: MapState,
     frame_gray: np.ndarray,
-) -> CompletionStep:
+) -> MapLifecycleStep:
     if state.first_win_done:
-        return CompletionStep.NOT_HANDLED
+        return MapLifecycleStep.NOT_HANDLED
 
     first_win_match = find_daily_first_win(
         frame_gray,
@@ -163,7 +157,7 @@ async def handle_first_win(
         context.find_template_fn,
     )
     if first_win_match is None:
-        return CompletionStep.NOT_HANDLED
+        return MapLifecycleStep.NOT_HANDLED
 
     daily_x, daily_y, daily_score = first_win_match
     print(
@@ -172,4 +166,8 @@ async def handle_first_win(
         flush=True,
     )
     state.first_win_done = await handle_daily_first_win(context, frame_gray)
-    return CompletionStep.CONTINUE if state.first_win_done else CompletionStep.STOP
+    return (
+        MapLifecycleStep.CONTINUE
+        if state.first_win_done
+        else MapLifecycleStep.STOP
+    )

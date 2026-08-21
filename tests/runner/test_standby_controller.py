@@ -227,17 +227,17 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         from hauntedroom.flows.automap_support import (
             boss_action,
             boss_flow,
-            completion_flow,
+            flow as automap_flow_support,
             gear_action,
             hero_action,
-            map_completion,
             upgrade_action,
         )
-        from hauntedroom.flows.automap_support.completion_flow import (
+        from hauntedroom.flows.automap_support.map import (
             blocker,
             first_win,
+            lifecycle,
+            model_state,
             reward,
-            state,
         )
         from hauntedroom.flows.automap_support.vision import (
             boss_controls as boss_controls_vision,
@@ -261,15 +261,15 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             hero_levelup_vision,
             boss_action,
             gear_action,
-            state,
+            model_state,
             first_win,
             reward,
             blocker,
-            completion_flow,
-            map_completion,
+            lifecycle,
             upgrade_action,
             hero_action,
             boss_flow,
+            automap_flow_support,
             refreshed_automap,
         ]
 
@@ -289,15 +289,15 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
                 call(hero_levelup_vision),
                 call(boss_action),
                 call(gear_action),
-                call(state),
+                call(model_state),
                 call(first_win),
                 call(reward),
                 call(blocker),
-                call(completion_flow),
-                call(map_completion),
+                call(lifecycle),
                 call(upgrade_action),
                 call(hero_action),
                 call(boss_flow),
+                call(automap_flow_support),
                 call(automap),
             ],
         )

@@ -9,7 +9,7 @@ from hauntedroom.actions.models import (
     ClickTemplateAction,
 )
 from hauntedroom.core.runtime import FlowControl
-from hauntedroom.flows.automap_support.state import AutomapRunContext
+from hauntedroom.flows.automap_support.map.model_state import MapRunState
 
 
 FlowStarter = Callable[[object, object, bool], Awaitable[object]]
@@ -138,12 +138,12 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         automap_runtime = reload_policy.get_automap_runtime(dev_reload)
 
         async def run(page, stop_event, debug: bool):
-            run_context = AutomapRunContext()
+            run_state = MapRunState()
             return await automap_runtime.automap_flow(
                 page,
                 stop_event,
                 debug=debug,
-                run_context=run_context,
+                run_state=run_state,
             )
 
         return ResolvedFlow(actions, run)
@@ -157,7 +157,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         start_actions = build_start_battle_actions()
 
         async def run(page, stop_event, debug: bool):
-            run_context = AutomapRunContext()
+            run_state = MapRunState()
             return await start_auto_flow.run_start_automap_loop(
                 page,
                 start_actions,
@@ -165,7 +165,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
                 stop_event,
                 automap_runtime.action_runner,
                 debug,
-                run_context=run_context,
+                run_state=run_state,
             )
 
         return ResolvedFlow(actions, run)
@@ -179,13 +179,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         train_flow = reload_policy.get_train_flow(dev_reload)
 
         async def run(page, stop_event, debug: bool):
-            run_context = AutomapRunContext()
+            run_state = MapRunState()
             return await train_flow(
                 page,
                 automap_runtime.automap_flow,
                 stop_event,
                 debug,
-                run_context=run_context,
+                run_state=run_state,
             )
 
         return ResolvedFlow(actions, run)

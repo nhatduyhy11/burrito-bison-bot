@@ -1,4 +1,6 @@
-"""Shared state, results, and runtime context for map completion."""
+"""Models and mutable state for a map and its enclosing run."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum, auto
@@ -8,14 +10,20 @@ from typing import Callable, Optional
 import numpy as np
 
 
-class CompletionStep(Enum):
+class MapLifecycleStep(Enum):
     NOT_HANDLED = auto()
     CONTINUE = auto()
     STOP = auto()
 
 
 @dataclass(frozen=True)
-class MapCompletionOutcome:
+class MapEndOutcome:
+    handled: bool
+    completed: bool = False
+
+
+@dataclass(frozen=True)
+class MapOutcome:
     completed: bool
     win_recorded: bool
     total_win: Optional[int]
@@ -23,21 +31,37 @@ class MapCompletionOutcome:
 
 
 @dataclass
-class MapCompletionState:
-    first_win_done: bool
-    win_recorded: bool
-    total_win: Optional[int]
-    reward_followup_click_count: int = 0
-    reward_click_position: Optional[tuple[int, int]] = None
-    reward_list_title_seen: bool = False
+class MapState:
+    """All mutable state whose lifetime is one map."""
 
-    def outcome(self, completed: bool) -> MapCompletionOutcome:
-        return MapCompletionOutcome(
+    last_map_end_check: float | None = None
+    completed: bool = False
+    win_recorded: bool = False
+    total_win: int | None = None
+    first_win_done: bool = False
+    reward_followup_click_count: int = 0
+    reward_click_position: tuple[int, int] | None = None
+    reward_list_title_seen: bool = False
+    final_boss_pet_deployed: bool = False
+    boss_detection_logged: bool = False
+    initial_gear_unlocked: bool = False
+    initial_gear_attempted: bool = False
+    initial_gear_placed: bool = False
+
+    def outcome(self, completed: bool) -> MapOutcome:
+        return MapOutcome(
             completed=completed,
             win_recorded=self.win_recorded,
             total_win=self.total_win,
             first_win_done=self.first_win_done,
         )
+
+
+@dataclass
+class MapRunState:
+    """State shared by every map in one runner-owned command invocation."""
+
+    daily_first_win_done: bool = False
 
 
 @dataclass(frozen=True)
@@ -75,7 +99,7 @@ class MapRewardContext:
 
 
 @dataclass(frozen=True)
-class MapCompletionBlockerContext:
+class MapBlockerContext:
     page: object
     stop_event: object
     blocker_templates: tuple[tuple[Path, np.ndarray], ...]
@@ -86,12 +110,12 @@ class MapCompletionBlockerContext:
 
 
 @dataclass(frozen=True)
-class MapCompletionContext:
+class MapLifecycleContext:
     page: object
     stop_event: object
     first_win: FirstWinContext
     reward: MapRewardContext
-    blocker: MapCompletionBlockerContext
+    blocker: MapBlockerContext
     start_home_template: np.ndarray
     start_home_template_path: Path
     capture_page_bgr_fn: Callable

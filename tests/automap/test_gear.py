@@ -26,7 +26,7 @@ from hauntedroom.flows.automap_support.gear_action import (
     GEAR_MENU_SETTLE_MS,
     deploy_initial_gear,
 )
-from tests.automap.fakes import fake_automap_templates
+from tests.automap.template_factory import build_test_automap_templates
 
 
 class GearActionTest(IsolatedAsyncioTestCase):
@@ -220,7 +220,10 @@ class GearActionTest(IsolatedAsyncioTestCase):
         )
         self.page.mouse.down.assert_not_awaited()
 
-    @patch("hauntedroom.flows.automap.deploy_initial_gear", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap_support.flow.deploy_initial_gear",
+        new_callable=AsyncMock,
+    )
     async def test_flow_attempts_gear_only_once_after_unlock(
         self,
         deploy_initial_gear,
@@ -230,7 +233,7 @@ class GearActionTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(),
-            fake_automap_templates(),
+            build_test_automap_templates(),
         )
 
         self.assertFalse(
