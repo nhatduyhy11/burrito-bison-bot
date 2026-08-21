@@ -24,19 +24,13 @@ from hauntedroom.flows.automap_support.vision.template_config import (
     AutomapConfig,
 )
 from hauntedroom.flows.automap_support.flow import (
-    BOSS_RECHECK_INTERVAL_MS,
     AutomapFlow,
-)
-from hauntedroom.flows.automap_support.map.lifecycle import (
-    MAP_END_CHECK_INTERVAL_SEC,
-    MAP_END_TEMPLATE_THRESHOLD,
 )
 from hauntedroom.flows.automap_support.map.model_state import (
     MapRunState,
     MapState,
 )
 from hauntedroom.flows.automap_support.templates import AutomapTemplates
-from hauntedroom.flows.automap_support.upgrade_action import AUTOMAP_POLL_MS
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_LEVELUP_TEMPLATE_PATHS,
 )

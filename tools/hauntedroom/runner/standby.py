@@ -4,7 +4,8 @@ from typing import Mapping, Optional
 
 from hauntedroom import settings
 from hauntedroom.actions.models import Action
-from hauntedroom.core.runtime import save_live_screenshot, start_hotkey_listener
+from hauntedroom.core.browser_hook import start_hotkey_listener
+from hauntedroom.core.runtime import save_live_screenshot
 from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
 from hauntedroom.runner.commands import FlowCommand
 from hauntedroom.screen_detect import ScreenName, detect_current_screen

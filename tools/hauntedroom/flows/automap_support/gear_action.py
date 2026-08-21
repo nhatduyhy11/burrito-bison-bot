@@ -150,9 +150,6 @@ async def deploy_initial_gear(
             ),
             flush=True,
         )
-        await page.evaluate(
-            "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-        )
         await smooth_drag(
             page,
             GEAR_ITEM_POSITION,

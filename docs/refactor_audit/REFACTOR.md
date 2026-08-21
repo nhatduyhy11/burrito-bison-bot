@@ -24,7 +24,7 @@ uv run --with pytest pytest -q
 Baseline hiện tại:
 
 ```text
-231 passed, 4 skipped, 82 subtests passed
+233 passed, 4 skipped, 82 subtests passed
 ```
 
 Bốn test bị skip đều nằm trong
@@ -39,11 +39,10 @@ nhánh enabled và chưa assert trực tiếp contract default-off.
 Runtime/non-test Python files từ 200 dòng trở lên:
 
 ```text
- 338 tools/hauntedroom/runner/standby.py
+ 339 tools/hauntedroom/runner/standby.py
  321 tools/hauntedroom/runner/commands.py
  320 tools/hauntedroom/flows/artifact.py
  317 tools/hauntedroom/actions/runner.py
- 305 tools/hauntedroom/core/runtime.py
  301 tools/hauntedroom/flows/automap_support/flow.py
  272 tools/hauntedroom/flows/automap_support/map/lifecycle.py
  271 tools/hauntedroom/flows/automap_support/vision/hero_levelup.py
@@ -51,6 +50,7 @@ Runtime/non-test Python files từ 200 dòng trở lên:
  250 tools/hauntedroom/actions/loader.py
  223 tools/hauntedroom/core/template_matching.py
  212 tools/hauntedroom/flows/train.py
+ 209 tools/hauntedroom/core/runtime.py
 ```
 
 Test files từ 200 dòng trở lên:
@@ -60,14 +60,13 @@ Test files từ 200 dòng trở lên:
  342 tests/actions/test_runner.py
  277 tests/automap/test_map_reward.py
  262 tests/special_flow/test_artifact_flow.py
- 258 tests/hero_select/test_hero_choice_policy.py
  258 tests/runner/test_start_automap_loop.py
+ 258 tests/hero_select/test_hero_choice_policy.py
  249 tests/automap/test_gear.py
  244 tests/automap/test_level_up.py
  229 tests/hero_select/test_hero_action.py
  222 tests/test_hauntedroom_vision.py
  205 tests/actions/test_loader.py
-```
 
 Line count chỉ là tín hiệu để review, không tự động đồng nghĩa với
 over-responsibility. Điểm cần theo dõi rõ nhất là boundary transport/dispatch/task

@@ -10,15 +10,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.flows.automap import (
-    AUTOMAP_POLL_MS,
     DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
     DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
     DAILY_FIRST_WIN_TEMPLATE_PATH,
-    MAP_END_CHECK_INTERVAL_SEC,
-    MAP_END_TEMPLATE_THRESHOLD,
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_PATH,
     run_automap_flow,
+)
+from hauntedroom.flows.automap_support.upgrade_action import AUTOMAP_POLL_MS
+from hauntedroom.flows.automap_support.map.lifecycle import (
+    MAP_END_CHECK_INTERVAL_SEC,
+    MAP_END_TEMPLATE_THRESHOLD,
 )
 from hauntedroom.flows.automap_support.vision.template_config import (
     MAP_WIN_TEMPLATE_DIR,

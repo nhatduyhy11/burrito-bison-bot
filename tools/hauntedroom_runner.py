@@ -8,9 +8,7 @@ from hauntedroom.control_events.new_tab_blocker import (
     install_profile_popup_guard,
 )
 from hauntedroom.core.cli import prepare_runner
-from hauntedroom.core.runtime import (
-    start_user_click_logger,
-)
+from hauntedroom.core.browser_hook import start_user_click_logger
 from hauntedroom.runner.default_commands import FLOW_COMMANDS, SCREEN_FLOW_COMMANDS
 from hauntedroom.runner.navigation import navigate_to_game
 from hauntedroom.runner.standby import run_standby_controller

@@ -90,6 +90,7 @@ class ClickTest(IsolatedAsyncioTestCase):
 class SmoothDragTest(IsolatedAsyncioTestCase):
     def setUp(self):
         self.page = Mock()
+        self.page.evaluate = AsyncMock()
         self.page.wait_for_timeout = AsyncMock()
         self.page.mouse = Mock()
         self.page.mouse.move = AsyncMock()
@@ -117,6 +118,7 @@ class SmoothDragTest(IsolatedAsyncioTestCase):
         )
         self.page.mouse.down.assert_awaited_once_with()
         self.page.mouse.up.assert_awaited_once_with()
+        self.page.evaluate.assert_awaited_once()
 
     async def test_releases_mouse_when_movement_fails(self):
         self.page.mouse.move.side_effect = [None, RuntimeError("move failed")]
@@ -132,3 +134,4 @@ class SmoothDragTest(IsolatedAsyncioTestCase):
 
         self.page.mouse.move.assert_not_awaited()
         self.page.mouse.down.assert_not_awaited()
+        self.page.evaluate.assert_not_awaited()

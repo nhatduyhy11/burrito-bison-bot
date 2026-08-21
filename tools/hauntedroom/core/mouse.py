@@ -2,6 +2,7 @@
 
 from typing import Literal, Optional
 
+from .browser_hook import suppress_next_click_log
 from .runtime import wait_for_flow_timeout
 
 
@@ -18,9 +19,7 @@ async def bot_click(
     button: Optional[MouseButton] = None,
 ) -> None:
     """Click without recording the bot-generated input as a user action."""
-    await page.evaluate(
-        "() => { window.__hauntedRoomSuppressNextClickLog = true; }"
-    )
+    await suppress_next_click_log(page)
     if button is None:
         await page.mouse.click(*position)
     else:
@@ -60,6 +59,7 @@ async def smooth_drag(
     if min(hold_before_move_ms, step_delay_ms, hold_before_release_ms) < 0:
         raise ValueError("drag delays cannot be negative")
 
+    await suppress_next_click_log(page)
     await page.mouse.move(*start)
     await page.mouse.down()
     try:

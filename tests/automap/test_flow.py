@@ -12,13 +12,13 @@ FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 sys.path.insert(0, str(TOOLS_DIR))
 
 from hauntedroom.flows.automap import (
-    BOSS_RECHECK_INTERVAL_MS,
     MAP_BLOCKER_TEMPLATE_PATHS,
     AutomapConfig,
     AutomapFlow,
-    MapState,
-    AutomapTemplates,
 )
+from hauntedroom.flows.automap_support.flow import BOSS_RECHECK_INTERVAL_MS
+from hauntedroom.flows.automap_support.map.model_state import MapState
+from hauntedroom.flows.automap_support.templates import AutomapTemplates
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
 from tests.automap.template_factory import build_test_automap_templates
 
