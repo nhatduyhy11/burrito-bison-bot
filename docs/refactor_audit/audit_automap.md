@@ -7,19 +7,13 @@ public facade:
 
 - Định nghĩa `AutomapFlow` và toàn bộ priority scheduler.
 - Làm adapter cho boss, hero, gear, upgrade và map completion.
-- Tự load `AutomapTemplates` trong constructor khi caller không inject.
-- Giữ callback runtime `on_win` bên trong `AutomapConfig`.
 - Rate-limit map-end, detect map-end, gọi completion flow và cập nhật win state.
 
 Các boundary còn chưa sạch:
 
-- `AutomapConfig` đang trộn configuration data với callback runtime `on_win`.
-- `AutomapFlow.__init__` vừa nhận loaded templates vừa có thể tự load chúng, nên
-  composition root chưa phải owner duy nhất của resource loading.
-- Test vẫn patch `hauntedroom.flows.automap.load_template`, giữ facade phụ thuộc
-  vào implementation detail của template loading.
 - `handle_map_end()` và `finish_map_from_home()` vẫn làm flow orchestration phụ
   thuộc trực tiếp vào policy completion.
+- Architecture allowlist vẫn phản ánh facade lớn thay vì boundary đích.
 
 ## Kiến trúc đích
 
@@ -79,19 +73,19 @@ Daily/run state đã được chuyển sang `AutomapRunContext` với field
 `AutomapState` giờ chỉ giữ state theo một map. Module global `FIRST_WIN_DONE` đã
 được xóa; completion outcome cập nhật trực tiếp context được inject.
 
-`on_win` là dependency theo invocation. Truyền callback trực tiếp vào
-`AutomapFlow` hoặc map-completion context, không đặt trong `AutomapConfig`.
+`on_win` đã là dependency theo invocation: facade truyền callback trực tiếp
+vào `AutomapFlow`, rồi flow truyền tiếp vào map-completion context.
+`AutomapConfig` chỉ còn configuration data.
 
 ## Template loading
 
-`AutomapFlow` chỉ nhận `AutomapTemplates` đã load. Bỏ fallback
-`AutomapTemplates.load()` khỏi constructor sau khi chuyển toàn bộ caller sang
-composition root.
+`AutomapFlow` chỉ nhận `AutomapTemplates` đã load; constructor không còn
+fallback resource loading. Facade `run_automap_flow()` là composition root load
+template cho mỗi invocation.
 
-Test cần một factory/fixture tạo `AutomapTemplates` fake và inject trực tiếp.
-Test riêng cho loader patch tại nơi symbol được dùng trong
-`automap_support.templates`, không patch facade. Loader của hero templates cũng
-nên đi qua cùng injection seam nếu test cần kiểm soát toàn bộ resource loading.
+Test trực tiếp flow dùng factory tạo `AutomapTemplates` fake và inject rõ ràng.
+Test loader patch symbol tại `automap_support.templates`, không patch facade.
+Hero templates cũng đi qua cùng injection seam với các template còn lại.
 
 ## `flow.py`
 
@@ -134,14 +128,11 @@ thúc; không tự đồng bộ từng field completion hoặc module global.
 
 ## Thứ tự refactor còn lại
 
-1. Đưa `on_win` ra khỏi `AutomapConfig` và truyền như dependency theo invocation.
-2. Bỏ template-loading fallback khỏi `AutomapFlow.__init__`; chuyển caller/test
-   sang inject `AutomapTemplates`.
-3. Chuyển `AutomapFlow` sang `automap_support/flow.py`, giữ re-export từ
+1. Chuyển `AutomapFlow` sang `automap_support/flow.py`, giữ re-export từ
    `automap.py`.
-4. Chuyển map-end/completion adapter sang `map_completion.py`.
-5. Cập nhật architecture allowlist và test patch targets theo owner mới.
-6. Chạy test automap, hero selection, runner và dev reload.
+2. Chuyển map-end/completion adapter sang `map_completion.py`.
+3. Cập nhật architecture allowlist theo owner mới.
+4. Chạy test automap, hero selection, runner và dev reload.
 
 ## Ranh giới không nên mở rộng
 

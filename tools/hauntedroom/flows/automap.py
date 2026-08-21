@@ -17,7 +17,6 @@ from hauntedroom.core.runtime import (
 from hauntedroom.core.template_matching import (
     find_template,
     find_template_matches,
-    load_template,
 )
 from hauntedroom.core.terminal import GREEN, RED, colorize
 from hauntedroom.core.vision import capture_page_bgr
@@ -112,18 +111,18 @@ class AutomapFlow:
         page,
         stop_event: asyncio.Event | None,
         config: AutomapConfig,
-        templates: AutomapTemplates | None = None,
+        templates: AutomapTemplates,
         state: AutomapState | None = None,
         run_context: AutomapRunContext | None = None,
+        on_win: Callable[[], int] | None = None,
     ) -> None:
         self.page = page
         self.stop_event = stop_event
         self.config = config
-        self.templates = templates or AutomapTemplates.load(
-            config, load_template_fn=load_template
-        )
+        self.templates = templates
         self.state = state or AutomapState()
         self.run_context = run_context or AutomapRunContext()
+        self.on_win = on_win
         self.loop = asyncio.get_running_loop()
 
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
@@ -198,7 +197,7 @@ class AutomapFlow:
             first_win_done=self.run_context.daily_first_win_done,
             win_recorded=self.state.win_recorded,
             total_win=self.state.total_win,
-            on_win=self.config.on_win,
+            on_win=self.on_win,
             capture_page_bgr_fn=capture_page_bgr,
             to_grayscale_fn=_to_grayscale,
             find_template_fn=find_template,
@@ -428,9 +427,8 @@ async def run_automap_flow(
         hero_levelup_template_paths=hero_levelup_template_paths,
         capture_hero_fallback_screenshots=capture_hero_fallback_screenshots,
         debug=debug,
-        on_win=on_win,
     )
-    templates = AutomapTemplates.load(config, load_template_fn=load_template)
+    templates = AutomapTemplates.load(config)
     state = AutomapState()
     return await AutomapFlow(
         page,
@@ -439,4 +437,5 @@ async def run_automap_flow(
         templates=templates,
         state=state,
         run_context=run_context,
+        on_win=on_win,
     ).run()

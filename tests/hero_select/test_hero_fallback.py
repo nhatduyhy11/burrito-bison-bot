@@ -33,6 +33,7 @@ from hauntedroom.flows.automap_support.vision.hero_levelup import (
     load_hero_levelup_templates,
     prepare_hero_levelup_frame,
 )
+from tests.automap.fakes import fake_automap_templates
 
 
 def find_choice(frame_bgr, template_paths=None):
@@ -229,7 +230,12 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
         capture_page_bgr.return_value = popup
         initial_frame = self.make_protect_available(np.zeros_like(popup))
-        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            fake_automap_templates(load_hero_templates=True),
+        )
 
         handled = await flow.hero_levelup(
             initial_frame,
@@ -261,6 +267,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(hero_levelup_template_paths=()),
+            fake_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -297,7 +304,12 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
         )
         capture_page_bgr.return_value = popup
         initial_frame = self.make_protect_available(np.zeros_like(popup))
-        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            fake_automap_templates(load_hero_templates=True),
+        )
 
         handled = await flow.hero_levelup(
             initial_frame,
@@ -332,6 +344,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(hero_levelup_template_paths=()),
+            fake_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -365,6 +378,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
                 hero_levelup_template_paths=(),
                 capture_hero_fallback_screenshots=False,
             ),
+            fake_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -397,6 +411,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(hero_levelup_template_paths=()),
+            fake_automap_templates(),
         )
 
         handled = await flow.hero_levelup(
@@ -432,6 +447,7 @@ class HeroFallbackTest(IsolatedAsyncioTestCase):
             self.page,
             asyncio.Event(),
             AutomapConfig(debug=True),
+            fake_automap_templates(load_hero_templates=True),
         )
 
         handled = await flow.hero_levelup(

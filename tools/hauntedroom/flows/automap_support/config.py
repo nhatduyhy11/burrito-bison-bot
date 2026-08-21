@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -72,5 +71,3 @@ class AutomapConfig:
     hero_levelup_template_paths: tuple[Path, ...] = HERO_LEVELUP_TEMPLATE_PATHS
     capture_hero_fallback_screenshots: bool = CAPTURE_HERO_FALLBACK_SCREENSHOTS
     debug: bool = False
-    # Kept for public API compatibility until the run-context extraction.
-    on_win: Callable[[], int] | None = None

@@ -52,7 +52,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
 
-    @patch("hauntedroom.flows.automap.load_template")
+    @patch("hauntedroom.flows.automap_support.templates.load_template")
     @patch(
         "hauntedroom.flows.automap.find_template",
         side_effect=[
@@ -174,7 +174,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         self.assertEqual((x, y), (318, 237))
 
     @patch(
-        "hauntedroom.flows.automap.load_template",
+        "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch("hauntedroom.flows.automap.find_template")
@@ -220,7 +220,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
             ],
         )
 
-    @patch("hauntedroom.flows.automap.load_template")
+    @patch("hauntedroom.flows.automap_support.templates.load_template")
     @patch(
         "hauntedroom.flows.automap.find_template",
         side_effect=[

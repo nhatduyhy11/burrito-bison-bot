@@ -47,7 +47,7 @@ class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
                 self.assertTrue(template_path.is_file())
 
     @patch(
-        "hauntedroom.flows.automap.load_template",
+        "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))

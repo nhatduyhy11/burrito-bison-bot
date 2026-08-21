@@ -71,7 +71,7 @@ class MapCompletionBlockerTest(IsolatedAsyncioTestCase):
         self.assertGreaterEqual(score, MAP_COMPLETION_BLOCKER_THRESHOLD)
 
     @patch(
-        "hauntedroom.flows.automap.load_template",
+        "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch("hauntedroom.flows.automap.find_template")
