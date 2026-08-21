@@ -107,12 +107,15 @@ flag được đọc lại cho flow mới khi runner chạy `--dev-reload`.
 
 ## Code, test và tài liệu liên quan
 
-- Vision queries và template: [`hero_levelup_vision.py`](../../../hauntedroom/flows/automap_support/hero_levelup_vision.py)
+- Vision queries và template: [`vision/hero_levelup.py`](../../../hauntedroom/flows/automap_support/vision/hero_levelup.py)
 - Business decision/action: [`hero_action.py`](../../../hauntedroom/flows/automap_support/hero_action.py)
 - Train matcher: [`train_select.py`](../../../hauntedroom/flows/automap_support/train_select.py)
 - Orchestrator: [`automap.py`](../../../hauntedroom/flows/automap.py)
-- Template priority và orchestration test: [`test_hero_select.py`](../../../../tests/hero_select/test_hero_select.py)
-- Panel/màu/capture fallback test: [`test_hero_fallback.py`](../../../../tests/hero_select/test_hero_fallback.py)
+- Vision test: [`test_hero_vision.py`](../../../../tests/hero_select/test_hero_vision.py)
+- Choice policy test: [`test_hero_choice_policy.py`](../../../../tests/hero_select/test_hero_choice_policy.py)
+- Action behavior test: [`test_hero_action.py`](../../../../tests/hero_select/test_hero_action.py)
+- Thin `AutomapFlow` adapter test: [`test_hero_flow_adapter.py`](../../../../tests/hero_select/test_hero_flow_adapter.py)
+- Fixture integration regression: [`test_hero_integration.py`](../../../../tests/hero_select/test_hero_integration.py)
 - Train selection test: [`test_train_select.py`](../../../../tests/hero_select/test_train_select.py)
 - Fixture selection chuẩn: [`tests/fixtures/hauntedroom-captures/hero_select/`](../../../../tests/fixtures/hauntedroom-captures/hero_select/)
 - Fixture từng bị capture sai: [`tests/fixtures/hauntedroom-captures/wrong_fallback/`](../../../../tests/fixtures/hauntedroom-captures/wrong_fallback/)

@@ -1,7 +1,17 @@
 # Refactor Audit
 
-File này chỉ mô tả snapshot và các finding còn mở trên code hiện tại. Finding đã
-được xử lý phải xóa khỏi file, không chuyển thành changelog hoặc lịch sử refactor.
+File này chỉ mô tả current state và các finding còn mở trên code hiện tại.
+
+## Quy tắc duy trì file
+
+- Đây không phải changelog, progress log, checklist hoàn thành hay nơi ghi nhận
+  công việc đã làm.
+- Chỉ giữ thông tin còn đúng và còn cần hành động trên code hiện tại.
+- Finding được xử lý xong phải xóa toàn bộ khỏi file; không đánh dấu `done`, gạch
+  ngang, chuyển sang mục completed hay để lại đoạn tổng kết kết quả.
+- Khi current state thay đổi, cập nhật hoặc xóa snapshot cũ ngay trong cùng thay
+  đổi; không giữ số liệu hay mô tả cũ để đối chiếu lịch sử.
+- Lịch sử thay đổi thuộc về Git/commit/PR, không thuộc file này.
 
 ## Test baseline
 
@@ -47,22 +57,22 @@ Test files từ 200 dòng trở lên:
 
 ```text
  734 tests/runner/test_standby_controller.py
- 463 tests/hero_select/test_hero_fallback.py
- 429 tests/hero_select/test_hero_select.py
  327 tests/actions/test_runner.py
- 277 tests/automap/test_map_reward.py
- 262 tests/special_flow/test_artifact_flow.py
- 258 tests/runner/test_start_automap_loop.py
- 249 tests/automap/test_gear.py
- 244 tests/automap/test_level_up.py
- 222 tests/test_hauntedroom_vision.py
- 205 tests/actions/test_loader.py
+  277 tests/automap/test_map_reward.py
+  262 tests/special_flow/test_artifact_flow.py
+  258 tests/runner/test_start_automap_loop.py
+ 258 tests/hero_select/test_hero_choice_policy.py
+  249 tests/automap/test_gear.py
+  244 tests/automap/test_level_up.py
+  229 tests/hero_select/test_hero_action.py
+  222 tests/test_hauntedroom_vision.py
+  205 tests/actions/test_loader.py
 ```
 
 Line count chỉ là tín hiệu để review, không tự động đồng nghĩa với
 over-responsibility. Điểm cần theo dõi rõ nhất là boundary transport/dispatch/task
-lifecycle trong `runner/standby.py`; các module auto-map lớn hiện vẫn bám theo
-boundary scheduler và map lifecycle đã được tách riêng.
+lifecycle trong `runner/standby.py`. Các module auto-map lớn hiện thuộc boundary
+scheduler hoặc map lifecycle tương ứng.
 
 ## Finding còn mở
 
@@ -92,11 +102,6 @@ là historical decision record, không dùng làm inventory của wiring hiện 
 command policy, reload policy, screen routing, standby orchestration, click loop
 và listener. Nếu thêm routing hoặc policy, tách theo các responsibility này trước
 để tránh một test module tiếp tục gom nhiều boundary.
-
-Hai file `tests/hero_select/test_hero_fallback.py` và
-`tests/hero_select/test_hero_select.py` nên được reorganize cùng nhau theo vision,
-choice policy, action behavior và thin `AutomapFlow` adapter. Không tách cơ học
-chỉ dựa trên line count.
 
 ### P3. Làm phẳng state loop của research khi sửa flow này
 

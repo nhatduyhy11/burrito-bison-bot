@@ -47,8 +47,11 @@ uv run python -m unittest tests.test_hauntedroom_vision -v
 uv run python -m unittest tests.actions.test_runner -v
 uv run python -m unittest tests.automap.test_boss -v
 uv run python -m unittest tests.automap.test_boss_flow -v
-uv run python -m unittest tests.hero_select.test_hero_select -v
-uv run python -m unittest tests.hero_select.test_hero_fallback -v
+uv run python -m unittest tests.hero_select.test_hero_vision -v
+uv run python -m unittest tests.hero_select.test_hero_choice_policy -v
+uv run python -m unittest tests.hero_select.test_hero_action -v
+uv run python -m unittest tests.hero_select.test_hero_flow_adapter -v
+uv run python -m unittest tests.hero_select.test_hero_integration -v
 uv run python -m unittest tests.runner.test_standby_controller -v
 uv run python -m unittest tests.runner.test_train_flow -v
 uv run python -m unittest tests.research.test_research_flow -v
@@ -79,10 +82,16 @@ uv run python -m unittest tests.automap.test_map_reward.MapRewardTest.test_map_e
   daily-first-win, map completion và orchestration one-map.
 - `control_events/`: blocker ngoài normal flow, gồm profile new-tab guard và
   game-core iframe CSS guard có startup delay.
-- `hero_select/test_hero_select.py`: template priority, ascend và interaction
-  mở/chọn option của popup hero level-up.
-- `hero_select/test_hero_fallback.py`: nhận diện layout 1/2/3 card, màu tím,
-  priority `99`, regression ảnh từng fallback sai và điều kiện capture tracking.
+- `hero_select/test_hero_vision.py`: nhận diện layout/card color, ascend và các
+  regression ảnh từng fallback sai.
+- `hero_select/test_hero_choice_policy.py`: ascend/template priority, priority
+  `99` và thứ tự fallback yellow/purple/red.
+- `hero_select/test_hero_action.py`: hành vi mở/poll/chọn option, settle timing và
+  điều kiện capture tracking.
+- `hero_select/test_hero_flow_adapter.py`: contract mỏng giữa `AutomapFlow`, hero
+  action và map state.
+- `hero_select/test_hero_integration.py`: regression xuyên suốt bằng fixture thật
+  từ `AutomapFlow` qua vision/choice đến click và capture policy.
   Asset và selection contract được mô tả tại
   [`tools/rooms/automap/hero_levelup/README.md`](../tools/rooms/automap/hero_levelup/README.md).
 - `research/`: polling và interaction của flow research.
