@@ -60,6 +60,40 @@ def build_start_battle_actions() -> list[Action]:
     ]
 
 
+def build_enter_exit_actions() -> list[Action]:
+    """Build the fixed room entry/exit cycle used by Shift+9."""
+    blocker_paths = tuple(
+        ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
+    )
+    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
+    return [
+        *build_start_battle_actions(),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "exit_click.png",
+            timeout_ms=60_000,
+            note="Exit click",
+        ),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "exit_confirm.png",
+            note="Exit confirm",
+        ),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "exit_back.png",
+            threshold=0.75,
+            skip_if_template_path=ROOMS_DIR / "start_home.png",
+            skip_template_scales=(1.0,),
+            note="Exit Back",
+        ),
+        ClearBlockersAction(
+            blocker_paths=blocker_paths,
+            until_template_path=ROOMS_DIR / "start_home.png",
+            click_positions=blocker_click_positions,
+            until_template_scales=(1.0,),
+            note="After Exit Back",
+        ),
+    ]
+
+
 @dataclass(frozen=True)
 class ResolvedFlow:
     actions: list[Action]
@@ -77,6 +111,24 @@ class FlowCommand:
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
+    def resolve_enter_exit(
+        _actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        action_runner = reload_policy.get_action_runner(dev_reload)
+        enter_exit_actions = build_enter_exit_actions()
+
+        async def run(page, stop_event, _debug: bool):
+            return await action_runner(
+                page,
+                enter_exit_actions,
+                loop_count=None,
+                stop_event=stop_event,
+            )
+
+        return ResolvedFlow(enter_exit_actions, run)
+
     def resolve_automap(
         actions: list[Action],
         dev_reload: bool,
@@ -207,6 +259,12 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     return {
+        "enter_exit": FlowCommand(
+            "enter_exit",
+            "enter-exit room loop",
+            "Enter / exit room loop",
+            resolve_enter_exit,
+        ),
         "automap": FlowCommand(
             "automap",
             "auto-map battle",

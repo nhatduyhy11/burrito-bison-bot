@@ -13,6 +13,7 @@ FLOW_DEFINITIONS = build_flow_commands(reload_policy, start_auto)
 FLOW_COMMANDS = {
     "t": replace(FLOW_DEFINITIONS["train"], key="T"),
     "5": replace(FLOW_DEFINITIONS["json_actions"], key="5"),
+    "9": replace(FLOW_DEFINITIONS["enter_exit"], key="9"),
 }
 
 SCREEN_FLOW_COMMANDS = {

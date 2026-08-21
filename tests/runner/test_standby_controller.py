@@ -367,12 +367,14 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertIn('? "t"', HOTKEY_SCRIPT)
         self.assertNotIn('event.code === "Minus"', HOTKEY_SCRIPT)
 
-    def test_replaced_hotkeys_are_only_available_through_auto_switch(self):
-        self.assertEqual(set(FLOW_COMMANDS), {"t", "5"})
+    def test_direct_hotkeys_and_auto_switched_flows_are_configured(self):
+        self.assertEqual(set(FLOW_COMMANDS), {"t", "5", "9"})
         self.assertEqual(FLOW_COMMANDS["t"].key, "T")
         self.assertEqual(FLOW_COMMANDS["t"].name, "train then auto-battle")
         self.assertEqual(FLOW_COMMANDS["5"].key, "5")
         self.assertEqual(FLOW_COMMANDS["5"].name, "JSON action loop")
+        self.assertEqual(FLOW_COMMANDS["9"].key, "9")
+        self.assertEqual(FLOW_COMMANDS["9"].name, "enter-exit room loop")
         self.assertEqual(
             {
                 screen: command.name
@@ -651,6 +653,45 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         action_runner.assert_awaited_once_with(
             page,
             loaded_actions,
+            loop_count=None,
+            stop_event=stop_event,
+        )
+
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_action_runner")
+    async def test_shift_9_runs_fixed_enter_exit_actions_forever(
+        self, get_action_runner
+    ):
+        page = Mock()
+        stop_event = asyncio.Event()
+        action_runner = AsyncMock(return_value=False)
+        get_action_runner.return_value = action_runner
+
+        resolved = FLOW_COMMANDS["9"].resolve(
+            [{"type": "unrelated-json-macro"}],
+            False,
+            Path("tools/json_macro/macro.env.json"),
+        )
+        completed = await resolved.run(page, stop_event, False)
+
+        self.assertFalse(completed)
+        self.assertEqual(len(resolved.actions), 8)
+        self.assertEqual(
+            [action.note for action in resolved.actions],
+            [
+                "Before Start HOME",
+                "Start HOME",
+                "Before Start Battle",
+                "Start Battle",
+                "Exit click",
+                "Exit confirm",
+                "Exit Back",
+                "After Exit Back",
+            ],
+        )
+        get_action_runner.assert_called_once_with(False)
+        action_runner.assert_awaited_once_with(
+            page,
+            resolved.actions,
             loop_count=None,
             stop_event=stop_event,
         )
