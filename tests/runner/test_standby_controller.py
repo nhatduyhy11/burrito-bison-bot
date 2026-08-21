@@ -227,17 +227,17 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         from hauntedroom.flows.automap_support import (
             boss_action,
             boss_flow,
-            completion_flow,
+            flow as automap_flow_support,
             gear_action,
             hero_action,
-            map_completion,
             upgrade_action,
         )
-        from hauntedroom.flows.automap_support.completion_flow import (
+        from hauntedroom.flows.automap_support.map import (
             blocker,
             first_win,
+            lifecycle,
+            model_state,
             reward,
-            state,
         )
         from hauntedroom.flows.automap_support.vision import (
             boss_controls as boss_controls_vision,
@@ -261,15 +261,15 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             hero_levelup_vision,
             boss_action,
             gear_action,
-            state,
+            model_state,
             first_win,
             reward,
             blocker,
-            completion_flow,
-            map_completion,
+            lifecycle,
             upgrade_action,
             hero_action,
             boss_flow,
+            automap_flow_support,
             refreshed_automap,
         ]
 
@@ -289,15 +289,15 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
                 call(hero_levelup_vision),
                 call(boss_action),
                 call(gear_action),
-                call(state),
+                call(model_state),
                 call(first_win),
                 call(reward),
                 call(blocker),
-                call(completion_flow),
-                call(map_completion),
+                call(lifecycle),
                 call(upgrade_action),
                 call(hero_action),
                 call(boss_flow),
+                call(automap_flow_support),
                 call(automap),
             ],
         )
@@ -367,12 +367,14 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertIn('? "t"', HOTKEY_SCRIPT)
         self.assertNotIn('event.code === "Minus"', HOTKEY_SCRIPT)
 
-    def test_replaced_hotkeys_are_only_available_through_auto_switch(self):
-        self.assertEqual(set(FLOW_COMMANDS), {"t", "5"})
+    def test_direct_hotkeys_and_auto_switched_flows_are_configured(self):
+        self.assertEqual(set(FLOW_COMMANDS), {"t", "5", "9"})
         self.assertEqual(FLOW_COMMANDS["t"].key, "T")
         self.assertEqual(FLOW_COMMANDS["t"].name, "train then auto-battle")
         self.assertEqual(FLOW_COMMANDS["5"].key, "5")
         self.assertEqual(FLOW_COMMANDS["5"].name, "JSON action loop")
+        self.assertEqual(FLOW_COMMANDS["9"].key, "9")
+        self.assertEqual(FLOW_COMMANDS["9"].name, "spawn_exit_lvup loop")
         self.assertEqual(
             {
                 screen: command.name
@@ -483,6 +485,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             stop_event,
             _action_runner,
             _debug,
+            **_kwargs,
         ):
             await stop_event.wait()
             return False
@@ -533,7 +536,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             command_queue.put_nowait("8")
 
         async def wait_until_stopped(
-            _page, _automap, stop_event, _debug
+            _page, _automap, stop_event, _debug, **_kwargs
         ):
             await stop_event.wait()
             return False
@@ -583,7 +586,13 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         get_automap_runtime.return_value = AutomapRuntime(AsyncMock(), AsyncMock())
 
         async def controllable_flow(
-            _page, _start_actions, _automap, flow_control, _action_runner, _debug
+            _page,
+            _start_actions,
+            _automap,
+            flow_control,
+            _action_runner,
+            _debug,
+            **_kwargs,
         ):
             nonlocal observed_control
             observed_control = flow_control
@@ -646,6 +655,46 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             loaded_actions,
             loop_count=None,
             stop_event=stop_event,
+        )
+
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_action_runner")
+    async def test_shift_9_runs_fixed_spawn_exit_lvup_actions_forever(
+        self, get_action_runner
+    ):
+        page = Mock()
+        stop_event = asyncio.Event()
+        action_runner = AsyncMock(return_value=False)
+        get_action_runner.return_value = action_runner
+
+        resolved = FLOW_COMMANDS["9"].resolve(
+            [{"type": "unrelated-json-macro"}],
+            False,
+            Path("tools/json_macro/macro.env.json"),
+        )
+        completed = await resolved.run(page, stop_event, False)
+
+        self.assertFalse(completed)
+        self.assertEqual(len(resolved.actions), 8)
+        self.assertEqual(
+            [action.note for action in resolved.actions],
+            [
+                "Before Start HOME",
+                "Start HOME",
+                "Before Start Battle",
+                "Start Battle",
+                "Exit click",
+                "Exit confirm",
+                "Exit Back",
+                "After Exit Back",
+            ],
+        )
+        get_action_runner.assert_called_once_with(False)
+        action_runner.assert_awaited_once_with(
+            page,
+            resolved.actions,
+            loop_count=None,
+            stop_event=stop_event,
+            loop_label="spawn_exit_lvup loop",
         )
 
     async def test_stop_event_ends_flow_without_clicking(self):

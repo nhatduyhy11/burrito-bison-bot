@@ -14,6 +14,7 @@ sys.path.insert(0, str(TOOLS_DIR))
 HERO_SELECT_FIXTURES_DIR = FIXTURES_DIR / "hauntedroom-captures" / "hero_select"
 
 from hauntedroom.flows.automap import run_automap_flow
+from hauntedroom.core.template_matching import load_template as load_real_template
 from hauntedroom.flows.automap_support.upgrade_action import (
     AUTOMAP_POLL_MS,
     LV_SPIN_CLICK_OFFSET_X,
@@ -21,6 +22,7 @@ from hauntedroom.flows.automap_support.upgrade_action import (
 )
 from hauntedroom.core.vision import region_has_enough_white
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
+    HERO_LEVELUP_TEMPLATE_PATHS,
     HERO_LEVELUP_PRICE_REGION,
     HERO_PRICE_WHITE_MAX_SATURATION,
     HERO_PRICE_WHITE_MIN_PIXELS,
@@ -93,12 +95,12 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         )
 
     @patch(
-        "hauntedroom.flows.automap.load_template",
+        "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(200, 20, 0.92))
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template", return_value=(200, 20, 0.92))
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_level_spin_interrupt_clicks_left_offset_before_protect_gate(
         self,
         capture_page_bgr,
@@ -127,15 +129,15 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         self.page.wait_for_timeout.assert_awaited_once_with(AUTOMAP_POLL_MS)
 
     @patch(
-        "hauntedroom.flows.automap.load_template",
+        "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
     @patch(
-        "hauntedroom.flows.automap.find_template",
+        "hauntedroom.flows.automap_support.flow.find_template",
         side_effect=[(0, 0, 0.0), (0, 0, 0.0), (200, 20, 0.92)],
     )
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_level_up_rechecks_level_spin_before_confirm_click(
         self,
         capture_page_bgr,
@@ -170,12 +172,12 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         )
 
     @patch(
-        "hauntedroom.flows.automap.load_template",
+        "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
-    @patch("hauntedroom.flows.automap.find_template_matches")
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_level_up_uses_largest_y_and_rechecks_before_confirm(
         self,
         capture_page_bgr,
@@ -183,6 +185,11 @@ class LevelUpTest(IsolatedAsyncioTestCase):
         _find_template,
         _load_template,
     ):
+        _load_template.side_effect = lambda path: (
+            load_real_template(path)
+            if path in HERO_LEVELUP_TEMPLATE_PATHS
+            else np.zeros((2, 2), dtype=np.uint8)
+        )
         unavailable = np.zeros((720, 640, 3), dtype=np.uint8)
         option_popup = cv2.imread(
             str(

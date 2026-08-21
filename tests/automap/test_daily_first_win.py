@@ -24,11 +24,11 @@ from hauntedroom.flows.automap import (
     DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
     DAILY_FIRST_WIN_TEMPLATE_PATH,
 )
-from hauntedroom.flows.automap_support.completion_flow.first_win import (
+from hauntedroom.flows.automap_support.map.first_win import (
     DAILY_FIRST_WIN_CHECK_DELAY_MS,
     handle_daily_first_win,
 )
-from hauntedroom.flows.automap_support.completion_flow.state import (
+from hauntedroom.flows.automap_support.map.model_state import (
     FirstWinContext,
 )
 

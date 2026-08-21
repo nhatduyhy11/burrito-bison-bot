@@ -12,6 +12,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 
 from hauntedroom.flows.automap_support.train_select import TrainChoice
+from hauntedroom.flows.automap_support.map.model_state import MapRunState
 from hauntedroom.core.template_detection import (
     TemplateWaitResult,
     TemplateWaitStatus,
@@ -81,12 +82,14 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         matcher.find_choice.side_effect = choices
         automap_flow = AsyncMock(return_value=True)
         stop_event = asyncio.Event()
+        run_state = MapRunState()
 
         result = await run_train_flow(
             self.page,
             automap_flow,
             stop_event,
             debug=True,
+            run_state=run_state,
         )
 
         self.assertTrue(result)
@@ -110,5 +113,8 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             (1.0, 0.67),
         )
         automap_flow.assert_awaited_once_with(
-            self.page, stop_event, debug=True
+            self.page,
+            stop_event,
+            debug=True,
+            run_state=run_state,
         )

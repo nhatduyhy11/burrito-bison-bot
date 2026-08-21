@@ -11,24 +11,26 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.flows.automap import AutomapConfig, AutomapFlow
 from hauntedroom.flows.automap_support.boss_flow import BossCriticalOutcome
+from tests.automap.template_factory import build_test_automap_templates
 
 
 class BossAutomapAdapterTest(IsolatedAsyncioTestCase):
-    @patch(
-        "hauntedroom.flows.automap.load_template",
-        return_value=np.zeros((2, 2), dtype=np.uint8),
-    )
-    async def test_boss_outcome_updates_automap_state(self, _load_template):
+    async def test_boss_outcome_updates_automap_state(self):
         page = Mock()
         outcome = BossCriticalOutcome(
             handled=True,
             final_boss_pet_deployed=True,
             boss_detection_logged=True,
         )
-        flow = AutomapFlow(page, asyncio.Event(), AutomapConfig())
+        flow = AutomapFlow(
+            page,
+            asyncio.Event(),
+            AutomapConfig(),
+            build_test_automap_templates(),
+        )
 
         with patch(
-            "hauntedroom.flows.automap._handle_boss_critical",
+            "hauntedroom.flows.automap_support.flow._handle_boss_critical",
             new_callable=AsyncMock,
             return_value=outcome,
         ) as handle_boss:
@@ -38,6 +40,6 @@ class BossAutomapAdapterTest(IsolatedAsyncioTestCase):
             )
 
         self.assertTrue(handled)
-        self.assertTrue(flow.final_boss_pet_deployed)
-        self.assertTrue(flow.boss_detection_logged)
+        self.assertTrue(flow.state.final_boss_pet_deployed)
+        self.assertTrue(flow.state.boss_detection_logged)
         handle_boss.assert_awaited_once()

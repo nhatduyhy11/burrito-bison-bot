@@ -49,9 +49,12 @@ làm detector fail.
   `tools/json_macro/hauntedroom_actions.sample.json`; `Shift+4` tái sử dụng typed
   `start_battle.png` action/config từ cùng file để vào train battle.
 - Đường dẫn `map_end.png`, `map_win/reward_list_title.png` và nhóm
-  `map_win/daily_first_win*.png` được cấu hình/load trong
-  `tools/hauntedroom/flows/automap.py`; rule nhận diện và xử lý nằm trong
-  `tools/hauntedroom/flows/automap_support/map_completion.py`.
+  `map_win/daily_first_win*.png` được khai báo trong
+  `tools/hauntedroom/flows/automap_support/config.py`, rồi load qua
+  `tools/hauntedroom/flows/automap_support/templates.py`. Map-end/home
+  orchestration nằm trong `map/lifecycle.py`; visual query và business handling
+  của daily-first-win/reward nằm lần lượt trong `map/first_win.py` và
+  `map/reward.py`.
 - Map-completion cleanup của auto-map cũng load các PNG trong
   `tools/rooms/blocker/`, nên ba blocker phụ thuộc chữ ở bảng trên ảnh hưởng cả
   `Shift+2`, `Shift+3` và phần auto-map sau train của `Shift+4`.

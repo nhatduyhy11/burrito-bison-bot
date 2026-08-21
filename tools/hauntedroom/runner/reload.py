@@ -19,18 +19,18 @@ from hauntedroom.flows.artifact import run_artifact_flow
 from hauntedroom.flows.automap_support import (
     boss_action,
     boss_flow,
-    completion_flow,
+    flow as automap_flow_support,
     gear_action,
     hero_action,
-    map_completion,
     train_select,
     upgrade_action,
 )
-from hauntedroom.flows.automap_support.completion_flow import (
+from hauntedroom.flows.automap_support.map import (
     blocker,
     first_win,
+    lifecycle,
+    model_state,
     reward,
-    state,
 )
 from hauntedroom.flows.automap_support.vision import (
     boss_controls as boss_controls_vision,
@@ -181,15 +181,15 @@ def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:
     importlib.reload(hero_levelup_vision)
     importlib.reload(boss_action)
     importlib.reload(gear_action)
-    importlib.reload(state)
+    importlib.reload(model_state)
     importlib.reload(first_win)
     importlib.reload(reward)
     importlib.reload(blocker)
-    importlib.reload(completion_flow)
-    importlib.reload(map_completion)
+    importlib.reload(lifecycle)
     importlib.reload(upgrade_action)
     importlib.reload(hero_action)
     importlib.reload(boss_flow)
+    importlib.reload(automap_flow_support)
     reloaded_automap = importlib.reload(automap)
     print("Auto-map support modules reloaded.", flush=True)
     return AutomapRuntime(reloaded_automap.run_automap_flow, action_runner)

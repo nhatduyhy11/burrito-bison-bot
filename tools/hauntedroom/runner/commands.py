@@ -9,6 +9,7 @@ from hauntedroom.actions.models import (
     ClickTemplateAction,
 )
 from hauntedroom.core.runtime import FlowControl
+from hauntedroom.flows.automap_support.map.model_state import MapRunState
 
 
 FlowStarter = Callable[[object, object, bool], Awaitable[object]]
@@ -59,6 +60,40 @@ def build_start_battle_actions() -> list[Action]:
     ]
 
 
+def build_spawn_exit_lvup_actions() -> list[Action]:
+    """Build the fixed spawn/exit/level-up cycle used by Shift+9."""
+    blocker_paths = tuple(
+        ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
+    )
+    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
+    return [
+        *build_start_battle_actions(),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "exit_click.png",
+            timeout_ms=60_000,
+            note="Exit click",
+        ),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "exit_confirm.png",
+            note="Exit confirm",
+        ),
+        ClickTemplateAction(
+            template_path=ROOMS_DIR / "exit_back.png",
+            threshold=0.75,
+            skip_if_template_path=ROOMS_DIR / "start_home.png",
+            skip_template_scales=(1.0,),
+            note="Exit Back",
+        ),
+        ClearBlockersAction(
+            blocker_paths=blocker_paths,
+            until_template_path=ROOMS_DIR / "start_home.png",
+            click_positions=blocker_click_positions,
+            until_template_scales=(1.0,),
+            note="After Exit Back",
+        ),
+    ]
+
+
 @dataclass(frozen=True)
 class ResolvedFlow:
     actions: list[Action]
@@ -76,6 +111,25 @@ class FlowCommand:
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
+    def resolve_spawn_exit_lvup(
+        _actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        action_runner = reload_policy.get_action_runner(dev_reload)
+        spawn_exit_lvup_actions = build_spawn_exit_lvup_actions()
+
+        async def run(page, stop_event, _debug: bool):
+            return await action_runner(
+                page,
+                spawn_exit_lvup_actions,
+                loop_count=None,
+                stop_event=stop_event,
+                loop_label="spawn_exit_lvup loop",
+            )
+
+        return ResolvedFlow(spawn_exit_lvup_actions, run)
+
     def resolve_automap(
         actions: list[Action],
         dev_reload: bool,
@@ -84,7 +138,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         automap_runtime = reload_policy.get_automap_runtime(dev_reload)
 
         async def run(page, stop_event, debug: bool):
-            return await automap_runtime.automap_flow(page, stop_event, debug=debug)
+            run_state = MapRunState()
+            return await automap_runtime.automap_flow(
+                page,
+                stop_event,
+                debug=debug,
+                run_state=run_state,
+            )
 
         return ResolvedFlow(actions, run)
 
@@ -97,6 +157,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         start_actions = build_start_battle_actions()
 
         async def run(page, stop_event, debug: bool):
+            run_state = MapRunState()
             return await start_auto_flow.run_start_automap_loop(
                 page,
                 start_actions,
@@ -104,6 +165,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
                 stop_event,
                 automap_runtime.action_runner,
                 debug,
+                run_state=run_state,
             )
 
         return ResolvedFlow(actions, run)
@@ -117,11 +179,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         train_flow = reload_policy.get_train_flow(dev_reload)
 
         async def run(page, stop_event, debug: bool):
+            run_state = MapRunState()
             return await train_flow(
                 page,
                 automap_runtime.automap_flow,
                 stop_event,
                 debug,
+                run_state=run_state,
             )
 
         return ResolvedFlow(actions, run)
@@ -196,6 +260,12 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     return {
+        "spawn_exit_lvup": FlowCommand(
+            "spawn_exit_lvup",
+            "spawn_exit_lvup loop",
+            "Spawn / exit / level-up loop",
+            resolve_spawn_exit_lvup,
+        ),
         "automap": FlowCommand(
             "automap",
             "auto-map battle",

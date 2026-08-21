@@ -37,6 +37,7 @@ from hauntedroom.flows.automap_support.vision.hero_levelup import (
     load_hero_levelup_templates,
     prepare_hero_levelup_frame,
 )
+from tests.automap.template_factory import build_test_automap_templates
 
 
 def find_choice(frame_bgr, template_paths=None):
@@ -66,7 +67,10 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
 
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap_support.flow.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
     async def test_hero_levelup_uses_priority_2_hanuman_from_lower_region(
         self,
         capture_page_bgr,
@@ -76,7 +80,12 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         )
         capture_page_bgr.return_value = popup
         initial_frame = self.make_protect_available(np.zeros_like(popup))
-        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            build_test_automap_templates(load_hero_templates=True),
+        )
 
         handled = await flow.hero_levelup(
             initial_frame,
@@ -114,7 +123,10 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
             ],
         )
 
-    @patch("hauntedroom.flows.automap.save_fallback_screenshot", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap_support.flow.save_fallback_screenshot",
+        new_callable=AsyncMock,
+    )
     async def test_hero_levelup_does_not_fallback_before_opening_picker(
         self,
         save_fallback_screenshot,
@@ -122,7 +134,12 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         battle_frame = np.zeros((720, 640, 3), dtype=np.uint8)
         battle_frame[610:655, 120:520] = (80, 20, 60)
         self.assertIsNotNone(find_choice(battle_frame))
-        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            build_test_automap_templates(load_hero_templates=True),
+        )
 
         handled = await flow.hero_levelup(
             battle_frame,
@@ -240,7 +257,10 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
         self.assertEqual(choice.template_name, HERO_ASCEND_TEMPLATE_NAME)
         self.assertEqual((choice.x, choice.y), (320, 632))
 
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.automap_support.flow.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
     async def test_hero_levelup_waits_for_flash_to_settle_before_first_capture(
         self,
         capture_page_bgr,
@@ -258,7 +278,12 @@ class HeroSelectTest(IsolatedAsyncioTestCase):
 
         capture_page_bgr.side_effect = capture_after_settle
         initial_frame = self.make_protect_available(np.zeros_like(popup))
-        flow = AutomapFlow(self.page, asyncio.Event(), AutomapConfig())
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            build_test_automap_templates(load_hero_templates=True),
+        )
 
         handled = await flow.hero_levelup(
             initial_frame,

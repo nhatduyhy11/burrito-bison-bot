@@ -1,13 +1,10 @@
-"""Reward popup handling for the post-map completion flow."""
+"""Map reward handling."""
 
 import numpy as np
 
 from hauntedroom.core.terminal import GREEN, colorize
-from hauntedroom.flows.automap_support.completion_flow.state import (
-    CompletionStep,
-    MapCompletionState,
-    MapRewardContext,
-)
+
+from .model_state import MapLifecycleStep, MapRewardContext, MapState
 
 WIN_REWARD_TEMPLATE_THRESHOLD = 0.85
 WIN_REWARD_RECHECK_MS = 2_000
@@ -20,11 +17,11 @@ REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
 
 async def handle_win_reward(
     context: MapRewardContext,
-    state: MapCompletionState,
+    state: MapState,
     frame_gray: np.ndarray,
-) -> CompletionStep:
+) -> MapLifecycleStep:
     if state.reward_click_position is not None:
-        return CompletionStep.NOT_HANDLED
+        return MapLifecycleStep.NOT_HANDLED
 
     reward_matches = context.find_template_matches_fn(
         frame_gray,
@@ -34,7 +31,7 @@ async def handle_win_reward(
         scales=(1.0,),
     )
     if not reward_matches:
-        return CompletionStep.NOT_HANDLED
+        return MapLifecycleStep.NOT_HANDLED
 
     if not state.first_win_done:
         state.first_win_done = True
@@ -47,17 +44,11 @@ async def handle_win_reward(
         state.win_recorded = True
         if context.on_win is not None:
             state.total_win = context.on_win()
-        print(
-            colorize("Win reward detected; win recorded.", GREEN),
-            flush=True,
-        )
+        print(colorize("Win reward detected; win recorded.", GREEN), flush=True)
 
     center_x, center_y, score = reward_matches[0]
     template_height = context.win_reward_template.shape[0]
-    click_y = center_y - template_height // 2 + min(
-        1,
-        template_height - 1,
-    )
+    click_y = center_y - template_height // 2 + min(1, template_height - 1)
     print(
         f"Win reward found at {center_x},{center_y}, "
         f"score={score:.3f}; clicking first match top-middle at "
@@ -71,14 +62,14 @@ async def handle_win_reward(
         WIN_REWARD_RECHECK_MS,
         context.stop_event,
     )
-    return CompletionStep.CONTINUE if ready else CompletionStep.STOP
+    return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP
 
 
 async def handle_reward_list(
     context: MapRewardContext,
-    state: MapCompletionState,
+    state: MapState,
     frame_gray: np.ndarray,
-) -> CompletionStep:
+) -> MapLifecycleStep:
     left, top, right, bottom = REWARD_LIST_TITLE_SEARCH_REGION
     title_frame = frame_gray[top:bottom, left:right]
     title_x, title_y, title_score = context.find_template_fn(
@@ -104,10 +95,10 @@ async def handle_reward_list(
             WIN_REWARD_RECHECK_MS,
             context.stop_event,
         )
-        return CompletionStep.CONTINUE if ready else CompletionStep.STOP
+        return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP
 
     if state.reward_click_position is None or state.reward_list_title_seen:
-        return CompletionStep.NOT_HANDLED
+        return MapLifecycleStep.NOT_HANDLED
 
     click_x, click_y = state.reward_click_position
     print(
@@ -121,23 +112,22 @@ async def handle_reward_list(
         WIN_REWARD_RECHECK_MS,
         context.stop_event,
     )
-    return CompletionStep.CONTINUE if ready else CompletionStep.STOP
+    return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP
 
 
 async def handle_reward_followup(
     context: MapRewardContext,
-    state: MapCompletionState,
-) -> CompletionStep:
+    state: MapState,
+) -> MapLifecycleStep:
     if state.reward_followup_click_count >= WIN_REWARD_FOLLOWUP_CLICK_COUNT:
-        return CompletionStep.NOT_HANDLED
+        return MapLifecycleStep.NOT_HANDLED
 
     next_click = state.reward_followup_click_count + 1
     print(
         "No win reward remains; waiting 3s then clicking "
         f"{WIN_REWARD_FOLLOWUP_CLICK[0]},"
         f"{WIN_REWARD_FOLLOWUP_CLICK[1]} "
-        f"({next_click}/{WIN_REWARD_FOLLOWUP_CLICK_COUNT}) "
-        "before rechecking.",
+        f"({next_click}/{WIN_REWARD_FOLLOWUP_CLICK_COUNT}) before rechecking.",
         flush=True,
     )
     ready = await context.wait_for_flow_timeout_fn(
@@ -146,8 +136,8 @@ async def handle_reward_followup(
         context.stop_event,
     )
     if not ready:
-        return CompletionStep.STOP
+        return MapLifecycleStep.STOP
 
     await context.click_fn(context.page, *WIN_REWARD_FOLLOWUP_CLICK)
     state.reward_followup_click_count += 1
-    return CompletionStep.CONTINUE
+    return MapLifecycleStep.CONTINUE

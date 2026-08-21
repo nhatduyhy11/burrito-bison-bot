@@ -16,10 +16,12 @@ from hauntedroom.flows.automap import (
     DAILY_FIRST_WIN_TEMPLATE_PATH,
     MAP_END_CHECK_INTERVAL_SEC,
     MAP_END_TEMPLATE_THRESHOLD,
-    MAP_WIN_TEMPLATE_DIR,
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_PATH,
     run_automap_flow,
+)
+from hauntedroom.flows.automap_support.vision.template_config import (
+    MAP_WIN_TEMPLATE_DIR,
 )
 
 
@@ -47,12 +49,12 @@ class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
                 self.assertTrue(template_path.is_file())
 
     @patch(
-        "hauntedroom.flows.automap.load_template",
+        "hauntedroom.flows.automap_support.templates.load_template",
         return_value=np.zeros((2, 2), dtype=np.uint8),
     )
-    @patch("hauntedroom.flows.automap.find_template", return_value=(0, 0, 0.0))
-    @patch("hauntedroom.flows.automap.find_template_matches", return_value=[])
-    @patch("hauntedroom.flows.automap.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.automap_support.flow.find_template", return_value=(0, 0, 0.0))
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches", return_value=[])
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
     async def test_map_end_is_checked_at_most_once_per_interval(
         self,
         capture_page_bgr,
@@ -83,8 +85,7 @@ class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
             ["map_end.png"],
         )
         matched_template_names = [
-            call_args.args[2]
-            for call_args in find_template_matches.call_args_list
+            call_args.args[2] for call_args in find_template_matches.call_args_list
         ]
         self.assertEqual(matched_template_names.count("lv_up.png"), 2)
         self.assertEqual(matched_template_names.count("built.png"), 2)

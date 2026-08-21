@@ -38,6 +38,7 @@ khi tab game đang focus:
 | `Shift+1` | Chụp một frame, nhận diện màn hình hiện tại và chạy flow phù hợp. |
 | `Shift+T` | Chạy train mode rồi auto-battle. |
 | `Shift+5` | Lazy-load `--actions` rồi chạy action JSON lặp vô hạn cho đến khi dừng. |
+| `Shift+9` | Chạy macro đặc biệt `spawn_exit_lvup`: vào room, bắt đầu battle, thoát room rồi lặp lại liên tục. |
 | `Shift+8` | Lưu screenshot vào `tests/fixtures/hauntedroom-captures/`; không đổi trạng thái flow. |
 | `Shift+0` | Dừng mềm flow hiện tại và quay lại standby. |
 | `Ctrl+C` | Đóng runner và browser. |
@@ -225,7 +226,7 @@ nhóm test và biết quy ước quản lý screenshot.
 ## Tài liệu liên quan
 
 - [Auto-map internals](AUTOMAP_FLOWS.md)
-- [Map-completion bridge](MAP_COMPLETION_BRIDGE.md)
+- [Map lifecycle](MAP_LIFECYCLE.md)
 - [Hero level-up selection](../tools/rooms/automap/hero_levelup/README.md)
 - [Testing](TESTING.md)
 - [Troubleshooting](TROUBLESHOOTING.md)
