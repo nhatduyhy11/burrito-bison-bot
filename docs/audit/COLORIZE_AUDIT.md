@@ -147,5 +147,5 @@ rg -n -F -e '\033[' -e '\x1b[' tools/hauntedroom -g "*.py"
 Chạy regression suite liên quan trực tiếp:
 
 ```powershell
-python -m pytest tests/automap/test_boss_action.py tests/automap/test_boss_flow.py tests/automap/test_gear.py tests/runner/test_standby_controller.py tests/test_capture_paths.py -q
+python -m pytest tests/automap/test_boss_action.py tests/automap/test_boss_flow.py tests/automap/test_gear.py tests/runner/test_standby_hotkeys.py tests/runner/test_standby_orchestration.py tests/test_capture_paths.py -q
 ```

@@ -128,7 +128,7 @@ Các invariant chính:
 6. Module tầng dưới không import ngược composition root.
 7. Các invariant đã ổn định được khóa bằng
    `tests/test_hauntedroom_architecture.py`; backlog mở rộng coverage nằm trong
-   `docs/REFACTOR.md`, và tài liệu không thay thế test.
+   `docs/refactor_audit/REFACTOR.md`, và tài liệu không thay thế test.
 
 ## Runtime wiring
 

@@ -144,9 +144,8 @@ Findings:
 - Top-level imports and constants in `tools/hauntedroom_runner.py` and
   `tools/hauntedroom/**/*.py` are placed before functions/classes.
 - The only indented imports found are in tests:
-  - `tests/runner/test_standby_controller.py`: imports inside tests that patch
-    or assert reload behavior across `runner/reload.py`,
-    `runner/default_commands.py` and `flows/start_auto.py`.
+  - `tests/runner/test_reload.py`: imports inside tests that patch
+    or assert reload behavior across `runner/reload.py` and its module graph.
   - `tests/automap/test_boss.py`: local import of `find_template` inside one
     test.
 

@@ -24,7 +24,7 @@ uv run --with pytest pytest -q
 Baseline hiện tại:
 
 ```text
-226 passed, 4 skipped, 46 subtests passed
+231 passed, 4 skipped, 82 subtests passed
 ```
 
 Bốn test bị skip đều nằm trong
@@ -56,17 +56,17 @@ Runtime/non-test Python files từ 200 dòng trở lên:
 Test files từ 200 dòng trở lên:
 
 ```text
- 734 tests/runner/test_standby_controller.py
- 327 tests/actions/test_runner.py
-  277 tests/automap/test_map_reward.py
-  262 tests/special_flow/test_artifact_flow.py
-  258 tests/runner/test_start_automap_loop.py
+ 359 tests/runner/test_standby_orchestration.py
+ 342 tests/actions/test_runner.py
+ 277 tests/automap/test_map_reward.py
+ 262 tests/special_flow/test_artifact_flow.py
  258 tests/hero_select/test_hero_choice_policy.py
-  249 tests/automap/test_gear.py
-  244 tests/automap/test_level_up.py
-  229 tests/hero_select/test_hero_action.py
-  222 tests/test_hauntedroom_vision.py
-  205 tests/actions/test_loader.py
+ 258 tests/runner/test_start_automap_loop.py
+ 249 tests/automap/test_gear.py
+ 244 tests/automap/test_level_up.py
+ 229 tests/hero_select/test_hero_action.py
+ 222 tests/test_hauntedroom_vision.py
+ 205 tests/actions/test_loader.py
 ```
 
 Line count chỉ là tín hiệu để review, không tự động đồng nghĩa với
@@ -95,13 +95,6 @@ Mở rộng guard theo dependency rule trong `docs/ARCHITECTURE.md`. Cần biể
 các dependency composite được phép, gồm wiring trong `runner/`, `train.py` và
 dependency có chủ đích từ `screen_detect.py` tới detector boss-progress. ADR chỉ
 là historical decision record, không dùng làm inventory của wiring hiện tại.
-
-### P2. Tách test theo responsibility khi tiếp tục thêm case
-
-`tests/runner/test_standby_controller.py` đang cover validation/formatting,
-command policy, reload policy, screen routing, standby orchestration, click loop
-và listener. Nếu thêm routing hoặc policy, tách theo các responsibility này trước
-để tránh một test module tiếp tục gom nhiều boundary.
 
 ### P3. Làm phẳng state loop của research khi sửa flow này
 

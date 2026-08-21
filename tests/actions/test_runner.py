@@ -1,3 +1,4 @@
+import asyncio
 import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
@@ -14,12 +15,12 @@ from hauntedroom.actions.models import (
     ClickTemplateAction,
 )
 from hauntedroom.actions.runner import run_actions
-from hauntedroom.core.terminal import BLUE
 from hauntedroom.core.template_detection import (
     TemplateWaitResult,
     TemplateWaitStatus,
     wait_for_template,
 )
+from hauntedroom.core.terminal import BLUE
 
 
 class ActionRunnerTest(IsolatedAsyncioTestCase):
@@ -325,3 +326,17 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
         self.assertIs(result.status, TemplateWaitStatus.ALTERNATIVE_MATCHED)
         self.assertIsNone(result.match)
         self.page.wait_for_timeout.assert_not_awaited()
+
+    async def test_pre_set_stop_event_ends_flow_without_clicking(self):
+        stop_event = asyncio.Event()
+        stop_event.set()
+
+        completed = await run_actions(
+            self.page,
+            [ClickAction(x=10, y=20)],
+            loop_count=None,
+            stop_event=stop_event,
+        )
+
+        self.assertFalse(completed)
+        self.page.mouse.click.assert_not_awaited()
