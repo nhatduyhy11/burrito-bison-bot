@@ -374,7 +374,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         self.assertEqual(FLOW_COMMANDS["5"].key, "5")
         self.assertEqual(FLOW_COMMANDS["5"].name, "JSON action loop")
         self.assertEqual(FLOW_COMMANDS["9"].key, "9")
-        self.assertEqual(FLOW_COMMANDS["9"].name, "enter-exit room loop")
+        self.assertEqual(FLOW_COMMANDS["9"].name, "spawn_exit_lvup loop")
         self.assertEqual(
             {
                 screen: command.name
@@ -658,7 +658,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
         )
 
     @patch("hauntedroom.runner.default_commands.reload_policy.get_action_runner")
-    async def test_shift_9_runs_fixed_enter_exit_actions_forever(
+    async def test_shift_9_runs_fixed_spawn_exit_lvup_actions_forever(
         self, get_action_runner
     ):
         page = Mock()
@@ -694,6 +694,7 @@ class StandbyControllerTest(IsolatedAsyncioTestCase):
             resolved.actions,
             loop_count=None,
             stop_event=stop_event,
+            loop_label="spawn_exit_lvup loop",
         )
 
     async def test_stop_event_ends_flow_without_clicking(self):

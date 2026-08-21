@@ -60,8 +60,8 @@ def build_start_battle_actions() -> list[Action]:
     ]
 
 
-def build_enter_exit_actions() -> list[Action]:
-    """Build the fixed room entry/exit cycle used by Shift+9."""
+def build_spawn_exit_lvup_actions() -> list[Action]:
+    """Build the fixed spawn/exit/level-up cycle used by Shift+9."""
     blocker_paths = tuple(
         ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
     )
@@ -111,23 +111,24 @@ class FlowCommand:
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
-    def resolve_enter_exit(
+    def resolve_spawn_exit_lvup(
         _actions: list[Action],
         dev_reload: bool,
         _actions_path: Optional[Path],
     ) -> ResolvedFlow:
         action_runner = reload_policy.get_action_runner(dev_reload)
-        enter_exit_actions = build_enter_exit_actions()
+        spawn_exit_lvup_actions = build_spawn_exit_lvup_actions()
 
         async def run(page, stop_event, _debug: bool):
             return await action_runner(
                 page,
-                enter_exit_actions,
+                spawn_exit_lvup_actions,
                 loop_count=None,
                 stop_event=stop_event,
+                loop_label="spawn_exit_lvup loop",
             )
 
-        return ResolvedFlow(enter_exit_actions, run)
+        return ResolvedFlow(spawn_exit_lvup_actions, run)
 
     def resolve_automap(
         actions: list[Action],
@@ -259,11 +260,11 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     return {
-        "enter_exit": FlowCommand(
-            "enter_exit",
-            "enter-exit room loop",
-            "Enter / exit room loop",
-            resolve_enter_exit,
+        "spawn_exit_lvup": FlowCommand(
+            "spawn_exit_lvup",
+            "spawn_exit_lvup loop",
+            "Spawn / exit / level-up loop",
+            resolve_spawn_exit_lvup,
         ),
         "automap": FlowCommand(
             "automap",

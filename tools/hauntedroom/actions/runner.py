@@ -19,6 +19,7 @@ from hauntedroom.core.runtime import (
     wait_for_flow_timeout,
     wait_with_countdown,
 )
+from hauntedroom.core.terminal import BLUE, colorize
 from hauntedroom.core.template_detection import (
     TemplateWaitStatus,
     wait_for_template,
@@ -211,6 +212,7 @@ def log_action_timeout(
     label: str,
     timeout_count: int,
     loop_count: Optional[int],
+    loop_label: str,
 ) -> bool:
     print(
         f"{label}: timeout count={timeout_count}/2: {error}",
@@ -227,7 +229,7 @@ def log_action_timeout(
         )
     else:
         print(
-            "Skipping the rest of action loop "
+            f"Skipping the rest of {loop_label.lower()} "
             f"{loop_index}/{loop_total}; retrying from the "
             "first action on the next loop.",
             flush=True,
@@ -241,6 +243,7 @@ async def run_actions(
     loop_count: Optional[int] = ACTION_LOOP_COUNT,
     stop_event: Optional[asyncio.Event] = None,
     stop_after_success: bool = False,
+    loop_label: str = "Action loop",
 ) -> bool:
     template_paths = collect_template_paths(actions)
     templates = {path: load_template(path) for path in template_paths}
@@ -253,7 +256,8 @@ async def run_actions(
             return False
         loop_index += 1
         loop_total = "infinite" if loop_count is None else str(loop_count)
-        print(f"Action loop {loop_index}/{loop_total} start", flush=True)
+        start_message = f"{loop_label} {loop_index}/{loop_total} start"
+        print(colorize(start_message, BLUE), flush=True)
         loop_timed_out = False
 
         for action_index, action in enumerate(actions, start=1):
@@ -280,6 +284,7 @@ async def run_actions(
                     label,
                     timeout_count,
                     loop_count,
+                    loop_label,
                 )
                 break
             if not completed:
@@ -289,7 +294,7 @@ async def run_actions(
         if loop_timed_out:
             if loop_count is not None and loop_index >= loop_count:
                 print(
-                    f"Action loop {loop_index}/{loop_total} exhausted after "
+                    f"{loop_label} {loop_index}/{loop_total} exhausted after "
                     "a timeout; returning failure.",
                     flush=True,
                 )
@@ -298,13 +303,14 @@ async def run_actions(
 
         if timeout_count:
             print(
-                f"Action loop {loop_index}/{loop_total} completed successfully; "
+                f"{loop_label} {loop_index}/{loop_total} completed successfully; "
                 "resetting timeout count to 0.",
                 flush=True,
             )
             timeout_count = 0
 
-        print(f"Action loop {loop_index}/{loop_total} finish", flush=True)
+        finish_message = f"{loop_label} {loop_index}/{loop_total} finish"
+        print(colorize(finish_message, BLUE), flush=True)
         if stop_after_success:
             return True
 

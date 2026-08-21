@@ -14,6 +14,7 @@ from hauntedroom.actions.models import (
     ClickTemplateAction,
 )
 from hauntedroom.actions.runner import run_actions
+from hauntedroom.core.terminal import BLUE
 from hauntedroom.core.template_detection import (
     TemplateWaitResult,
     TemplateWaitStatus,
@@ -39,6 +40,33 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             ),
             ClickAction(x=10, y=20),
         ]
+
+    @patch("hauntedroom.actions.runner.print")
+    @patch("hauntedroom.actions.runner.colorize")
+    async def test_loop_count_logs_are_blue_and_support_custom_label(
+        self, colorize, print_mock
+    ):
+        colorize.side_effect = lambda message, _color: f"blue:{message}"
+
+        await run_actions(
+            self.page,
+            [ClickAction(x=10, y=20)],
+            loop_count=1,
+            loop_label="spawn_exit_lvup loop",
+        )
+
+        colorize.assert_has_calls(
+            [
+                call("spawn_exit_lvup loop 1/1 start", BLUE),
+                call("spawn_exit_lvup loop 1/1 finish", BLUE),
+            ]
+        )
+        emitted_messages = [args[0] for args, _kwargs in print_mock.call_args_list]
+        self.assertIn("blue:spawn_exit_lvup loop 1/1 start", emitted_messages)
+        self.assertIn("blue:spawn_exit_lvup loop 1/1 finish", emitted_messages)
+        self.assertFalse(
+            any("Action loop" in message for message in emitted_messages)
+        )
 
     @patch(
         "hauntedroom.actions.runner.load_template",
