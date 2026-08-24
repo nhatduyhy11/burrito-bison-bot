@@ -74,6 +74,9 @@ hoạt động trong trang browser đang focus.
 Ví dụ thường dùng:
 
 ```shell
+# Cách chạy thường dùng nhất
+uv run python tools/hauntedroom_runner.py --dev-reload --profile .tmp/pdd
+
 # Hot-reload code/template/action giữa các lần khởi chạy flow
 uv run python tools/hauntedroom_runner.py --dev-reload
 

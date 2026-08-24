@@ -19,3 +19,7 @@ Planning notes only. Do not treat these as current implementation tasks.
   - [ ] Replace the separate `hero_spin`, `lv_spin`, and related handling with the shared `để đóng` blocker.
   - [ ] Capture live full-screen samples for both the dim-text and clear-text `để đóng` cases to confirm where they occur in the screen flow.
   - [ ] Research whether the detector should use scale matching or separate captured `để đóng` pattern variants.
+- [ ] Add detection for the `hero_pre-enter` screen.
+  - [ ] Support swapping priority 1-2 between Lubu and Hanuman depending on this screen's state.
+- [ ] Add missing screen detection for the hero level up screen.
+- [ ] Add detection for the train screen to integrate it into the screen auto-switching logic.
