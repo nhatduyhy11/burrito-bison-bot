@@ -210,6 +210,23 @@ class HeroChoicePolicyTest(unittest.TestCase):
                 self.assertEqual(choice.fallback_option_count, 3)
                 self.assertEqual((choice.x, choice.y), purple_centers[0])
 
+    def test_lubu_near_threshold_captures_choose_lubu(self):
+        fixture_dir = CAPTURES_DIR / "retest"
+
+        for index in range(1, 5):
+            fixture_path = fixture_dir / f"lubu_miss_{index}.png"
+            with self.subTest(fixture=fixture_path.name):
+                popup = cv2.imread(str(fixture_path))
+                self.assertIsNotNone(popup)
+
+                choice = find_choice(popup)
+
+                self.assertEqual(choice.template_name, "01_dark_lubu.png")
+                self.assertEqual(choice.priority, 1.0)
+                self.assertEqual((choice.x, choice.y), (331, 597))
+                self.assertGreaterEqual(choice.score, 0.69)
+                self.assertLess(choice.score, 0.70)
+
     def test_current_fixture_choices_follow_template_priorities(self):
         cases = [
             ("3_option_hanu_xlubu.png", None, "02_hanuman.png", 2.0, (347, 597)),

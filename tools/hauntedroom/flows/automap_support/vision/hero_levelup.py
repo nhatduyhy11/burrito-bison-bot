@@ -23,6 +23,11 @@ HERO_NAME_TEMPLATE_NAMES = {
     "11_death.png",
     "11_underworld.png",
 }
+HERO_NAME_TEMPLATE_THRESHOLDS = {
+    # Lu Bu's name renders slightly differently in these captures; its known
+    # misses score about 0.696, while observed non-Lu-Bu frames stay below 0.56.
+    "01_dark_lubu.png": 0.69,
+}
 HERO_OPTION_PANEL_TOP = 610
 HERO_OPTION_PANEL_BOTTOM = 655
 HERO_OPTION_MIN_SATURATION = 80
@@ -252,11 +257,12 @@ def find_hero_template_match(
         template_path.name,
         scales=(1.0,),
     )
-    required_score = (
-        HERO_NAME_TEMPLATE_THRESHOLD
-        if template_path.name in HERO_NAME_TEMPLATE_NAMES
-        else threshold
-    )
+    required_score = threshold
+    if template_path.name in HERO_NAME_TEMPLATE_NAMES:
+        required_score = HERO_NAME_TEMPLATE_THRESHOLDS.get(
+            template_path.name,
+            HERO_NAME_TEMPLATE_THRESHOLD,
+        )
     if score < required_score:
         return None
     return x, HERO_LEVELUP_SEARCH_TOP + local_y, score
