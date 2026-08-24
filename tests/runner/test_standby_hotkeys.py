@@ -97,6 +97,37 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
         )
         self.assertIsNone(control.boss_pause_target)
 
+    async def test_repeat_shift_1_stops_special_screen_flows(self):
+        for screen in (
+            ScreenName.RESEARCH,
+            ScreenName.ARTIFACT,
+            ScreenName.EXP_HERO,
+            ScreenName.HERO_AVAILABLE,
+        ):
+            with self.subTest(screen=screen):
+                stop_event = Mock()
+
+                self.assertTrue(
+                    await handle_control_command(
+                        "1",
+                        Mock(),
+                        Mock(),
+                        stop_event,
+                        SCREEN_FLOW_COMMANDS[screen],
+                    )
+                )
+                stop_event.set.assert_called_once_with()
+
+    async def test_repeat_shift_1_does_not_stop_unrelated_flow(self):
+        stop_event = Mock()
+
+        self.assertFalse(
+            await handle_control_command(
+                "1", Mock(), Mock(), stop_event, FLOW_COMMANDS["5"]
+            )
+        )
+        stop_event.set.assert_not_called()
+
     async def test_automap_hotkeys_can_be_remapped_by_config_values(self):
         remapped = {
             "pause_resume": "4",

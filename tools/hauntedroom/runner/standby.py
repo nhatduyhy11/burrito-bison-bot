@@ -159,6 +159,16 @@ async def handle_control_command(
         # intentionally ignored.
         return True
 
+    if (
+        command == "1"
+        and flow_task is not None
+        and current_command is not None
+        and current_command.stops_on_repeat_screen_hotkey
+    ):
+        print("Stopping current flow...", flush=True)
+        stop_event.set()
+        return True
+
     if command == "0":
         if flow_task is None:
             print(colorize("Runner is already idle.", ORANGE), flush=True)
@@ -271,16 +281,6 @@ async def run_standby_controller(
                 )
             else:
                 command = flow_commands.get(command_key)
-                if (
-                    command_key == "1"
-                    and flow_task is not None
-                    and not current_command.uses_automap_controls
-                ):
-                    print(
-                        "Runner busy; press Shift+0 before using Shift+1.",
-                        flush=True,
-                    )
-                    continue
 
             if await handle_control_command(
                 command_key,
@@ -290,6 +290,13 @@ async def run_standby_controller(
                 current_command,
                 start_auto_hotkeys,
             ):
+                continue
+
+            if command_key == "1" and flow_task is not None:
+                print(
+                    "Runner busy; press Shift+0 before using Shift+1.",
+                    flush=True,
+                )
                 continue
 
             if command is None:

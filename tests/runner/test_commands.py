@@ -44,6 +44,19 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
         )
         self.assertNotIn(ScreenName.TRAIN, SCREEN_FLOW_COMMANDS)
         self.assertNotIn(ScreenName.UNKNOWN, SCREEN_FLOW_COMMANDS)
+        self.assertEqual(
+            {
+                screen
+                for screen, command in SCREEN_FLOW_COMMANDS.items()
+                if command.stops_on_repeat_screen_hotkey
+            },
+            {
+                ScreenName.RESEARCH,
+                ScreenName.ARTIFACT,
+                ScreenName.EXP_HERO,
+                ScreenName.HERO_AVAILABLE,
+            },
+        )
 
     @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")
     @patch("hauntedroom.runner.default_commands.reload_policy.get_action_runner")

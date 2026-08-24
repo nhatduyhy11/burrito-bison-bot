@@ -108,6 +108,7 @@ class FlowCommand:
     resolve: FlowResolver
     control_factory: ControlFactory = asyncio.Event
     uses_automap_controls: bool = False
+    stops_on_repeat_screen_hotkey: bool = False
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
@@ -293,12 +294,14 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "EXP available",
             "EXP available",
             resolve_exp_available,
+            stops_on_repeat_screen_hotkey=True,
         ),
         "hero_up_available": FlowCommand(
             "hero_up_available",
             "hero breakthrough available",
             "Hero breakthrough available",
             resolve_hero_up_available,
+            stops_on_repeat_screen_hotkey=True,
         ),
         "json_actions": FlowCommand(
             "json_actions",
@@ -311,11 +314,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "research",
             "Research",
             resolve_research,
+            stops_on_repeat_screen_hotkey=True,
         ),
         "artifact": FlowCommand(
             "artifact",
             "artifact",
             "Artifact",
             resolve_artifact,
+            stops_on_repeat_screen_hotkey=True,
         ),
     }
