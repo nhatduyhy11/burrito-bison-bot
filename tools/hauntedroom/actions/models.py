@@ -98,6 +98,20 @@ class ClickPauseExitAction:
 
 
 @dataclass(frozen=True)
+class ClickMapExitBackAction:
+    """Click the centered yellow button on the post-exit map popup."""
+
+    skip_if_template_path: Optional[Path] = None
+    threshold: float = DEFAULT_TEMPLATE_THRESHOLD
+    timeout_ms: int = DEFAULT_TEMPLATE_TIMEOUT_MS
+    poll_ms: int = DEFAULT_TEMPLATE_POLL_MS
+    delay_ms: int = DEFAULT_CLICK_DELAY_MS
+    note: Optional[str] = None
+
+    type: ClassVar[Literal["click_map_exit_back"]] = "click_map_exit_back"
+
+
+@dataclass(frozen=True)
 class WaitAction:
     ms: int
     note: Optional[str] = None
@@ -111,5 +125,6 @@ Action = Union[
     ClearBlockersAction,
     ClickHeroSelectBattleAction,
     ClickPauseExitAction,
+    ClickMapExitBackAction,
     WaitAction,
 ]

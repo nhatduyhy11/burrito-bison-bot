@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 from hauntedroom.actions.models import (
     ClearBlockersAction,
     ClickHeroSelectBattleAction,
+    ClickMapExitBackAction,
     ClickPauseExitAction,
     ClickTemplateAction,
 )
@@ -49,8 +50,17 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         actions = build_spawn_exit_lvup_actions()
 
         self.assertIsInstance(actions[4], ClickPauseExitAction)
+        self.assertIsInstance(actions[5], ClickMapExitBackAction)
         self.assertNotIn(
             "exit_confirm.png",
+            {
+                action.template_path.name
+                for action in actions
+                if isinstance(action, ClickTemplateAction)
+            },
+        )
+        self.assertNotIn(
+            "exit_back.png",
             {
                 action.template_path.name
                 for action in actions

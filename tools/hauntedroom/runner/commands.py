@@ -7,6 +7,7 @@ from hauntedroom.actions.models import (
     Action,
     ClearBlockersAction,
     ClickHeroSelectBattleAction,
+    ClickMapExitBackAction,
     ClickPauseExitAction,
     ClickTemplateAction,
 )
@@ -76,11 +77,8 @@ def build_spawn_exit_lvup_actions() -> list[Action]:
         ClickPauseExitAction(
             note="Exit confirm",
         ),
-        ClickTemplateAction(
-            template_path=ROOMS_DIR / "exit_back.png",
-            threshold=0.75,
+        ClickMapExitBackAction(
             skip_if_template_path=ROOMS_DIR / "start_home.png",
-            skip_template_scales=(1.0,),
             note="Exit Back",
         ),
         ClearBlockersAction(
