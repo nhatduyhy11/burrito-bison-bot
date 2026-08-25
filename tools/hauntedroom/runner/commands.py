@@ -260,6 +260,26 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_new_account(
+        actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        automap_runtime = reload_policy.get_automap_runtime(dev_reload)
+        new_account_flow = reload_policy.get_new_account_flow(dev_reload)
+
+        async def run(page, stop_event, debug: bool):
+            run_state = MapRunState()
+            return await new_account_flow(
+                page,
+                automap_runtime.automap_flow,
+                stop_event,
+                debug,
+                run_state=run_state,
+            )
+
+        return ResolvedFlow(actions, run)
+
     return {
         "spawn_exit_lvup": FlowCommand(
             "spawn_exit_lvup",
@@ -322,5 +342,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "Artifact",
             resolve_artifact,
             stops_on_repeat_screen_hotkey=True,
+        ),
+        "new_account": FlowCommand(
+            "new_account",
+            "new-account setup then auto-map",
+            "New-account setup then auto-map",
+            resolve_new_account,
+            control_factory=FlowControl,
+            uses_automap_controls=True,
         ),
     }

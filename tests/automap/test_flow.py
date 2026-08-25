@@ -104,12 +104,17 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             total_win=3,
             first_win_done=True,
         )
+        run_state = MapRunState(
+            daily_first_win_done=True,
+            new_account_lubu_popup_active=True,
+        )
         flow = AutomapFlow(
             self.page,
             asyncio.Event(),
             AutomapConfig(),
             build_test_automap_templates(),
             on_win=on_win,
+            run_state=run_state,
         )
 
         with patch(
@@ -130,13 +135,14 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
         self.assertTrue(flow.state.win_recorded)
         self.assertEqual(flow.state.total_win, 3)
         self.assertTrue(flow.run_state.daily_first_win_done)
+        self.assertFalse(flow.run_state.new_account_lubu_popup_active)
 
     @patch(
         "hauntedroom.flows.automap_support.flow.capture_page_bgr",
         new_callable=AsyncMock,
     )
     @patch("hauntedroom.flows.automap_support.flow.find_template")
-    async def test_lubu_close_is_clicked_and_confirmed_before_first_level_up(
+    async def test_new_account_lubu_close_is_clicked_and_confirmed(
         self,
         find_template,
         capture_page_bgr,
@@ -155,9 +161,10 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             asyncio.Event(),
             AutomapConfig(),
             templates,
+            run_state=MapRunState(new_account_lubu_popup_active=True),
         )
 
-        handled = await flow.handle_lubu_close_before_first_lvup(
+        handled = await flow.handle_new_account_lubu_close(
             np.zeros((720, 640, 3), dtype=np.uint8),
             np.zeros((720, 640), dtype=np.uint8),
         )
@@ -169,8 +176,43 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
         self.assertEqual(find_template.call_count, 2)
 
     @patch("hauntedroom.flows.automap_support.flow._handle_level_up")
-    async def test_first_level_up_disables_lubu_close_checks(self, handle_level_up):
+    async def test_first_level_up_keeps_new_account_lubu_close_armed(
+        self, handle_level_up
+    ):
         handle_level_up.return_value = UpgradeOutcome(handled=True)
+        templates = build_test_automap_templates()
+        templates.map_blockers = (
+            (Path("lubu_close.png"), np.zeros((2, 2), dtype=np.uint8)),
+        )
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            templates,
+            run_state=MapRunState(new_account_lubu_popup_active=True),
+        )
+
+        self.assertTrue(
+            await flow.handle_level_up(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+        )
+        self.assertTrue(flow.run_state.new_account_lubu_popup_active)
+
+        with patch(
+            "hauntedroom.flows.automap_support.flow.find_template",
+            return_value=(0, 0, 0.0),
+        ) as find_template:
+            handled = await flow.handle_new_account_lubu_close(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertFalse(handled)
+        find_template.assert_called_once()
+
+    async def test_normal_automap_does_not_check_new_account_lubu_close(self):
         templates = build_test_automap_templates()
         templates.map_blockers = (
             (Path("lubu_close.png"), np.zeros((2, 2), dtype=np.uint8)),
@@ -182,18 +224,10 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             templates,
         )
 
-        self.assertTrue(
-            await flow.handle_level_up(
-                np.zeros((720, 640, 3), dtype=np.uint8),
-                np.zeros((720, 640), dtype=np.uint8),
-            )
-        )
-        self.assertTrue(flow.state.first_lvup)
-
         with patch(
             "hauntedroom.flows.automap_support.flow.find_template"
         ) as find_template:
-            handled = await flow.handle_lubu_close_before_first_lvup(
+            handled = await flow.handle_new_account_lubu_close(
                 np.zeros((720, 640, 3), dtype=np.uint8),
                 np.zeros((720, 640), dtype=np.uint8),
             )

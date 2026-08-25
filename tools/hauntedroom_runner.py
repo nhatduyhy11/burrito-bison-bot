@@ -23,7 +23,10 @@ async def main() -> None:
             "user_data_dir": str(profile_dir),
             "headless": args.headless,
             "viewport": {"width": args.width, "height": args.height},
-            "args": ["--disable-blink-features=AutomationControlled"],
+            "args": [
+                "--disable-blink-features=AutomationControlled",
+                "--hide-crash-restore-bubble",
+            ],
             # The runner only needs cookies/local storage from this profile. A
             # stale game worker can otherwise interfere with a fresh navigation.
             "service_workers": "block",

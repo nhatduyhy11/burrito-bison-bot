@@ -70,6 +70,7 @@ async def run_automap_flow(
     debug: bool = False,
     on_win: Callable[[], int] | None = None,
     run_state: MapRunState | None = None,
+    new_account_lubu_popup_active: bool = False,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -97,6 +98,9 @@ async def run_automap_flow(
     )
     templates = AutomapTemplates.load(config)
     state = MapState()
+    run_state = run_state or MapRunState()
+    if new_account_lubu_popup_active:
+        run_state.new_account_lubu_popup_active = True
     return await AutomapFlow(
         page,
         stop_event,

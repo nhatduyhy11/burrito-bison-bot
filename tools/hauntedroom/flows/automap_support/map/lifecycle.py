@@ -89,6 +89,10 @@ class MapLifecycle:
         if score < MAP_END_TEMPLATE_THRESHOLD:
             return MapEndOutcome(handled=False)
 
+        # This interceptor belongs only to the first new-account battle.
+        # From map end onward, popup cleanup remains owned
+        # by the normal blocker lifecycle below.
+        self.run_state.new_account_lubu_popup_active = False
         print(
             f"Map end at {x},{y}, score={score:.3f}; clicking back to home.",
             flush=True,

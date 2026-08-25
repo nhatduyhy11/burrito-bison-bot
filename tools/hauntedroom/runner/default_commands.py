@@ -22,5 +22,6 @@ SCREEN_FLOW_COMMANDS = {
     ScreenName.ARTIFACT: FLOW_DEFINITIONS["artifact"],
     ScreenName.EXP_HERO: FLOW_DEFINITIONS["exp_available"],
     ScreenName.HERO_AVAILABLE: FLOW_DEFINITIONS["hero_up_available"],
+    ScreenName.NEW_ACCOUNT: FLOW_DEFINITIONS["new_account"],
     ScreenName.AUTOMAP: FLOW_DEFINITIONS["automap"],
 }

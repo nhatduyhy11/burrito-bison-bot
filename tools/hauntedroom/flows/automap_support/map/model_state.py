@@ -44,7 +44,6 @@ class MapState:
     reward_list_title_seen: bool = False
     final_boss_pet_deployed: bool = False
     boss_detection_logged: bool = False
-    first_lvup: bool = False
     initial_gear_unlocked: bool = False
     initial_gear_attempted: bool = False
     initial_gear_placed: bool = False
@@ -63,6 +62,7 @@ class MapRunState:
     """State shared by every map in one runner-owned command invocation."""
 
     daily_first_win_done: bool = False
+    new_account_lubu_popup_active: bool = False
 
 
 @dataclass(frozen=True)

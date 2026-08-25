@@ -100,7 +100,7 @@ class LevelUpTest(IsolatedAsyncioTestCase):
     )
     @patch(
         "hauntedroom.flows.automap_support.flow.find_template",
-        side_effect=[(0, 0, 0.0), (200, 20, 0.92)],
+        side_effect=[(200, 20, 0.92)],
     )
     @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
     @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
@@ -138,7 +138,6 @@ class LevelUpTest(IsolatedAsyncioTestCase):
     @patch(
         "hauntedroom.flows.automap_support.flow.find_template",
         side_effect=[
-            (0, 0, 0.0),
             (0, 0, 0.0),
             (0, 0, 0.0),
             (200, 20, 0.92),

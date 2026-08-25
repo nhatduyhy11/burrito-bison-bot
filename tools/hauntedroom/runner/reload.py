@@ -12,6 +12,7 @@ from hauntedroom.flows import (
     automap,
     exp_available,
     hero_up_available,
+    new_account,
     research,
     train,
 )
@@ -148,6 +149,17 @@ def get_hero_up_available_flow(dev_reload: bool = False):
     )
     print("Hero breakthrough module reloaded.", flush=True)
     return run_hero_up_available_flow
+
+
+def get_new_account_flow(dev_reload: bool = False):
+    if not dev_reload:
+        return new_account.run_new_account_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(vision)
+    reloaded_new_account = importlib.reload(new_account)
+    print("New-account module reloaded.", flush=True)
+    return reloaded_new_account.run_new_account_flow
 
 
 def get_automap_flow(dev_reload: bool = False):

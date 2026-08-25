@@ -14,14 +14,16 @@ from hauntedroom.screen_detect import ScreenName
 
 class CommandPolicyTest(IsolatedAsyncioTestCase):
     def test_auto_switch_automap_flows_use_the_same_flow_control(self):
-        self.assertIs(
-            SCREEN_FLOW_COMMANDS[ScreenName.AUTOMAP].control_factory,
-            FlowControl,
-        )
-        self.assertIs(
-            SCREEN_FLOW_COMMANDS[ScreenName.HOME].control_factory,
-            FlowControl,
-        )
+        for screen in (
+            ScreenName.AUTOMAP,
+            ScreenName.HOME,
+            ScreenName.NEW_ACCOUNT,
+        ):
+            with self.subTest(screen=screen):
+                self.assertIs(
+                    SCREEN_FLOW_COMMANDS[screen].control_factory,
+                    FlowControl,
+                )
 
     def test_direct_hotkeys_and_auto_switched_flows_are_configured(self):
         self.assertEqual(set(FLOW_COMMANDS), {"t", "5", "9"})
@@ -39,6 +41,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
                 ScreenName.ARTIFACT: "artifact",
                 ScreenName.EXP_HERO: "EXP available",
                 ScreenName.HERO_AVAILABLE: "hero breakthrough available",
+                ScreenName.NEW_ACCOUNT: "new-account setup then auto-map",
                 ScreenName.AUTOMAP: "auto-map battle",
             },
         )

@@ -22,6 +22,8 @@ SCREEN_TEMPLATE_DIR = Path(__file__).resolve().parents[1] / "rooms" / "screen_de
 SCREEN_TEMPLATE_THRESHOLD = 0.85
 SCREEN_TEMPLATE_SCALES = (1.0, 0.9, 1.1, 0.67)
 GAME_CONTENT_WIDTH = 405
+NEW_ACCOUNT_ACTION_CLICK = (320, 630)
+NEW_ACCOUNT_ACTION_REGION = (242, 590, 397, 665)
 
 
 class ScreenName(str, Enum):
@@ -31,6 +33,7 @@ class ScreenName(str, Enum):
     EXP_HERO = "exp_hero"
     HERO_AVAILABLE = "hero_avail"
     TRAIN = "train"
+    NEW_ACCOUNT = "new_account"
     AUTOMAP = "automap"
     UNKNOWN = "unknown"
 
@@ -99,6 +102,53 @@ def _absolute_search_region(
     return absolute if x1 < x2 and y1 < y2 else None
 
 
+def find_new_account_action_click(
+    frame_bgr: np.ndarray,
+) -> Optional[tuple[int, int]]:
+    """Find either fixed bottom action used by the new-account screens."""
+    if frame_bgr.ndim != 3 or frame_bgr.shape[:2] != (720, 640):
+        return None
+
+    left, top, right, bottom = NEW_ACCOUNT_ACTION_REGION
+    hsv = cv2.cvtColor(frame_bgr[top:bottom, left:right], cv2.COLOR_BGR2HSV)
+
+    masks = (
+        # Step 1: wide gold `Create character` button.
+        (
+            cv2.inRange(hsv, (8, 100, 100), (40, 255, 255)),
+            lambda x, y, width, height, area: (
+                area >= 3_000
+                and width >= 118
+                and 30 <= height <= 45
+                and y <= 13
+                and 310 <= left + x + width // 2 <= 330
+            ),
+        ),
+        # Step 2: narrower cyan-green `Ready` button.
+        (
+            cv2.inRange(hsv, (65, 40, 120), (100, 255, 255)),
+            lambda x, y, width, height, area: (
+                area >= 700
+                and 45 <= width <= 80
+                and 25 <= height <= 45
+                and 30 <= y <= 45
+                and 310 <= left + x + width // 2 <= 330
+            ),
+        ),
+    )
+    for mask, matches_geometry in masks:
+        component_count, _labels, stats, _centroids = (
+            cv2.connectedComponentsWithStats(mask)
+        )
+        for component in range(1, component_count):
+            x, y, width, height, area = (
+                int(value) for value in stats[component]
+            )
+            if matches_geometry(x, y, width, height, area):
+                return NEW_ACCOUNT_ACTION_CLICK
+    return None
+
+
 def detect_screen(frame_bgr: np.ndarray) -> ScreenName:
     """Return the screen whose unique anchor best matches the current frame."""
     if frame_bgr.size == 0 or frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
@@ -130,6 +180,10 @@ def detect_screen(frame_bgr: np.ndarray) -> ScreenName:
         if score >= best_score:
             best_screen = spec.screen
             best_score = score
+
+    if best_screen is ScreenName.UNKNOWN:
+        if find_new_account_action_click(frame_bgr) is not None:
+            return ScreenName.NEW_ACCOUNT
 
     return best_screen
 

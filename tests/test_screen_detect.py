@@ -11,9 +11,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.screen_detect import (  # noqa: E402
+    NEW_ACCOUNT_ACTION_CLICK,
     ScreenName,
     detect_current_screen,
     detect_screen,
+    find_new_account_action_click,
 )
 
 
@@ -43,6 +45,8 @@ class ScreenDetectionTest(TestCase):
         ),
         ("fixtures/train_flow/train_available.png", ScreenName.TRAIN),
         ("fixtures/train_flow/train_reward.png", ScreenName.TRAIN),
+        ("fixtures/special_flow/new_acc_step1.png", ScreenName.NEW_ACCOUNT),
+        ("fixtures/special_flow/new_acc_step2.png", ScreenName.NEW_ACCOUNT),
         (
             "fixtures/hauntedroom-captures/boss_screen/final_boss_miss.png",
             ScreenName.AUTOMAP,
@@ -61,6 +65,23 @@ class ScreenDetectionTest(TestCase):
         frame = np.zeros((720, 640, 3), dtype=np.uint8)
 
         self.assertEqual(detect_screen(frame), ScreenName.UNKNOWN)
+
+    def test_new_account_steps_share_one_click_position(self):
+        for filename in ("new_acc_step1.png", "new_acc_step2.png"):
+            with self.subTest(filename=filename):
+                frame = cv2.imread(
+                    str(
+                        PROJECT_ROOT
+                        / "tests"
+                        / "fixtures"
+                        / "special_flow"
+                        / filename
+                    )
+                )
+                self.assertEqual(
+                    find_new_account_action_click(frame),
+                    NEW_ACCOUNT_ACTION_CLICK,
+                )
 
     def test_returns_unknown_for_invalid_frame_shape(self):
         frame = np.zeros((720, 640), dtype=np.uint8)

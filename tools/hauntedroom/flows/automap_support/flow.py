@@ -116,13 +116,16 @@ class AutomapFlow:
             find_template_matches_fn=find_template_matches,
         )
 
-    async def handle_lubu_close_before_first_lvup(
+    async def handle_new_account_lubu_close(
         self,
         _frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
-        """Dismiss the Lu Bu popup only while waiting for this map's first level-up."""
-        if self.state.first_lvup or self.lubu_close_template is None:
+        """Dismiss the one-time Lu Bu popup during the new-account map."""
+        if (
+            not self.run_state.new_account_lubu_popup_active
+            or self.lubu_close_template is None
+        ):
             return False
 
         x, y, score = find_template(
@@ -287,8 +290,6 @@ class AutomapFlow:
         )
         if outcome.initial_gear_unlocked:
             self.state.initial_gear_unlocked = True
-        if outcome.handled:
-            self.state.first_lvup = True
         return outcome.handled
 
     async def handle_build_structure(
@@ -314,7 +315,7 @@ class AutomapFlow:
         map_end_handler = self.handle_map_end
         boss_handler = self.handle_boss_critical
         handlers: tuple[SituationHandler, ...] = (
-            self.handle_lubu_close_before_first_lvup,
+            self.handle_new_account_lubu_close,
             self.handle_level_spin_interrupt,
             map_end_handler,
             self.handle_initial_gear,
