@@ -19,6 +19,10 @@ RESEARCH_TEMPLATE_SCALES = (1.0,)
 RESEARCH_POLL_MS = 600
 RESEARCH_AVAILABLE_MAX_MISSES = 4
 RESEARCH_ACTIVE_MAX_MISSES = 4
+# ``research_active.png`` is anchored on the notification badge at the
+# top-right of the activation button.  Click back inside the language-neutral
+# button instead of clicking the template itself.
+RESEARCH_ACTIVE_CLICK_OFFSET = (-40, 5)
 
 
 async def run_research_flow(
@@ -134,4 +138,6 @@ async def run_research_flow(
                 print("Research flow stopped; runner is idle.", flush=True)
                 return False
 
-            await bot_click(page, (x, y))
+            click_x = x + RESEARCH_ACTIVE_CLICK_OFFSET[0]
+            click_y = y + RESEARCH_ACTIVE_CLICK_OFFSET[1]
+            await bot_click(page, (click_x, click_y))

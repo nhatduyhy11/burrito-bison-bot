@@ -7,9 +7,9 @@ Ngày rà soát: 2026-08-25
 Runner hiện tại không dùng OCR. Các flow được gọi là "bắt chữ" thực chất dùng
 OpenCV template matching với những ảnh crop có chứa chữ tiếng Việt.
 
-Trong fixed Python runner Haunted Room hiện tại còn 19 file template phụ thuộc
-ngôn ngữ: 8 template flow/UI thuộc phạm vi audit chính và 11 template hero
-selection được ghi nhận thành một nhóm riêng. Ba điểm vào/thoát từng phụ thuộc
+Trong fixed Python runner Haunted Room hiện tại còn 18 file template phụ thuộc
+ngôn ngữ: 7 template flow/UI thuộc phạm vi audit chính và 11 template hero
+selection được ghi nhận thành một nhóm riêng. Bốn điểm vào/thoát từng phụ thuộc
 chữ đã được thay thế:
 
 - HOME entry xác nhận màn hero-select bằng crop đồ họa không chứa chữ ở góc trái
@@ -18,6 +18,8 @@ chữ đã được thay thế:
   học + HSV.
 - Spawn/exit quay về HOME bằng component vàng hoàn chỉnh ở vùng chặt của popup
   kết quả, không dùng crop chữ và không bắt nhầm nút vàng của game nằm phía dưới.
+- Research active dùng badge `!` gắn với góc phải nút vàng; tọa độ click được
+  offset vào tâm nút nên template không cần chứa label theo ngôn ngữ.
 
 `start_battle.png` vẫn còn được train flow sử dụng. Các asset chỉ còn được JSON
 macro mẫu tham chiếu được gom riêng ở phần cuối; fixed Python flow/auto chính
@@ -41,7 +43,6 @@ scale hoặc palette vẫn có thể làm detector fail.
 | Auto-map / start-auto / train handoff — kết thúc map | `map_end.png`: "Quay lại" | Không nhận ra map đã kết thúc; auto-map tiếp tục polling | Rất cao |
 | Auto-map / start-auto / train handoff — reward | `reward_list_title.png`: phần chữ "mừng" | Có thể không đóng được màn danh sách thưởng | Cao |
 | Auto-map / start-auto / train handoff — daily first win | `daily_first_win.png`: "Không nhắc lại hôm nay" | Không vào isolated flow để tick/confirm prompt; cleanup reward có thể không hoàn tất | Cao |
-| Research screen auto-switch (`Shift+1`) | `research_active.png`: chữ "Kích..." | Có thể cho rằng research active đã biến mất và dừng flow sớm | Trung bình |
 
 ## Nhóm template hero selection
 
@@ -122,6 +123,7 @@ detector của từng screen quyết định.
 - `boss_hp_bar.png`: hình học và gradient của thanh máu.
 - `pet_ready.png`, `pet_active.png`, `spell_ready.png`: icon và glow.
 - `research_available.png`: icon notification.
+- `research_active.png`: badge notification, cạnh phải nút vàng và nền popup.
 - Giá upgrade/build: kiểm tra pixel trắng, vàng và vùng màu, không đọc số/chữ.
 - `Shift+T` train entry: availability dựa vào số pixel màu trong vùng dòng chữ,
   challenge button dựa vào connected component màu vàng. Không match glyph cố
@@ -164,8 +166,7 @@ Phần `ref_cv` là bot mẫu/legacy và không thuộc runner Haunted Room hi�
 3. Các blocker.
 4. `start_battle.png` còn lại trong train flow.
 5. `reward_list_title.png`.
-6. `research_active.png`.
 
 `map_end.png` có khả năng làm toàn bộ vòng lặp start-auto ngừng hoạt động cao
-nhất. Ba detector mới không cần asset chữ theo ngôn ngữ, nhưng vẫn cần fixture
+nhất. Bốn detector mới không cần asset chữ theo ngôn ngữ, nhưng vẫn cần fixture
 mới nếu server khác thay viewport, vị trí banner/nút, scale hoặc palette màu.
