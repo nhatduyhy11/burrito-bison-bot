@@ -5,6 +5,8 @@ from playwright.async_api import Error as PlaywrightError
 from playwright.async_api import BrowserContext, Page
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 
+from hauntedroom.core.terminal import ORANGE, colorize
+
 
 NAVIGATION_ATTEMPTS = 3
 NAVIGATION_TIMEOUT_MS = 15_000
@@ -38,8 +40,11 @@ async def navigate_to_game(
                 raise
 
             print(
-                f"Navigation attempt {attempt}/{attempts} timed out; "
-                "discarding the stuck page and retrying with a new page..."
+                colorize(
+                    f"Navigation attempt {attempt}/{attempts} timed out; "
+                    "discarding the stuck page and retrying with a new page...",
+                    ORANGE,
+                )
             )
             # Keep at least one page alive in a persistent context. Closing its
             # last page can terminate the context (notably when a debugger is

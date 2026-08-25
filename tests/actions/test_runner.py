@@ -14,13 +14,13 @@ from hauntedroom.actions.models import (
     ClickAction,
     ClickTemplateAction,
 )
-from hauntedroom.actions.runner import run_actions
+from hauntedroom.actions.runner import log_action_timeout, run_actions
 from hauntedroom.core.template_detection import (
     TemplateWaitResult,
     TemplateWaitStatus,
     wait_for_template,
 )
-from hauntedroom.core.terminal import BLUE
+from hauntedroom.core.terminal import BLUE, ORANGE
 
 
 class ActionRunnerTest(IsolatedAsyncioTestCase):
@@ -41,6 +41,37 @@ class ActionRunnerTest(IsolatedAsyncioTestCase):
             ),
             ClickAction(x=10, y=20),
         ]
+
+    @patch("hauntedroom.actions.runner.print")
+    @patch("hauntedroom.actions.runner.colorize")
+    async def test_timeout_and_skip_logs_are_orange(self, colorize, print_mock):
+        colorize.side_effect = lambda message, _color: f"orange:{message}"
+
+        log_action_timeout(
+            TimeoutError("timed out"),
+            loop_index=1,
+            loop_total="infinite",
+            label="1.3 (Start Battle)",
+            timeout_count=1,
+            loop_count=None,
+            loop_label="spawn_exit_lvup loop",
+        )
+
+        colorize.assert_has_calls(
+            [
+                call(
+                    "1.3 (Start Battle): timeout count=1/2: timed out",
+                    ORANGE,
+                ),
+                call(
+                    "Skipping the rest of spawn_exit_lvup loop 1/infinite; "
+                    "retrying from the first action on the next loop.",
+                    ORANGE,
+                ),
+            ]
+        )
+        emitted_messages = [args[0] for args, _kwargs in print_mock.call_args_list]
+        self.assertTrue(all(message.startswith("orange:") for message in emitted_messages))
 
     @patch("hauntedroom.actions.runner.print")
     @patch("hauntedroom.actions.runner.colorize")

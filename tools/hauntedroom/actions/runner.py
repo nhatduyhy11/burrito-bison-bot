@@ -24,7 +24,7 @@ from hauntedroom.core.runtime import (
     wait_for_flow_timeout,
     wait_with_countdown,
 )
-from hauntedroom.core.terminal import BLUE, colorize
+from hauntedroom.core.terminal import BLUE, ORANGE, colorize
 from hauntedroom.core.template_detection import (
     TemplateWaitStatus,
     wait_for_template,
@@ -261,23 +261,35 @@ def log_action_timeout(
     loop_label: str,
 ) -> bool:
     print(
-        f"{label}: timeout count={timeout_count}/2: {error}",
+        colorize(
+            f"{label}: timeout count={timeout_count}/2: {error}",
+            ORANGE,
+        ),
         flush=True,
     )
     if timeout_count >= 2:
-        print("Second timeout; stopping runner.", flush=True)
+        print(
+            colorize("Second timeout; stopping runner.", ORANGE),
+            flush=True,
+        )
         raise error
     if loop_count is not None and loop_index >= loop_count:
         print(
-            "Skipping the rest of the final action attempt; "
-            "no retry remains.",
+            colorize(
+                "Skipping the rest of the final action attempt; "
+                "no retry remains.",
+                ORANGE,
+            ),
             flush=True,
         )
     else:
         print(
-            f"Skipping the rest of {loop_label.lower()} "
-            f"{loop_index}/{loop_total}; retrying from the "
-            "first action on the next loop.",
+            colorize(
+                f"Skipping the rest of {loop_label.lower()} "
+                f"{loop_index}/{loop_total}; retrying from the "
+                "first action on the next loop.",
+                ORANGE,
+            ),
             flush=True,
         )
     return True
@@ -340,8 +352,11 @@ async def run_actions(
         if loop_timed_out:
             if loop_count is not None and loop_index >= loop_count:
                 print(
-                    f"{loop_label} {loop_index}/{loop_total} exhausted after "
-                    "a timeout; returning failure.",
+                    colorize(
+                        f"{loop_label} {loop_index}/{loop_total} exhausted "
+                        "after a timeout; returning failure.",
+                        ORANGE,
+                    ),
                     flush=True,
                 )
                 return False
@@ -349,8 +364,11 @@ async def run_actions(
 
         if timeout_count:
             print(
-                f"{loop_label} {loop_index}/{loop_total} completed successfully; "
-                "resetting timeout count to 0.",
+                colorize(
+                    f"{loop_label} {loop_index}/{loop_total} completed "
+                    "successfully; resetting timeout count to 0.",
+                    ORANGE,
+                ),
                 flush=True,
             )
             timeout_count = 0

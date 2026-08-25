@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from hauntedroom.core.terminal import GREEN, colorize
+from hauntedroom.core.terminal import GREEN, ORANGE, colorize
 
 ACTION_LOOP_COUNT = 0
 
@@ -163,6 +163,8 @@ async def save_screenshot(
     saved_message = f"{description} screenshot saved: {resolved_path}"
     if description == "Live":
         saved_message = colorize(saved_message, GREEN)
+    elif description == "Timeout":
+        saved_message = colorize(saved_message, ORANGE)
     print(saved_message, flush=True)
     return resolved_path
 
