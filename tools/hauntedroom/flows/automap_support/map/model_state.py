@@ -44,6 +44,7 @@ class MapState:
     reward_list_title_seen: bool = False
     final_boss_pet_deployed: bool = False
     boss_detection_logged: bool = False
+    first_lvup: bool = False
     initial_gear_unlocked: bool = False
     initial_gear_attempted: bool = False
     initial_gear_placed: bool = False

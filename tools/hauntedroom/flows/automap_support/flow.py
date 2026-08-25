@@ -19,13 +19,12 @@ from hauntedroom.core.template_matching import (
     find_template,
     find_template_matches,
 )
-from hauntedroom.core.terminal import GREEN, RED, colorize
+from hauntedroom.core.terminal import BLUE, GREEN, RED, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.boss_action import deploy_boss_pet
 from hauntedroom.flows.automap_support.boss_flow import (
     handle_boss_critical as _handle_boss_critical,
 )
-from hauntedroom.flows.automap_support.vision.template_config import AutomapConfig
 from hauntedroom.flows.automap_support.gear_action import deploy_initial_gear
 from hauntedroom.flows.automap_support.hero_action import (
     handle_hero_levelup as _handle_hero_levelup,
@@ -36,7 +35,10 @@ from hauntedroom.flows.automap_support.map.model_state import (
     MapState,
 )
 from hauntedroom.flows.automap_support.templates import AutomapTemplates
-from hauntedroom.flows.automap_support.upgrade_action import AUTOMAP_POLL_MS
+from hauntedroom.flows.automap_support.upgrade_action import (
+    AUTOMAP_ACTION_DELAY_MS,
+    AUTOMAP_POLL_MS,
+)
 from hauntedroom.flows.automap_support.upgrade_action import (
     click_level_spin_if_present as _click_level_spin_if_present,
 )
@@ -57,8 +59,11 @@ from hauntedroom.flows.automap_support.vision.gear import find_gear_button
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
     hero_levelup_price_is_available,
 )
+from hauntedroom.flows.automap_support.vision.template_config import AutomapConfig
 
 BOSS_RECHECK_INTERVAL_MS = 400
+LUBU_CLOSE_TEMPLATE_NAME = "lubu_close.png"
+LUBU_CLOSE_TEMPLATE_THRESHOLD = 0.80
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -90,6 +95,14 @@ class AutomapFlow:
         self.templates = templates
         self.state = state or MapState()
         self.run_state = run_state or MapRunState()
+        self.lubu_close_template = next(
+            (
+                template
+                for path, template in templates.map_blockers
+                if path.name == LUBU_CLOSE_TEMPLATE_NAME
+            ),
+            None,
+        )
         self.map_lifecycle = MapLifecycle(
             page,
             stop_event,
@@ -102,6 +115,58 @@ class AutomapFlow:
             find_template_fn=find_template,
             find_template_matches_fn=find_template_matches,
         )
+
+    async def handle_lubu_close_before_first_lvup(
+        self,
+        _frame_bgr: np.ndarray,
+        frame_gray: np.ndarray,
+    ) -> bool:
+        """Dismiss the Lu Bu popup only while waiting for this map's first level-up."""
+        if self.state.first_lvup or self.lubu_close_template is None:
+            return False
+
+        x, y, score = find_template(
+            frame_gray,
+            self.lubu_close_template,
+            LUBU_CLOSE_TEMPLATE_NAME,
+        )
+        if score < LUBU_CLOSE_TEMPLATE_THRESHOLD:
+            return False
+
+        print(
+            colorize(
+                f"Lu Bu close at {x},{y}, score={score:.3f}; clicking, then "
+                f"confirming disappearance in {AUTOMAP_ACTION_DELAY_MS}ms.",
+                BLUE,
+            ),
+            flush=True,
+        )
+        await _click(self.page, x, y)
+        if not await wait_for_flow_timeout(
+            self.page,
+            AUTOMAP_ACTION_DELAY_MS,
+            self.stop_event,
+        ):
+            return True
+
+        confirm_frame = _to_grayscale(await capture_page_bgr(self.page))
+        _, _, confirm_score = find_template(
+            confirm_frame,
+            self.lubu_close_template,
+            LUBU_CLOSE_TEMPLATE_NAME,
+        )
+        if confirm_score < LUBU_CLOSE_TEMPLATE_THRESHOLD:
+            print(
+                colorize("Lu Bu close disappeared; resuming auto-map.", BLUE),
+                flush=True,
+            )
+        else:
+            print(
+                f"Lu Bu close is still present, score={confirm_score:.3f}; "
+                "will retry.",
+                flush=True,
+            )
+        return True
 
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
         return await _click_level_spin_if_present(
@@ -222,6 +287,8 @@ class AutomapFlow:
         )
         if outcome.initial_gear_unlocked:
             self.state.initial_gear_unlocked = True
+        if outcome.handled:
+            self.state.first_lvup = True
         return outcome.handled
 
     async def handle_build_structure(
@@ -247,6 +314,7 @@ class AutomapFlow:
         map_end_handler = self.handle_map_end
         boss_handler = self.handle_boss_critical
         handlers: tuple[SituationHandler, ...] = (
+            self.handle_lubu_close_before_first_lvup,
             self.handle_level_spin_interrupt,
             map_end_handler,
             self.handle_initial_gear,

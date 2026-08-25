@@ -57,6 +57,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         "hauntedroom.flows.automap_support.flow.find_template",
         side_effect=[
             (0, 0, 0.0),
+            (0, 0, 0.0),
             (300, 400, 0.91),
             (0, 0, 0.0),
             (138, 37, 0.99),
@@ -117,7 +118,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
                 call(318, 237),
             ],
         )
-        self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
+        self.assertEqual(find_template.call_args_list[2].args[2], "map_end.png")
         reward_call = find_template_matches.call_args_list[0]
         self.assertEqual(reward_call.args[2], "win_reward.png")
         self.assertEqual(
@@ -210,7 +211,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
                 call(*WIN_REWARD_FOLLOWUP_CLICK),
             ],
         )
-        self.assertEqual(find_template.call_args_list[1].args[2], "map_end.png")
+        self.assertEqual(find_template.call_args_list[2].args[2], "map_end.png")
         self.assertEqual(find_template_matches.call_count, 3)
         self.assertEqual(
             self.page.wait_for_timeout.await_args_list,
@@ -224,6 +225,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
     @patch(
         "hauntedroom.flows.automap_support.flow.find_template",
         side_effect=[
+            (0, 0, 0.0),
             (0, 0, 0.0),
             (300, 400, 0.91),
             (138, 37, 0.99),

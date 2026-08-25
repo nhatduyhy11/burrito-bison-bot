@@ -16,10 +16,17 @@ from hauntedroom.flows.automap import (
     AutomapConfig,
     AutomapFlow,
 )
-from hauntedroom.flows.automap_support.flow import BOSS_RECHECK_INTERVAL_MS
-from hauntedroom.flows.automap_support.map.model_state import MapState
+from hauntedroom.flows.automap_support.flow import (
+    BOSS_RECHECK_INTERVAL_MS,
+    LUBU_CLOSE_TEMPLATE_THRESHOLD,
+)
+from hauntedroom.flows.automap_support.map.model_state import MapRunState, MapState
 from hauntedroom.flows.automap_support.templates import AutomapTemplates
-from hauntedroom.flows.automap_support.map.model_state import MapRunState
+from hauntedroom.flows.automap_support.upgrade_action import (
+    AUTOMAP_ACTION_DELAY_MS,
+    UpgradeOutcome,
+)
+
 from tests.automap.template_factory import build_test_automap_templates
 
 
@@ -123,6 +130,76 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
         self.assertTrue(flow.state.win_recorded)
         self.assertEqual(flow.state.total_win, 3)
         self.assertTrue(flow.run_state.daily_first_win_done)
+
+    @patch(
+        "hauntedroom.flows.automap_support.flow.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.flows.automap_support.flow.find_template")
+    async def test_lubu_close_is_clicked_and_confirmed_before_first_level_up(
+        self,
+        find_template,
+        capture_page_bgr,
+    ):
+        templates = build_test_automap_templates()
+        templates.map_blockers = (
+            (Path("lubu_close.png"), np.zeros((2, 2), dtype=np.uint8)),
+        )
+        find_template.side_effect = [
+            (420, 180, LUBU_CLOSE_TEMPLATE_THRESHOLD + 0.1),
+            (0, 0, LUBU_CLOSE_TEMPLATE_THRESHOLD - 0.1),
+        ]
+        capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            templates,
+        )
+
+        handled = await flow.handle_lubu_close_before_first_lvup(
+            np.zeros((720, 640, 3), dtype=np.uint8),
+            np.zeros((720, 640), dtype=np.uint8),
+        )
+
+        self.assertTrue(handled)
+        self.page.mouse.click.assert_awaited_once_with(420, 180)
+        self.page.wait_for_timeout.assert_awaited_once_with(AUTOMAP_ACTION_DELAY_MS)
+        capture_page_bgr.assert_awaited_once_with(self.page)
+        self.assertEqual(find_template.call_count, 2)
+
+    @patch("hauntedroom.flows.automap_support.flow._handle_level_up")
+    async def test_first_level_up_disables_lubu_close_checks(self, handle_level_up):
+        handle_level_up.return_value = UpgradeOutcome(handled=True)
+        templates = build_test_automap_templates()
+        templates.map_blockers = (
+            (Path("lubu_close.png"), np.zeros((2, 2), dtype=np.uint8)),
+        )
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            templates,
+        )
+
+        self.assertTrue(
+            await flow.handle_level_up(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+        )
+        self.assertTrue(flow.state.first_lvup)
+
+        with patch(
+            "hauntedroom.flows.automap_support.flow.find_template"
+        ) as find_template:
+            handled = await flow.handle_lubu_close_before_first_lvup(
+                np.zeros((720, 640, 3), dtype=np.uint8),
+                np.zeros((720, 640), dtype=np.uint8),
+            )
+
+        self.assertFalse(handled)
+        find_template.assert_not_called()
 
     @patch(
         "hauntedroom.flows.automap_support.flow.capture_page_bgr",
