@@ -239,7 +239,12 @@ async def finish_map(
         if step is MapLifecycleStep.STOP:
             break
 
-        step = await reward.handle_reward_list(context.reward, state, frame_gray)
+        step = await reward.handle_reward_list(
+            context.reward,
+            state,
+            frame_bgr,
+            frame_gray,
+        )
         if step is MapLifecycleStep.CONTINUE:
             continue
         if step is MapLifecycleStep.STOP:
@@ -250,7 +255,7 @@ async def finish_map(
             if outcome is not None:
                 return outcome
 
-        step = await reward.handle_reward_followup(context.reward, state)
+        step = await reward.handle_reward_followup(context.reward, state, frame_gray)
         if step is MapLifecycleStep.CONTINUE:
             continue
         if step is MapLifecycleStep.STOP:

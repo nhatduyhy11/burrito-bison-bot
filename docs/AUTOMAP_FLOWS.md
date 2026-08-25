@@ -89,12 +89,11 @@ các nhánh retry canonical nằm trong [Map lifecycle](MAP_LIFECYCLE.md).
 
 | Tình huống | Hành vi | Ảnh hưởng tới loop kế tiếp |
 |---|---|---|
-| Thấy `win_reward.png` | Chỉ match đầu tiên được dùng; click ở mép trên template, lưu vị trí click và gọi `on_win()` đúng một lần trong map hiện tại. | Chưa được chạy map mới; bridge tiếp tục dọn reward-list và chờ home. |
-| Reward đã click nhưng title chưa xuất hiện | Không scan/ghi nhận reward lần nữa; click lại vị trí reward đã lưu sau mỗi `2 giây`. | Giữ bridge ở map hiện tại cho tới khi title xuất hiện hoặc flow bị stop. |
-| `reward_list_title.png` còn hiện | Tìm trong region `(180, 200, 460, 300)`, click top-middle, đánh dấu `title_seen` và kiểm tra lại sau `2 giây`. Nếu popup vẫn còn thì click lại. | Chỉ khi title biến mất mới tiến tới home/fallback check. |
-| Không thấy reward và title | Chờ `3 giây` rồi click `(220, 560)`, tối đa hai lần. | Cho UI có cơ hội đóng animation/popup trước khi kiểm tra blocker và home. |
+| Thấy `win_reward.png` | Dùng match như visual hint, nhưng click hotspot tương đối `(50% width, 65% height)` thay vì click icon. Chưa ghi nhận win. | Chụp frame mới để chờ popup reward-list xác nhận. |
+| Không thấy icon reward | Vẫn chờ `3 giây` rồi click cùng hotspot tương đối; tổng số click hotspot tối đa hai lần. | Icon/template không còn là gate của collect flow. |
+| Reward-list xuất hiện | Primary detector kiểm tra tỷ lệ panel đỏ trong ROI tương đối; `reward_list_title.png` chỉ là compatibility fallback. Gọi `on_win()` đúng một lần sau confirmation rồi click đóng popup. | Chỉ khi popup đã từng được xác nhận và nay biến mất mới tiến tới home check. |
 | Có post-map blocker | Sau hai fallback click, tìm các template trong `rooms/blocker/`, click blocker đầu tiên match rồi scan lại. `overlay_newbie.png` dùng vị trí `top_middle`; blocker khác dùng tâm. | Không đánh dấu hoàn tất khi blocker còn che home. |
-| Home xuất hiện mà không thấy reward | Vẫn có thể trả `completed=True` sau fallback/blocker cleanup. `win_recorded` giữ `False`, vì vậy win count không tăng. | Start-auto vẫn có thể tiếp tục map sau vì completion và win-count là hai contract độc lập. |
+| Home xuất hiện mà không xác nhận được popup | Vẫn có thể trả `completed=True` sau hotspot/blocker cleanup. `win_recorded` giữ `False`, vì vậy win count không tăng. | Start-auto vẫn có thể tiếp tục map sau vì completion và win-count là hai contract độc lập. |
 
 #### Daily first-win
 

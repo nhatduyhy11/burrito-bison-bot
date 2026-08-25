@@ -38,7 +38,7 @@ ANSI hard-code nào khác trong package Haunted Room.
 | `Live screenshot saved: ...` | `core/runtime.py:202` | Chỉ `description == "Live"`; timeout/fallback screenshot vẫn plain |
 | `>>> [N] win` | `flows/automap.py:441` | Win counter |
 | `Pet summon is active at ...; clicking it.` | `automap_support/boss_action.py:95` | Pet summon đã match threshold |
-| `Win reward detected; win recorded.` | `map/reward.py` | Reward được xác nhận |
+| `Reward popup confirmed; win recorded.` | `map/reward.py` | Popup reward được xác nhận |
 | `[autoswitch] screen=...; no flow started.` | `runner/standby.py:245` | Green dù không start flow |
 | `[autoswitch] screen=... -> ...` | `runner/standby.py:254` | Auto-switch thành công |
 | `[screen_detect] screen=...` | `screen_detect.py:142` | Green cho cả kết quả `unknown` |

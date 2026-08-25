@@ -94,10 +94,10 @@ ngay cả khi cleanup cuối cùng trả `completed=False`; caller phải đọc
 
 | State | Phạm vi sống | Vai trò |
 |---|---|---|
-| `reward_click_position` | Một map | Disable scan reward lần hai và làm tọa độ retry trong lúc chờ reward-list. |
-| `reward_list_title_seen` | Một map | Cho phép probe home sớm sau khi title biến mất. |
-| `reward_followup_click_count` | Một map | Giới hạn fallback click ở đúng hai lần. |
-| `win_recorded` | Một map | Đảm bảo `on_win()` chỉ chạy một lần cho reward screen của map đó. |
+| `reward_click_position` | Một map | Disable scan reward lần hai và lưu hotspot tương đối đã click. |
+| `reward_list_title_seen` | Một map | Ghi nhận popup đã được xác nhận và cho phép probe home sau khi popup biến mất. |
+| `reward_followup_click_count` | Một map | Giới hạn tổng số click hotspot ở đúng hai lần. |
+| `win_recorded` | Một map | Đảm bảo `on_win()` chỉ chạy một lần sau khi popup reward-list được xác nhận. |
 | `completed` | Một map | Kết quả home-ready gate; không suy ra từ `win_recorded`. |
 | `daily_first_win_done` | Một command run | Bỏ qua daily prompt ở các map sau trong cùng command invocation. |
 
@@ -143,23 +143,19 @@ flowchart TD
     CP -- running --> CAP[Vision input: capture BGR<br/>convert grayscale]
 
     CAP --> WR{Vision: win_reward<br/>first match at least 0.85?}
-    WR -- yes --> WRA[Business: record win once<br/>Action: click reward top-middle<br/>wait 2s]
+    WR -- yes --> WRA[Action: click relative hotspot<br/>50% width, 65% height<br/>wait 2s]
     WRA --> CP
     WR -- no --> FW[Daily first-win handler]
     FW -- CONTINUE --> CP
     FW -- STOP --> X
-    FW -- NOT_HANDLED --> RT{Vision: reward-list title<br/>in ROI at least 0.90?}
+    FW -- NOT_HANDLED --> RT{Vision: red reward panel<br/>or title compatibility fallback?}
 
-    RT -- yes --> RTA[Action: click title top-middle<br/>Business: title_seen=true<br/>wait 2s]
+    RT -- yes --> RTA[Business: record win once<br/>Action: dismiss popup<br/>popup_seen=true, wait 2s]
     RTA --> CP
-    RT -- no --> RR{Business: reward position saved<br/>and title never seen?}
-    RR -- yes --> RRA[Action: click saved reward position<br/>wait 2s]
-    RRA --> CP
-
-    RR -- no --> EH{Business: title was seen?<br/>Vision: home at least 0.90?}
+    RT -- no --> EH{Business: popup was seen?<br/>Vision: home at least 0.90?}
     EH -- yes --> OK[Outcome: completed=true]
     EH -- no --> FC{Business: two fallback<br/>clicks already used?}
-    FC -- no --> FCA[Runtime: wait 3s<br/>Action: click 220,560]
+    FC -- no --> FCA[Runtime: wait 3s<br/>Action: click relative hotspot]
     FCA --> CP
 
     FC -- yes --> BL{Vision: first blocker<br/>in configured priority?}
@@ -173,14 +169,15 @@ flowchart TD
 
 Hai home gate dùng cùng một home visual query:
 
-- Gate sớm chỉ chạy khi reward-list title đã từng xuất hiện và hiện đã biến
+- Gate sớm chỉ chạy khi reward-list popup đã từng xuất hiện và hiện đã biến
   mất.
 - Gate cuối chỉ chạy sau khi hai fallback click đã dùng hết và không có blocker
   match.
 
-Nếu chưa từng thấy reward-list title, lifecycle không check generic home trước
-khi thực hiện đủ hai fallback click. Vì vậy đường đi thẳng về home vẫn có thể
-chờ `2 x 3 giây` và click `(220, 560)` hai lần trước khi complete.
+Nếu chưa từng thấy reward-list popup, lifecycle không check generic home trước
+khi thực hiện đủ hai click hotspot. Vì vậy đường đi thẳng về home vẫn có thể
+chờ `2 x 3 giây` và click hotspot `(50% width, 65% height)` hai lần trước khi
+complete.
 
 ## Daily first-win
 
@@ -189,9 +186,9 @@ checkbox ở trạng thái checked rồi mới decline; visual chưa rõ thì ch
 không click mù. Thành công trả `CONTINUE` và đánh dấu done cho cả command run;
 không có prompt trả `NOT_HANDLED`, còn checkpoint/wait bị ngắt trả `STOP`.
 
-Nếu win reward xuất hiện trước daily prompt, reward handler cũng đánh dấu
-first-win done để các map sau không tìm lại prompt. Trạng thái này không thay thế
-home-ready gate.
+Khi reward-list popup xác nhận win mà daily prompt không xuất hiện, reward handler
+đánh dấu first-win done để các map sau không tìm lại prompt. Trạng thái này không
+thay thế home-ready gate.
 
 ## Reward, blocker và home-ready
 
@@ -199,26 +196,27 @@ home-ready gate.
 
 - Vision tìm `map_win/win_reward.png` ở scale `1.0`, threshold `0.85` và chỉ dùng
   match đầu tiên.
-- Business chỉ gọi `on_win()` nếu `win_recorded=False`.
-- Action click top-middle của reward, lưu tọa độ và chờ `2 giây`.
+- Match chỉ là visual hint; nó không còn ghi nhận win.
+- Action click hotspot tương đối `(50% width, 65% height)`, lưu tọa độ và chờ
+  `2 giây`.
 - Khi đã có `reward_click_position`, win-reward query bị disable cho phần còn lại
   của map.
 
 ### Reward-list
 
-- Vision tìm `reward_list_title.png` trong ROI `(180, 200, 460, 300)`, scale
-  `1.0`, threshold `0.90`.
-- Khi title hiện, action click top-middle, đặt `reward_list_title_seen=True`, chờ
-  `2 giây` và capture lại.
-- Nếu reward đã click nhưng title chưa từng match, action click lại vị trí reward
-  cũ sau mỗi `2 giây`.
-- Khi title đã từng hiện nhưng nay biến mất, handler trả `NOT_HANDLED`; lifecycle
+- Primary vision đo tỷ lệ pixel đỏ HSV trong panel ROI tương đối; threshold là
+  `0.50`, không phụ thuộc text/ngôn ngữ.
+- `reward_list_title.png` trong ROI `(180, 200, 460, 300)`, scale `1.0`, threshold
+  `0.90` chỉ còn là compatibility fallback cho theme panel khác.
+- Khi popup hiện, business gọi `on_win()` đúng một lần; action click vị trí dismiss
+  tương đối, đặt `reward_list_title_seen=True`, chờ `2 giây` và capture lại.
+- Khi popup đã từng hiện nhưng nay biến mất, handler trả `NOT_HANDLED`; lifecycle
   được quyền probe home trên frame đó.
 
 ### Fallback và blocker
 
-- Nếu các phase trước không handle frame, lifecycle chờ `3 giây` rồi click cố
-  định `(220, 560)`, tối đa hai lần cho mỗi map.
+- Nếu các phase trước không handle frame, lifecycle chờ `3 giây` rồi click hotspot
+  tương đối `(50% width, 65% height)`, tối đa hai lần cho mỗi map.
 - Sau hai click, vision tìm blocker theo priority config. `overlay_newbie.png`
   click `top_middle`; blocker còn lại click center.
 - Action blocker thành công luôn dẫn tới capture frame mới trước khi thử home.
@@ -239,16 +237,11 @@ mong đợi.
 
 | Điểm có thể kẹt | Điều kiện | Vì sao không tới home gate |
 |---|---|---|
-| Reward-position retry | Đã lưu reward position nhưng title chưa từng match. | Reward-list handler luôn click lại rồi trả `CONTINUE`, kể cả khi home đã hiện. |
 | Daily first-win isolated loop | Label biến mất giữa chừng hoặc cả checked/unchecked đều không đạt `0.95`. | Sub-flow tự wait/capture và chưa trả quyền cho lifecycle. |
-| Reward title | Popup không đóng hoặc template false-positive liên tục. | Mỗi vòng click title rồi `CONTINUE`. |
+| Reward popup | Popup không đóng hoặc detector false-positive liên tục. | Mỗi vòng click dismiss rồi `CONTINUE`. |
 | Blocker | Click không đóng blocker hoặc template false-positive. | Mỗi vòng click blocker rồi `CONTINUE`; home gate nằm sau blocker. |
 | Home false-negative | Asset, scale hoặc overlay làm `start_home.png` miss. | Không có completion signal thay thế. |
-| Hardcoded fallback | Layout đổi khiến `(220, 560)` trỏ vào control khác. | Hai action có thể đưa UI sang state ngoài state machine. |
-
-Rủi ro lớn nhất là đường `reward clicked -> title skipped -> home visible`: vị
-trí reward được click lại vô hạn nên lifecycle không probe home. Đây là hành vi
-hiện tại, không phải guardrail mong muốn.
+| Relative hotspot | Layout đổi mạnh khiến `(50% width, 65% height)` rời vùng reward. | Hai action có thể đưa UI sang state ngoài state machine, nhưng retry vẫn bị giới hạn. |
 
 Khi cải tiến liveness, cân nhắc:
 
