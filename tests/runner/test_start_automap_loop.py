@@ -11,6 +11,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 from hauntedroom.actions.models import (
     ClearBlockersAction,
     ClickHeroSelectBattleAction,
+    ClickPauseExitAction,
     ClickTemplateAction,
 )
 from hauntedroom.core.runtime import FlowControl
@@ -21,7 +22,10 @@ from hauntedroom.flows.start_auto import (
     run_start_automap_loop,
 )
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
-from hauntedroom.runner.commands import build_start_battle_actions
+from hauntedroom.runner.commands import (
+    build_spawn_exit_lvup_actions,
+    build_start_battle_actions,
+)
 
 
 class StartAutomapLoopTest(IsolatedAsyncioTestCase):
@@ -39,6 +43,19 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         self.assertNotIn(
             "start_battle.png",
             {path.name for path in actions[2].blocker_paths},
+        )
+
+    def test_spawn_exit_uses_language_agnostic_pause_button_pair(self):
+        actions = build_spawn_exit_lvup_actions()
+
+        self.assertIsInstance(actions[4], ClickPauseExitAction)
+        self.assertNotIn(
+            "exit_confirm.png",
+            {
+                action.template_path.name
+                for action in actions
+                if isinstance(action, ClickTemplateAction)
+            },
         )
 
     async def test_loss_detector_is_currently_a_false_placeholder(self):

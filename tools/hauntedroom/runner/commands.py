@@ -7,6 +7,7 @@ from hauntedroom.actions.models import (
     Action,
     ClearBlockersAction,
     ClickHeroSelectBattleAction,
+    ClickPauseExitAction,
     ClickTemplateAction,
 )
 from hauntedroom.core.runtime import FlowControl
@@ -72,8 +73,7 @@ def build_spawn_exit_lvup_actions() -> list[Action]:
             timeout_ms=60_000,
             note="Exit click",
         ),
-        ClickTemplateAction(
-            template_path=ROOMS_DIR / "exit_confirm.png",
+        ClickPauseExitAction(
             note="Exit confirm",
         ),
         ClickTemplateAction(

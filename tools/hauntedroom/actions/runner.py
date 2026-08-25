@@ -10,9 +10,11 @@ from hauntedroom.actions.models import (
     ClearBlockersAction,
     ClickAction,
     ClickHeroSelectBattleAction,
+    ClickPauseExitAction,
     ClickTemplateAction,
     WaitAction,
 )
+from hauntedroom.actions.pause_exit import click_pause_exit
 from hauntedroom.control_events.blockers import clear_blockers
 from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
@@ -215,6 +217,15 @@ async def execute_action(
             poll_ms=action.poll_ms,
             delay_ms=action.delay_ms,
             click_positions=action.click_positions,
+            label=label,
+            stop_event=stop_event,
+        )
+    if isinstance(action, ClickPauseExitAction):
+        return await click_pause_exit(
+            page=page,
+            timeout_ms=action.timeout_ms,
+            poll_ms=action.poll_ms,
+            delay_ms=action.delay_ms,
             label=label,
             stop_event=stop_event,
         )

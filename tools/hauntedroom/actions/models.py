@@ -86,6 +86,18 @@ class ClickHeroSelectBattleAction:
 
 
 @dataclass(frozen=True)
+class ClickPauseExitAction:
+    """Wait for the pause popup's button pair and click its red exit button."""
+
+    timeout_ms: int = DEFAULT_TEMPLATE_TIMEOUT_MS
+    poll_ms: int = DEFAULT_TEMPLATE_POLL_MS
+    delay_ms: int = DEFAULT_CLICK_DELAY_MS
+    note: Optional[str] = None
+
+    type: ClassVar[Literal["click_pause_exit"]] = "click_pause_exit"
+
+
+@dataclass(frozen=True)
 class WaitAction:
     ms: int
     note: Optional[str] = None
@@ -98,5 +110,6 @@ Action = Union[
     ClickTemplateAction,
     ClearBlockersAction,
     ClickHeroSelectBattleAction,
+    ClickPauseExitAction,
     WaitAction,
 ]
