@@ -20,6 +20,7 @@ from hauntedroom.core.template_matching import (
 )
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.train_select import TrainHeroMatcher
+from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
 
 
 TRAIN_AVAILABLE_REGION = (126, 196, 222, 213)
@@ -27,15 +28,13 @@ TRAIN_AVAILABLE_MIN_TEXT_PIXELS = 30
 # The train challenge button is yellow only while it can be pressed. Detect its
 # live bounding box instead of trusting a fixed point from a different screen.
 TRAIN_CHALLENGE_REGION = (320, 620, 480, 680)
-TRAIN_CHALLENGE_HUE_MIN = 15
-TRAIN_CHALLENGE_HUE_MAX = 40
-TRAIN_CHALLENGE_SATURATION_MIN = 80
-TRAIN_CHALLENGE_VALUE_MIN = 100
-TRAIN_CHALLENGE_MIN_AREA = 2_000
-TRAIN_CHALLENGE_MIN_WIDTH = 80
-TRAIN_CHALLENGE_MAX_WIDTH = 140
-TRAIN_CHALLENGE_MIN_HEIGHT = 20
-TRAIN_CHALLENGE_MAX_HEIGHT = 50
+TRAIN_CHALLENGE_GEOMETRY = ButtonGeometry(
+    min_area=2_000,
+    min_width=80,
+    max_width=140,
+    min_height=20,
+    max_height=50,
+)
 TRAIN_ENTRY_SETTLE_MS = 2_000
 TRAIN_BATTLE_LOAD_MS = 5_000
 TRAIN_START_BATTLE_TIMEOUT_MS = 30_000
@@ -71,32 +70,13 @@ def find_train_challenge_click(
     if frame_bgr.ndim != 3 or frame_bgr.shape[:2] != (720, 640):
         return None
 
-    left, top, right, bottom = TRAIN_CHALLENGE_REGION
-    hsv = cv2.cvtColor(frame_bgr[top:bottom, left:right], cv2.COLOR_BGR2HSV)
-    mask = (
-        (hsv[:, :, 0] >= TRAIN_CHALLENGE_HUE_MIN)
-        & (hsv[:, :, 0] <= TRAIN_CHALLENGE_HUE_MAX)
-        & (hsv[:, :, 1] >= TRAIN_CHALLENGE_SATURATION_MIN)
-        & (hsv[:, :, 2] >= TRAIN_CHALLENGE_VALUE_MIN)
-    ).astype(np.uint8)
-
-    component_count, _labels, stats, _centroids = cv2.connectedComponentsWithStats(
-        mask
+    button = find_colored_button(
+        frame_bgr,
+        TRAIN_CHALLENGE_REGION,
+        "yellow",
+        TRAIN_CHALLENGE_GEOMETRY,
     )
-    candidates: list[tuple[int, int, int, int, int]] = []
-    for component in range(1, component_count):
-        x, y, width, height, area = (int(value) for value in stats[component])
-        if (
-            area >= TRAIN_CHALLENGE_MIN_AREA
-            and TRAIN_CHALLENGE_MIN_WIDTH <= width <= TRAIN_CHALLENGE_MAX_WIDTH
-            and TRAIN_CHALLENGE_MIN_HEIGHT <= height <= TRAIN_CHALLENGE_MAX_HEIGHT
-        ):
-            candidates.append((area, x, y, width, height))
-
-    if not candidates:
-        return None
-    _area, x, y, width, height = max(candidates)
-    return left + x + width // 2, top + y + height // 2
+    return button.center if button is not None else None
 
 
 async def run_train_flow(

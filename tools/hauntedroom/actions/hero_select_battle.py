@@ -18,10 +18,9 @@ from hauntedroom.core.runtime import (
 from hauntedroom.core.template_matching import ClickPosition, find_template
 from hauntedroom.core.vision import (
     ColorComponentMatch,
-    ColorComponentPattern,
     capture_page_bgr,
-    find_color_component,
 )
+from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
 
 
 # The title text changes by locale. Match only the text-free left corner of
@@ -29,9 +28,7 @@ from hauntedroom.core.vision import (
 HERO_SELECT_HEADER_REGION = (210, 10, 430, 90)
 HERO_SELECT_HEADER_THRESHOLD = 0.80
 BATTLE_START_BUTTON_REGION = (230, 650, 410, 719)
-BATTLE_START_BUTTON_PATTERN = ColorComponentPattern(
-    lower_hsv=(15, 80, 100),
-    upper_hsv=(40, 255, 255),
+BATTLE_START_BUTTON_GEOMETRY = ButtonGeometry(
     min_area=2_400,
     min_width=95,
     max_width=130,
@@ -58,10 +55,11 @@ def find_hero_select_battle_button(
     )
     if header_score < HERO_SELECT_HEADER_THRESHOLD:
         return None
-    return find_color_component(
+    return find_colored_button(
         image,
         BATTLE_START_BUTTON_REGION,
-        BATTLE_START_BUTTON_PATTERN,
+        "yellow",
+        BATTLE_START_BUTTON_GEOMETRY,
     )
 
 

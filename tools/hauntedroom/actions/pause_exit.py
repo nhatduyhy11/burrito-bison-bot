@@ -17,16 +17,13 @@ from hauntedroom.core.runtime import (
 from hauntedroom.core.template_matching import find_template
 from hauntedroom.core.vision import (
     ColorComponentMatch,
-    ColorComponentPattern,
     capture_page_bgr,
-    find_color_component,
 )
+from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
 
 
 PAUSE_EXIT_RED_REGION = (180, 600, 325, 665)
-PAUSE_EXIT_RED_PATTERN = ColorComponentPattern(
-    lower_hsv=(165, 80, 80),
-    upper_hsv=(179, 255, 255),
+PAUSE_EXIT_RED_GEOMETRY = ButtonGeometry(
     min_area=2_000,
     min_width=100,
     max_width=120,
@@ -35,9 +32,7 @@ PAUSE_EXIT_RED_PATTERN = ColorComponentPattern(
     min_fill_ratio=0.60,
 )
 PAUSE_EXIT_YELLOW_REGION = (320, 600, 465, 665)
-PAUSE_EXIT_YELLOW_PATTERN = ColorComponentPattern(
-    lower_hsv=(13, 80, 90),
-    upper_hsv=(42, 255, 255),
+PAUSE_EXIT_YELLOW_GEOMETRY = ButtonGeometry(
     min_area=2_000,
     min_width=100,
     max_width=120,
@@ -54,9 +49,7 @@ MAX_BUTTON_HEIGHT_DELTA = 4
 # button can enter this ROI, so it cannot satisfy the complete-component
 # geometry required below.
 MAP_EXIT_BACK_REGION = (245, 610, 390, 658)
-MAP_EXIT_BACK_PATTERN = ColorComponentPattern(
-    lower_hsv=(13, 80, 90),
-    upper_hsv=(42, 255, 255),
+MAP_EXIT_BACK_GEOMETRY = ButtonGeometry(
     min_area=2_500,
     min_width=100,
     max_width=120,
@@ -74,15 +67,17 @@ def find_pause_exit_button(
     image: np.ndarray,
 ) -> Optional[ColorComponentMatch]:
     """Return red exit only when its adjacent yellow button also matches."""
-    red = find_color_component(
+    red = find_colored_button(
         image,
         PAUSE_EXIT_RED_REGION,
-        PAUSE_EXIT_RED_PATTERN,
+        "red",
+        PAUSE_EXIT_RED_GEOMETRY,
     )
-    yellow = find_color_component(
+    yellow = find_colored_button(
         image,
         PAUSE_EXIT_YELLOW_REGION,
-        PAUSE_EXIT_YELLOW_PATTERN,
+        "yellow",
+        PAUSE_EXIT_YELLOW_GEOMETRY,
     )
     if red is None or yellow is None:
         return None
@@ -101,10 +96,11 @@ def find_map_exit_back_button(
     image: np.ndarray,
 ) -> Optional[ColorComponentMatch]:
     """Find the complete popup button without accepting the button below it."""
-    button = find_color_component(
+    button = find_colored_button(
         image,
         MAP_EXIT_BACK_REGION,
-        MAP_EXIT_BACK_PATTERN,
+        "yellow",
+        MAP_EXIT_BACK_GEOMETRY,
     )
     if button is None:
         return None

@@ -93,6 +93,11 @@ scale `1.0` và train `Shift+T` tái sử dụng ở scale `0.8`.
 
 Các detector sau tương đối an toàn hơn khi đổi ngôn ngữ:
 
+Palette và primitive cho button đỏ/vàng của game được dùng chung qua
+`tools/hauntedroom/vision/buttons.py`; module này xây trên connected-component
+generic trong `core/vision.py`. ROI, geometry và quan hệ giữa các button vẫn do
+detector của từng screen quyết định.
+
 - `start_home.png`: icon.
 - `exit_click.png`: nút pause.
 - HOME/start-auto start battle: `hero_select_battle_banner_left.png` là crop

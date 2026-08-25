@@ -107,3 +107,13 @@ class HauntedRoomDependencyTest(TestCase):
                 and module not in allowed_non_core_imports.get(path.name, set())
             }
             self.assertEqual(forbidden, set(), path.name)
+
+    def test_game_vision_only_depends_on_core(self):
+        vision_dir = PACKAGE_DIR / "vision"
+        for path in vision_dir.glob("*.py"):
+            forbidden = {
+                module
+                for module in internal_imports(path)
+                if not module.startswith("hauntedroom.core")
+            }
+            self.assertEqual(forbidden, set(), path.name)
