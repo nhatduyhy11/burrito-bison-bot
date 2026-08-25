@@ -67,12 +67,15 @@ async def click_hero_select_battle(
     page,
     blocker_paths: tuple[Path, ...],
     header_template_path: Path,
+    entry_template_path: Path,
     templates: dict[Path, np.ndarray],
     threshold: float,
     timeout_ms: int,
     poll_ms: int,
     delay_ms: int,
     click_positions: dict[str, ClickPosition],
+    entry_click_position: ClickPosition,
+    entry_template_scales: tuple[float, ...],
     label: str,
     stop_event: Optional[asyncio.Event] = None,
 ) -> bool:
@@ -127,6 +130,36 @@ async def click_hero_select_battle(
                 return False
             await bot_click(page, (x, y))
             return True
+
+        # A blocker can hide the HOME entry immediately after it is clicked.
+        # Once the blocker closes, the game may return to that same entry
+        # screen instead of advancing to hero-select. Retry the interrupted
+        # transition rather than waiting forever for the destination screen.
+        entry_x, entry_y, entry_score = find_template(
+            screenshot_gray,
+            templates[entry_template_path],
+            entry_template_path.name,
+            entry_click_position,
+            scales=entry_template_scales,
+        )
+        if entry_score >= threshold:
+            print(
+                f"{label}: {entry_template_path.name} returned after an "
+                f"interruption at {entry_x},{entry_y}, "
+                f"score={entry_score:.3f}; retry click in {delay_ms}ms",
+                flush=True,
+            )
+            if not await wait_for_flow_timeout(page, delay_ms, stop_event):
+                return False
+            if not await click_and_wait(
+                page,
+                (entry_x, entry_y),
+                poll_ms,
+                stop_event,
+            ):
+                return False
+            deadline = flow_time(stop_event) + timeout_ms / 1000
+            continue
 
         if flow_time(stop_event) >= deadline:
             screenshot_path = await save_timeout_screenshot(page, label)

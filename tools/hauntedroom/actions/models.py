@@ -73,6 +73,9 @@ class ClickHeroSelectBattleAction:
 
     blocker_paths: tuple[Path, ...]
     header_template_path: Path
+    entry_template_path: Path
+    entry_click_position: ClickPosition = "mid_left"
+    entry_template_scales: tuple[float, ...] = (1.0,)
     threshold: float = DEFAULT_TEMPLATE_THRESHOLD
     timeout_ms: int = DEFAULT_TEMPLATE_TIMEOUT_MS
     poll_ms: int = DEFAULT_TEMPLATE_POLL_MS

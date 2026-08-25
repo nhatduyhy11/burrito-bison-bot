@@ -54,6 +54,7 @@ def collect_template_paths(actions: list[Action]) -> set[Path]:
         elif isinstance(action, ClickHeroSelectBattleAction):
             template_paths.update(action.blocker_paths)
             template_paths.add(action.header_template_path)
+            template_paths.add(action.entry_template_path)
         elif isinstance(action, ClickMapExitBackAction):
             if action.skip_if_template_path is not None:
                 template_paths.add(action.skip_if_template_path)
@@ -215,12 +216,15 @@ async def execute_action(
             page=page,
             blocker_paths=action.blocker_paths,
             header_template_path=action.header_template_path,
+            entry_template_path=action.entry_template_path,
             templates=templates,
             threshold=action.threshold,
             timeout_ms=action.timeout_ms,
             poll_ms=action.poll_ms,
             delay_ms=action.delay_ms,
             click_positions=action.click_positions,
+            entry_click_position=action.entry_click_position,
+            entry_template_scales=action.entry_template_scales,
             label=label,
             stop_event=stop_event,
         )

@@ -41,6 +41,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
             actions[2].header_template_path.name,
             "hero_select_battle_banner_left.png",
         )
+        self.assertEqual(actions[2].entry_template_path.name, "start_home.png")
         self.assertNotIn(
             "start_battle.png",
             {path.name for path in actions[2].blocker_paths},

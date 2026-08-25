@@ -55,6 +55,7 @@ def build_start_battle_actions() -> list[Action]:
             header_template_path=(
                 ROOMS_DIR / "hero_select_battle_banner_left.png"
             ),
+            entry_template_path=ROOMS_DIR / "start_home.png",
             click_positions=blocker_click_positions,
             note="Start Battle",
         ),
