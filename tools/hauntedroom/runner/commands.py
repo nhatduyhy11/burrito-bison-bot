@@ -6,6 +6,7 @@ from typing import Awaitable, Callable, Optional
 from hauntedroom.actions.models import (
     Action,
     ClearBlockersAction,
+    ClickHeroSelectBattleAction,
     ClickTemplateAction,
 )
 from hauntedroom.core.runtime import FlowControl
@@ -47,14 +48,12 @@ def build_start_battle_actions() -> list[Action]:
             repeat_delay_ms=1_000,
             note="Start HOME",
         ),
-        ClearBlockersAction(
+        ClickHeroSelectBattleAction(
             blocker_paths=blocker_paths,
-            until_template_path=ROOMS_DIR / "start_battle.png",
+            header_template_path=(
+                ROOMS_DIR / "hero_select_battle_banner_left.png"
+            ),
             click_positions=blocker_click_positions,
-            note="Before Start Battle",
-        ),
-        ClickTemplateAction(
-            template_path=ROOMS_DIR / "start_battle.png",
             note="Start Battle",
         ),
     ]

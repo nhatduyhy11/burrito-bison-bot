@@ -68,6 +68,24 @@ class ClearBlockersAction:
 
 
 @dataclass(frozen=True)
+class ClickHeroSelectBattleAction:
+    """Wait for the hero-select screen and click its color-defined start button."""
+
+    blocker_paths: tuple[Path, ...]
+    header_template_path: Path
+    threshold: float = DEFAULT_TEMPLATE_THRESHOLD
+    timeout_ms: int = DEFAULT_TEMPLATE_TIMEOUT_MS
+    poll_ms: int = DEFAULT_TEMPLATE_POLL_MS
+    delay_ms: int = DEFAULT_CLICK_DELAY_MS
+    click_positions: dict[str, ClickPosition] = field(default_factory=dict)
+    note: Optional[str] = None
+
+    type: ClassVar[Literal["click_hero_select_battle"]] = (
+        "click_hero_select_battle"
+    )
+
+
+@dataclass(frozen=True)
 class WaitAction:
     ms: int
     note: Optional[str] = None
@@ -75,4 +93,10 @@ class WaitAction:
     type: ClassVar[Literal["wait"]] = "wait"
 
 
-Action = Union[ClickAction, ClickTemplateAction, ClearBlockersAction, WaitAction]
+Action = Union[
+    ClickAction,
+    ClickTemplateAction,
+    ClearBlockersAction,
+    ClickHeroSelectBattleAction,
+    WaitAction,
+]

@@ -104,13 +104,12 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
         completed = await resolved.run(page, stop_event, False)
 
         self.assertFalse(completed)
-        self.assertEqual(len(resolved.actions), 8)
+        self.assertEqual(len(resolved.actions), 7)
         self.assertEqual(
             [action.note for action in resolved.actions],
             [
                 "Before Start HOME",
                 "Start HOME",
-                "Before Start Battle",
                 "Start Battle",
                 "Exit click",
                 "Exit confirm",
