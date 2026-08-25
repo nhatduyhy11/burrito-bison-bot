@@ -130,7 +130,7 @@ class StandbyOrchestrationTest(IsolatedAsyncioTestCase):
         get_automap_runtime.assert_called_once_with(True)
         run_start_automap_loop.assert_awaited_once()
         self.assertIs(run_start_automap_loop.await_args.args[0], page)
-        self.assertEqual(len(run_start_automap_loop.await_args.args[1]), 4)
+        self.assertEqual(len(run_start_automap_loop.await_args.args[1]), 3)
         self.assertIs(run_start_automap_loop.await_args.args[2], automap_flow)
         self.assertIs(run_start_automap_loop.await_args.args[4], action_runner)
         load_actions.assert_not_called()

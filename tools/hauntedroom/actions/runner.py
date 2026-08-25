@@ -4,13 +4,18 @@ from typing import Optional
 
 import numpy as np
 
+from hauntedroom.actions.hero_select_battle import click_hero_select_battle
 from hauntedroom.actions.models import (
     Action,
     ClearBlockersAction,
     ClickAction,
+    ClickHeroSelectBattleAction,
+    ClickMapExitBackAction,
+    ClickPauseExitAction,
     ClickTemplateAction,
     WaitAction,
 )
+from hauntedroom.actions.pause_exit import click_map_exit_back, click_pause_exit
 from hauntedroom.control_events.blockers import clear_blockers
 from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
@@ -46,6 +51,12 @@ def collect_template_paths(actions: list[Action]) -> set[Path]:
         elif isinstance(action, ClearBlockersAction):
             template_paths.update(action.blocker_paths)
             template_paths.add(action.until_template_path)
+        elif isinstance(action, ClickHeroSelectBattleAction):
+            template_paths.update(action.blocker_paths)
+            template_paths.add(action.header_template_path)
+        elif isinstance(action, ClickMapExitBackAction):
+            if action.skip_if_template_path is not None:
+                template_paths.add(action.skip_if_template_path)
     return template_paths
 
 
@@ -198,6 +209,41 @@ async def execute_action(
             templates,
             label,
             stop_event,
+        )
+    if isinstance(action, ClickHeroSelectBattleAction):
+        return await click_hero_select_battle(
+            page=page,
+            blocker_paths=action.blocker_paths,
+            header_template_path=action.header_template_path,
+            templates=templates,
+            threshold=action.threshold,
+            timeout_ms=action.timeout_ms,
+            poll_ms=action.poll_ms,
+            delay_ms=action.delay_ms,
+            click_positions=action.click_positions,
+            label=label,
+            stop_event=stop_event,
+        )
+    if isinstance(action, ClickPauseExitAction):
+        return await click_pause_exit(
+            page=page,
+            timeout_ms=action.timeout_ms,
+            poll_ms=action.poll_ms,
+            delay_ms=action.delay_ms,
+            label=label,
+            stop_event=stop_event,
+        )
+    if isinstance(action, ClickMapExitBackAction):
+        return await click_map_exit_back(
+            page=page,
+            skip_if_template_path=action.skip_if_template_path,
+            templates=templates,
+            threshold=action.threshold,
+            timeout_ms=action.timeout_ms,
+            poll_ms=action.poll_ms,
+            delay_ms=action.delay_ms,
+            label=label,
+            stop_event=stop_event,
         )
     if isinstance(action, WaitAction):
         return await wait_with_countdown(page, action.ms, label, stop_event)

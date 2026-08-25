@@ -1,8 +1,10 @@
 import argparse
 from pathlib import Path
 
+# CN_URL: https://hauntheroesweb.acenetgame.com/
+# VN_URL: https://hauntedroomvnh5.joynetgame.com/
+GAME_URL = "https://hauntheroesweb.acenetgame.com/"
 
-GAME_URL = "https://hauntedroomvnh5.joynetgame.com/"
 DEFAULT_VIEWPORT_WIDTH = 640
 DEFAULT_VIEWPORT_HEIGHT = 720
 DEFAULT_BROWSER = "chrome"

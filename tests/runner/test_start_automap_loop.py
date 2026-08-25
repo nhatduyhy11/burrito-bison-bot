@@ -8,7 +8,13 @@ from unittest.mock import ANY, AsyncMock, Mock, call, patch
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.actions.models import ClearBlockersAction, ClickTemplateAction
+from hauntedroom.actions.models import (
+    ClearBlockersAction,
+    ClickHeroSelectBattleAction,
+    ClickMapExitBackAction,
+    ClickPauseExitAction,
+    ClickTemplateAction,
+)
 from hauntedroom.core.runtime import FlowControl
 from hauntedroom.core.terminal import ORANGE
 from hauntedroom.flows.start_auto import (
@@ -17,18 +23,50 @@ from hauntedroom.flows.start_auto import (
     run_start_automap_loop,
 )
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
-from hauntedroom.runner.commands import build_start_battle_actions
+from hauntedroom.runner.commands import (
+    build_spawn_exit_lvup_actions,
+    build_start_battle_actions,
+)
 
 
 class StartAutomapLoopTest(IsolatedAsyncioTestCase):
     def test_start_actions_are_fixed_in_python(self):
         actions = build_start_battle_actions()
-        self.assertEqual(len(actions), 4)
+        self.assertEqual(len(actions), 3)
         self.assertIsInstance(actions[0], ClearBlockersAction)
         self.assertIsInstance(actions[1], ClickTemplateAction)
         self.assertEqual(actions[1].template_path.name, "start_home.png")
-        self.assertIsInstance(actions[3], ClickTemplateAction)
-        self.assertEqual(actions[3].template_path.name, "start_battle.png")
+        self.assertIsInstance(actions[2], ClickHeroSelectBattleAction)
+        self.assertEqual(
+            actions[2].header_template_path.name,
+            "hero_select_battle_banner_left.png",
+        )
+        self.assertNotIn(
+            "start_battle.png",
+            {path.name for path in actions[2].blocker_paths},
+        )
+
+    def test_spawn_exit_uses_language_agnostic_pause_button_pair(self):
+        actions = build_spawn_exit_lvup_actions()
+
+        self.assertIsInstance(actions[4], ClickPauseExitAction)
+        self.assertIsInstance(actions[5], ClickMapExitBackAction)
+        self.assertNotIn(
+            "exit_confirm.png",
+            {
+                action.template_path.name
+                for action in actions
+                if isinstance(action, ClickTemplateAction)
+            },
+        )
+        self.assertNotIn(
+            "exit_back.png",
+            {
+                action.template_path.name
+                for action in actions
+                if isinstance(action, ClickTemplateAction)
+            },
+        )
 
     async def test_loss_detector_is_currently_a_false_placeholder(self):
         self.assertFalse(await map_was_lost(Mock()))
