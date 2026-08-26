@@ -23,10 +23,10 @@ uv sync
 uv run python tools/hauntedroom_runner.py
 ```
 
-Runner mở game tại `https://hauntedroomvnh5.joynetgame.com/` với viewport mặc
-định `640x720` và profile `.tmp/hauntedroom-profile`. Profile giữ cookie,
-localStorage và phiên đăng nhập giữa các lần chạy. Không mở đồng thời hai runner
-dùng chung profile này.
+Runner mở game tại `https://hauntedroomvnh5.joynetgame.com/` (hoặc server Trung
+Quốc qua cờ `--cn`) với viewport mặc định `640x720` và profile
+`.tmp/hauntedroom-profile`. Profile giữ cookie, localStorage và phiên đăng nhập
+giữa các lần chạy. Không mở đồng thời hai runner dùng chung profile này.
 
 ## Cách vận hành
 
@@ -77,6 +77,9 @@ Ví dụ thường dùng:
 # Cách chạy thường dùng nhất
 uv run python tools/hauntedroom_runner.py --dev-reload --profile .tmp/pdd
 
+# Chạy trên server Trung Quốc (CN) thay vì server mặc định (VN)
+uv run python tools/hauntedroom_runner.py --cn
+
 # Hot-reload code/template/action giữa các lần khởi chạy flow
 uv run python tools/hauntedroom_runner.py --dev-reload
 
@@ -104,7 +107,8 @@ Các macro tham khảo được track trong `tools/json_macro/`:
 - `hauntedroom_actions.sample.json`: ví dụ phức tạp dùng template matching và
   blocker clearing.
 - `--profile`: browser profile, mặc định `.tmp/hauntedroom-profile`.
-- `--url`: URL game.
+- `--cn`: dùng server Trung Quốc (`https://hauntheroesweb.acenetgame.com/`). Mặc định runner dùng server Việt Nam (`https://hauntedroomvnh5.joynetgame.com/`).
+- `--url`: ghi đè trực tiếp URL game (mặc định được chọn tự động theo `--cn` / VN server).
 - `--browser {chrome,msedge,chromium}`: Chrome là mặc định; `chromium` cần
   browser binary do Playwright quản lý (`uv run playwright install chromium`).
 - `--width`, `--height`: viewport, mặc định `640x720`.

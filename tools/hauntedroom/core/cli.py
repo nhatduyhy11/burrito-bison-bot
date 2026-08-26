@@ -1,9 +1,8 @@
 import argparse
 from pathlib import Path
 
-# CN_URL: https://hauntheroesweb.acenetgame.com/
-# VN_URL: https://hauntedroomvnh5.joynetgame.com/
-GAME_URL = "https://hauntheroesweb.acenetgame.com/"
+CN_URL = "https://hauntheroesweb.acenetgame.com/"
+VN_URL = "https://hauntedroomvnh5.joynetgame.com/"
 
 DEFAULT_VIEWPORT_WIDTH = 640
 DEFAULT_VIEWPORT_HEIGHT = 720
@@ -31,7 +30,15 @@ def prepare_runner() -> tuple[argparse.Namespace, Path]:
             "Cookies and local storage are kept here."
         ),
     )
-    parser.add_argument("--url", default=GAME_URL)
+    parser.add_argument(
+        "--cn",
+        action="store_true",
+        help="Use the CN server. The VN server is used by default.",
+    )
+    parser.add_argument(
+        "--url",
+        help="Override the game URL selected by --cn.",
+    )
     parser.add_argument("--headless", action="store_true")
     parser.add_argument(
         "--browser",
@@ -58,6 +65,8 @@ def prepare_runner() -> tuple[argparse.Namespace, Path]:
         help="Enable flow debug mode for development.",
     )
     args = parser.parse_args()
+    if args.url is None:
+        args.url = CN_URL if args.cn else VN_URL
 
     profile_dir = Path(args.profile)
     profile_dir.mkdir(parents=True, exist_ok=True)
