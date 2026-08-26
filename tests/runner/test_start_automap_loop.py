@@ -39,7 +39,7 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
         self.assertIsInstance(actions[2], ClickHeroSelectBattleAction)
         self.assertEqual(
             actions[2].header_template_path.name,
-            "hero_select_battle_banner_left.png",
+            "hero_select_battle_banner_top.png",
         )
         self.assertEqual(actions[2].entry_template_path.name, "start_home.png")
         self.assertNotIn(

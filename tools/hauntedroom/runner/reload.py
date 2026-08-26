@@ -10,6 +10,7 @@ from hauntedroom.core import template_detection, template_matching, vision
 from hauntedroom.flows import (
     artifact,
     automap,
+    diamond_collection,
     exp_available,
     hero_up_available,
     new_account,
@@ -17,6 +18,7 @@ from hauntedroom.flows import (
     train,
 )
 from hauntedroom.flows.artifact import run_artifact_flow
+from hauntedroom.flows.diamond_collection import run_diamond_collection_flow
 from hauntedroom.flows.automap_support import (
     boss_action,
     boss_flow,
@@ -119,6 +121,23 @@ def get_artifact_flow(dev_reload: bool = False):
     run_artifact_flow = reloaded_artifact.run_artifact_flow
     print("Artifact modules reloaded.", flush=True)
     return run_artifact_flow
+
+
+def get_diamond_collection_flow(dev_reload: bool = False):
+    global run_diamond_collection_flow
+
+    if not dev_reload:
+        return run_diamond_collection_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(template_matching)
+    importlib.reload(vision)
+    reloaded_diamond_collection = importlib.reload(diamond_collection)
+    run_diamond_collection_flow = (
+        reloaded_diamond_collection.run_diamond_collection_flow
+    )
+    print("Diamond collection modules reloaded.", flush=True)
+    return run_diamond_collection_flow
 
 
 def get_exp_available_flow(dev_reload: bool = False):

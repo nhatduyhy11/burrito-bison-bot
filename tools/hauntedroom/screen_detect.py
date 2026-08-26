@@ -33,6 +33,7 @@ class ScreenName(str, Enum):
     EXP_HERO = "exp_hero"
     HERO_AVAILABLE = "hero_avail"
     TRAIN = "train"
+    DIAMOND_COLLECTION = "diamond_collection"
     NEW_ACCOUNT = "new_account"
     AUTOMAP = "automap"
     UNKNOWN = "unknown"
@@ -72,6 +73,11 @@ SCREEN_TEMPLATE_SPECS = (
         ScreenName.TRAIN,
         "train_broken_board.png",
         (70, 70, 210, 180),
+    ),
+    ScreenTemplateSpec(
+        ScreenName.DIAMOND_COLLECTION,
+        "diamond_collection_clip.png",
+        (105, 25, 305, 115),
     ),
 )
 

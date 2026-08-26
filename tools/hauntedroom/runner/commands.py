@@ -234,6 +234,20 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_diamond_collection(
+        actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        diamond_collection_flow = reload_policy.get_diamond_collection_flow(
+            dev_reload
+        )
+
+        async def run(page, stop_event, _debug: bool):
+            return await diamond_collection_flow(page, stop_event)
+
+        return ResolvedFlow(actions, run)
+
     def resolve_exp_available(
         actions: list[Action],
         dev_reload: bool,
@@ -339,6 +353,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "artifact",
             "Artifact",
             resolve_artifact,
+            stops_on_repeat_screen_hotkey=True,
+        ),
+        "diamond_collection": FlowCommand(
+            "diamond_collection",
+            "diamond collection",
+            "Diamond collection",
+            resolve_diamond_collection,
             stops_on_repeat_screen_hotkey=True,
         ),
         "new_account": FlowCommand(

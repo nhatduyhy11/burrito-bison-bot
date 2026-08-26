@@ -62,6 +62,9 @@ class HauntedRoomDependencyTest(TestCase):
             "artifact.py": {
                 "hauntedroom.flows.artifact_vision",
             },
+            "diamond_collection.py": {
+                "hauntedroom.flows.diamond_collection_vision",
+            },
             "automap.py": {
                 "hauntedroom.flows.automap_support.flow",
                 "hauntedroom.flows.automap_support.map.lifecycle",

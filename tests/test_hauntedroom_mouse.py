@@ -12,6 +12,7 @@ from hauntedroom.core.mouse import (
     SUPPORTED_MOUSE_BUTTONS,
     bot_click,
     click_and_wait,
+    scroll_and_wait,
     smooth_drag,
 )
 
@@ -85,6 +86,22 @@ class ClickTest(IsolatedAsyncioTestCase):
         self.assertTrue(continued)
         self.page.mouse.click.assert_awaited_once_with(30, 40)
         self.page.wait_for_timeout.assert_awaited_once_with(250)
+
+
+class ScrollTest(IsolatedAsyncioTestCase):
+    async def test_moves_scrolls_and_waits(self):
+        page = Mock()
+        page.wait_for_timeout = AsyncMock()
+        page.mouse = Mock()
+        page.mouse.move = AsyncMock()
+        page.mouse.wheel = AsyncMock()
+
+        continued = await scroll_and_wait(page, (320, 500), 527, 250)
+
+        self.assertTrue(continued)
+        page.mouse.move.assert_awaited_once_with(320, 500)
+        page.mouse.wheel.assert_awaited_once_with(0, 527)
+        page.wait_for_timeout.assert_awaited_once_with(250)
 
 
 class SmoothDragTest(IsolatedAsyncioTestCase):

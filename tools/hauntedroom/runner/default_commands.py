@@ -20,6 +20,7 @@ SCREEN_FLOW_COMMANDS = {
     ScreenName.HOME: FLOW_DEFINITIONS["start_auto"],
     ScreenName.RESEARCH: FLOW_DEFINITIONS["research"],
     ScreenName.ARTIFACT: FLOW_DEFINITIONS["artifact"],
+    ScreenName.DIAMOND_COLLECTION: FLOW_DEFINITIONS["diamond_collection"],
     ScreenName.EXP_HERO: FLOW_DEFINITIONS["exp_available"],
     ScreenName.HERO_AVAILABLE: FLOW_DEFINITIONS["hero_up_available"],
     ScreenName.NEW_ACCOUNT: FLOW_DEFINITIONS["new_account"],

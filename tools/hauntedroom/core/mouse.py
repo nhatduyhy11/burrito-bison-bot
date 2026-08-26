@@ -43,6 +43,19 @@ async def click_and_wait(
     return True
 
 
+async def scroll_and_wait(
+    page,
+    position: tuple[int, int],
+    delta_y: int,
+    wait_ms: int,
+    stop_event=None,
+) -> bool:
+    """Move over a scrollable area, scroll vertically, then wait cooperatively."""
+    await page.mouse.move(*position)
+    await page.mouse.wheel(0, delta_y)
+    return await wait_for_flow_timeout(page, wait_ms, stop_event)
+
+
 async def smooth_drag(
     page,
     start: tuple[int, int],

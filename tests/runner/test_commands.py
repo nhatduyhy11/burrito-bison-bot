@@ -39,6 +39,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
                 ScreenName.HOME: "start-auto loop",
                 ScreenName.RESEARCH: "research",
                 ScreenName.ARTIFACT: "artifact",
+                ScreenName.DIAMOND_COLLECTION: "diamond collection",
                 ScreenName.EXP_HERO: "EXP available",
                 ScreenName.HERO_AVAILABLE: "hero breakthrough available",
                 ScreenName.NEW_ACCOUNT: "new-account setup then auto-map",
@@ -56,6 +57,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
             {
                 ScreenName.RESEARCH,
                 ScreenName.ARTIFACT,
+                ScreenName.DIAMOND_COLLECTION,
                 ScreenName.EXP_HERO,
                 ScreenName.HERO_AVAILABLE,
             },
