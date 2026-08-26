@@ -16,6 +16,7 @@ class BossCriticalOutcome:
     handled: bool
     final_boss_pet_deployed: Optional[bool] = None
     boss_detection_logged: bool = False
+    final_boss_detected: bool = False
 
 
 async def handle_boss_critical(
@@ -107,7 +108,11 @@ async def handle_boss_critical(
                 ),
                 flush=True,
             )
-        return BossCriticalOutcome(True, boss_detection_logged=True)
+        return BossCriticalOutcome(
+            True,
+            boss_detection_logged=True,
+            final_boss_detected=is_final_boss,
+        )
 
     if is_final_boss and not final_boss_pet_deployed:
         deployed = await deploy_boss_pet_fn(
@@ -120,6 +125,11 @@ async def handle_boss_critical(
             True,
             final_boss_pet_deployed=deployed,
             boss_detection_logged=True,
+            final_boss_detected=True,
         )
 
-    return BossCriticalOutcome(False, boss_detection_logged=True)
+    return BossCriticalOutcome(
+        False,
+        boss_detection_logged=True,
+        final_boss_detected=is_final_boss,
+    )

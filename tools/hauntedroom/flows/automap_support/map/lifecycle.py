@@ -73,6 +73,12 @@ class MapLifecycle:
         self.loop = asyncio.get_running_loop()
 
     async def handle_map_end(self, frame_gray: np.ndarray) -> MapEndOutcome:
+        if (
+            self.run_state.new_account_lubu_popup_active
+            and not self.state.map_end_armed
+        ):
+            return MapEndOutcome(handled=False)
+
         now = self.loop.time()
         if (
             self.state.last_map_end_check is not None

@@ -90,6 +90,10 @@ khi home ready hoặc flow bị stop. Map-end handler được xem là đã hand
 ngay cả khi cleanup cuối cùng trả `completed=False`; caller phải đọc riêng field
 `completed` để quyết định có được nối loop hay không.
 
+Riêng new-account map, `map_end_armed` phải được bật bởi một upgrade action hoặc
+final-boss detection trước khi vision được phép query `map_end.png`. Các map thường
+không dùng gate này để vẫn hỗ trợ attach/reload giữa trận.
+
 ## State lifetime
 
 | State | Phạm vi sống | Vai trò |

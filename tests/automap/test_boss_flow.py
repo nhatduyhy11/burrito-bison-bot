@@ -134,3 +134,4 @@ class BossFlowTest(IsolatedAsyncioTestCase):
         )
         self.assertTrue(outcome.final_boss_pet_deployed)
         self.assertTrue(outcome.boss_detection_logged)
+        self.assertTrue(outcome.final_boss_detected)

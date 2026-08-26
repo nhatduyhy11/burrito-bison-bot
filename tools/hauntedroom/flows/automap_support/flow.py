@@ -188,7 +188,10 @@ class AutomapFlow:
         _frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
-        return await self.click_level_spin_if_present(frame_gray)
+        handled = await self.click_level_spin_if_present(frame_gray)
+        if handled:
+            self.state.map_end_armed = True
+        return handled
 
     async def handle_map_end(
         self,
@@ -221,6 +224,8 @@ class AutomapFlow:
         )
         if outcome.initial_gear_unlocked:
             self.state.initial_gear_unlocked = True
+        if outcome.handled:
+            self.state.map_end_armed = True
         return outcome.handled
 
     async def handle_initial_gear(
@@ -267,6 +272,8 @@ class AutomapFlow:
         if outcome.final_boss_pet_deployed is not None:
             self.state.final_boss_pet_deployed = outcome.final_boss_pet_deployed
         self.state.boss_detection_logged = outcome.boss_detection_logged
+        if outcome.final_boss_detected:
+            self.state.map_end_armed = True
         return outcome.handled
 
     async def handle_level_up(
@@ -290,6 +297,8 @@ class AutomapFlow:
         )
         if outcome.initial_gear_unlocked:
             self.state.initial_gear_unlocked = True
+        if outcome.handled:
+            self.state.map_end_armed = True
         return outcome.handled
 
     async def handle_build_structure(
@@ -297,7 +306,7 @@ class AutomapFlow:
         _frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
-        return await _handle_build_structure(
+        handled = await _handle_build_structure(
             self.page,
             self.stop_event,
             frame_gray,
@@ -309,6 +318,9 @@ class AutomapFlow:
             click_fn=_click,
             wait_with_countdown_fn=wait_with_countdown,
         )
+        if handled:
+            self.state.map_end_armed = True
+        return handled
 
     async def run(self) -> bool:
         """Run handlers in priority order until stopped or the map completes."""

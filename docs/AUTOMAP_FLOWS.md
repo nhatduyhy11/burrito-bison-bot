@@ -61,6 +61,10 @@ khi thêm tình huống mới phải xác định rõ vị trí của nó trong 
 
 ### 2. Map end
 
+Trong new-account map, detector map-end chỉ được arm sau khi một upgrade handler
+đã thực hiện action hoặc final boss đã được nhận diện. Gate này ngăn màn setup/home
+ban đầu false-positive thành map-end rồi mở reward lifecycle quá sớm.
+
 Map-end không kết thúc ngay khi `automap/map_end.png` xuất hiện. Match này chỉ
 bắt đầu **map lifecycle**: đóng toàn bộ reward/prompt/blocker, xác
 nhận home đã thật sự sẵn sàng rồi mới cho start-auto chạy map kế tiếp.

@@ -21,6 +21,7 @@ class BossAutomapAdapterTest(IsolatedAsyncioTestCase):
             handled=True,
             final_boss_pet_deployed=True,
             boss_detection_logged=True,
+            final_boss_detected=True,
         )
         flow = AutomapFlow(
             page,
@@ -42,4 +43,5 @@ class BossAutomapAdapterTest(IsolatedAsyncioTestCase):
         self.assertTrue(handled)
         self.assertTrue(flow.state.final_boss_pet_deployed)
         self.assertTrue(flow.state.boss_detection_logged)
+        self.assertTrue(flow.state.map_end_armed)
         handle_boss.assert_awaited_once()

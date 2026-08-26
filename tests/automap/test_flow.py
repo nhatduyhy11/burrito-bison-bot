@@ -113,6 +113,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             asyncio.Event(),
             AutomapConfig(),
             build_test_automap_templates(),
+            state=MapState(map_end_armed=True),
             on_win=on_win,
             run_state=run_state,
         )
@@ -136,6 +137,24 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
         self.assertEqual(flow.state.total_win, 3)
         self.assertTrue(flow.run_state.daily_first_win_done)
         self.assertFalse(flow.run_state.new_account_lubu_popup_active)
+
+    async def test_new_account_map_end_waits_for_an_upgrade_or_final_boss(self):
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            build_test_automap_templates(),
+            run_state=MapRunState(new_account_lubu_popup_active=True),
+        )
+        map_end_detector = Mock(return_value=(334, 645, 0.903))
+        flow.map_lifecycle.find_template_fn = map_end_detector
+
+        outcome = await flow.map_lifecycle.handle_map_end(
+            np.zeros((720, 640), dtype=np.uint8)
+        )
+
+        self.assertFalse(outcome.handled)
+        map_end_detector.assert_not_called()
 
     @patch(
         "hauntedroom.flows.automap_support.flow.capture_page_bgr",
@@ -198,6 +217,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
                 np.zeros((720, 640), dtype=np.uint8),
             )
         )
+        self.assertTrue(flow.state.map_end_armed)
         self.assertTrue(flow.run_state.new_account_lubu_popup_active)
 
         with patch(

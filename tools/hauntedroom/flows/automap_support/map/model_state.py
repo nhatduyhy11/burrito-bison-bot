@@ -42,6 +42,7 @@ class MapState:
     reward_followup_click_count: int = 0
     reward_click_position: tuple[int, int] | None = None
     reward_list_title_seen: bool = False
+    map_end_armed: bool = False
     final_boss_pet_deployed: bool = False
     boss_detection_logged: bool = False
     initial_gear_unlocked: bool = False
