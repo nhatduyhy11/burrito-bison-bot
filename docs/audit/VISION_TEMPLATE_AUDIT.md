@@ -101,8 +101,8 @@ detector của từng screen quyết định.
 
 - `start_home.png`: icon.
 - `exit_click.png`: nút pause.
-- HOME/start-auto start battle: `hero_select_battle_banner_left.png` là crop
-  `43x49` của góc trái banner, không chứa chữ; match grayscale ở scale `1.0`
+- HOME/start-auto start battle: `hero_select_battle_banner_top.png` là crop
+  `47x23` của gờ trái và cạnh trên banner, không chứa chữ; match grayscale ở scale `1.0`
   trong top region `(210, 10, 430, 90)` với threshold `0.80`. Chỉ sau khi banner
   match mới tìm connected component vàng ở bottom region `(230, 650, 410, 719)`
   và click tâm nút.

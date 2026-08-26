@@ -19,12 +19,26 @@ from hauntedroom.actions.hero_select_battle import (
 
 FIXTURES_DIR = PROJECT_ROOT / "tests" / "fixtures"
 HEADER_TEMPLATE = cv2.imread(
-    str(PROJECT_ROOT / "tools" / "rooms" / "hero_select_battle_banner_left.png"),
+    str(PROJECT_ROOT / "tools" / "rooms" / "hero_select_battle_banner_top.png"),
     cv2.IMREAD_GRAYSCALE,
 )
 
 
 class HeroSelectBattleVisionTest(TestCase):
+    def test_vn_hero_select_screen_finds_yellow_button_without_reading_text(self):
+        image = cv2.imread(
+            str(
+                FIXTURES_DIR
+                / "hauntedroom-captures"
+                / "hero_select_screen_vn.png"
+            )
+        )
+
+        button = find_hero_select_battle_button(image, HEADER_TEMPLATE)
+
+        self.assertIsNotNone(button)
+        self.assertEqual(button.center, (319, 689))
+
     def test_cn_hero_select_screen_finds_yellow_button_without_reading_text(self):
         image = cv2.imread(
             str(

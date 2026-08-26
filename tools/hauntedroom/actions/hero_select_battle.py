@@ -23,7 +23,7 @@ from hauntedroom.core.vision import (
 from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
 
 
-# The title text changes by locale. Match only the text-free left corner of
+# The title text changes by locale. Match only the thin, text-free top edge of
 # its backing plate, restricted to the fixed top-screen neighborhood.
 HERO_SELECT_HEADER_REGION = (210, 10, 430, 90)
 HERO_SELECT_HEADER_THRESHOLD = 0.80
@@ -49,7 +49,7 @@ def find_hero_select_battle_button(
     _, _, header_score = find_template(
         screenshot_gray,
         header_template,
-        "hero_select_battle_banner_left.png",
+        "hero_select_battle_banner_top.png",
         scales=(1.0,),
         region=HERO_SELECT_HEADER_REGION,
     )

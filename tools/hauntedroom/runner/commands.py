@@ -53,7 +53,7 @@ def build_start_battle_actions() -> list[Action]:
         ClickHeroSelectBattleAction(
             blocker_paths=blocker_paths,
             header_template_path=(
-                ROOMS_DIR / "hero_select_battle_banner_left.png"
+                ROOMS_DIR / "hero_select_battle_banner_top.png"
             ),
             entry_template_path=ROOMS_DIR / "start_home.png",
             click_positions=blocker_click_positions,
