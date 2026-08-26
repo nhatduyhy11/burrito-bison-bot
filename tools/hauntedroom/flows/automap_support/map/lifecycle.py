@@ -147,6 +147,14 @@ def _complete_if_home_ready(
     if score < START_HOME_TEMPLATE_THRESHOLD:
         return None
 
+    if state.win_recorded and not state.first_win_done:
+        state.first_win_done = True
+        print(
+            "Home reward cleanup completed without daily first-win prompt; "
+            "daily check disabled for this run.",
+            flush=True,
+        )
+
     print(
         f"Home ready at {x},{y}, score={score:.3f}, "
         f"template={template_path.name}; auto-map complete.",
@@ -263,6 +271,13 @@ async def finish_map(
 
         step = await blocker.handle_map_blocker(context.blocker, frame_gray)
         if step is MapLifecycleStep.CONTINUE:
+            # A blocker can reveal the reward-selection screen again after a
+            # reward-list popup was dismissed. Re-arm both reward strategies
+            # so the newly exposed card is not left behind by the one-shot
+            # guard or the bounded blind-click fallback.
+            if state.reward_list_title_seen:
+                state.reward_click_position = None
+                state.reward_followup_click_count = 0
             continue
         if step is MapLifecycleStep.STOP:
             break

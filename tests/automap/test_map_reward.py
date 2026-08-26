@@ -33,6 +33,7 @@ from hauntedroom.flows.automap_support.map.reward import (
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
     WIN_REWARD_EMPTY_DELAY_MS,
     WIN_REWARD_FOLLOWUP_CLICK,
+    WIN_REWARD_HOTSPOT_RATIO,
     WIN_REWARD_RECHECK_MS,
     WIN_REWARD_TEMPLATE_THRESHOLD,
     handle_reward_list,
@@ -65,7 +66,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
     @patch("hauntedroom.flows.automap_support.flow.find_template")
     @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
     @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
-    async def test_map_end_uses_center_hotspot_and_records_confirmed_popup(
+    async def test_map_end_clicks_fixed_card_and_records_confirmed_popup(
         self,
         capture_page_bgr,
         find_template_matches,
@@ -141,13 +142,80 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         )
         self.assertEqual(find_template_matches.call_count, 1)
 
+    @patch("hauntedroom.flows.automap_support.templates.load_template")
+    @patch("hauntedroom.flows.automap_support.flow.find_template")
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    async def test_first_win_remains_active_after_home_reward_click(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        find_template,
+        load_template,
+    ):
+        load_template.return_value = np.zeros((2, 2), dtype=np.uint8)
+        capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
+        daily_scores = iter((0.0, 0.0, 0.99, 0.99))
+        title_scores = iter((0.99, 0.0, 0.0))
+        home_scores = iter((0.0, 0.95))
+
+        def match_by_name(_frame, _template, name, **_kwargs):
+            if name == "map_end.png":
+                return 300, 400, 0.91
+            if name == "daily_first_win.png":
+                return 332, 442, next(daily_scores)
+            if name == "daily_first_win_checked.png":
+                return 10, 10, 0.99
+            if name == "reward_list_title.png":
+                return 138, 37, next(title_scores)
+            if name == "start_home.png":
+                return 50, 600, next(home_scores)
+            return 0, 0, 0.0
+
+        find_template.side_effect = match_by_name
+        find_template_matches.return_value = []
+
+        on_win = Mock(return_value=1)
+        run_state = MapRunState()
+        with patch("builtins.print") as print_mock:
+            completed = await run_automap_flow(
+                self.page,
+                asyncio.Event(),
+                on_win=on_win,
+                run_state=run_state,
+            )
+
+        self.assertTrue(completed)
+        self.assertTrue(run_state.daily_first_win_done)
+        on_win.assert_called_once_with()
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(300, 400),
+                call(318, 237),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
+                call(377, 478),
+            ],
+        )
+        messages = [print_call.args[0] for print_call in print_mock.call_args_list]
+        self.assertTrue(
+            any(message.startswith("Daily first-win prompt at ") for message in messages)
+        )
+
     def test_win_reward_template_matches_dynamic_reward_screens(self):
         template = load_real_template(WIN_REWARD_TEMPLATE_PATH)
 
-        for fixture_name in ("rewards_v1.png", "rewards_v2.png"):
-            with self.subTest(fixture_name=fixture_name):
+        fixtures = (
+            MAP_WIN_FIXTURES_DIR / "rewards_v1.png",
+            MAP_WIN_FIXTURES_DIR / "rewards_v2.png",
+            FIXTURES_DIR
+            / "hauntedroom-captures"
+            / "20260826-125439-709039-live.png",
+        )
+        for fixture_path in fixtures:
+            with self.subTest(fixture_name=fixture_path.name):
                 frame = cv2.imread(
-                    str(MAP_WIN_FIXTURES_DIR / fixture_name),
+                    str(fixture_path),
                     cv2.IMREAD_GRAYSCALE,
                 )
                 self.assertIsNotNone(frame)
@@ -207,7 +275,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
             )
         )
         self.assertEqual(
-            relative_position(missed_reward, (0.50, 0.65)),
+            relative_position(missed_reward, WIN_REWARD_HOTSPOT_RATIO),
             WIN_REWARD_FOLLOWUP_CLICK,
         )
 
@@ -241,6 +309,7 @@ class MapRewardTest(IsolatedAsyncioTestCase):
         self.assertIs(step, MapLifecycleStep.CONTINUE)
         self.assertTrue(state.win_recorded)
         self.assertEqual(state.total_win, 7)
+        self.assertFalse(state.first_win_done)
         self.assertTrue(state.reward_list_title_seen)
         on_win.assert_called_once_with()
         find_template.assert_not_called()

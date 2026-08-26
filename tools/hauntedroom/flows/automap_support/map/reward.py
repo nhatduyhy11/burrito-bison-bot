@@ -7,15 +7,15 @@ from hauntedroom.core.terminal import GREEN, colorize
 
 from .model_state import MapLifecycleStep, MapRewardContext, MapState
 
-WIN_REWARD_TEMPLATE_THRESHOLD = 0.85
+WIN_REWARD_TEMPLATE_THRESHOLD = 0.70
 WIN_REWARD_RECHECK_MS = 2_000
 WIN_REWARD_EMPTY_DELAY_MS = 3_000
-# The whole center reward area is clickable. Keep the target relative to the
-# captured page so this action does not depend on reward artwork or language.
-WIN_REWARD_HOTSPOT_RATIO = (0.50, 0.65)
+# The reward card directly below the home character stays fixed across room
+# and avatar variants. Keep it relative to the canvas for scaled captures.
+WIN_REWARD_HOTSPOT_RATIO = (341 / 640, 414 / 720)
 # Reference coordinate for the production 640x720 capture. Runtime clicks are
 # calculated from the ratio above; this name remains useful to tests/docs.
-WIN_REWARD_FOLLOWUP_CLICK = (320, 468)
+WIN_REWARD_FOLLOWUP_CLICK = (341, 414)
 WIN_REWARD_FOLLOWUP_CLICK_COUNT = 2
 REWARD_LIST_TITLE_TEMPLATE_THRESHOLD = 0.90
 REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
@@ -65,13 +65,6 @@ def reward_list_popup_visible(frame_bgr: np.ndarray) -> bool:
 
 
 def _record_confirmed_win(context: MapRewardContext, state: MapState) -> None:
-    if not state.first_win_done:
-        state.first_win_done = True
-        print(
-            "Reward confirmed without daily first-win prompt; "
-            "daily check disabled for this run.",
-            flush=True,
-        )
     if state.win_recorded:
         return
 
@@ -99,11 +92,11 @@ async def handle_win_reward(
     if not reward_matches:
         return MapLifecycleStep.NOT_HANDLED
 
-    _center_x, _center_y, score = reward_matches[0]
+    _match_x, _match_y, score = reward_matches[0]
     click_x, click_y = relative_position(frame_gray, WIN_REWARD_HOTSPOT_RATIO)
     print(
         f"Win reward visual hint found, score={score:.3f}; "
-        "clicking the language-independent reward hotspot at "
+        "clicking the fixed reward card below the home character at "
         f"{click_x},{click_y} and checking again in 2s.",
         flush=True,
     )

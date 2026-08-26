@@ -89,18 +89,19 @@ các nhánh retry canonical nằm trong [Map lifecycle](MAP_LIFECYCLE.md).
 
 | Tình huống | Hành vi | Ảnh hưởng tới loop kế tiếp |
 |---|---|---|
-| Thấy `win_reward.png` | Dùng match như visual hint, nhưng click hotspot tương đối `(50% width, 65% height)` thay vì click icon. Chưa ghi nhận win. | Chụp frame mới để chờ popup reward-list xác nhận. |
+| Thấy `win_reward.png` | Click fixed reward card dưới nhân vật `(341,414)` theo ratio canvas. Chưa ghi nhận win. | Chụp frame mới để chờ popup reward-list xác nhận. |
 | Không thấy icon reward | Vẫn chờ `3 giây` rồi click cùng hotspot tương đối; tổng số click hotspot tối đa hai lần. | Icon/template không còn là gate của collect flow. |
-| Reward-list xuất hiện | Primary detector kiểm tra tỷ lệ panel đỏ trong ROI tương đối; `reward_list_title.png` chỉ là compatibility fallback. Gọi `on_win()` đúng một lần sau confirmation rồi click đóng popup. | Chỉ khi popup đã từng được xác nhận và nay biến mất mới tiến tới home check. |
+| Reward-list xuất hiện | Primary detector kiểm tra tỷ lệ panel đỏ trong ROI tương đối; `reward_list_title.png` chỉ là compatibility fallback. Gọi `on_win()` đúng một lần sau confirmation rồi click đóng popup. Chưa disable daily-first-win ở bước này. | Chỉ khi popup đã từng được xác nhận và nay biến mất mới tiến tới home check; first-win vẫn được kiểm tra trong lúc collect home reward. |
 | Có post-map blocker | Sau hai fallback click, tìm các template trong `rooms/blocker/`, click blocker đầu tiên match rồi scan lại. `overlay_newbie.png` dùng vị trí `top_middle`; blocker khác dùng tâm. | Không đánh dấu hoàn tất khi blocker còn che home. |
 | Home xuất hiện mà không xác nhận được popup | Vẫn có thể trả `completed=True` sau hotspot/blocker cleanup. `win_recorded` giữ `False`, vì vậy win count không tăng. | Start-auto vẫn có thể tiếp tục map sau vì completion và win-count là hai contract độc lập. |
 
 #### Daily first-win
 
 Handler chỉ xử lý prompt khi first-win còn pending: bảo đảm checkbox đã checked
-rồi mới decline và không click khi visual chưa rõ. Khi xử lý xong hoặc reward
-cho thấy prompt không còn cần thiết, trạng thái done được dùng lại cho các map
-trong cùng command run; command mới sẽ reset trạng thái này.
+rồi mới decline và không click khi visual chưa rõ. Khi xử lý xong, hoặc khi reward
+đã được ghi nhận và home-ready xác nhận toàn bộ cleanup hoàn tất mà prompt không
+xuất hiện, trạng thái done được dùng lại cho các map trong cùng command run;
+command mới sẽ reset trạng thái này.
 
 #### Điều kiện kết thúc và dữ liệu trả về
 

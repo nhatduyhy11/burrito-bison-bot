@@ -186,21 +186,22 @@ checkbox ở trạng thái checked rồi mới decline; visual chưa rõ thì ch
 không click mù. Thành công trả `CONTINUE` và đánh dấu done cho cả command run;
 không có prompt trả `NOT_HANDLED`, còn checkpoint/wait bị ngắt trả `STOP`.
 
-Khi reward-list popup xác nhận win mà daily prompt không xuất hiện, reward handler
-đánh dấu first-win done để các map sau không tìm lại prompt. Trạng thái này không
-thay thế home-ready gate.
+Khi reward-list popup xác nhận win, daily-first-win vẫn còn pending trong lúc bot
+collect home reward. Nếu prompt xuất hiện thì handler xử lý như bình thường; nếu
+không xuất hiện, trạng thái chỉ được đánh dấu done khi home-ready xác nhận toàn bộ
+cleanup đã hoàn tất. Trạng thái này không thay thế home-ready gate.
 
 ## Reward, blocker và home-ready
 
 ### Win reward
 
-- Vision tìm `map_win/win_reward.png` ở scale `1.0`, threshold `0.85` và chỉ dùng
+- Vision tìm `map_win/win_reward.png` ở scale `1.0`, threshold `0.70` và chỉ dùng
   match đầu tiên.
-- Match chỉ là visual hint; nó không còn ghi nhận win.
-- Action click hotspot tương đối `(50% width, 65% height)`, lưu tọa độ và chờ
+- Match không ghi nhận win; action click fixed reward card dưới nhân vật `(341,414)` theo ratio canvas, lưu tọa độ và chờ
   `2 giây`.
-- Khi đã có `reward_click_position`, win-reward query bị disable cho phần còn lại
-  của map.
+- Khi đã có `reward_click_position`, win-reward query bị disable; nếu một blocker
+  xuất hiện sau reward-list, lifecycle re-arm query và fallback để xử lý lại màn
+  reward-selection vừa được lộ ra.
 
 ### Reward-list
 
