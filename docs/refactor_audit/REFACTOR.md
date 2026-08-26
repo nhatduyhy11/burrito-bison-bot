@@ -24,13 +24,13 @@ uv run --with pytest pytest -q
 Baseline hiện tại:
 
 ```text
-233 passed, 4 skipped, 82 subtests passed
+277 passed, 4 skipped, 101 subtests passed
 ```
 
 Bốn test bị skip đều nằm trong
 `tests/control_events/test_new_tab_blocker.py`. Nguyên nhân là runtime chủ đích đặt
 `ENABLE_SCRIPT_INJECTION = False`, trong khi ba happy-path injection và test mang
-tên `test_script_injection_is_enabled_by_default` cùng dùng
+`test_script_injection_is_enabled_by_default` cùng dùng
 `@skipUnless(ENABLE_SCRIPT_INJECTION, ...)`. Suite đang xanh nhưng chưa thực thi
 nhánh enabled và chưa assert trực tiếp contract default-off.
 
@@ -39,34 +39,41 @@ nhánh enabled và chưa assert trực tiếp contract default-off.
 Runtime/non-test Python files từ 200 dòng trở lên:
 
 ```text
- 339 tools/hauntedroom/runner/standby.py
- 321 tools/hauntedroom/runner/commands.py
+ 385 tools/hauntedroom/actions/runner.py
+ 382 tools/hauntedroom/flows/automap_support/flow.py
+ 373 tools/hauntedroom/runner/commands.py
+ 346 tools/hauntedroom/runner/standby.py
  320 tools/hauntedroom/flows/artifact.py
- 317 tools/hauntedroom/actions/runner.py
- 301 tools/hauntedroom/flows/automap_support/flow.py
- 272 tools/hauntedroom/flows/automap_support/map/lifecycle.py
- 271 tools/hauntedroom/flows/automap_support/vision/hero_levelup.py
+ 302 tools/hauntedroom/flows/automap_support/map/lifecycle.py
+ 277 tools/hauntedroom/flows/automap_support/vision/hero_levelup.py
  258 tools/hauntedroom/flows/automap_support/hero_action.py
  250 tools/hauntedroom/actions/loader.py
+ 226 tools/hauntedroom/runner/reload.py
  223 tools/hauntedroom/core/template_matching.py
- 212 tools/hauntedroom/flows/train.py
- 209 tools/hauntedroom/core/runtime.py
+ 215 tools/hauntedroom/actions/pause_exit.py
+ 211 tools/hauntedroom/core/runtime.py
+ 207 tools/hauntedroom/screen_detect.py
+ 201 tools/hauntedroom/flows/diamond_collection.py
 ```
 
 Test files từ 200 dòng trở lên:
 
 ```text
+ 423 tests/automap/test_map_reward.py
+ 373 tests/actions/test_runner.py
  359 tests/runner/test_standby_orchestration.py
- 342 tests/actions/test_runner.py
- 277 tests/automap/test_map_reward.py
+ 297 tests/runner/test_start_automap_loop.py
+ 286 tests/automap/test_flow.py
+ 275 tests/hero_select/test_hero_choice_policy.py
  262 tests/special_flow/test_artifact_flow.py
- 258 tests/runner/test_start_automap_loop.py
- 258 tests/hero_select/test_hero_choice_policy.py
+ 251 tests/automap/test_level_up.py
  249 tests/automap/test_gear.py
- 244 tests/automap/test_level_up.py
  229 tests/hero_select/test_hero_action.py
  222 tests/test_hauntedroom_vision.py
+ 206 tests/actions/test_hero_select_battle.py
  205 tests/actions/test_loader.py
+ 205 tests/runner/test_standby_hotkeys.py
+```
 
 Line count chỉ là tín hiệu để review, không tự động đồng nghĩa với
 over-responsibility. Điểm cần theo dõi rõ nhất là boundary transport/dispatch/task
