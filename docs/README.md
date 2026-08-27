@@ -53,7 +53,8 @@ khi tab game đang focus:
 | `artifact` | Artifact. |
 | `exp_hero` | EXP available. |
 | `hero_avail` | Hero breakthrough available. |
-| `train`, `unknown` | Chỉ ghi log, không khởi chạy flow. |
+| `train` | Chạy train mode rồi auto-battle. |
+| `unknown` | Chỉ ghi log, không khởi chạy flow. |
 
 Khi auto-map hoặc start-auto đang chạy, các phím số được dùng làm control:
 

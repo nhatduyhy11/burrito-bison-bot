@@ -42,11 +42,11 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
                 ScreenName.DIAMOND_COLLECTION: "diamond collection",
                 ScreenName.EXP_HERO: "EXP available",
                 ScreenName.HERO_AVAILABLE: "hero breakthrough available",
+                ScreenName.TRAIN: "train then auto-battle",
                 ScreenName.NEW_ACCOUNT: "new-account setup then auto-map",
                 ScreenName.AUTOMAP: "auto-map battle",
             },
         )
-        self.assertNotIn(ScreenName.TRAIN, SCREEN_FLOW_COMMANDS)
         self.assertNotIn(ScreenName.UNKNOWN, SCREEN_FLOW_COMMANDS)
         self.assertEqual(
             {

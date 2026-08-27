@@ -9,9 +9,9 @@ Planning notes only. Do not treat these as current implementation tasks.
   - [ ] Support the `blood_mode` and `udo_mode` signals.
   - [ ] Complete and validate the currently staged reference images before
     implementing the detectors.
-- [ ] Stabilize the train flow on its temporary `Shift+T` binding, cover the
-  reused priority-template scale `0.8`, then merge it into `Shift+1` screen
-  auto-switching.
+- [x] Stabilize the train flow on its `Shift+T` binding, cover the reused
+  priority-template scale `0.8`, and expose it through `Shift+1` screen
+  auto-switching using the train screen template.
 - [ ] Add an OS-global `Ctrl+Shift+F12` recovery hotkey that re-installs the
   browser listener across the current Playwright context without changing flow
   state. See [handoff](GLOBAL_HOTKEY_RECOVERY_HANDOFF.md).
@@ -22,4 +22,4 @@ Planning notes only. Do not treat these as current implementation tasks.
 - [ ] Add detection for the `hero_pre-enter` screen.
   - [ ] Support swapping priority 1-2 between Lubu and Hanuman depending on this screen's state.
 - [ ] Add missing screen detection for the hero level up screen.
-- [ ] Add detection for the train screen to integrate it into the screen auto-switching logic.
+- [x] Add detection for the train screen and integrate it into screen auto-switching.

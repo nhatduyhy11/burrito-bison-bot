@@ -1,4 +1,4 @@
-"""Shift+T train entry, five hero selections, then normal auto-battle."""
+"""Train entry, five hero selections, then normal auto-battle."""
 
 import asyncio
 from pathlib import Path
