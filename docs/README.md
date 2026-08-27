@@ -241,7 +241,7 @@ nhóm test và biết quy ước quản lý screenshot.
 - [Kiến trúc hiện tại](ARCHITECTURE.md)
 - [ADR-001: Haunted Room package boundaries](adr/ADR-001-hauntedroom-package-boundaries.md)
 - [Framework extraction backlog](planning/FRAMEWORK_EXTRACTION_HANDOVER.md)
-- [Vision template audit](planning/VISION_TEMPLATE_AUDIT.md)
+- [Vision/OCR audit](audit/VISION_OCR_AUDIT.md)
 
 ## Giới hạn và lưu ý
 

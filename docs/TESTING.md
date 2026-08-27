@@ -119,6 +119,9 @@ Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
   available/unavailable, artwork gây nhiễu và grid EXP đã scroll.
 - `Shift+8` chụp viewport live vào
   `tests/fixtures/hauntedroom-captures/` mà không dừng flow hiện tại.
+- `newbie_block_screen.png` và `newbie_block_screen_en.png` khóa regression
+  blocker màn hướng dẫn trên giao diện tiếng Việt và tiếng Anh; cả hai phải dùng
+  cùng template đồ họa `overlay_newbie.png` và click `(405, 506)`.
 - Screenshot timeout mới được lưu tạm trong `.tmp/hauntedroom-timeouts/`.
 - Screenshot fallback của screen detector và hero selection được lưu trong
   `.tmp/hauntedroom-fallbacks/`.

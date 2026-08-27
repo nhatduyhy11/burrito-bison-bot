@@ -120,4 +120,4 @@ flag được đọc lại cho flow mới khi runner chạy `--dev-reload`.
 - Fixture selection chuẩn: [`tests/fixtures/hauntedroom-captures/hero_select/`](../../../../tests/fixtures/hauntedroom-captures/hero_select/)
 - Fixture từng bị capture sai: [`tests/fixtures/hauntedroom-captures/wrong_fallback/`](../../../../tests/fixtures/hauntedroom-captures/wrong_fallback/)
 - Auto-map flow: [`AUTOMAP_FLOWS.md`](../../../../docs/AUTOMAP_FLOWS.md)
-- Audit template phụ thuộc chữ: [`VISION_TEMPLATE_AUDIT.md`](../../../../docs/planning/VISION_TEMPLATE_AUDIT.md)
+- Audit template phụ thuộc chữ: [`VISION_OCR_AUDIT.md`](../../../../docs/audit/VISION_OCR_AUDIT.md)

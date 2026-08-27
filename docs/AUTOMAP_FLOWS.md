@@ -96,7 +96,7 @@ các nhánh retry canonical nằm trong [Map lifecycle](MAP_LIFECYCLE.md).
 | Thấy `win_reward.png` | Click fixed reward card dưới nhân vật `(341,414)` theo ratio canvas. Chưa ghi nhận win. | Chụp frame mới để chờ popup reward-list xác nhận. |
 | Không thấy icon reward | Vẫn chờ `3 giây` rồi click cùng hotspot tương đối; tổng số click hotspot tối đa hai lần. | Icon/template không còn là gate của collect flow. |
 | Reward-list xuất hiện | Primary detector kiểm tra tỷ lệ panel đỏ trong ROI tương đối; `reward_list_title.png` chỉ là compatibility fallback. Gọi `on_win()` đúng một lần sau confirmation rồi click đóng popup. Chưa disable daily-first-win ở bước này. | Chỉ khi popup đã từng được xác nhận và nay biến mất mới tiến tới home check; first-win vẫn được kiểm tra trong lúc collect home reward. |
-| Có post-map blocker | Sau hai fallback click, tìm các template trong `rooms/blocker/`, click blocker đầu tiên match rồi scan lại. `overlay_newbie.png` dùng vị trí `top_middle`; blocker khác dùng tâm. | Không đánh dấu hoàn tất khi blocker còn che home. |
+| Có post-map blocker | Sau hai fallback click, tìm các template trong `rooms/blocker/`, click blocker đầu tiên match rồi scan lại. `overlay_newbie.png` dùng crop quyển sách không chứa chữ và click `top_middle` vào vùng trống phía trên sách; blocker khác dùng tâm. | Không đánh dấu hoàn tất khi blocker còn che home. |
 | Home xuất hiện mà không xác nhận được popup | Vẫn có thể trả `completed=True` sau hotspot/blocker cleanup. `win_recorded` giữ `False`, vì vậy win count không tăng. | Start-auto vẫn có thể tiếp tục map sau vì completion và win-count là hai contract độc lập. |
 
 #### Daily first-win

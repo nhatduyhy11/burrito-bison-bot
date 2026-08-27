@@ -223,7 +223,8 @@ cleanup đã hoàn tất. Trạng thái này không thay thế home-ready gate.
 - Nếu các phase trước không handle frame, lifecycle chờ `3 giây` rồi click hotspot
   tương đối `(50% width, 65% height)`, tối đa hai lần cho mỗi map.
 - Sau hai click, vision tìm blocker theo priority config. `overlay_newbie.png`
-  click `top_middle`; blocker còn lại click center.
+  dùng crop quyển sách không chứa chữ và click `top_middle` vào vùng trống phía
+  trên sách; blocker còn lại click center.
 - Action blocker thành công luôn dẫn tới capture frame mới trước khi thử home.
 
 ### Home-ready

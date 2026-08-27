@@ -44,23 +44,33 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
         image[y1 : y1 + 2, x1 : x1 + 4] = (255, 255, 255)
         return image
 
-    def test_newbie_screen_matches_map_blocker(self):
-        frame = cv2.imread(
-            str(FIXTURES_DIR / "hauntedroom-captures" / "newbie_block_screen.png"),
-            cv2.IMREAD_GRAYSCALE,
-        )
-        self.assertIsNotNone(frame)
+    def test_newbie_screen_matches_map_blocker_in_supported_languages(self):
         blocker_templates = tuple(
             (path, load_real_template(path)) for path in MAP_BLOCKER_TEMPLATE_PATHS
         )
 
-        match = find_map_blocker(frame, blocker_templates, find_real_template)
+        for fixture_name in (
+            "newbie_block_screen.png",
+            "newbie_block_screen_en.png",
+        ):
+            with self.subTest(fixture=fixture_name):
+                frame = cv2.imread(
+                    str(FIXTURES_DIR / "hauntedroom-captures" / fixture_name),
+                    cv2.IMREAD_GRAYSCALE,
+                )
+                self.assertIsNotNone(frame)
 
-        self.assertIsNotNone(match)
-        x, y, score, path = match
-        self.assertEqual(path.name, "overlay_newbie.png")
-        self.assertEqual((x, y), (345, 75))
-        self.assertGreaterEqual(score, MAP_BLOCKER_THRESHOLD)
+                match = find_map_blocker(
+                    frame,
+                    blocker_templates,
+                    find_real_template,
+                )
+
+                self.assertIsNotNone(match)
+                x, y, score, path = match
+                self.assertEqual(path.name, "overlay_newbie.png")
+                self.assertEqual((x, y), (405, 506))
+                self.assertGreaterEqual(score, MAP_BLOCKER_THRESHOLD)
 
     @patch(
         "hauntedroom.flows.automap_support.templates.load_template",
