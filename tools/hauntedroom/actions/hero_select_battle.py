@@ -8,6 +8,7 @@ import cv2
 import numpy as np
 
 from hauntedroom.control_events.new_tab_blocker import close_profile_popup_tabs
+from hauntedroom.control_events.blockers import blocker_dismiss_click
 from hauntedroom.core.mouse import bot_click, click_and_wait
 from hauntedroom.core.runtime import (
     flow_checkpoint,
@@ -98,6 +99,7 @@ async def click_hero_select_battle(
                 click_positions.get(blocker_path.name, "center"),
             )
             if score >= threshold:
+                x, y = blocker_dismiss_click(blocker_path.name, x, y)
                 blocker_match = (score, blocker_path, x, y)
                 break
 

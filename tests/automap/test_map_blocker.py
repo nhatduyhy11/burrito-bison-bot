@@ -69,7 +69,7 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
                 self.assertIsNotNone(match)
                 x, y, score, path = match
                 self.assertEqual(path.name, "overlay_newbie.png")
-                self.assertEqual((x, y), (405, 506))
+                self.assertEqual((x, y), (124, 98))
                 self.assertGreaterEqual(score, MAP_BLOCKER_THRESHOLD)
 
     @patch(
@@ -105,7 +105,7 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
 
         def record_click(x, y):
             nonlocal blocker_cleared
-            if (x, y) == (345, 75):
+            if (x, y) == (124, 98):
                 blocker_cleared = True
 
         find_template.side_effect = match_by_name
@@ -125,6 +125,6 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
                     call(*WIN_REWARD_FOLLOWUP_CLICK)
                     for _ in range(WIN_REWARD_FOLLOWUP_CLICK_COUNT)
                 ],
-                call(345, 75),
+                call(124, 98),
             ],
         )

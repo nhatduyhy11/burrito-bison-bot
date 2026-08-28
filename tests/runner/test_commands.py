@@ -37,6 +37,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
             {screen: command.name for screen, command in SCREEN_FLOW_COMMANDS.items()},
             {
                 ScreenName.HOME: "start-auto loop",
+                ScreenName.NEWBIE_BLOCK: "dismiss newbie blocker",
                 ScreenName.RESEARCH: "research",
                 ScreenName.ARTIFACT: "artifact",
                 ScreenName.DIAMOND_COLLECTION: "diamond collection",
@@ -61,6 +62,32 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
                 ScreenName.EXP_HERO,
                 ScreenName.HERO_AVAILABLE,
             },
+        )
+
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_action_runner")
+    async def test_newbie_block_flow_clicks_fixed_black_margin_once(
+        self,
+        get_action_runner,
+    ):
+        page = Mock()
+        stop_event = asyncio.Event()
+        action_runner = AsyncMock(return_value=True)
+        get_action_runner.return_value = action_runner
+
+        command = SCREEN_FLOW_COMMANDS[ScreenName.NEWBIE_BLOCK]
+        resolved = command.resolve([], False, None)
+        completed = await resolved.run(page, stop_event, False)
+
+        self.assertTrue(completed)
+        self.assertEqual(len(resolved.actions), 1)
+        action = resolved.actions[0]
+        self.assertEqual((action.x, action.y), (124, 98))
+        action_runner.assert_awaited_once_with(
+            page,
+            resolved.actions,
+            loop_count=1,
+            stop_event=stop_event,
+            loop_label="Newbie blocker",
         )
 
     @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")

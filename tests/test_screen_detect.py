@@ -49,6 +49,14 @@ class ScreenDetectionTest(TestCase):
             "fixtures/special_flow/diamond_collection.png",
             ScreenName.DIAMOND_COLLECTION,
         ),
+        (
+            "fixtures/hauntedroom-captures/newbie_block_screen.png",
+            ScreenName.NEWBIE_BLOCK,
+        ),
+        (
+            "fixtures/hauntedroom-captures/newbie_block_screen_en.png",
+            ScreenName.NEWBIE_BLOCK,
+        ),
         ("fixtures/special_flow/new_acc_step1.png", ScreenName.NEW_ACCOUNT),
         ("fixtures/special_flow/new_acc_step2.png", ScreenName.NEW_ACCOUNT),
         (

@@ -6,11 +6,13 @@ from typing import Awaitable, Callable, Optional
 from hauntedroom.actions.models import (
     Action,
     ClearBlockersAction,
+    ClickAction,
     ClickHeroSelectBattleAction,
     ClickMapExitBackAction,
     ClickPauseExitAction,
     ClickTemplateAction,
 )
+from hauntedroom.control_events.blockers import NEWBIE_BLOCKER_DISMISS_CLICK
 from hauntedroom.core.runtime import FlowControl
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
 
@@ -25,19 +27,17 @@ BLOCKER_PRIORITY = (
     "overlay_close_2.png",
     "overlay_newbie.png",
 )
+def build_blocker_paths() -> tuple[Path, ...]:
+    return tuple(ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY)
 
 
 def build_start_battle_actions() -> list[Action]:
     """Build Shift+1 HOME entry actions from fixed Python configuration."""
-    blocker_paths = tuple(
-        ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
-    )
-    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
+    blocker_paths = build_blocker_paths()
     return [
         ClearBlockersAction(
             blocker_paths=blocker_paths,
             until_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
             until_template_scales=(1.0,),
             note="Before Start HOME",
         ),
@@ -56,7 +56,6 @@ def build_start_battle_actions() -> list[Action]:
                 ROOMS_DIR / "hero_select_battle_banner_top.png"
             ),
             entry_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
             note="Start Battle",
         ),
     ]
@@ -64,10 +63,7 @@ def build_start_battle_actions() -> list[Action]:
 
 def build_spawn_exit_lvup_actions() -> list[Action]:
     """Build the fixed spawn/exit/level-up cycle used by Shift+9."""
-    blocker_paths = tuple(
-        ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
-    )
-    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
+    blocker_paths = build_blocker_paths()
     return [
         *build_start_battle_actions(),
         ClickTemplateAction(
@@ -85,10 +81,21 @@ def build_spawn_exit_lvup_actions() -> list[Action]:
         ClearBlockersAction(
             blocker_paths=blocker_paths,
             until_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
             until_template_scales=(1.0,),
             note="After Exit Back",
         ),
+    ]
+
+
+def build_newbie_block_actions() -> list[Action]:
+    """Dismiss the detected newbie overlay at its fixed black margin."""
+    x, y = NEWBIE_BLOCKER_DISMISS_CLICK
+    return [
+        ClickAction(
+            x=x,
+            y=y,
+            note="Dismiss newbie block",
+        )
     ]
 
 
@@ -110,6 +117,25 @@ class FlowCommand:
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
+    def resolve_newbie_block(
+        _actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        action_runner = reload_policy.get_action_runner(dev_reload)
+        newbie_actions = build_newbie_block_actions()
+
+        async def run(page, stop_event, _debug: bool):
+            return await action_runner(
+                page,
+                newbie_actions,
+                loop_count=1,
+                stop_event=stop_event,
+                loop_label="Newbie blocker",
+            )
+
+        return ResolvedFlow(newbie_actions, run)
+
     def resolve_spawn_exit_lvup(
         _actions: list[Action],
         dev_reload: bool,
@@ -293,6 +319,12 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     return {
+        "newbie_block": FlowCommand(
+            "newbie_block",
+            "dismiss newbie blocker",
+            "Dismiss newbie blocker",
+            resolve_newbie_block,
+        ),
         "spawn_exit_lvup": FlowCommand(
             "spawn_exit_lvup",
             "spawn_exit_lvup loop",

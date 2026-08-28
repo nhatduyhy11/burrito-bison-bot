@@ -19,9 +19,13 @@ from hauntedroom.flows.automap_support.vision.boss_progress import (
 
 
 SCREEN_TEMPLATE_DIR = Path(__file__).resolve().parents[1] / "rooms" / "screen_detect"
+BLOCKER_TEMPLATE_DIR = SCREEN_TEMPLATE_DIR.parent / "blocker"
 SCREEN_TEMPLATE_THRESHOLD = 0.85
 SCREEN_TEMPLATE_SCALES = (1.0, 0.9, 1.1, 0.67)
 GAME_CONTENT_WIDTH = 405
+NEWBIE_BLOCK_TEMPLATE_PATH = BLOCKER_TEMPLATE_DIR / "overlay_newbie.png"
+NEWBIE_BLOCK_REGION = (240, 495, 340, 575)
+NEWBIE_BLOCK_THRESHOLD = 0.90
 NEW_ACCOUNT_ACTION_CLICK = (320, 630)
 NEW_ACCOUNT_ACTION_REGION = (242, 590, 397, 665)
 
@@ -34,6 +38,7 @@ class ScreenName(str, Enum):
     HERO_AVAILABLE = "hero_avail"
     TRAIN = "train"
     DIAMOND_COLLECTION = "diamond_collection"
+    NEWBIE_BLOCK = "newbie_block"
     NEW_ACCOUNT = "new_account"
     AUTOMAP = "automap"
     UNKNOWN = "unknown"
@@ -155,16 +160,36 @@ def find_new_account_action_click(
     return None
 
 
+@lru_cache(maxsize=1)
+def _load_newbie_block_template() -> np.ndarray:
+    return load_template(NEWBIE_BLOCK_TEMPLATE_PATH)
+
+
 def detect_screen(frame_bgr: np.ndarray) -> ScreenName:
     """Return the screen whose unique anchor best matches the current frame."""
     if frame_bgr.size == 0 or frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
         return ScreenName.UNKNOWN
 
+    frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
+    newbie_region = _absolute_search_region(frame_gray, NEWBIE_BLOCK_REGION)
+    if newbie_region is not None:
+        try:
+            _x, _y, newbie_score = find_template(
+                frame_gray,
+                _load_newbie_block_template(),
+                NEWBIE_BLOCK_TEMPLATE_PATH.name,
+                scales=(1.0,),
+                region=newbie_region,
+            )
+        except ValueError:
+            newbie_score = -1.0
+        if newbie_score >= NEWBIE_BLOCK_THRESHOLD:
+            return ScreenName.NEWBIE_BLOCK
+
     # Auto-map already owns a robust color/geometry detector for this icon.
     if find_boss_progress_anchor(frame_bgr) is not None:
         return ScreenName.AUTOMAP
 
-    frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
     best_screen = ScreenName.UNKNOWN
     best_score = SCREEN_TEMPLATE_THRESHOLD
 

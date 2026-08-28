@@ -17,6 +17,7 @@ FLOW_COMMANDS = {
 }
 
 SCREEN_FLOW_COMMANDS = {
+    ScreenName.NEWBIE_BLOCK: FLOW_DEFINITIONS["newbie_block"],
     ScreenName.HOME: FLOW_DEFINITIONS["start_auto"],
     ScreenName.RESEARCH: FLOW_DEFINITIONS["research"],
     ScreenName.ARTIFACT: FLOW_DEFINITIONS["artifact"],

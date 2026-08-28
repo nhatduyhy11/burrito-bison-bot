@@ -5,12 +5,11 @@ from typing import Optional
 
 import numpy as np
 
+from hauntedroom.control_events.blockers import blocker_dismiss_click
+
 from .model_state import MapBlockerContext, MapLifecycleStep
 
 MAP_BLOCKER_THRESHOLD = 0.90
-MAP_BLOCKER_CLICK_POSITIONS = {
-    "overlay_newbie.png": "top_middle",
-}
 
 
 def find_map_blocker(
@@ -23,12 +22,9 @@ def find_map_blocker(
             frame_gray,
             blocker_template,
             blocker_path.name,
-            click_position=MAP_BLOCKER_CLICK_POSITIONS.get(
-                blocker_path.name,
-                "center",
-            ),
         )
         if score >= MAP_BLOCKER_THRESHOLD:
+            x, y = blocker_dismiss_click(blocker_path.name, x, y)
             return x, y, score, blocker_path
     return None
 

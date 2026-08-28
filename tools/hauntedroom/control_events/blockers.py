@@ -20,6 +20,21 @@ from hauntedroom.core.template_matching import (
 from hauntedroom.core.vision import capture_page_grayscale
 
 
+NEWBIE_BLOCKER_TEMPLATE_NAME = "overlay_newbie.png"
+NEWBIE_BLOCKER_DISMISS_CLICK = (124, 98)
+
+
+def blocker_dismiss_click(
+    template_name: str,
+    detected_x: int,
+    detected_y: int,
+) -> tuple[int, int]:
+    """Return the actual dismiss target for a detected blocker."""
+    if template_name == NEWBIE_BLOCKER_TEMPLATE_NAME:
+        return NEWBIE_BLOCKER_DISMISS_CLICK
+    return detected_x, detected_y
+
+
 async def clear_blockers(
     page,
     blocker_paths: list[Path],
@@ -52,6 +67,7 @@ async def clear_blockers(
                 click_positions.get(blocker_path.name, "center"),
             )
             if score >= threshold:
+                x, y = blocker_dismiss_click(blocker_path.name, x, y)
                 blocker_match = (score, blocker_path, x, y)
                 break
 
