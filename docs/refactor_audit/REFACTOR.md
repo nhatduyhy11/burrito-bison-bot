@@ -24,7 +24,7 @@ uv run --with pytest pytest -q
 Baseline hiện tại:
 
 ```text
-277 passed, 4 skipped, 101 subtests passed
+282 passed, 4 skipped, 105 subtests passed
 ```
 
 Bốn test bị skip đều nằm trong
@@ -39,20 +39,20 @@ nhánh enabled và chưa assert trực tiếp contract default-off.
 Runtime/non-test Python files từ 200 dòng trở lên:
 
 ```text
- 385 tools/hauntedroom/actions/runner.py
+ 405 tools/hauntedroom/runner/commands.py
  382 tools/hauntedroom/flows/automap_support/flow.py
- 373 tools/hauntedroom/runner/commands.py
  346 tools/hauntedroom/runner/standby.py
  320 tools/hauntedroom/flows/artifact.py
  302 tools/hauntedroom/flows/automap_support/map/lifecycle.py
  277 tools/hauntedroom/flows/automap_support/vision/hero_levelup.py
  258 tools/hauntedroom/flows/automap_support/hero_action.py
  250 tools/hauntedroom/actions/loader.py
+ 232 tools/hauntedroom/screen_detect.py
  226 tools/hauntedroom/runner/reload.py
  223 tools/hauntedroom/core/template_matching.py
+ 223 tools/hauntedroom/actions/runner_executor.py
  215 tools/hauntedroom/actions/pause_exit.py
  211 tools/hauntedroom/core/runtime.py
- 207 tools/hauntedroom/screen_detect.py
  201 tools/hauntedroom/flows/diamond_collection.py
 ```
 
@@ -60,8 +60,7 @@ Test files từ 200 dòng trở lên:
 
 ```text
  423 tests/automap/test_map_reward.py
- 373 tests/actions/test_runner.py
- 359 tests/runner/test_standby_orchestration.py
+ 412 tests/runner/test_standby_orchestration.py
  297 tests/runner/test_start_automap_loop.py
  286 tests/automap/test_flow.py
  275 tests/hero_select/test_hero_choice_policy.py
@@ -71,14 +70,17 @@ Test files từ 200 dòng trở lên:
  229 tests/hero_select/test_hero_action.py
  222 tests/test_hauntedroom_vision.py
  206 tests/actions/test_hero_select_battle.py
- 205 tests/actions/test_loader.py
  205 tests/runner/test_standby_hotkeys.py
+ 205 tests/actions/test_runner.py
+ 205 tests/actions/test_loader.py
+ 202 tests/actions/test_runner_executor.py
 ```
 
 Line count chỉ là tín hiệu để review, không tự động đồng nghĩa với
-over-responsibility. Điểm cần theo dõi rõ nhất là boundary transport/dispatch/task
-lifecycle trong `runner/standby.py`. Các module auto-map lớn hiện thuộc boundary
-scheduler hoặc map lifecycle tương ứng.
+over-responsibility. Sau khi `actions/runner.py` được tách thành `runner.py`
+(169 dòng) và `runner_executor.py` (223 dòng), `runner/commands.py` (405 dòng)
+và `runner/standby.py` (346 dòng) trở thành hai điểm cần theo dõi chính trong
+package `runner/`.
 
 ## Finding còn mở
 
@@ -92,15 +94,59 @@ enabled lẫn disabled đều chạy trong baseline.
 ### P1. Mở rộng architecture guardrail
 
 `tests/test_hauntedroom_architecture.py` mới kiểm tra các Python file trực tiếp
-trong `core/`, `actions/`, `control_events/`, `flows/` và riêng thư mục
+trong `core/`, `actions/`, `control_events/`, `flows/`, `vision/` và riêng thư mục
 `automap_support/vision/`. Test chưa quét recursive toàn bộ
 `flows/automap_support/`, package `map/`, `runner/`, composition root và
 `screen_detect.py`.
 
-Mở rộng guard theo dependency rule trong `docs/ARCHITECTURE.md`. Cần biểu diễn rõ
-các dependency composite được phép, gồm wiring trong `runner/`, `train.py` và
-dependency có chủ đích từ `screen_detect.py` tới detector boss-progress. ADR chỉ
-là historical decision record, không dùng làm inventory của wiring hiện tại.
+Ngoài ra, allowed imports của `train.py` trong test kiến trúc đang bị stale
+(vẫn chứa `actions.models`, `actions.runner`, `boss_action` dù code đã dọn sạch
+sau khi hợp nhất train flow). Cần cập nhật rule và mở rộng test theo dependency
+direction trong `docs/ARCHITECTURE.md`.
+
+### P2. Tách action builders và flow resolvers khỏi `runner/commands.py`
+
+`tools/hauntedroom/runner/commands.py` đã phình lên 405 dòng và đang gánh 3
+trách nhiệm khác nhau:
+1. Factory tạo fixed action list (`build_start_battle_actions`,
+   `build_spawn_exit_lvup_actions`, `build_newbie_block_actions`) phụ thuộc trực
+   tiếp template assets tại `ROOMS_DIR`.
+2. 11 flow resolver closures chứa logic lặp (`MapRunState()`, async wrapper,
+   reload lookup).
+3. Định nghĩa FlowCommand metadata và registry builder `build_flow_commands`.
+
+Cần tách action list builders và flow resolvers ra module riêng để `commands.py`
+chỉ tập trung vào command registry và dispatch model.
+
+### P2. Xóa coupling ngược từ `flows/new_account.py` sang `screen_detect.py`
+
+`tools/hauntedroom/flows/new_account.py` đang import trực tiếp `ScreenName`,
+`detect_screen` và `NEW_ACCOUNT_ACTION_CLICK` từ `hauntedroom.screen_detect`.
+Theo dependency rule trong `docs/ARCHITECTURE.md`, tầng `flows` chỉ phụ thuộc
+`core` (và support module nội bộ của flow), không phụ thuộc `screen_detect`.
+
+Đồng thời, `screen_detect.py` (module nhận diện screen) đang sở hữu action
+coordinate constant `NEW_ACCOUNT_ACTION_CLICK = (320, 630)` và detector
+`find_new_account_action_click`. Cần chuyển action coordinate/detector về
+flow helper hoặc vision vocabulary thích hợp và điều phối vòng lặp chuyển
+screen qua runner/callback.
+
+### P2. Chuẩn hóa boundary của `vision/` package trong tài liệu kiến trúc
+
+Module `tools/hauntedroom/vision/buttons.py` đã được tạo để chia sẻ vocabulary màu
+và hình học của button (`ButtonColor`, `ButtonGeometry`, `find_colored_button`)
+giữa `actions` (`hero_select_battle.py`, `pause_exit.py`) và `flows` (`train.py`).
+Tuy nhiên, `docs/ARCHITECTURE.md` chưa bổ sung `vision/` vào cây package boundaries
+và ma trận dependency direction (`vision -> core`, `actions/flows -> vision`).
+
+### P3. Chuẩn hóa dependency của map blocker với `control_events`
+
+`tools/hauntedroom/flows/automap_support/map/blocker.py` đang import
+`blocker_dismiss_click` từ `hauntedroom.control_events.blockers`. Trong kiến
+trúc hiện tại, `flows` không phụ thuộc `control_events`. Semantics tính toán
+dismiss coordinate của blocker nên thuộc về template matching / vision hoặc
+được inject qua context để tránh tạo dependency chéo giữa business map flow và
+control event layer.
 
 ### P3. Làm phẳng state loop của research khi sửa flow này
 

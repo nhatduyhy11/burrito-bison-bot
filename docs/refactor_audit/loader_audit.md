@@ -165,6 +165,32 @@ class ActionLoadError(ValueError):
 Error nên mang source path và location như action index/field. Giữ exception gốc
 bằng `raise ... from error`; không cần custom exception hierarchy lớn.
 
+## 8. `resolve_template_file` eager I/O check và coupling với filesystem
+
+### Hiện trạng
+
+`resolve_template_file()` thực hiện `(path.parent / raw_template).resolve()` và
+ngay lập tức kiểm tra `template_path.is_file()`, tương tự `load_clear_blockers_action()`
+kiểm tra `templates_dir_path.is_dir()`.
+
+Việc eager check disk existence ngay trong bước parse JSON khiến parser phụ thuộc
+chặt vào filesystem:
+- Mọi unit test kiểm tra schema/numeric/bounds của loader đều bị buộc phải tạo dummy
+  image files trên disk (`target.png.write_bytes(b"fixture")`), làm test cồng kềnh.
+- Ở runtime, `actions/runner.py` và `template_matching.load_template()` đằng nào cũng
+  đã kiểm tra và raise exception khi không đọc được file qua OpenCV (`OpenCV could not read template`).
+- Logic ghép path lặp lại giữa `raw_template`, `skip_if_template`, `until_template`
+  và `templates_dir_path`, đồng thời chưa xử lý tường minh trường hợp `raw_template`
+  là absolute path.
+
+### Breakdown đề xuất
+
+- Tách path normalization thành helper thuần túy (chuẩn hóa relative/absolute path
+  thành `Path` mà không assert `.is_file()`).
+- Nếu cần xác thực sự tồn tại của asset trước khi chạy, thực hiện ở phase validation/preparation
+  riêng biệt trước execution, hoặc để runtime loading handle tự nhiên.
+- Dọn dẹp unit test của loader để test schema độc lập mà không cần tạo dummy file fixture.
+
 ## Thứ tự xử lý đề xuất
 
 1. Reject non-finite number.
@@ -172,8 +198,9 @@ bằng `raise ... from error`; không cần custom exception hierarchy lớn.
 3. Validate `note`.
 4. Không mutate `click_positions`.
 5. Quyết định numeric coercion policy.
-6. Reject unknown field.
-7. Chuẩn hóa error boundary nếu caller cần error UX thống nhất.
+6. Tách path normalization khỏi eager filesystem check (`resolve_template_file`).
+7. Reject unknown field.
+8. Chuẩn hóa error boundary nếu caller cần error UX thống nhất.
 
 Mỗi thay đổi strictness nên có test riêng vì có thể làm action file hiện tại không
 còn hợp lệ.
