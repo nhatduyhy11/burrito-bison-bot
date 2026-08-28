@@ -23,7 +23,7 @@ from hauntedroom.flows.start_auto import (
     run_start_automap_loop,
 )
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
-from hauntedroom.runner.commands import (
+from hauntedroom.runner.command_actions import (
     build_spawn_exit_lvup_actions,
     build_start_battle_actions,
 )

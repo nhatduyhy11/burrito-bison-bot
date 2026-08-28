@@ -3,100 +3,19 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Awaitable, Callable, Optional
 
-from hauntedroom.actions.models import (
-    Action,
-    ClearBlockersAction,
-    ClickAction,
-    ClickHeroSelectBattleAction,
-    ClickMapExitBackAction,
-    ClickPauseExitAction,
-    ClickTemplateAction,
-)
-from hauntedroom.control_events.blockers import NEWBIE_BLOCKER_DISMISS_CLICK
+from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import FlowControl
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
+from hauntedroom.runner.command_actions import (
+    build_newbie_block_actions,
+    build_spawn_exit_lvup_actions,
+    build_start_battle_actions,
+)
 
 
 FlowStarter = Callable[[object, object, bool], Awaitable[object]]
 FlowResolver = Callable[[list[Action], bool, Optional[Path]], "ResolvedFlow"]
 ControlFactory = Callable[[], object]
-ROOMS_DIR = Path(__file__).resolve().parents[2] / "rooms"
-BLOCKER_PRIORITY = (
-    "lubu_close.png",
-    "overlay_close.png",
-    "overlay_close_2.png",
-    "overlay_newbie.png",
-)
-def build_blocker_paths() -> tuple[Path, ...]:
-    return tuple(ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY)
-
-
-def build_start_battle_actions() -> list[Action]:
-    """Build Shift+1 HOME entry actions from fixed Python configuration."""
-    blocker_paths = build_blocker_paths()
-    return [
-        ClearBlockersAction(
-            blocker_paths=blocker_paths,
-            until_template_path=ROOMS_DIR / "start_home.png",
-            until_template_scales=(1.0,),
-            note="Before Start HOME",
-        ),
-        ClickTemplateAction(
-            template_path=ROOMS_DIR / "start_home.png",
-            click_position="mid_left",
-            template_scales=(1.0,),
-            click_count=3,
-            recheck_before_repeat=True,
-            repeat_delay_ms=1_000,
-            note="Start HOME",
-        ),
-        ClickHeroSelectBattleAction(
-            blocker_paths=blocker_paths,
-            header_template_path=(
-                ROOMS_DIR / "hero_select_battle_banner_top.png"
-            ),
-            entry_template_path=ROOMS_DIR / "start_home.png",
-            note="Start Battle",
-        ),
-    ]
-
-
-def build_spawn_exit_lvup_actions() -> list[Action]:
-    """Build the fixed spawn/exit/level-up cycle used by Shift+9."""
-    blocker_paths = build_blocker_paths()
-    return [
-        *build_start_battle_actions(),
-        ClickTemplateAction(
-            template_path=ROOMS_DIR / "exit_click.png",
-            timeout_ms=60_000,
-            note="Exit click",
-        ),
-        ClickPauseExitAction(
-            note="Exit confirm",
-        ),
-        ClickMapExitBackAction(
-            skip_if_template_path=ROOMS_DIR / "start_home.png",
-            note="Exit Back",
-        ),
-        ClearBlockersAction(
-            blocker_paths=blocker_paths,
-            until_template_path=ROOMS_DIR / "start_home.png",
-            until_template_scales=(1.0,),
-            note="After Exit Back",
-        ),
-    ]
-
-
-def build_newbie_block_actions() -> list[Action]:
-    """Dismiss the detected newbie overlay at its fixed black margin."""
-    x, y = NEWBIE_BLOCKER_DISMISS_CLICK
-    return [
-        ClickAction(
-            x=x,
-            y=y,
-            note="Dismiss newbie block",
-        )
-    ]
 
 
 @dataclass(frozen=True)
@@ -117,6 +36,21 @@ class FlowCommand:
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
+    def build_leaf_resolver(flow_getter) -> FlowResolver:
+        def resolve(
+            actions: list[Action],
+            dev_reload: bool,
+            _actions_path: Optional[Path],
+        ) -> ResolvedFlow:
+            flow = flow_getter(dev_reload)
+
+            async def run(page, stop_event, _debug: bool):
+                return await flow(page, stop_event)
+
+            return ResolvedFlow(actions, run)
+
+        return resolve
+
     def resolve_newbie_block(
         _actions: list[Action],
         dev_reload: bool,
@@ -236,67 +170,21 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
-    def resolve_research(
-        actions: list[Action],
-        dev_reload: bool,
-        _actions_path: Optional[Path],
-    ) -> ResolvedFlow:
-        research_flow = reload_policy.get_research_flow(dev_reload)
-
-        async def run(page, stop_event, _debug: bool):
-            return await research_flow(page, stop_event)
-
-        return ResolvedFlow(actions, run)
-
-    def resolve_artifact(
-        actions: list[Action],
-        dev_reload: bool,
-        _actions_path: Optional[Path],
-    ) -> ResolvedFlow:
-        artifact_flow = reload_policy.get_artifact_flow(dev_reload)
-
-        async def run(page, stop_event, _debug: bool):
-            return await artifact_flow(page, stop_event)
-
-        return ResolvedFlow(actions, run)
-
-    def resolve_diamond_collection(
-        actions: list[Action],
-        dev_reload: bool,
-        _actions_path: Optional[Path],
-    ) -> ResolvedFlow:
-        diamond_collection_flow = reload_policy.get_diamond_collection_flow(
-            dev_reload
-        )
-
-        async def run(page, stop_event, _debug: bool):
-            return await diamond_collection_flow(page, stop_event)
-
-        return ResolvedFlow(actions, run)
-
-    def resolve_exp_available(
-        actions: list[Action],
-        dev_reload: bool,
-        _actions_path: Optional[Path],
-    ) -> ResolvedFlow:
-        exp_available_flow = reload_policy.get_exp_available_flow(dev_reload)
-
-        async def run(page, stop_event, _debug: bool):
-            return await exp_available_flow(page, stop_event)
-
-        return ResolvedFlow(actions, run)
-
-    def resolve_hero_up_available(
-        actions: list[Action],
-        dev_reload: bool,
-        _actions_path: Optional[Path],
-    ) -> ResolvedFlow:
-        hero_up_available_flow = reload_policy.get_hero_up_available_flow(dev_reload)
-
-        async def run(page, stop_event, _debug: bool):
-            return await hero_up_available_flow(page, stop_event)
-
-        return ResolvedFlow(actions, run)
+    resolve_research = build_leaf_resolver(
+        lambda dev_reload: reload_policy.get_research_flow(dev_reload)
+    )
+    resolve_artifact = build_leaf_resolver(
+        lambda dev_reload: reload_policy.get_artifact_flow(dev_reload)
+    )
+    resolve_diamond_collection = build_leaf_resolver(
+        lambda dev_reload: reload_policy.get_diamond_collection_flow(dev_reload)
+    )
+    resolve_exp_available = build_leaf_resolver(
+        lambda dev_reload: reload_policy.get_exp_available_flow(dev_reload)
+    )
+    resolve_hero_up_available = build_leaf_resolver(
+        lambda dev_reload: reload_policy.get_hero_up_available_flow(dev_reload)
+    )
 
     def resolve_new_account(
         actions: list[Action],
