@@ -59,6 +59,7 @@ async def run_new_account_flow(
                 debug=debug,
                 run_state=run_state,
                 new_account_lubu_popup_active=True,
+                capture_hero_fallback_screenshots=False,
             )
 
         if flow_time(stop_event) >= deadline:

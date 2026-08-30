@@ -74,6 +74,7 @@ class NewAccountFlowTest(IsolatedAsyncioTestCase):
             debug=True,
             run_state=run_state,
             new_account_lubu_popup_active=True,
+            capture_hero_fallback_screenshots=False,
         )
 
     @patch(
