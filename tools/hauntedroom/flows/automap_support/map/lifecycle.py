@@ -277,11 +277,15 @@ async def finish_map(
 
         step = await blocker.handle_map_blocker(context.blocker, frame_gray)
         if step is MapLifecycleStep.CONTINUE:
-            # A blocker can reveal the reward-selection screen again after a
-            # reward-list popup was dismissed. Re-arm both reward strategies
-            # so the newly exposed card is not left behind by the one-shot
-            # guard or the bounded blind-click fallback.
-            if state.reward_list_title_seen:
+            # A blocker can reveal the reward-selection screen after *any*
+            # reward attempt, including the case where the reward-list popup
+            # was never confirmed. Re-arm both strategies so the newly
+            # exposed card is not left behind by the one-shot guard or the
+            # bounded blind-click fallback.
+            if (
+                state.reward_click_position is not None
+                or state.reward_followup_click_count > 0
+            ):
                 state.reward_click_position = None
                 state.reward_followup_click_count = 0
             continue

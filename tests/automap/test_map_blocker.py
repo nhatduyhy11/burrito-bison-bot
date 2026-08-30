@@ -126,5 +126,75 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
                     for _ in range(WIN_REWARD_FOLLOWUP_CLICK_COUNT)
                 ],
                 call(345, 75),
+                *[
+                    call(*WIN_REWARD_FOLLOWUP_CLICK)
+                    for _ in range(WIN_REWARD_FOLLOWUP_CLICK_COUNT)
+                ],
+            ],
+        )
+
+    @patch(
+        "hauntedroom.flows.automap_support.templates.load_template",
+        return_value=np.zeros((2, 2), dtype=np.uint8),
+    )
+    @patch("hauntedroom.flows.automap_support.flow.find_template")
+    @patch(
+        "hauntedroom.flows.automap_support.flow.find_template_matches",
+        return_value=[(305, 466, 0.90)],
+    )
+    @patch(
+        "hauntedroom.flows.automap_support.flow.capture_page_bgr",
+        new_callable=AsyncMock,
+    )
+    async def test_blocker_rearms_unconfirmed_reward_detection(
+        self,
+        capture_page_bgr,
+        find_template_matches,
+        find_template,
+        _load_template,
+    ):
+        blocker_cleared = False
+        reward_click_count = 0
+
+        def match_by_name(_frame, _template, name, **_kwargs):
+            if name == "map_end.png":
+                return 300, 400, 0.91
+            if name == "lubu_close.png" and not blocker_cleared:
+                return 465, 219, 0.93
+            if (
+                name == "start_home.png"
+                and blocker_cleared
+                and reward_click_count >= 4
+            ):
+                return 50, 600, 0.95
+            return 0, 0, 0.0
+
+        def record_click(x, y):
+            nonlocal blocker_cleared, reward_click_count
+            if (x, y) == (465, 219):
+                blocker_cleared = True
+            elif (x, y) == WIN_REWARD_FOLLOWUP_CLICK:
+                reward_click_count += 1
+
+        find_template.side_effect = match_by_name
+        self.page.mouse.click.side_effect = record_click
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+
+        completed = await run_automap_flow(self.page, asyncio.Event())
+
+        self.assertTrue(completed)
+        self.assertEqual(reward_click_count, 4)
+        self.assertEqual(find_template_matches.call_count, 2)
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [
+                call(300, 400),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
+                call(465, 219),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
+                call(*WIN_REWARD_FOLLOWUP_CLICK),
             ],
         )
