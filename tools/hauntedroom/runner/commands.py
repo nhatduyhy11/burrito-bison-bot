@@ -3,14 +3,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Awaitable, Callable, Optional
 
-from hauntedroom.actions.models import (
-    Action,
-    ClearBlockersAction,
-    ClickHeroSelectBattleAction,
-    ClickMapExitBackAction,
-    ClickPauseExitAction,
-    ClickTemplateAction,
+from hauntedroom.actions.builder import (
+    build_spawn_exit_lvup_actions,
+    build_start_battle_actions,
 )
+from hauntedroom.actions.models import Action
 from hauntedroom.core.runtime import FlowControl
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
 
@@ -18,78 +15,6 @@ from hauntedroom.flows.automap_support.map.model_state import MapRunState
 FlowStarter = Callable[[object, object, bool], Awaitable[object]]
 FlowResolver = Callable[[list[Action], bool, Optional[Path]], "ResolvedFlow"]
 ControlFactory = Callable[[], object]
-ROOMS_DIR = Path(__file__).resolve().parents[2] / "rooms"
-BLOCKER_PRIORITY = (
-    "lubu_close.png",
-    "overlay_close.png",
-    "overlay_close_2.png",
-    "overlay_newbie.png",
-)
-
-
-def build_start_battle_actions() -> list[Action]:
-    """Build Shift+1 HOME entry actions from fixed Python configuration."""
-    blocker_paths = tuple(
-        ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
-    )
-    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
-    return [
-        ClearBlockersAction(
-            blocker_paths=blocker_paths,
-            until_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
-            until_template_scales=(1.0,),
-            note="Before Start HOME",
-        ),
-        ClickTemplateAction(
-            template_path=ROOMS_DIR / "start_home.png",
-            click_position="mid_left",
-            template_scales=(1.0,),
-            click_count=3,
-            recheck_before_repeat=True,
-            repeat_delay_ms=1_000,
-            note="Start HOME",
-        ),
-        ClickHeroSelectBattleAction(
-            blocker_paths=blocker_paths,
-            header_template_path=(
-                ROOMS_DIR / "hero_select_battle_banner_top.png"
-            ),
-            entry_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
-            note="Start Battle",
-        ),
-    ]
-
-
-def build_spawn_exit_lvup_actions() -> list[Action]:
-    """Build the fixed spawn/exit/level-up cycle used by Shift+9."""
-    blocker_paths = tuple(
-        ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
-    )
-    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
-    return [
-        *build_start_battle_actions(),
-        ClickTemplateAction(
-            template_path=ROOMS_DIR / "exit_click.png",
-            timeout_ms=60_000,
-            note="Exit click",
-        ),
-        ClickPauseExitAction(
-            note="Exit confirm",
-        ),
-        ClickMapExitBackAction(
-            skip_if_template_path=ROOMS_DIR / "start_home.png",
-            note="Exit Back",
-        ),
-        ClearBlockersAction(
-            blocker_paths=blocker_paths,
-            until_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
-            until_template_scales=(1.0,),
-            note="After Exit Back",
-        ),
-    ]
 
 
 @dataclass(frozen=True)

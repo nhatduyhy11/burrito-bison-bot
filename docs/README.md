@@ -49,6 +49,7 @@ khi tab game đang focus:
 | --- | --- |
 | `home` | Start-auto loop: vào trận, chạy auto-map và lặp map. |
 | `automap` | Chạy đúng một lượt auto-map. |
+| `new_account` | Custom flow riêng cho tài khoản mới. Xem [tài liệu New Account](planning/newacc_docs.md). |
 | `research` | Research. |
 | `artifact` | Artifact. |
 | `exp_hero` | EXP available. |

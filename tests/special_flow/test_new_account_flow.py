@@ -26,13 +26,26 @@ class NewAccountFlowTest(IsolatedAsyncioTestCase):
         self.page.mouse.click = AsyncMock()
 
     @patch(
+        "hauntedroom.flows.new_account.run_actions",
+        new_callable=AsyncMock,
+    )
+    @patch(
+        "hauntedroom.flows.new_account.build_spawn_exit_lvup_actions",
+    )
+    @patch(
         "hauntedroom.flows.new_account.capture_page_bgr",
         new_callable=AsyncMock,
     )
     async def test_clicks_both_steps_at_one_point_then_starts_automap(
         self,
         capture_page_bgr,
+        mock_build_actions,
+        mock_run_actions,
     ):
+        mock_actions = [Mock()]
+        mock_build_actions.return_value = mock_actions
+        mock_run_actions.return_value = True
+
         fixture_dir = PROJECT_ROOT / "tests" / "fixtures" / "special_flow"
         step1 = cv2.imread(str(fixture_dir / "new_acc_step1.png"))
         step2 = cv2.imread(str(fixture_dir / "new_acc_step2.png"))
@@ -75,6 +88,14 @@ class NewAccountFlowTest(IsolatedAsyncioTestCase):
             run_state=run_state,
             new_account_lubu_popup_active=True,
             capture_hero_fallback_screenshots=False,
+        )
+        mock_build_actions.assert_called_once()
+        mock_run_actions.assert_awaited_once_with(
+            self.page,
+            mock_actions,
+            loop_count=1,
+            stop_event=stop_event,
+            loop_label="new_account enter-exit map",
         )
 
     @patch(

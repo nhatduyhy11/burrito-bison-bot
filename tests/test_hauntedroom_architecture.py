@@ -84,6 +84,10 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.train_select",
             },
+            "new_account.py": {
+                "hauntedroom.actions.builder",
+                "hauntedroom.actions.runner",
+            },
         }
         for path in (PACKAGE_DIR / "flows").glob("*.py"):
             forbidden = {

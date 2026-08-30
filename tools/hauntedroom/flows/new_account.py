@@ -3,6 +3,8 @@
 import asyncio
 from typing import Awaitable, Callable, Optional
 
+from hauntedroom.actions.builder import build_spawn_exit_lvup_actions
+from hauntedroom.actions.runner import run_actions
 from hauntedroom.core.mouse import click_and_wait
 from hauntedroom.core.runtime import flow_checkpoint, flow_time, wait_for_flow_timeout
 from hauntedroom.core.vision import capture_page_bgr
@@ -53,13 +55,28 @@ async def run_new_account_flow(
                 "New-account setup finished; starting normal auto-map.",
                 flush=True,
             )
-            return await automap_flow(
+            automap_completed = await automap_flow(
                 page,
                 stop_event,
                 debug=debug,
                 run_state=run_state,
                 new_account_lubu_popup_active=True,
                 capture_hero_fallback_screenshots=False,
+            )
+            if not automap_completed:
+                return False
+
+            print(
+                "First map completed; executing one-time enter-exit map flow.",
+                flush=True,
+            )
+            spawn_exit_actions = build_spawn_exit_lvup_actions()
+            return await run_actions(
+                page,
+                spawn_exit_actions,
+                loop_count=1,
+                stop_event=stop_event,
+                loop_label="new_account enter-exit map",
             )
 
         if flow_time(stop_event) >= deadline:
