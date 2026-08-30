@@ -48,15 +48,16 @@ ANSI hard-code nào khác trong package Haunted Room.
 | Message | Nguồn | Ghi chú |
 | --- | --- | --- |
 | `Final-boss pet has a full glowing bar at ...` | `automap_support/boss_action.py:70` | Pet final boss sẵn sàng |
-| `Final boss HP entered upper search region at ...` | `automap_support/boss_flow.py:52` | Chỉ final boss yellow; mini-boss cùng template message vẫn plain |
+| `Mini-boss HP entered upper search region at ...` | `automap_support/boss_flow.py:52` | Mini-boss được phát hiện; final boss dùng orange |
 | `Auto-map flow paused at mini-boss/final boss.` | `automap_support/boss_flow.py:105` | Pause được kích hoạt khi boss xuất hiện |
 | `Auto-map flow will pause at the next boss.` | `runner/standby.py:129` | Đã arm one-shot pause |
 | `Auto-map flow will pause at the final boss.` | `runner/standby.py:139` | Đã arm final-only pause |
 
-### Orange — 6 call site
+### Orange — 7 call site
 
 | Message | Nguồn | Ghi chú |
 | --- | --- | --- |
+| `Final boss HP entered upper search region at ...` | `automap_support/boss_flow.py:52` | Final boss được phát hiện; mini-boss cùng event yellow |
 | `Map completed without a detected win reward; ...` | `flows/start_auto.py:100` | Recoverable loss/pause policy |
 | `Auto-map flow paused. Press Shift+...` | `runner/standby.py:116` | Pause thủ công ngay lập tức |
 | `Runner is already idle.` | `runner/standby.py:152` | Stop command khi không có flow |
@@ -64,7 +65,7 @@ ANSI hard-code nào khác trong package Haunted Room.
 | `Runner idle.` trong banner | `runner/standby.py:212` | Orange nested trong banner green; nằm cuối banner nên reset không làm mất màu text phía sau |
 | `Runner idle.` sau khi flow kết thúc | `runner/standby.py:232` | Trạng thái standby |
 
-Ngoài 6 call site trực tiếp trên, gear recovery chọn `ORANGE` động cho message bắt
+Ngoài 7 call site trực tiếp trên, gear recovery chọn `ORANGE` động cho message bắt
 đầu bằng `Initial gear placement could not`; các gear error khác vẫn là `RED`.
 
 ### Blue — 6 call site
@@ -112,7 +113,7 @@ semantic gần với nhóm đã có màu và nên được quyết định rõ n
 | `[autoswitch] ...; no flow started.` | Green | Kết quả detect thành công nhưng outcome không start flow |
 | `[screen_detect] screen=unknown` | Green | Detector chạy xong nhưng không nhận diện được screen |
 | Screenshot save failure | Plain | Failure nhưng không red; success của live screenshot lại green |
-| Mini-boss HP vào search region | Plain | Final boss cùng event là yellow |
+| Mini-boss HP vào search region | Yellow | Final boss cùng event dùng orange |
 | `Auto-map flow stopped; runner is idle.` | Red | Chữ `idle` có thể gây nhầm với các message idle orange, nhưng stop outcome có thể chủ ý là red |
 
 Audit không đổi các message trên. Cần policy cụ thể trước khi recolor để tránh biến

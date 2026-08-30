@@ -2,7 +2,7 @@ import asyncio
 import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import ANY, AsyncMock, Mock
+from unittest.mock import ANY, AsyncMock, Mock, patch
 
 import numpy as np
 
@@ -10,6 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
 from hauntedroom.core.runtime import FlowControl
+from hauntedroom.core.terminal import ORANGE, YELLOW
 from hauntedroom.flows.automap_support.boss_flow import handle_boss_critical
 
 
@@ -57,6 +58,29 @@ class BossFlowTest(IsolatedAsyncioTestCase):
         self.assertTrue(outcome.boss_detection_logged)
         self.classify_progress.assert_called_once_with(self.frame_bgr)
         self.find_pause.assert_not_called()
+
+    @patch("hauntedroom.flows.automap_support.boss_flow.colorize")
+    async def test_mini_boss_detection_log_is_yellow(self, colorize_mock):
+        colorize_mock.side_effect = lambda message, _color: message
+
+        await self._handle()
+
+        colorize_mock.assert_called_once_with(
+            "Mini-boss HP entered upper search region at 250,280, score=0.900.",
+            YELLOW,
+        )
+
+    @patch("hauntedroom.flows.automap_support.boss_flow.colorize")
+    async def test_final_boss_detection_log_is_orange(self, colorize_mock):
+        colorize_mock.side_effect = lambda message, _color: message
+        self.classify_progress.return_value = True
+
+        await self._handle()
+
+        colorize_mock.assert_any_call(
+            "Final boss HP entered upper search region at 250,280, score=0.900.",
+            ORANGE,
+        )
 
     async def test_armed_any_boss_clicks_game_pause_then_pauses_script(self):
         control = FlowControl()

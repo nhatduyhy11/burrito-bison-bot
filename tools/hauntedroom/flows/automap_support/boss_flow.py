@@ -5,7 +5,7 @@ from typing import Optional
 
 import numpy as np
 
-from hauntedroom.core.terminal import YELLOW, colorize
+from hauntedroom.core.terminal import ORANGE, YELLOW, colorize
 
 
 EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
@@ -50,9 +50,9 @@ async def handle_boss_critical(
             f"score={score:.3f}."
         )
         print(
-            colorize(detection_message, YELLOW)
+            colorize(detection_message, ORANGE)
             if is_final_boss
-            else detection_message,
+            else colorize(detection_message, YELLOW),
             flush=True,
         )
 
