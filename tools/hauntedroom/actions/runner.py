@@ -7,6 +7,7 @@ from hauntedroom.actions.models import (
     ClearBlockersAction,
     ClickHeroSelectBattleAction,
     ClickMapExitBackAction,
+    ClickPauseExitAction,
     ClickTemplateAction,
 )
 from hauntedroom.actions.runner_executor import action_label, execute_action
@@ -35,6 +36,9 @@ def collect_template_paths(actions: list[Action]) -> set[Path]:
         elif isinstance(action, ClickMapExitBackAction):
             if action.skip_if_template_path is not None:
                 template_paths.add(action.skip_if_template_path)
+        elif isinstance(action, ClickPauseExitAction):
+            if action.retry_template_path is not None:
+                template_paths.add(action.retry_template_path)
     return template_paths
 
 

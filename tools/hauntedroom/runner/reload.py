@@ -16,6 +16,14 @@ from hauntedroom.flows import (
     new_account,
     research,
     train,
+    train_support,
+)
+from hauntedroom.flows.train_support import (
+    common as train_common_support,
+    entry as train_entry_support,
+    exit_flow as train_exit_flow_support,
+    hero_selection as train_hero_selection_support,
+    pet_and_ad as train_pet_and_ad_support,
 )
 from hauntedroom.flows.artifact import run_artifact_flow
 from hauntedroom.flows.diamond_collection import run_diamond_collection_flow
@@ -193,9 +201,23 @@ def get_train_flow(dev_reload: bool = False):
     importlib.reload(hero_levelup_vision)
     importlib.reload(train_vision)
     importlib.reload(train_select)
+    importlib.reload(train_common_support)
+    importlib.reload(train_entry_support)
+    importlib.reload(train_hero_selection_support)
+    importlib.reload(train_pet_and_ad_support)
+    importlib.reload(train_exit_flow_support)
+    importlib.reload(train_support)
     reloaded_train = importlib.reload(train)
     print("Train modules reloaded.", flush=True)
     return reloaded_train.run_train_flow
+
+
+def get_train_ad_exit_flow(dev_reload: bool = False):
+    if not dev_reload:
+        return train.run_train_ad_exit_flow
+
+    get_train_flow(dev_reload)
+    return train.run_train_ad_exit_flow
 
 
 def get_automap_runtime(dev_reload: bool = False) -> AutomapRuntime:

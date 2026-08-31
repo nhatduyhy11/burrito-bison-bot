@@ -9,6 +9,10 @@ from hauntedroom.actions.models import (
 )
 
 ROOMS_DIR = Path(__file__).resolve().parents[2] / "rooms"
+# The pause icon is fixed in the upper-left control rail at the supported
+# 640x720 viewport. Searching only this rail prevents game sprites from being
+# mistaken for the tiny 22x24 icon.
+PAUSE_TRIGGER_REGION = (120, 125, 175, 175)
 BLOCKER_PRIORITY = (
     "lubu_close.png",
     "overlay_close.png",
@@ -64,9 +68,14 @@ def build_spawn_exit_lvup_actions() -> list[Action]:
             template_path=ROOMS_DIR / "exit_click.png",
             threshold=0.70,  # Lowered threshold to handle newbie tooltip overlaps
             timeout_ms=60_000,
+            template_scales=(1.0,),
+            region=PAUSE_TRIGGER_REGION,
             note="Exit click",
         ),
         ClickPauseExitAction(
+            retry_template_path=ROOMS_DIR / "exit_click.png",
+            retry_template_threshold=0.70,
+            retry_template_region=PAUSE_TRIGGER_REGION,
             note="Exit confirm",
         ),
         ClickMapExitBackAction(

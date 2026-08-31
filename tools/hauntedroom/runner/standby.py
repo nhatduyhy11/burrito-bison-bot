@@ -92,6 +92,30 @@ async def handle_control_command(
 ) -> bool:
     if (
         current_command is not None
+        and current_command.key.lower() == "t"
+        and command.lower() == "t"
+        and flow_task is not None
+    ):
+        if stop_event.is_paused:
+            stop_event.resume()
+            print(
+                colorize("Custom train flow resumed.", BLUE),
+                flush=True,
+            )
+        else:
+            stop_event.pause()
+            print(
+                colorize(
+                    "Custom train flow paused. "
+                    "Press Shift+T to resume or Shift+0 to stop.",
+                    ORANGE,
+                ),
+                flush=True,
+            )
+        return True
+
+    if (
+        current_command is not None
         and current_command.uses_automap_controls
         and flow_task is not None
     ):

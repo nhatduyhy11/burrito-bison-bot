@@ -75,14 +75,10 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.automap_support.vision.template_config",
             },
             "train.py": {
-                "hauntedroom.actions.models",
-                "hauntedroom.actions.runner",
-                "hauntedroom.core.runtime",
-                "hauntedroom.core.template_detection",
-                "hauntedroom.core.template_matching",
-                "hauntedroom.core.vision",
-                "hauntedroom.flows.automap_support.boss_action",
-                "hauntedroom.flows.automap_support.train_select",
+                "hauntedroom.flows.train_support.common",
+                "hauntedroom.flows.train_support.entry",
+                "hauntedroom.flows.train_support.exit_flow",
+                "hauntedroom.flows.train_support.hero_selection",
             },
             "new_account.py": {
                 "hauntedroom.actions.builder",
@@ -97,6 +93,65 @@ class HauntedRoomDependencyTest(TestCase):
                 and module not in allowed_support_imports.get(path.name, set())
             }
             self.assertEqual(forbidden, set(), path.name)
+
+    def test_train_support_dependencies_are_declared(self):
+        allowed_imports = {
+            "__init__.py": {
+                "hauntedroom.flows.train_support.common",
+                "hauntedroom.flows.train_support.entry",
+                "hauntedroom.flows.train_support.exit_flow",
+                "hauntedroom.flows.train_support.hero_selection",
+                "hauntedroom.flows.train_support.pet_and_ad",
+            },
+            "common.py": {
+                "hauntedroom.core.template_matching",
+                "hauntedroom.vision.buttons",
+            },
+            "entry.py": {
+                "hauntedroom.core.mouse",
+                "hauntedroom.core.runtime",
+                "hauntedroom.core.template_detection",
+                "hauntedroom.core.template_matching",
+                "hauntedroom.core.vision",
+                "hauntedroom.flows.train_support.common",
+            },
+            "exit_flow.py": {
+                "hauntedroom.actions.pause_exit",
+                "hauntedroom.core.runtime",
+                "hauntedroom.core.template_matching",
+                "hauntedroom.core.terminal",
+                "hauntedroom.core.vision",
+                "hauntedroom.flows.train_support.common",
+                "hauntedroom.flows.train_support.entry",
+                "hauntedroom.flows.train_support.hero_selection",
+                "hauntedroom.flows.train_support.pet_and_ad",
+            },
+            "hero_selection.py": {
+                "hauntedroom.core.mouse",
+                "hauntedroom.core.runtime",
+                "hauntedroom.core.vision",
+                "hauntedroom.flows.automap_support.train_select",
+                "hauntedroom.flows.train_support.common",
+            },
+            "pet_and_ad.py": {
+                "hauntedroom.core.mouse",
+                "hauntedroom.core.runtime",
+                "hauntedroom.core.template_matching",
+                "hauntedroom.core.vision",
+                "hauntedroom.flows.automap_support.upgrade_action",
+                "hauntedroom.flows.train_support.common",
+            },
+        }
+        train_support_dir = PACKAGE_DIR / "flows" / "train_support"
+        paths = list(train_support_dir.glob("*.py"))
+
+        self.assertEqual({path.name for path in paths}, set(allowed_imports))
+        for path in paths:
+            self.assertEqual(
+                internal_imports(path),
+                allowed_imports[path.name],
+                path.name,
+            )
 
     def test_automap_vision_only_depends_on_core(self):
         vision_dir = PACKAGE_DIR / "flows" / "automap_support" / "vision"

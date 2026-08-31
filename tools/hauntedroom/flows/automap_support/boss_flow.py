@@ -3,12 +3,14 @@
 from dataclasses import dataclass
 from typing import Optional
 
+import cv2
 import numpy as np
 
 from hauntedroom.core.terminal import ORANGE, YELLOW, colorize
 
 
 EXIT_CLICK_TEMPLATE_THRESHOLD = 0.90
+PAUSE_CONFIRM_POLL_MS = 200
 
 
 @dataclass(frozen=True)
@@ -33,8 +35,11 @@ async def handle_boss_critical(
     find_boss_health_bar_fn,
     boss_progress_is_full_fn,
     find_template_fn,
+    find_pause_exit_button_fn,
     deploy_boss_pet_fn,
     click_fn,
+    capture_page_bgr_fn,
+    wait_for_flow_timeout_fn,
 ) -> BossCriticalOutcome:
     match = find_boss_health_bar_fn(frame_gray, boss_hp_template)
     if match is None:
@@ -67,40 +72,66 @@ async def handle_boss_critical(
         and pause_for_detected_boss is not None
         and boss_pause_matches(is_final_boss=is_final_boss)
     ):
-        try:
-            pause_match = find_template_fn(
-                frame_gray,
-                exit_click_template,
-                exit_click_template_name,
-            )
-        except Exception as error:
-            print(
-                f"Game pause detection failed for {boss_kind}: {error}; "
-                "pausing script anyway.",
-                flush=True,
-            )
-        else:
-            exit_x, exit_y, exit_score = pause_match
-            if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
+        pause_frame_bgr = frame_bgr
+        pause_frame_gray = frame_gray
+        while find_pause_exit_button_fn(pause_frame_bgr) is None:
+            try:
+                pause_match = find_template_fn(
+                    pause_frame_gray,
+                    exit_click_template,
+                    exit_click_template_name,
+                )
+            except Exception as error:
                 print(
-                    f"Game pause button was not found for {boss_kind} "
-                    f"(score={exit_score:.3f}); pausing script anyway.",
+                    f"Game pause detection failed for {boss_kind}: {error}; "
+                    "will retry.",
                     flush=True,
                 )
-            else:
-                print(
-                    f"Clicking game pause at {exit_x},{exit_y} for {boss_kind}.",
-                    flush=True,
-                )
-                try:
-                    await click_fn(page, exit_x, exit_y)
-                except Exception as error:
+                pause_match = None
+
+            if pause_match is not None:
+                exit_x, exit_y, exit_score = pause_match
+                if exit_score < EXIT_CLICK_TEMPLATE_THRESHOLD:
                     print(
-                        f"Game pause click failed for {boss_kind}: {error}; "
-                        "pausing script anyway.",
+                        f"Game pause button was not found for {boss_kind} "
+                        f"(score={exit_score:.3f}); will retry.",
                         flush=True,
                     )
+                else:
+                    print(
+                        f"Clicking game pause at {exit_x},{exit_y} for "
+                        f"{boss_kind}; waiting for pause popup confirmation.",
+                        flush=True,
+                    )
+                    try:
+                        await click_fn(page, exit_x, exit_y)
+                    except Exception as error:
+                        print(
+                            f"Game pause click failed for {boss_kind}: {error}; "
+                            "will retry.",
+                            flush=True,
+                        )
 
+            if not await wait_for_flow_timeout_fn(
+                page,
+                PAUSE_CONFIRM_POLL_MS,
+                stop_event,
+            ):
+                return BossCriticalOutcome(
+                    True,
+                    boss_detection_logged=True,
+                    final_boss_detected=is_final_boss,
+                )
+            pause_frame_bgr = await capture_page_bgr_fn(page)
+            pause_frame_gray = cv2.cvtColor(
+                pause_frame_bgr,
+                cv2.COLOR_BGR2GRAY,
+            )
+
+        print(
+            f"Game pause popup confirmed for {boss_kind}.",
+            flush=True,
+        )
         if pause_for_detected_boss(is_final_boss=is_final_boss):
             print(
                 colorize(

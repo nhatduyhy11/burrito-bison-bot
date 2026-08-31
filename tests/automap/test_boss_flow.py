@@ -22,8 +22,11 @@ class BossFlowTest(IsolatedAsyncioTestCase):
         self.find_health_bar = Mock(return_value=(250, 280, 0.90))
         self.classify_progress = Mock(return_value=False)
         self.find_pause = Mock(return_value=(612, 35, 0.95))
+        self.find_pause_popup = Mock(side_effect=[None, Mock()])
         self.deploy_pet = AsyncMock(return_value=True)
         self.click = AsyncMock()
+        self.capture = AsyncMock(return_value=self.frame_bgr)
+        self.wait = AsyncMock(return_value=True)
 
     async def _handle(
         self,
@@ -47,8 +50,11 @@ class BossFlowTest(IsolatedAsyncioTestCase):
             find_boss_health_bar_fn=self.find_health_bar,
             boss_progress_is_full_fn=self.classify_progress,
             find_template_fn=self.find_pause,
+            find_pause_exit_button_fn=self.find_pause_popup,
             deploy_boss_pet_fn=self.deploy_pet,
             click_fn=self.click,
+            capture_page_bgr_fn=self.capture,
+            wait_for_flow_timeout_fn=self.wait,
         )
 
     async def test_mini_boss_is_classified_without_an_armed_pause(self):
@@ -110,17 +116,35 @@ class BossFlowTest(IsolatedAsyncioTestCase):
         self.deploy_pet.assert_not_awaited()
         self.assertTrue(control.is_paused)
 
-    async def test_armed_boss_pauses_script_when_game_pause_is_not_found(self):
+    async def test_armed_boss_retries_until_game_pause_popup_is_confirmed(self):
         control = FlowControl()
         control.pause_at_next_boss(final_only=False)
-        self.find_pause.return_value = (612, 35, 0.50)
+        self.find_pause.side_effect = [
+            (612, 35, 0.50),
+            (612, 35, 0.95),
+        ]
+        self.find_pause_popup.side_effect = [None, None, Mock()]
 
         outcome = await self._handle(control)
 
         self.assertTrue(outcome.handled)
         self.assertTrue(control.is_paused)
         self.deploy_pet.assert_not_awaited()
-        self.click.assert_not_awaited()
+        self.click.assert_awaited_once_with(self.page, 612, 35)
+        self.assertEqual(self.find_pause.call_count, 2)
+        self.assertEqual(self.capture.await_count, 2)
+
+    async def test_armed_boss_reclicks_when_first_pause_click_is_missed(self):
+        control = FlowControl()
+        control.pause_at_next_boss(final_only=False)
+        self.find_pause_popup.side_effect = [None, None, Mock()]
+
+        outcome = await self._handle(control)
+
+        self.assertTrue(outcome.handled)
+        self.assertTrue(control.is_paused)
+        self.assertEqual(self.click.await_count, 2)
+        self.click.assert_awaited_with(self.page, 612, 35)
 
     async def test_final_boss_pause_ignores_mini_boss_and_remains_armed(self):
         control = FlowControl()

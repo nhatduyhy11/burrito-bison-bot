@@ -1,192 +1,125 @@
-"""Train entry, five hero selections, then normal auto-battle."""
+"""Unified Train Flow supporting 3 execution modes:
+
+1. NORMAL: Enter train -> 5 hero card selections -> full normal auto-battle.
+2. EXIT_IMMEDIATELY: Enter train -> 5 hero selections -> wait match start -> exit immediately.
+3. PET_AND_AD: Enter train -> 5 hero selections -> wait match start -> active pet + summon + wait spin -> exit.
+"""
 
 import asyncio
-from pathlib import Path
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable, Optional, Union
 
-import cv2
-import numpy as np
-
-from hauntedroom.core.mouse import click_and_wait
-from hauntedroom.core.runtime import flow_checkpoint, flow_time, wait_for_flow_timeout
-from hauntedroom.core.template_detection import (
-    TemplateWaitStatus,
-    wait_for_template,
+from hauntedroom.flows.train_support.common import TrainCycleResult, TrainMode
+from hauntedroom.flows.train_support.entry import (
+    check_and_click_train_challenge,
+    wait_and_click_start_battle,
 )
-from hauntedroom.core.template_matching import (
-    DEFAULT_TEMPLATE_THRESHOLD,
-    TEMPLATE_SCALES,
-    load_template,
+from hauntedroom.flows.train_support.exit_flow import (
+    run_train_ad_exit_cycle,
+    run_train_ad_exit_loop,
 )
-from hauntedroom.core.vision import capture_page_bgr
-from hauntedroom.flows.automap_support.train_select import TrainHeroMatcher
-from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
+from hauntedroom.flows.train_support.hero_selection import select_train_heroes
 
 
-TRAIN_AVAILABLE_REGION = (126, 196, 222, 213)
-TRAIN_AVAILABLE_MIN_TEXT_PIXELS = 30
-# The train challenge button is yellow only while it can be pressed. Detect its
-# live bounding box instead of trusting a fixed point from a different screen.
-TRAIN_CHALLENGE_REGION = (320, 620, 480, 680)
-TRAIN_CHALLENGE_GEOMETRY = ButtonGeometry(
-    min_area=2_000,
-    min_width=80,
-    max_width=140,
-    min_height=20,
-    max_height=50,
-)
-TRAIN_ENTRY_SETTLE_MS = 2_000
-TRAIN_BATTLE_LOAD_MS = 5_000
-TRAIN_START_BATTLE_TIMEOUT_MS = 30_000
-TRAIN_START_BATTLE_POLL_MS = 600
-TRAIN_SELECTION_ROUNDS = 5
-TRAIN_SELECTION_POLL_MS = 200
-TRAIN_SELECTION_SETTLE_MS = 600
-TRAIN_SELECTION_TIMEOUT_MS = 30_000
-TRAIN_START_BATTLE_TEMPLATE_PATH = (
-    Path(__file__).resolve().parents[2] / "rooms" / "start_battle.png"
-)
-
-
-def train_is_available(frame_bgr: np.ndarray) -> bool:
-    """Read the green `Lượt vượt ải` row without OCR."""
-    if frame_bgr.ndim != 3 or frame_bgr.shape[:2] != (720, 640):
-        return False
-    left, top, right, bottom = TRAIN_AVAILABLE_REGION
-    hsv = cv2.cvtColor(frame_bgr[top:bottom, left:right], cv2.COLOR_BGR2HSV)
-    available_text = (
-        (hsv[:, :, 0] >= 14)
-        & (hsv[:, :, 0] <= 25)
-        & (hsv[:, :, 1] >= 100)
-        & (hsv[:, :, 2] >= 80)
-    )
-    return int(np.count_nonzero(available_text)) >= TRAIN_AVAILABLE_MIN_TEXT_PIXELS
-
-
-def find_train_challenge_click(
-    frame_bgr: np.ndarray,
-) -> Optional[tuple[int, int]]:
-    """Return the center of the live yellow train challenge button."""
-    if frame_bgr.ndim != 3 or frame_bgr.shape[:2] != (720, 640):
-        return None
-
-    button = find_colored_button(
-        frame_bgr,
-        TRAIN_CHALLENGE_REGION,
-        "yellow",
-        TRAIN_CHALLENGE_GEOMETRY,
-    )
-    return button.center if button is not None else None
+def _normalize_mode(
+    mode: Union[TrainMode, str, None],
+    pet_and_ad: Optional[bool] = None,
+) -> TrainMode:
+    """Normalize input parameters into a TrainMode enum value."""
+    if pet_and_ad is not None:
+        return TrainMode.PET_AND_AD if pet_and_ad else TrainMode.EXIT_IMMEDIATELY
+    if mode is None:
+        return TrainMode.NORMAL
+    if isinstance(mode, TrainMode):
+        return mode
+    if isinstance(mode, str):
+        mode_key = mode.lower().strip().replace("-", "_")
+        if mode_key in ("normal", "train", "standard"):
+            return TrainMode.NORMAL
+        elif mode_key in ("exit_immediately", "immediate_exit", "exit_early", "direct_exit", "exit"):
+            return TrainMode.EXIT_IMMEDIATELY
+        elif mode_key in ("pet_and_ad", "pet_ad", "pet", "ad_exit", "pet_and_spin"):
+            return TrainMode.PET_AND_AD
+        raise ValueError(f"Unknown train mode: {mode!r}. Valid modes are: NORMAL, EXIT_IMMEDIATELY, PET_AND_AD")
+    return mode
 
 
 async def run_train_flow(
     page,
-    automap_flow: Callable[..., Awaitable[bool]],
+    automap_flow: Optional[Callable[..., Awaitable[bool]]] = None,
     stop_event: Optional[asyncio.Event] = None,
     debug: bool = False,
     *,
     run_state: Optional[object] = None,
+    mode: Union[TrainMode, str] = TrainMode.NORMAL,
+    loop: Optional[bool] = None,
+    pet_and_ad: Optional[bool] = None,
 ) -> bool:
-    """Enter an available train, select 2 cards five times, then auto-battle."""
-    frame_bgr = await capture_page_bgr(page)
-    if not train_is_available(frame_bgr):
-        print("No train attempt is currently available; runner is idle.", flush=True)
-        return False
+    """Run train flow in one of 3 modes:
 
-    challenge_click = find_train_challenge_click(frame_bgr)
-    if challenge_click is None:
-        print(
-            "Train attempt available, but the challenge button was not found; "
-            "runner is idle.",
-            flush=True,
-        )
-        return False
+    - TrainMode.NORMAL (default):
+        Enter challenge -> start battle -> 5 hero selections -> normal auto-battle.
+    - TrainMode.EXIT_IMMEDIATELY:
+        Enter challenge -> start battle -> 5 hero selections -> wait match start -> exit immediately.
+    - TrainMode.PET_AND_AD:
+        Enter challenge -> start battle -> 5 hero selections -> wait match start -> activate middle pet,
+        summon repeatedly, wait for level spin & dismiss -> exit.
+    """
+    selected_mode = _normalize_mode(mode, pet_and_ad)
 
-    print(
-        f"Train attempt available; challenge button detected at "
-        f"{challenge_click}; clicking.",
-        flush=True,
-    )
-    if not await click_and_wait(
-        page, challenge_click, TRAIN_ENTRY_SETTLE_MS, stop_event
-    ):
-        return False
+    if selected_mode is TrainMode.NORMAL and automap_flow is None:
+        raise ValueError("automap_flow is required for normal train mode")
 
-    template_path = TRAIN_START_BATTLE_TEMPLATE_PATH
-    wait_result = await wait_for_template(
-        page,
-        load_template(template_path),
-        template_path.name,
-        DEFAULT_TEMPLATE_THRESHOLD,
-        TRAIN_START_BATTLE_TIMEOUT_MS,
-        TRAIN_START_BATTLE_POLL_MS,
-        stop_event,
-        template_scales=TEMPLATE_SCALES,
-    )
-    if wait_result.status is TemplateWaitStatus.STOPPED:
-        return False
-
-    assert wait_result.match is not None
-    x, y, score = wait_result.match
-    print(
-        f"Train start battle detected at {x},{y}, "
-        f"score={score:.3f}; clicking.",
-        flush=True,
-    )
-    if not await click_and_wait(page, (x, y), TRAIN_BATTLE_LOAD_MS, stop_event):
-        return False
-
-    matcher = TrainHeroMatcher()
-    confirmed_rounds = 0
-    deadline = flow_time(stop_event) + TRAIN_SELECTION_TIMEOUT_MS / 1000
-    while confirmed_rounds < TRAIN_SELECTION_ROUNDS:
-        if not await flow_checkpoint(stop_event):
+    # 1. Mode: NORMAL (full normal train flow)
+    if selected_mode is TrainMode.NORMAL:
+        if not await check_and_click_train_challenge(page, stop_event):
             return False
-        choice = matcher.find_choice(await capture_page_bgr(page))
-        if choice is None:
-            if flow_time(stop_event) >= deadline:
-                raise TimeoutError(
-                    "Timed out during train hero selection; "
-                    f"confirmed {confirmed_rounds}/{TRAIN_SELECTION_ROUNDS}."
-                )
-            if not await wait_for_flow_timeout(
-                page, TRAIN_SELECTION_POLL_MS, stop_event
-            ):
-                return False
-            continue
 
-        if choice.confirm:
-            confirmed_rounds += 1
-            deadline = flow_time(stop_event) + TRAIN_SELECTION_TIMEOUT_MS / 1000
-            print(
-                f"Train hero selection {confirmed_rounds}/"
-                f"{TRAIN_SELECTION_ROUNDS}: confirming 2 cards.",
-                flush=True,
-            )
-        elif choice.template_name is not None:
-            print(
-                f"Train option {choice.template_name!r} matched at "
-                f"{choice.x},{choice.y}, score={choice.score:.3f}.",
-                flush=True,
-            )
-        else:
-            print(
-                f"Train priority missed; choosing purple card at "
-                f"{choice.x},{choice.y}.",
-                flush=True,
-            )
-        if not await click_and_wait(
+        if not await wait_and_click_start_battle(page, stop_event):
+            return False
+
+        if not await select_train_heroes(page, stop_event, raise_on_timeout=True):
+            return False
+
+        print("All 5 train selections confirmed; starting normal auto-battle.", flush=True)
+        return await automap_flow(
             page,
-            (choice.x, choice.y),
-            TRAIN_SELECTION_SETTLE_MS,
             stop_event,
-        ):
-            return False
+            debug=debug,
+            run_state=run_state,
+        )
 
-    print("All 5 train selections confirmed; starting normal auto-battle.", flush=True)
-    return await automap_flow(
+    # 2 & 3. Modes: EXIT_IMMEDIATELY / PET_AND_AD
+    is_pet_mode = (selected_mode is TrainMode.PET_AND_AD)
+    is_loop = False if loop is False else True  # Default to looping for ad-exit flows unless loop=False
+
+    if is_loop:
+        return await run_train_ad_exit_loop(
+            page,
+            stop_event,
+            debug=debug,
+            pet_and_ad=is_pet_mode,
+        )
+    cycle_result = await run_train_ad_exit_cycle(
         page,
         stop_event,
+        pet_and_ad=is_pet_mode,
+    )
+    return cycle_result is TrainCycleResult.COMPLETED
+
+
+async def run_train_ad_exit_flow(
+    page,
+    stop_event: Optional[asyncio.Event] = None,
+    debug: bool = False,
+    *,
+    pet_and_ad: bool = True,
+) -> bool:
+    """Convenience wrapper delegating to run_train_flow for ad-exit modes."""
+    mode = TrainMode.PET_AND_AD if pet_and_ad else TrainMode.EXIT_IMMEDIATELY
+    return await run_train_flow(
+        page,
+        stop_event=stop_event,
         debug=debug,
-        run_state=run_state,
+        mode=mode,
+        loop=True,
     )

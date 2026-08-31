@@ -8,6 +8,7 @@ from collections.abc import Awaitable, Callable
 import cv2
 import numpy as np
 
+from hauntedroom.actions.pause_exit import find_pause_exit_button
 from hauntedroom.core.mouse import bot_click
 from hauntedroom.core.runtime import (
     flow_checkpoint,
@@ -266,8 +267,11 @@ class AutomapFlow:
             find_boss_health_bar_fn=find_boss_health_bar,
             boss_progress_is_full_fn=boss_progress_is_full,
             find_template_fn=find_template,
+            find_pause_exit_button_fn=find_pause_exit_button,
             deploy_boss_pet_fn=deploy_boss_pet,
             click_fn=_click,
+            capture_page_bgr_fn=capture_page_bgr,
+            wait_for_flow_timeout_fn=wait_for_flow_timeout,
         )
         if outcome.final_boss_pet_deployed is not None:
             self.state.final_boss_pet_deployed = outcome.final_boss_pet_deployed
