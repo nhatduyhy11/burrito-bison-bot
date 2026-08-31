@@ -51,6 +51,19 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
 
         self.assertIsNone(find_train_challenge_click(frame))
 
+    @patch("hauntedroom.flows.train.check_and_click_train_challenge", new_callable=AsyncMock)
+    async def test_mode_normal_requires_automap_before_entering_train(
+        self,
+        check_and_click_train_challenge,
+    ):
+        with self.assertRaisesRegex(
+            ValueError,
+            "automap_flow is required for normal train mode",
+        ):
+            await run_train_flow(self.page, mode=TrainMode.NORMAL)
+
+        check_and_click_train_challenge.assert_not_awaited()
+
     @patch("hauntedroom.flows.train_support.hero_selection.TrainHeroMatcher")
     @patch("hauntedroom.flows.train_support.entry.load_template")
     @patch("hauntedroom.flows.train_support.entry.wait_for_template", new_callable=AsyncMock)

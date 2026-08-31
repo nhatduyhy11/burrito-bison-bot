@@ -66,6 +66,9 @@ async def run_train_flow(
     """
     selected_mode = _normalize_mode(mode, pet_and_ad)
 
+    if selected_mode is TrainMode.NORMAL and automap_flow is None:
+        raise ValueError("automap_flow is required for normal train mode")
+
     # 1. Mode: NORMAL (full normal train flow)
     if selected_mode is TrainMode.NORMAL:
         if not await check_and_click_train_challenge(page, stop_event):
@@ -78,14 +81,12 @@ async def run_train_flow(
             return False
 
         print("All 5 train selections confirmed; starting normal auto-battle.", flush=True)
-        if automap_flow is not None:
-            return await automap_flow(
-                page,
-                stop_event,
-                debug=debug,
-                run_state=run_state,
-            )
-        return True
+        return await automap_flow(
+            page,
+            stop_event,
+            debug=debug,
+            run_state=run_state,
+        )
 
     # 2 & 3. Modes: EXIT_IMMEDIATELY / PET_AND_AD
     is_pet_mode = (selected_mode is TrainMode.PET_AND_AD)

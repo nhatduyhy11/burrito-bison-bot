@@ -35,6 +35,7 @@ from hauntedroom.flows.train_support.exit_flow import (
     run_train_ad_exit_cycle,
     wait_for_train_screen,
 )
+from hauntedroom.flows.train_support.common import TRAIN_SCREEN_TEMPLATE_PATH
 
 
 class TrainSupportTest(IsolatedAsyncioTestCase):
@@ -44,6 +45,32 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         self.page.mouse = Mock()
         self.page.mouse.click = AsyncMock()
         self.page.wait_for_timeout = AsyncMock()
+
+    def test_train_screen_template_is_a_runtime_asset(self):
+        self.assertTrue(TRAIN_SCREEN_TEMPLATE_PATH.is_file())
+        self.assertNotIn("tests", TRAIN_SCREEN_TEMPLATE_PATH.parts)
+
+    async def _run_composite_cycle(self, *, pet_and_ad: bool):
+        phases = {
+            "wait_for_train_challenge_available": AsyncMock(return_value=True),
+            "wait_and_click_start_battle": AsyncMock(return_value=True),
+            "select_train_heroes": AsyncMock(return_value=True),
+            "wait_for_match_start": AsyncMock(return_value=True),
+            "run_pet_and_ad_phase": AsyncMock(return_value=True),
+            "exit_train_match": AsyncMock(return_value=True),
+            "wait_for_train_screen": AsyncMock(return_value=True),
+        }
+        stop_event = asyncio.Event()
+        with patch.multiple(
+            "hauntedroom.flows.train_support.exit_flow",
+            **phases,
+        ):
+            result = await run_train_ad_exit_cycle(
+                self.page,
+                stop_event,
+                pet_and_ad=pet_and_ad,
+            )
+        return result, stop_event, phases
 
     @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
     async def test_check_and_click_train_challenge_not_available(self, capture_page_bgr):
@@ -170,6 +197,60 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         ]
         self.assertTrue(await wait_for_train_screen(self.page))
         self.page.mouse.click.assert_awaited_once_with(251, 633)
+
+    async def test_pet_and_ad_cycle_runs_every_phase(self):
+        result, stop_event, phases = await self._run_composite_cycle(
+            pet_and_ad=True
+        )
+
+        self.assertTrue(result)
+        phases["wait_for_train_challenge_available"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+        phases["wait_and_click_start_battle"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+        phases["select_train_heroes"].assert_awaited_once_with(
+            self.page,
+            stop_event,
+            raise_on_timeout=False,
+        )
+        phases["wait_for_match_start"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+        phases["run_pet_and_ad_phase"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+        phases["exit_train_match"].assert_awaited_once_with(self.page, stop_event)
+        phases["wait_for_train_screen"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+
+    async def test_immediate_exit_cycle_skips_pet_and_ad_phase(self):
+        result, stop_event, phases = await self._run_composite_cycle(
+            pet_and_ad=False
+        )
+
+        self.assertTrue(result)
+        phases["wait_for_train_challenge_available"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+        phases["wait_and_click_start_battle"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+        phases["select_train_heroes"].assert_awaited_once_with(
+            self.page,
+            stop_event,
+            raise_on_timeout=False,
+        )
+        phases["wait_for_match_start"].assert_awaited_once_with(
+            self.page, stop_event
+        )
+        phases["run_pet_and_ad_phase"].assert_not_awaited()
+        phases["exit_train_match"].assert_awaited_once_with(self.page, stop_event)
+        phases["wait_for_train_screen"].assert_awaited_once_with(
+            self.page, stop_event
+        )
 
     @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_unified_run_train_flow_delegates_to_ad_exit_single_cycle(self, mock_cycle):

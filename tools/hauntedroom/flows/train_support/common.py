@@ -73,13 +73,7 @@ MONEY_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "automap" / "money.png"
 PET_ACTIVE_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "boss" / "pet_active.png"
 LV_SPIN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "automap" / "lv_spin.png"
 EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
-TRAIN_SCREEN_TEMPLATE_PATH = (
-    Path(__file__).resolve().parents[4]
-    / "tests"
-    / "fixtures"
-    / "train_ad_exit_screen"
-    / "a_new_1.png"
-)
+TRAIN_SCREEN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "train_screen.png"
 TRAIN_SCREEN_TEMPLATE_SCALES = (1.0, 0.8, 0.67)
 
 
