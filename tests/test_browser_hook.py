@@ -19,7 +19,7 @@ from hauntedroom.core.browser_hook import (
 
 
 class BrowserHookTest(IsolatedAsyncioTestCase):
-    def test_hotkey_script_accepts_digits_and_t_but_not_removed_letters(self):
+    def test_hotkey_script_accepts_digits_t_and_e_but_not_removed_letters(self):
         self.assertIn("/^Digit[0-9]$/.test(event.code)", HOTKEY_SCRIPT)
         self.assertNotIn('event.code === "KeyY"', HOTKEY_SCRIPT)
         self.assertNotIn('? "y"', HOTKEY_SCRIPT)
@@ -27,6 +27,8 @@ class BrowserHookTest(IsolatedAsyncioTestCase):
         self.assertNotIn('? "g"', HOTKEY_SCRIPT)
         self.assertIn('event.code === "KeyT"', HOTKEY_SCRIPT)
         self.assertIn('? "t"', HOTKEY_SCRIPT)
+        self.assertIn('event.code === "KeyE"', HOTKEY_SCRIPT)
+        self.assertIn('? "e"', HOTKEY_SCRIPT)
         self.assertNotIn('event.code === "Minus"', HOTKEY_SCRIPT)
 
     async def test_hotkey_listener_is_installed_for_current_and_future_frames(self):
