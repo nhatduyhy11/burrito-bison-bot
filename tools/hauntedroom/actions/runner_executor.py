@@ -197,8 +197,22 @@ async def execute_action(
             stop_event=stop_event,
         )
     if isinstance(action, ClickPauseExitAction):
+        retry_template_path = action.retry_template_path
         return await click_pause_exit(
             page=page,
+            retry_template=(
+                templates[retry_template_path]
+                if retry_template_path is not None
+                else None
+            ),
+            retry_template_name=(
+                retry_template_path.name
+                if retry_template_path is not None
+                else None
+            ),
+            retry_template_threshold=action.retry_template_threshold,
+            retry_template_scales=action.retry_template_scales,
+            retry_template_region=action.retry_template_region,
             timeout_ms=action.timeout_ms,
             poll_ms=action.poll_ms,
             delay_ms=action.delay_ms,

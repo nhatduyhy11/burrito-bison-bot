@@ -2,7 +2,7 @@ import sys
 from asyncio import Event
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase, TestCase
-from unittest.mock import AsyncMock, Mock
+from unittest.mock import AsyncMock, Mock, call
 
 import cv2
 import numpy as np
@@ -28,6 +28,7 @@ FIXTURE_PATH = (
     / "pause_map_exit.png"
 )
 FAIL_MAP_FIXTURE_PATH = FIXTURE_PATH.with_name("fail_map.png")
+NEW_ACCOUNT_FAIL_MAP_FIXTURE_PATH = FIXTURE_PATH.with_name("new_account_fail_map.png")
 
 
 class PauseExitVisionTest(TestCase):
@@ -62,6 +63,14 @@ class MapExitBackVisionTest(TestCase):
         self.assertIsNotNone(button)
         self.assertEqual(button.center, (319, 637))
 
+    def test_new_account_fail_map_finds_centered_popup_button(self):
+        image = cv2.imread(str(NEW_ACCOUNT_FAIL_MAP_FIXTURE_PATH))
+
+        button = find_map_exit_back_button(image)
+
+        self.assertIsNotNone(button)
+        self.assertEqual(button.center, (319, 576))
+
     def test_underlying_yellow_button_is_rejected_when_popup_button_is_gone(self):
         image = cv2.imread(str(FAIL_MAP_FIXTURE_PATH))
         image[615:655, 255:385] = 0
@@ -78,6 +87,11 @@ class PauseExitActionTest(IsolatedAsyncioTestCase):
 
         completed = await click_pause_exit(
             page=page,
+            retry_template=None,
+            retry_template_name=None,
+            retry_template_threshold=0.9,
+            retry_template_scales=(1.0,),
+            retry_template_region=None,
             timeout_ms=1_000,
             poll_ms=100,
             delay_ms=0,
@@ -87,6 +101,42 @@ class PauseExitActionTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(completed)
         page.mouse.click.assert_awaited_once_with(251, 633)
+
+    async def test_reclicks_pause_icon_until_pause_controls_are_visible(self):
+        pause_icon = cv2.imread(
+            str(PROJECT_ROOT / "tools" / "rooms" / "exit_click.png"),
+            cv2.IMREAD_GRAYSCALE,
+        )
+        pause_icon_color = cv2.imread(
+            str(PROJECT_ROOT / "tools" / "rooms" / "exit_click.png")
+        )
+        game_image = np.zeros((720, 640, 3), dtype=np.uint8)
+        game_image[137:161, 134:156] = pause_icon_color
+        _ok, game_screenshot = cv2.imencode(".png", game_image)
+        page = Mock()
+        page.screenshot = AsyncMock(
+            side_effect=[game_screenshot.tobytes(), FIXTURE_PATH.read_bytes()]
+        )
+        page.wait_for_timeout = AsyncMock()
+        page.evaluate = AsyncMock()
+        page.mouse.click = AsyncMock()
+
+        completed = await click_pause_exit(
+            page=page,
+            retry_template=pause_icon,
+            retry_template_name="exit_click.png",
+            retry_template_threshold=0.70,
+            retry_template_scales=(1.0,),
+            retry_template_region=(120, 125, 175, 175),
+            timeout_ms=1_000,
+            poll_ms=100,
+            delay_ms=0,
+            label="Exit confirm",
+            stop_event=Event(),
+        )
+
+        self.assertTrue(completed)
+        page.mouse.click.assert_has_awaits([call(145, 149), call(251, 633)])
 
 
 class MapExitBackActionTest(IsolatedAsyncioTestCase):

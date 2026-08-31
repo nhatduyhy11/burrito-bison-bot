@@ -48,7 +48,7 @@ MAX_BUTTON_HEIGHT_DELTA = 4
 # Stop above the underlying game button. Only a few pixels of that lower
 # button can enter this ROI, so it cannot satisfy the complete-component
 # geometry required below.
-MAP_EXIT_BACK_REGION = (245, 610, 390, 658)
+MAP_EXIT_BACK_REGION = (245, 550, 390, 658)
 MAP_EXIT_BACK_GEOMETRY = ButtonGeometry(
     min_area=2_500,
     min_width=100,
@@ -59,7 +59,7 @@ MAP_EXIT_BACK_GEOMETRY = ButtonGeometry(
 )
 MIN_MAP_EXIT_BACK_X = 258
 MAX_MAP_EXIT_BACK_X = 270
-MIN_MAP_EXIT_BACK_Y = 615
+MIN_MAP_EXIT_BACK_Y = 550
 MAX_MAP_EXIT_BACK_Y = 625
 
 
@@ -114,13 +114,18 @@ def find_map_exit_back_button(
 
 async def click_pause_exit(
     page,
+    retry_template: Optional[np.ndarray],
+    retry_template_name: Optional[str],
+    retry_template_threshold: float,
+    retry_template_scales: tuple[float, ...],
+    retry_template_region: Optional[tuple[int, int, int, int]],
     timeout_ms: int,
     poll_ms: int,
     delay_ms: int,
     label: str,
     stop_event: Optional[asyncio.Event] = None,
 ) -> bool:
-    """Wait for the paired pause buttons and click the red exit control."""
+    """Wait for pause controls, retrying the pause trigger until they appear."""
     deadline = flow_time(stop_event) + timeout_ms / 1000
 
     while True:
@@ -139,6 +144,29 @@ async def click_pause_exit(
                 return False
             await bot_click(page, (x, y))
             return True
+
+        # The first click can be consumed while the game is still settling.
+        # When that happens, retry only the verified pause icon, never an
+        # arbitrary fixed coordinate, until the paired pause controls appear.
+        if retry_template is not None and retry_template_name is not None:
+            screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+            x, y, score = find_template(
+                screenshot_gray,
+                retry_template,
+                retry_template_name,
+                scales=retry_template_scales,
+                region=retry_template_region,
+            )
+            if score >= retry_template_threshold:
+                print(
+                    f"{label}: pause controls not visible; retry "
+                    f"{retry_template_name} at {x},{y}, score={score:.3f}",
+                    flush=True,
+                )
+                await bot_click(page, (x, y))
+                if not await wait_for_flow_timeout(page, delay_ms, stop_event):
+                    return False
+                continue
 
         if flow_time(stop_event) >= deadline:
             screenshot_path = await save_timeout_screenshot(page, label)

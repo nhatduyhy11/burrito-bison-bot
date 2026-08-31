@@ -92,6 +92,10 @@ class ClickHeroSelectBattleAction:
 class ClickPauseExitAction:
     """Wait for the pause popup's button pair and click its red exit button."""
 
+    retry_template_path: Optional[Path] = None
+    retry_template_threshold: float = DEFAULT_TEMPLATE_THRESHOLD
+    retry_template_scales: tuple[float, ...] = (1.0,)
+    retry_template_region: Optional[Region] = None
     timeout_ms: int = DEFAULT_TEMPLATE_TIMEOUT_MS
     poll_ms: int = DEFAULT_TEMPLATE_POLL_MS
     delay_ms: int = DEFAULT_CLICK_DELAY_MS
