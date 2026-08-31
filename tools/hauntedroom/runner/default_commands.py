@@ -11,7 +11,7 @@ FLOW_DEFINITIONS = build_flow_commands(reload_policy, start_auto)
 # Only these commands remain directly startable. The original command table is
 # kept private so screen auto-switching can reuse its resolvers and reload policy.
 FLOW_COMMANDS = {
-    "t": replace(FLOW_DEFINITIONS["train"], key="T"),
+    "t": replace(FLOW_DEFINITIONS["train_ad_exit"], key="T"),
     "5": replace(FLOW_DEFINITIONS["json_actions"], key="5"),
     "9": replace(FLOW_DEFINITIONS["spawn_exit_lvup"], key="9"),
 }

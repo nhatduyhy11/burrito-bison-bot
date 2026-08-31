@@ -83,10 +83,17 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.core.vision",
                 "hauntedroom.flows.automap_support.boss_action",
                 "hauntedroom.flows.automap_support.train_select",
+                "hauntedroom.flows.train_common",
             },
             "new_account.py": {
                 "hauntedroom.actions.builder",
                 "hauntedroom.actions.runner",
+            },
+            "train_ad_exit.py": {
+                "hauntedroom.actions.pause_exit",
+                "hauntedroom.flows.automap_support.train_select",
+                "hauntedroom.flows.train_common",
+                "hauntedroom.flows.automap_support.upgrade_action",
             },
         }
         for path in (PACKAGE_DIR / "flows").glob("*.py"):

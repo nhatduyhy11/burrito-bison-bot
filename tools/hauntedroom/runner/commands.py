@@ -114,6 +114,22 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_train_ad_exit(
+        actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        train_ad_exit_flow = reload_policy.get_train_ad_exit_flow(dev_reload)
+
+        async def run(page, stop_event, debug: bool):
+            return await train_ad_exit_flow(
+                page,
+                stop_event,
+                debug,
+            )
+
+        return ResolvedFlow(actions, run)
+
     def resolve_json_actions(
         actions: list[Action],
         dev_reload: bool,
@@ -245,6 +261,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "train then auto-battle",
             "Train mode then auto-battle",
             resolve_train,
+        ),
+        "train_ad_exit": FlowCommand(
+            "train_ad_exit",
+            "train ad exit loop",
+            "Train ad exit loop",
+            resolve_train_ad_exit,
+            control_factory=FlowControl,
         ),
         "exp_available": FlowCommand(
             "exp_available",

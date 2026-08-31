@@ -28,7 +28,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
     def test_direct_hotkeys_and_auto_switched_flows_are_configured(self):
         self.assertEqual(set(FLOW_COMMANDS), {"t", "5", "9"})
         self.assertEqual(FLOW_COMMANDS["t"].key, "T")
-        self.assertEqual(FLOW_COMMANDS["t"].name, "train then auto-battle")
+        self.assertEqual(FLOW_COMMANDS["t"].name, "train ad exit loop")
         self.assertEqual(FLOW_COMMANDS["5"].key, "5")
         self.assertEqual(FLOW_COMMANDS["5"].name, "JSON action loop")
         self.assertEqual(FLOW_COMMANDS["9"].key, "9")

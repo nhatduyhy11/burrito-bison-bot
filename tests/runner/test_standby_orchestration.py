@@ -137,34 +137,30 @@ class StandbyOrchestrationTest(IsolatedAsyncioTestCase):
 
     @patch("hauntedroom.runner.default_commands.reload_policy.load_actions")
     @patch("hauntedroom.runner.standby.save_live_screenshot", new_callable=AsyncMock)
-    @patch("hauntedroom.runner.default_commands.reload_policy.get_train_flow")
-    @patch("hauntedroom.runner.default_commands.reload_policy.get_automap_runtime")
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_train_ad_exit_flow")
     @patch("hauntedroom.runner.standby.start_hotkey_listener", new_callable=AsyncMock)
-    async def test_shift_t_starts_train_then_automap_flow(
+    async def test_shift_t_starts_train_ad_exit_flow(
         self,
         start_hotkey_listener,
-        get_automap_runtime,
-        get_train_flow,
+        get_train_ad_exit_flow,
         save_live_screenshot,
         load_actions,
     ):
         page = Mock()
         original_actions = [{"type": "old-action"}]
-        automap_flow = AsyncMock()
-        train_flow = AsyncMock()
-        get_automap_runtime.return_value = AutomapRuntime(automap_flow, AsyncMock())
-        get_train_flow.return_value = train_flow
+        train_ad_exit_flow = AsyncMock()
+        get_train_ad_exit_flow.return_value = train_ad_exit_flow
 
         async def enqueue_commands(_page, command_queue):
             command_queue.put_nowait("t")
             command_queue.put_nowait("8")
 
-        async def wait_until_stopped(_page, _automap, stop_event, _debug, **_kwargs):
+        async def wait_until_stopped(_page, stop_event, _debug, **_kwargs):
             await stop_event.wait()
             return False
 
         start_hotkey_listener.side_effect = enqueue_commands
-        train_flow.side_effect = wait_until_stopped
+        train_ad_exit_flow.side_effect = wait_until_stopped
         save_live_screenshot.side_effect = RuntimeError("stop test loop")
 
         with self.assertRaisesRegex(RuntimeError, "stop test loop"):
@@ -176,12 +172,11 @@ class StandbyOrchestrationTest(IsolatedAsyncioTestCase):
                 actions_path=Path("tools/json_macro/macro.env.json"),
             )
 
-        get_automap_runtime.assert_called_once_with(True)
-        get_train_flow.assert_called_once_with(True)
-        train_flow.assert_awaited_once()
+        get_train_ad_exit_flow.assert_called_once_with(True)
+        train_ad_exit_flow.assert_awaited_once()
         self.assertEqual(
-            train_flow.await_args.args[:2],
-            (page, automap_flow),
+            train_ad_exit_flow.await_args.args[0],
+            page,
         )
         load_actions.assert_not_called()
 
