@@ -18,6 +18,7 @@ from hauntedroom.core.template_detection import (
     TemplateWaitStatus,
 )
 from hauntedroom.flows.train import TrainMode, run_train_flow
+from hauntedroom.flows.train_support.common import TrainCycleResult
 from hauntedroom.flows.train_support import (
     TRAIN_BATTLE_LOAD_MS,
     TRAIN_ENTRY_SETTLE_MS,
@@ -140,7 +141,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
     @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_mode_exit_immediately_single_cycle(self, mock_cycle):
         """Mode 2: Exit immediately after match start."""
-        mock_cycle.return_value = True
+        mock_cycle.return_value = TrainCycleResult.COMPLETED
         stop_event = asyncio.Event()
 
         result = await run_train_flow(
@@ -170,7 +171,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
     @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_mode_pet_and_ad_single_cycle(self, mock_cycle):
         """Mode 3: Pet summon, spin dismissal, then exit."""
-        mock_cycle.return_value = True
+        mock_cycle.return_value = TrainCycleResult.COMPLETED
         stop_event = asyncio.Event()
 
         result = await run_train_flow(

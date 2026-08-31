@@ -8,7 +8,7 @@
 import asyncio
 from typing import Awaitable, Callable, Optional, Union
 
-from hauntedroom.flows.train_support.common import TrainMode
+from hauntedroom.flows.train_support.common import TrainCycleResult, TrainMode
 from hauntedroom.flows.train_support.entry import (
     check_and_click_train_challenge,
     wait_and_click_start_battle,
@@ -99,11 +99,12 @@ async def run_train_flow(
             debug=debug,
             pet_and_ad=is_pet_mode,
         )
-    return await run_train_ad_exit_cycle(
+    cycle_result = await run_train_ad_exit_cycle(
         page,
         stop_event,
         pet_and_ad=is_pet_mode,
     )
+    return cycle_result is TrainCycleResult.COMPLETED
 
 
 async def run_train_ad_exit_flow(

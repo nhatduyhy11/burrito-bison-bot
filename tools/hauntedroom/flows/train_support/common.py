@@ -19,6 +19,15 @@ class TrainMode(str, Enum):
     PET_AND_AD = "pet_and_ad"
 
 
+class TrainCycleResult(Enum):
+    """Outcome of one ad-exit cycle, including whether the loop may retry."""
+
+    COMPLETED = "completed"
+    STOPPED = "stopped"
+    RETRYABLE_FAILURE = "retryable_failure"
+    FATAL_FAILURE = "fatal_failure"
+
+
 TRAIN_AVAILABLE_REGION = (126, 196, 222, 213)
 TRAIN_AVAILABLE_MIN_TEXT_PIXELS = 30
 

@@ -33,9 +33,13 @@ from hauntedroom.flows.train_support.pet_and_ad import (
 from hauntedroom.flows.train_support.exit_flow import (
     exit_train_match,
     run_train_ad_exit_cycle,
+    run_train_ad_exit_loop,
     wait_for_train_screen,
 )
-from hauntedroom.flows.train_support.common import TRAIN_SCREEN_TEMPLATE_PATH
+from hauntedroom.flows.train_support.common import (
+    TRAIN_SCREEN_TEMPLATE_PATH,
+    TrainCycleResult,
+)
 
 
 class TrainSupportTest(IsolatedAsyncioTestCase):
@@ -203,7 +207,7 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
             pet_and_ad=True
         )
 
-        self.assertTrue(result)
+        self.assertIs(result, TrainCycleResult.COMPLETED)
         phases["wait_for_train_challenge_available"].assert_awaited_once_with(
             self.page, stop_event
         )
@@ -231,7 +235,7 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
             pet_and_ad=False
         )
 
-        self.assertTrue(result)
+        self.assertIs(result, TrainCycleResult.COMPLETED)
         phases["wait_for_train_challenge_available"].assert_awaited_once_with(
             self.page, stop_event
         )
@@ -252,9 +256,48 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
             self.page, stop_event
         )
 
+    @patch("hauntedroom.flows.train_support.exit_flow.wait_for_train_screen", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train_support.exit_flow.run_train_ad_exit_cycle", new_callable=AsyncMock)
+    async def test_loop_recovers_and_retries_after_temporary_timeout(
+        self,
+        run_cycle,
+        wait_for_train_screen,
+    ):
+        stop_event = asyncio.Event()
+        run_cycle.side_effect = [
+            TrainCycleResult.RETRYABLE_FAILURE,
+            TrainCycleResult.STOPPED,
+        ]
+        wait_for_train_screen.return_value = True
+
+        self.assertFalse(
+            await run_train_ad_exit_loop(self.page, stop_event, pet_and_ad=False)
+        )
+
+        self.assertEqual(run_cycle.await_count, 2)
+        wait_for_train_screen.assert_awaited_once_with(self.page, stop_event)
+
+    @patch("hauntedroom.flows.train_support.exit_flow.wait_for_train_screen", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train_support.exit_flow.run_train_ad_exit_cycle", new_callable=AsyncMock)
+    async def test_loop_stops_immediately_for_stop_event(
+        self,
+        run_cycle,
+        wait_for_train_screen,
+    ):
+        run_cycle.return_value = TrainCycleResult.STOPPED
+        stop_event = asyncio.Event()
+        stop_event.set()
+
+        self.assertFalse(
+            await run_train_ad_exit_loop(self.page, stop_event, pet_and_ad=False)
+        )
+
+        run_cycle.assert_not_awaited()
+        wait_for_train_screen.assert_not_awaited()
+
     @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_unified_run_train_flow_delegates_to_ad_exit_single_cycle(self, mock_cycle):
-        mock_cycle.return_value = True
+        mock_cycle.return_value = TrainCycleResult.COMPLETED
         stop_event = asyncio.Event()
 
         result = await run_train_flow(self.page, stop_event=stop_event, pet_and_ad=False, loop=False)

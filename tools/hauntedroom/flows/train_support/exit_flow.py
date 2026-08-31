@@ -24,6 +24,7 @@ from hauntedroom.flows.train_support.common import (
     TRAIN_OVERLAY_DISMISS_CLICK,
     TRAIN_SCREEN_TEMPLATE_PATH,
     TRAIN_SCREEN_TEMPLATE_SCALES,
+    TrainCycleResult,
 )
 from hauntedroom.flows.train_support.entry import (
     wait_and_click_start_battle,
@@ -34,6 +35,18 @@ from hauntedroom.flows.train_support.pet_and_ad import (
     run_pet_and_ad_phase,
     wait_for_match_start,
 )
+
+
+def _failure_result(
+    stop_event: Optional[asyncio.Event],
+    *,
+    retryable: bool,
+) -> TrainCycleResult:
+    if stop_event is not None and stop_event.is_set():
+        return TrainCycleResult.STOPPED
+    if retryable:
+        return TrainCycleResult.RETRYABLE_FAILURE
+    return TrainCycleResult.FATAL_FAILURE
 
 
 async def exit_train_match(
@@ -97,7 +110,7 @@ async def run_train_ad_exit_cycle(
     stop_event: Optional[asyncio.Event] = None,
     *,
     pet_and_ad: bool = True,
-) -> bool:
+) -> TrainCycleResult:
     """Execute a single train ad-exit cycle:
     1. Wait for train challenge available and click it.
     2. Wait for start battle button and click it.
@@ -109,32 +122,34 @@ async def run_train_ad_exit_cycle(
     """
     # 1. Wait until train is available and challenge clicked
     if not await wait_for_train_challenge_available(page, stop_event):
-        return False
+        return _failure_result(stop_event, retryable=False)
 
     # 2. Wait for start battle button and click
     print("Waiting for start battle button...", flush=True)
     if not await wait_and_click_start_battle(page, stop_event):
-        return False
+        return _failure_result(stop_event, retryable=True)
 
     # 3. Hero Card Selection (Rounds 1-5)
     if not await select_train_heroes(page, stop_event, raise_on_timeout=False):
-        return False
+        return _failure_result(stop_event, retryable=True)
 
     # 4. Wait for match start
     if not await wait_for_match_start(page, stop_event):
-        return False
+        return _failure_result(stop_event, retryable=False)
 
     # 5. Pet and ad phase (if enabled)
     if pet_and_ad:
         if not await run_pet_and_ad_phase(page, stop_event):
-            return False
+            return _failure_result(stop_event, retryable=False)
 
     # 6. Exit match
     if not await exit_train_match(page, stop_event):
-        return False
+        return _failure_result(stop_event, retryable=True)
 
     # 7. Wait for train screen to return
-    return await wait_for_train_screen(page, stop_event)
+    if not await wait_for_train_screen(page, stop_event):
+        return _failure_result(stop_event, retryable=False)
+    return TrainCycleResult.COMPLETED
 
 
 async def run_train_ad_exit_loop(
@@ -156,7 +171,24 @@ async def run_train_ad_exit_loop(
         loop_count += 1
         print("\n" + colorize(f"--- Train Ad Exit Loop #{loop_count} ({mode_name}) ---", BLUE), flush=True)
 
-        if not await run_train_ad_exit_cycle(page, stop_event, pet_and_ad=pet_and_ad):
+        cycle_result = await run_train_ad_exit_cycle(
+            page,
+            stop_event,
+            pet_and_ad=pet_and_ad,
+        )
+        if cycle_result is TrainCycleResult.STOPPED:
             return False
+        if cycle_result is TrainCycleResult.FATAL_FAILURE:
+            print("Train ad exit cycle failed fatally; stopping loop.", flush=True)
+            return False
+        if cycle_result is TrainCycleResult.RETRYABLE_FAILURE:
+            print(
+                "Train ad exit cycle hit a temporary vision timeout; "
+                "recovering the train screen before retry.",
+                flush=True,
+            )
+            if not await wait_for_train_screen(page, stop_event):
+                return False
+            continue
 
         print(f"Train ad exit loop #{loop_count} completed!", flush=True)
