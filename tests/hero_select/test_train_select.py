@@ -72,3 +72,9 @@ class TrainSelectTest(TestCase):
 
         self.assertEqual(find_train_cards(frame), [])
         self.assertIsNone(self.matcher.find_choice(frame))
+
+    def test_red_card_fallback_when_no_purple_available(self):
+        choice = self.matcher.find_choice(self.load("train_3red.png"))
+        self.assertIsNotNone(choice)
+        self.assertEqual((choice.x, choice.y), (271, 566))
+        self.assertIsNone(choice.template_name)

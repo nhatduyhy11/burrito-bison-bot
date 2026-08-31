@@ -100,4 +100,14 @@ class TrainHeroMatcher:
         if purple:
             card = purple[0]
             return TrainChoice(card.x, card.y)
+
+        red = [
+            card
+            for card in available
+            if not card.is_purple and card.index not in ignored_indices
+        ]
+        if red:
+            card = red[0]
+            return TrainChoice(card.x, card.y)
+
         return None
