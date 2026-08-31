@@ -75,25 +75,14 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.automap_support.vision.template_config",
             },
             "train.py": {
-                "hauntedroom.actions.models",
-                "hauntedroom.actions.runner",
-                "hauntedroom.core.runtime",
-                "hauntedroom.core.template_detection",
-                "hauntedroom.core.template_matching",
-                "hauntedroom.core.vision",
-                "hauntedroom.flows.automap_support.boss_action",
-                "hauntedroom.flows.automap_support.train_select",
-                "hauntedroom.flows.train_common",
+                "hauntedroom.flows.train_support.common",
+                "hauntedroom.flows.train_support.entry",
+                "hauntedroom.flows.train_support.exit_flow",
+                "hauntedroom.flows.train_support.hero_selection",
             },
             "new_account.py": {
                 "hauntedroom.actions.builder",
                 "hauntedroom.actions.runner",
-            },
-            "train_ad_exit.py": {
-                "hauntedroom.actions.pause_exit",
-                "hauntedroom.flows.automap_support.train_select",
-                "hauntedroom.flows.train_common",
-                "hauntedroom.flows.automap_support.upgrade_action",
             },
         }
         for path in (PACKAGE_DIR / "flows").glob("*.py"):

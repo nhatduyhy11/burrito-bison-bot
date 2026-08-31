@@ -17,13 +17,13 @@ from hauntedroom.core.template_detection import (
     TemplateWaitResult,
     TemplateWaitStatus,
 )
-from hauntedroom.flows.train import (
+from hauntedroom.flows.train import TrainMode, run_train_flow
+from hauntedroom.flows.train_support import (
     TRAIN_BATTLE_LOAD_MS,
     TRAIN_ENTRY_SETTLE_MS,
     TRAIN_SELECTION_ROUNDS,
     TRAIN_SELECTION_SETTLE_MS,
     find_train_challenge_click,
-    run_train_flow,
     train_is_available,
 )
 
@@ -51,19 +51,23 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
 
         self.assertIsNone(find_train_challenge_click(frame))
 
-    @patch("hauntedroom.flows.train.TrainHeroMatcher")
-    @patch("hauntedroom.flows.train.load_template")
-    @patch("hauntedroom.flows.train.wait_for_template", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.train.capture_page_bgr", new_callable=AsyncMock)
-    async def test_confirms_five_rounds_then_hands_off_to_automap(
+    @patch("hauntedroom.flows.train_support.hero_selection.TrainHeroMatcher")
+    @patch("hauntedroom.flows.train_support.entry.load_template")
+    @patch("hauntedroom.flows.train_support.entry.wait_for_template", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train_support.hero_selection.capture_page_bgr", new_callable=AsyncMock)
+    async def test_mode_normal_confirms_five_rounds_then_hands_off_to_automap(
         self,
-        capture_page_bgr,
+        hero_capture_page_bgr,
+        entry_capture_page_bgr,
         wait_for_template,
         load_template,
         matcher_type,
     ):
+        """Mode 1: Normal train flow."""
         available = cv2.imread(str(FIXTURES / "train_available.png"))
-        capture_page_bgr.return_value = available
+        entry_capture_page_bgr.return_value = available
+        hero_capture_page_bgr.return_value = available
         wait_for_template.return_value = TemplateWaitResult(
             TemplateWaitStatus.MATCHED,
             (401, 644, 0.95),
@@ -90,6 +94,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             stop_event,
             debug=True,
             run_state=run_state,
+            mode=TrainMode.NORMAL,
         )
 
         self.assertTrue(result)
@@ -118,3 +123,63 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             debug=True,
             run_state=run_state,
         )
+
+    @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
+    async def test_mode_exit_immediately_single_cycle(self, mock_cycle):
+        """Mode 2: Exit immediately after match start."""
+        mock_cycle.return_value = True
+        stop_event = asyncio.Event()
+
+        result = await run_train_flow(
+            self.page,
+            stop_event=stop_event,
+            mode=TrainMode.EXIT_IMMEDIATELY,
+            loop=False,
+        )
+        self.assertTrue(result)
+        mock_cycle.assert_awaited_once_with(self.page, stop_event, pet_and_ad=False)
+
+    @patch("hauntedroom.flows.train.run_train_ad_exit_loop", new_callable=AsyncMock)
+    async def test_mode_exit_immediately_loop(self, mock_loop):
+        """Mode 2 loop: Exit immediately after match start in loop."""
+        mock_loop.return_value = True
+        stop_event = asyncio.Event()
+
+        result = await run_train_flow(
+            self.page,
+            stop_event=stop_event,
+            mode="exit_immediately",
+            loop=True,
+        )
+        self.assertTrue(result)
+        mock_loop.assert_awaited_once_with(self.page, stop_event, debug=False, pet_and_ad=False)
+
+    @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
+    async def test_mode_pet_and_ad_single_cycle(self, mock_cycle):
+        """Mode 3: Pet summon, spin dismissal, then exit."""
+        mock_cycle.return_value = True
+        stop_event = asyncio.Event()
+
+        result = await run_train_flow(
+            self.page,
+            stop_event=stop_event,
+            mode=TrainMode.PET_AND_AD,
+            loop=False,
+        )
+        self.assertTrue(result)
+        mock_cycle.assert_awaited_once_with(self.page, stop_event, pet_and_ad=True)
+
+    @patch("hauntedroom.flows.train.run_train_ad_exit_loop", new_callable=AsyncMock)
+    async def test_mode_pet_and_ad_loop(self, mock_loop):
+        """Mode 3 loop: Pet summon, spin dismissal, then exit in loop."""
+        mock_loop.return_value = True
+        stop_event = asyncio.Event()
+
+        result = await run_train_flow(
+            self.page,
+            stop_event=stop_event,
+            mode="pet_and_ad",
+            loop=True,
+        )
+        self.assertTrue(result)
+        mock_loop.assert_awaited_once_with(self.page, stop_event, debug=False, pet_and_ad=True)
