@@ -24,7 +24,7 @@ uv run --with pytest pytest -q
 Baseline hiện tại:
 
 ```text
-277 passed, 4 skipped, 101 subtests passed
+313 passed, 4 skipped, 103 subtests passed
 ```
 
 Bốn test bị skip đều nằm trong
@@ -39,18 +39,18 @@ nhánh enabled và chưa assert trực tiếp contract default-off.
 Runtime/non-test Python files từ 200 dòng trở lên:
 
 ```text
- 385 tools/hauntedroom/actions/runner.py
- 382 tools/hauntedroom/flows/automap_support/flow.py
- 373 tools/hauntedroom/runner/commands.py
- 346 tools/hauntedroom/runner/standby.py
+ 386 tools/hauntedroom/flows/automap_support/flow.py
+ 370 tools/hauntedroom/runner/standby.py
+ 345 tools/hauntedroom/runner/commands.py
  320 tools/hauntedroom/flows/artifact.py
- 302 tools/hauntedroom/flows/automap_support/map/lifecycle.py
+ 306 tools/hauntedroom/flows/automap_support/map/lifecycle.py
  277 tools/hauntedroom/flows/automap_support/vision/hero_levelup.py
  258 tools/hauntedroom/flows/automap_support/hero_action.py
  250 tools/hauntedroom/actions/loader.py
- 226 tools/hauntedroom/runner/reload.py
+ 248 tools/hauntedroom/runner/reload.py
+ 243 tools/hauntedroom/actions/pause_exit.py
+ 237 tools/hauntedroom/actions/runner_executor.py
  223 tools/hauntedroom/core/template_matching.py
- 215 tools/hauntedroom/actions/pause_exit.py
  211 tools/hauntedroom/core/runtime.py
  207 tools/hauntedroom/screen_detect.py
  201 tools/hauntedroom/flows/diamond_collection.py
@@ -59,10 +59,10 @@ Runtime/non-test Python files từ 200 dòng trở lên:
 Test files từ 200 dòng trở lên:
 
 ```text
+ 457 tests/runner/test_standby_orchestration.py
  423 tests/automap/test_map_reward.py
- 373 tests/actions/test_runner.py
- 359 tests/runner/test_standby_orchestration.py
- 297 tests/runner/test_start_automap_loop.py
+ 314 tests/runner/test_train_support.py
+ 300 tests/runner/test_start_automap_loop.py
  286 tests/automap/test_flow.py
  275 tests/hero_select/test_hero_choice_policy.py
  262 tests/special_flow/test_artifact_flow.py
@@ -71,8 +71,11 @@ Test files từ 200 dòng trở lên:
  229 tests/hero_select/test_hero_action.py
  222 tests/test_hauntedroom_vision.py
  206 tests/actions/test_hero_select_battle.py
- 205 tests/actions/test_loader.py
  205 tests/runner/test_standby_hotkeys.py
+ 205 tests/actions/test_runner.py
+ 205 tests/actions/test_loader.py
+ 202 tests/actions/test_runner_executor.py
+ 200 tests/automap/test_map_blocker.py
 ```
 
 Line count chỉ là tín hiệu để review, không tự động đồng nghĩa với
@@ -91,16 +94,17 @@ enabled lẫn disabled đều chạy trong baseline.
 
 ### P1. Mở rộng architecture guardrail
 
-`tests/test_hauntedroom_architecture.py` mới kiểm tra các Python file trực tiếp
-trong `core/`, `actions/`, `control_events/`, `flows/` và riêng thư mục
-`automap_support/vision/`. Test chưa quét recursive toàn bộ
-`flows/automap_support/`, package `map/`, `runner/`, composition root và
-`screen_detect.py`.
+`tests/test_hauntedroom_architecture.py` hiện kiểm tra các Python file trực tiếp
+trong `core/`, `actions/`, `control_events/`, `flows/`, `vision/`, contract import
+từng file cho `flows/train_support/`, và các file trực tiếp của
+`automap_support/vision/`. Test chưa quét recursive `flows/automap_support/`
+(gồm package `map/`), package `runner/`, composition root
+(`hauntedroom_runner.py`) và `screen_detect.py`.
 
 Mở rộng guard theo dependency rule trong `docs/ARCHITECTURE.md`. Cần biểu diễn rõ
-các dependency composite được phép, gồm wiring trong `runner/`, `train.py` và
-dependency có chủ đích từ `screen_detect.py` tới detector boss-progress. ADR chỉ
-là historical decision record, không dùng làm inventory của wiring hiện tại.
+các dependency composite được phép, gồm wiring trong `runner/` và dependency có
+chủ đích từ `screen_detect.py` tới detector boss-progress. ADR chỉ là historical
+decision record, không dùng làm inventory của wiring hiện tại.
 
 ### P3. Làm phẳng state loop của research khi sửa flow này
 
