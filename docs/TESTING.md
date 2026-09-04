@@ -52,7 +52,7 @@ uv run python -m unittest tests.hero_select.test_hero_choice_policy -v
 uv run python -m unittest tests.hero_select.test_hero_action -v
 uv run python -m unittest tests.hero_select.test_hero_flow_adapter -v
 uv run python -m unittest tests.hero_select.test_hero_integration -v
-uv run python -m unittest tests.runner.test_standby_hotkeys tests.runner.test_standby_orchestration -v
+uv run python -m unittest tests.runner.test_standby_hotkeys tests.runner.test_standby_idle tests.runner.test_standby_dispatch tests.runner.test_standby_flow_lifecycle -v
 uv run python -m unittest tests.runner.test_train_flow -v
 uv run python -m unittest tests.research.test_research_flow -v
 uv run python -m unittest tests.special_flow.test_artifact_flow -v
