@@ -202,7 +202,10 @@ Ví dụ tối thiểu:
 
 `clear_blockers` hỗ trợ `priority`, `click_positions`, `threshold`,
 `timeout_ms`, `poll_ms`, `delay_ms`, `note` và `until_template_scales`. Các vị
-trí click hợp lệ là `center`, `top_middle`, `mid_left`, `bottom_left`.
+trí click hợp lệ là `center`, `top_middle`, `mid_left`, `bottom_left`. Template
+nằm trong `FIXED_BLOCKER_CLICKS` (`core.template_matching`, hiện có
+`overlay_newbie.png`) bị bỏ qua `click_positions` và luôn được click tại tọa
+độ cố định vì màn tương ứng đóng bằng "nhấn khu vực trống".
 
 Action JSON chủ yếu phục vụ đoạn vào/ra room. Auto-map, train, research,
 artifact, EXP và hero breakthrough là flow Python riêng. Mỗi timeout sẽ lưu ảnh

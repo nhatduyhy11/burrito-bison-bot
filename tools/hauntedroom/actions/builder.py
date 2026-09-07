@@ -19,6 +19,10 @@ BLOCKER_PRIORITY = (
     "overlay_close_2.png",
     "overlay_newbie.png",
 )
+# Blocker clicks are match-relative except for templates mapped in
+# core.template_matching.FIXED_BLOCKER_CLICKS: overlay_newbie.png closes on
+# "tap empty area", so it is clicked at a fixed viewport point regardless of
+# where the book sprite matched.
 
 
 def build_start_battle_actions() -> list[Action]:
@@ -26,12 +30,10 @@ def build_start_battle_actions() -> list[Action]:
     blocker_paths = tuple(
         ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
     )
-    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
     return [
         ClearBlockersAction(
             blocker_paths=blocker_paths,
             until_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
             until_template_scales=(1.0,),
             note="Before Start HOME",
         ),
@@ -50,7 +52,6 @@ def build_start_battle_actions() -> list[Action]:
                 ROOMS_DIR / "hero_select_battle_banner_top.png"
             ),
             entry_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
             note="Start Battle",
         ),
     ]
@@ -61,7 +62,6 @@ def build_spawn_exit_lvup_actions() -> list[Action]:
     blocker_paths = tuple(
         ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
     )
-    blocker_click_positions = {"overlay_newbie.png": "top_middle"}
     return [
         *build_start_battle_actions(),
         ClickTemplateAction(
@@ -85,7 +85,6 @@ def build_spawn_exit_lvup_actions() -> list[Action]:
         ClearBlockersAction(
             blocker_paths=blocker_paths,
             until_template_path=ROOMS_DIR / "start_home.png",
-            click_positions=blocker_click_positions,
             until_template_scales=(1.0,),
             note="After Exit Back",
         ),

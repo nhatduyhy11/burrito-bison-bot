@@ -19,6 +19,23 @@ ClickPosition = Literal["bottom_left", "center", "mid_left", "top_middle"]
 SUPPORTED_CLICK_POSITIONS: frozenset[ClickPosition] = frozenset(
     {"bottom_left", "center", "mid_left", "top_middle"}
 )
+# Screens that dismiss on "tap empty area" must not be clicked at the detected
+# match: their templates reappear as harmless scenery (the newbie book stack is
+# also desk decoration), where a tap is ignored and the blocker never clears.
+# Such templates are clicked at a fixed empty viewport point instead, with the
+# match only acting as a gate. Coordinates target the supported 640x720
+# viewport; overlay_newbie taps the dark wall left of the title banner.
+FIXED_BLOCKER_CLICKS: dict[str, tuple[int, int]] = {
+    "overlay_newbie.png": (157, 54),
+}
+
+
+def resolve_blocker_click(template_name: str, x: int, y: int) -> tuple[int, int]:
+    """Return the fixed click point for ``template_name`` when one is mapped.
+
+    Match-derived coordinates pass through for templates without an override.
+    """
+    return FIXED_BLOCKER_CLICKS.get(template_name, (x, y))
 
 
 def load_template(path: Path) -> np.ndarray:

@@ -138,7 +138,7 @@ class HeroSelectBattleActionTest(IsolatedAsyncioTestCase):
         "hauntedroom.actions.hero_select_battle.capture_page_bgr",
         new_callable=AsyncMock,
     )
-    async def test_retries_home_entry_after_blocker_interrupts_transition(
+    async def test_newbie_blocker_uses_fixed_click_before_retrying_home_entry(
         self,
         capture_page_bgr,
         find_battle_button,
@@ -148,7 +148,7 @@ class HeroSelectBattleActionTest(IsolatedAsyncioTestCase):
         bot_click_mock,
         _close_profile_popup_tabs,
     ):
-        blocker_path = Path("lubu_close.png")
+        blocker_path = Path("overlay_newbie.png")
         header_path = Path("header.png")
         entry_path = Path("start_home.png")
         frames = [
@@ -199,7 +199,7 @@ class HeroSelectBattleActionTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             click_and_wait_mock.await_args_list,
             [
-                call(page, (483, 182), 100, stop_event),
+                call(page, (157, 54), 100, stop_event),
                 call(page, (296, 562), 100, stop_event),
             ],
         )

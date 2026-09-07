@@ -121,7 +121,10 @@ Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
   `tests/fixtures/hauntedroom-captures/` mà không dừng flow hiện tại.
 - `newbie_block_screen.png` và `newbie_block_screen_en.png` khóa regression
   blocker màn hướng dẫn trên giao diện tiếng Việt và tiếng Anh; cả hai phải dùng
-  cùng template đồ họa `overlay_newbie.png` và click `(405, 506)`.
+  cùng template đồ họa `overlay_newbie.png` làm điều kiện detect, còn click thì
+  bấm tọa độ cố định `(157, 54)` — vùng đen trống bên trái banner tiêu đề
+  (`FIXED_BLOCKER_CLICKS` trong `core.template_matching`), không click theo vị
+  trí match vì sprite quyển sách cũng xuất hiện làm cảnh trang trí trên bàn.
 - Screenshot timeout mới được lưu tạm trong `.tmp/hauntedroom-timeouts/`.
 - Screenshot fallback của screen detector và hero selection được lưu trong
   `.tmp/hauntedroom-fallbacks/`.

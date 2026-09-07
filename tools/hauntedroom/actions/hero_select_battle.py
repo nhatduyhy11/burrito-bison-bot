@@ -15,7 +15,11 @@ from hauntedroom.core.runtime import (
     save_timeout_screenshot,
     wait_for_flow_timeout,
 )
-from hauntedroom.core.template_matching import ClickPosition, find_template
+from hauntedroom.core.template_matching import (
+    ClickPosition,
+    find_template,
+    resolve_blocker_click,
+)
 from hauntedroom.core.vision import (
     ColorComponentMatch,
     capture_page_bgr,
@@ -98,7 +102,11 @@ async def click_hero_select_battle(
                 click_positions.get(blocker_path.name, "center"),
             )
             if score >= threshold:
-                blocker_match = (score, blocker_path, x, y)
+                blocker_match = (
+                    score,
+                    blocker_path,
+                    *resolve_blocker_click(blocker_path.name, x, y),
+                )
                 break
 
         if blocker_match is not None:
