@@ -24,7 +24,7 @@ uv run --with pytest pytest -q
 Baseline hiện tại:
 
 ```text
-313 passed, 4 skipped, 103 subtests passed
+316 passed, 4 skipped, 103 subtests passed
 ```
 
 Bốn test bị skip đều nằm trong
@@ -50,7 +50,7 @@ Runtime/non-test Python files từ 200 dòng trở lên:
  248 tools/hauntedroom/runner/reload.py
  243 tools/hauntedroom/actions/pause_exit.py
  237 tools/hauntedroom/actions/runner_executor.py
- 223 tools/hauntedroom/core/template_matching.py
+ 240 tools/hauntedroom/core/template_matching.py
  211 tools/hauntedroom/core/runtime.py
  207 tools/hauntedroom/screen_detect.py
  201 tools/hauntedroom/flows/diamond_collection.py
@@ -59,23 +59,23 @@ Runtime/non-test Python files từ 200 dòng trở lên:
 Test files từ 200 dòng trở lên:
 
 ```text
- 457 tests/runner/test_standby_orchestration.py
- 423 tests/automap/test_map_reward.py
  314 tests/runner/test_train_support.py
  300 tests/runner/test_start_automap_loop.py
  286 tests/automap/test_flow.py
+ 284 tests/automap/test_map_reward_flow.py
  275 tests/hero_select/test_hero_choice_policy.py
  262 tests/special_flow/test_artifact_flow.py
  251 tests/automap/test_level_up.py
  249 tests/automap/test_gear.py
  229 tests/hero_select/test_hero_action.py
+ 226 tests/runner/test_standby_dispatch.py
  222 tests/test_hauntedroom_vision.py
+ 207 tests/automap/test_map_blocker.py
  206 tests/actions/test_hero_select_battle.py
  205 tests/runner/test_standby_hotkeys.py
  205 tests/actions/test_runner.py
  205 tests/actions/test_loader.py
  202 tests/actions/test_runner_executor.py
- 200 tests/automap/test_map_blocker.py
 ```
 
 Line count chỉ là tín hiệu để review, không tự động đồng nghĩa với
@@ -116,8 +116,9 @@ vi, tách `wait_for_research_available` và `drain_active_research`, giữ
 
 ### P3. Gom cấu hình blocker khi signature tiếp tục lớn
 
-`clear_blockers` đang nhận nhiều tham số và `timeout_ms` thực chất là inactivity
-timeout vì deadline được reset sau mỗi blocker click. Khi thêm option mới, gom
+`clear_blockers` trong `control_events/blockers.py` đang nhận nhiều tham số và
+`timeout_ms` thực chất là inactivity timeout vì deadline được reset sau mỗi
+blocker click. Khi thêm option mới, gom
 cấu hình vào `BlockerConfig` và đổi tên hoặc bổ sung docstring để semantics rõ
 ràng. Chưa cần tạo abstraction riêng nếu signature không đổi.
 

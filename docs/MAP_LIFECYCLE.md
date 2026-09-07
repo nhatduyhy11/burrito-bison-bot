@@ -280,7 +280,8 @@ vẫn sở hữu map-end policy, business priority và state synchronization.
 | Blocker detection/action | `tools/hauntedroom/flows/automap_support/map/blocker.py` |
 | Multi-map caller | `tools/hauntedroom/flows/start_auto.py` |
 | First-win regression | `tests/automap/test_daily_first_win.py` |
-| Reward/liveness behavior | `tests/automap/test_map_reward.py` |
+| Reward click orchestration | `tests/automap/test_map_reward_flow.py` |
+| Reward popup recognition | `tests/automap/test_map_reward_vision.py` |
 | Map-end throttle/handoff | `tests/automap/test_map_end.py` |
 | Blocker cleanup | `tests/automap/test_map_blocker.py` |
 | Multi-map handoff | `tests/runner/test_start_automap_loop.py` |
@@ -289,7 +290,7 @@ Khi sửa lifecycle, tối thiểu chạy:
 
 ```shell
 uv run python -m unittest tests.automap.test_daily_first_win
-uv run python -m unittest tests.automap.test_map_reward
+uv run python -m unittest tests.automap.test_map_reward_flow tests.automap.test_map_reward_vision
 uv run python -m unittest tests.automap.test_map_end
 uv run python -m unittest tests.automap.test_map_blocker
 uv run python -m unittest tests.runner.test_start_automap_loop

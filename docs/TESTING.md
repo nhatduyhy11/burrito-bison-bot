@@ -64,7 +64,7 @@ uv run python -m unittest tests.test_screen_detect -v
 Chạy một test cụ thể:
 
 ```shell
-uv run python -m unittest tests.automap.test_map_reward.MapRewardTest.test_map_end_clicks_followup_twice_before_checking_home -v
+uv run python -m unittest tests.automap.test_map_reward_flow.MapRewardFlowTest.test_map_end_clicks_followup_twice_before_checking_home -v
 ```
 
 ## Phạm vi
