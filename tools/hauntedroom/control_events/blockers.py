@@ -16,6 +16,7 @@ from hauntedroom.core.template_matching import (
     TEMPLATE_SCALES,
     ClickPosition,
     find_template,
+    resolve_blocker_click,
 )
 from hauntedroom.core.vision import capture_page_grayscale
 
@@ -52,7 +53,11 @@ async def clear_blockers(
                 click_positions.get(blocker_path.name, "center"),
             )
             if score >= threshold:
-                blocker_match = (score, blocker_path, x, y)
+                blocker_match = (
+                    score,
+                    blocker_path,
+                    *resolve_blocker_click(blocker_path.name, x, y),
+                )
                 break
 
         if blocker_match:

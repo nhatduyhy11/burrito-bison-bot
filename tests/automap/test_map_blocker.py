@@ -18,6 +18,7 @@ from hauntedroom.flows.automap_support.map.blocker import (
     MAP_BLOCKER_THRESHOLD,
     find_map_blocker,
 )
+
 from hauntedroom.flows.automap_support.map.reward import (
     WIN_REWARD_FOLLOWUP_CLICK,
     WIN_REWARD_FOLLOWUP_CLICK_COUNT,
@@ -25,6 +26,8 @@ from hauntedroom.flows.automap_support.map.reward import (
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
     HERO_LEVELUP_PRICE_REGION,
 )
+
+FIXED_NEWBIE_CLICK = (157, 54)
 
 
 class MapBlockerTest(IsolatedAsyncioTestCase):
@@ -69,7 +72,9 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
                 self.assertIsNotNone(match)
                 x, y, score, path = match
                 self.assertEqual(path.name, "overlay_newbie.png")
-                self.assertEqual((x, y), (405, 506))
+                # The screen closes on "tap empty area", so the click is the
+                # fixed dark-wall point, not the matched book position.
+                self.assertEqual((x, y), FIXED_NEWBIE_CLICK)
                 self.assertGreaterEqual(score, MAP_BLOCKER_THRESHOLD)
 
     @patch(
@@ -105,7 +110,9 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
 
         def record_click(x, y):
             nonlocal blocker_cleared
-            if (x, y) == (345, 75):
+            # The newbie match reports (345, 75) but the click must use the
+            # fixed empty-area point instead of the matched book position.
+            if (x, y) == FIXED_NEWBIE_CLICK:
                 blocker_cleared = True
 
         find_template.side_effect = match_by_name
@@ -125,7 +132,7 @@ class MapBlockerTest(IsolatedAsyncioTestCase):
                     call(*WIN_REWARD_FOLLOWUP_CLICK)
                     for _ in range(WIN_REWARD_FOLLOWUP_CLICK_COUNT)
                 ],
-                call(345, 75),
+                call(*FIXED_NEWBIE_CLICK),
                 *[
                     call(*WIN_REWARD_FOLLOWUP_CLICK)
                     for _ in range(WIN_REWARD_FOLLOWUP_CLICK_COUNT)

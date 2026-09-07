@@ -223,8 +223,9 @@ cleanup đã hoàn tất. Trạng thái này không thay thế home-ready gate.
 - Nếu các phase trước không handle frame, lifecycle chờ `3 giây` rồi click hotspot
   tương đối `(50% width, 65% height)`, tối đa hai lần cho mỗi map.
 - Sau hai click, vision tìm blocker theo priority config. `overlay_newbie.png`
-  dùng crop quyển sách không chứa chữ và click `top_middle` vào vùng trống phía
-  trên sách; blocker còn lại click center.
+  dùng crop quyển sách không chứa chữ để detect; màn hướng dẫn đóng bằng
+  "nhấn khu vực trống" nên click tọa độ cố định `(157, 54)` ở vùng đen bên
+  trái banner tiêu đề, không theo vị trí match; blocker còn lại click center.
 - Action blocker thành công luôn dẫn tới capture frame mới trước khi thử home.
 
 ### Home-ready
@@ -279,7 +280,8 @@ vẫn sở hữu map-end policy, business priority và state synchronization.
 | Blocker detection/action | `tools/hauntedroom/flows/automap_support/map/blocker.py` |
 | Multi-map caller | `tools/hauntedroom/flows/start_auto.py` |
 | First-win regression | `tests/automap/test_daily_first_win.py` |
-| Reward/liveness behavior | `tests/automap/test_map_reward.py` |
+| Reward click orchestration | `tests/automap/test_map_reward_flow.py` |
+| Reward popup recognition | `tests/automap/test_map_reward_vision.py` |
 | Map-end throttle/handoff | `tests/automap/test_map_end.py` |
 | Blocker cleanup | `tests/automap/test_map_blocker.py` |
 | Multi-map handoff | `tests/runner/test_start_automap_loop.py` |
@@ -288,7 +290,7 @@ Khi sửa lifecycle, tối thiểu chạy:
 
 ```shell
 uv run python -m unittest tests.automap.test_daily_first_win
-uv run python -m unittest tests.automap.test_map_reward
+uv run python -m unittest tests.automap.test_map_reward_flow tests.automap.test_map_reward_vision
 uv run python -m unittest tests.automap.test_map_end
 uv run python -m unittest tests.automap.test_map_blocker
 uv run python -m unittest tests.runner.test_start_automap_loop

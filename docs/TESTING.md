@@ -52,7 +52,7 @@ uv run python -m unittest tests.hero_select.test_hero_choice_policy -v
 uv run python -m unittest tests.hero_select.test_hero_action -v
 uv run python -m unittest tests.hero_select.test_hero_flow_adapter -v
 uv run python -m unittest tests.hero_select.test_hero_integration -v
-uv run python -m unittest tests.runner.test_standby_hotkeys tests.runner.test_standby_orchestration -v
+uv run python -m unittest tests.runner.test_standby_hotkeys tests.runner.test_standby_idle tests.runner.test_standby_dispatch tests.runner.test_standby_flow_lifecycle -v
 uv run python -m unittest tests.runner.test_train_flow -v
 uv run python -m unittest tests.research.test_research_flow -v
 uv run python -m unittest tests.special_flow.test_artifact_flow -v
@@ -64,7 +64,7 @@ uv run python -m unittest tests.test_screen_detect -v
 Chạy một test cụ thể:
 
 ```shell
-uv run python -m unittest tests.automap.test_map_reward.MapRewardTest.test_map_end_clicks_followup_twice_before_checking_home -v
+uv run python -m unittest tests.automap.test_map_reward_flow.MapRewardFlowTest.test_map_end_clicks_followup_twice_before_checking_home -v
 ```
 
 ## Phạm vi
@@ -121,7 +121,10 @@ Business rule cần bảo vệ khi thay đổi auto-map được mô tả trong
   `tests/fixtures/hauntedroom-captures/` mà không dừng flow hiện tại.
 - `newbie_block_screen.png` và `newbie_block_screen_en.png` khóa regression
   blocker màn hướng dẫn trên giao diện tiếng Việt và tiếng Anh; cả hai phải dùng
-  cùng template đồ họa `overlay_newbie.png` và click `(405, 506)`.
+  cùng template đồ họa `overlay_newbie.png` làm điều kiện detect, còn click thì
+  bấm tọa độ cố định `(157, 54)` — vùng đen trống bên trái banner tiêu đề
+  (`FIXED_BLOCKER_CLICKS` trong `core.template_matching`), không click theo vị
+  trí match vì sprite quyển sách cũng xuất hiện làm cảnh trang trí trên bàn.
 - Screenshot timeout mới được lưu tạm trong `.tmp/hauntedroom-timeouts/`.
 - Screenshot fallback của screen detector và hero selection được lưu trong
   `.tmp/hauntedroom-fallbacks/`.

@@ -39,14 +39,3 @@ Khi người dùng nhấn `Shift+1` ở màn hình ban đầu của tài khoản
 | **Số lần lặp trận đấu** | Chạy map đầu tiên xong, thực hiện **chỉ đúng 1 lần** chu kỳ vào-ra map rồi dừng hẳn. | Chạy lặp đi lặp lại vô hạn các map tiếp theo cho đến khi người dùng bấm dừng (`Shift+0` hoặc gặp điều kiện dừng cấu hình). |
 | **Mục đích** | Thiết lập ban đầu cho tài khoản mới qua trận đầu tiên, đồng bộ trạng thái game. | Auto cày cuốc map liên tục để thu thập tài nguyên. |
 
----
-
-## 3. Kiến trúc code & Tái cấu trúc DRY
-
-Để tránh việc lặp lại code (Don't Repeat Yourself - DRY), các hàm xây dựng danh sách hành động (Action list builders) đã được tách rời từ `tools/hauntedroom/runner/commands.py` sang một module dùng chung:
-- **File mới**: `tools/hauntedroom/actions/builder.py`
-- **Các hàm được chuyển**:
-  - [`build_start_battle_actions`](../../tools/hauntedroom/actions/builder.py): Tạo danh sách các hành động để click từ màn hình chính vào trận đấu.
-  - [`build_spawn_exit_lvup_actions`](../../tools/hauntedroom/actions/builder.py): Tạo danh sách các hành động từ lúc bắt đầu trận đấu, exit trận đấu và quay về màn hình chính.
-
-Cả `runner/commands.py` (sử dụng cho lệnh `Shift+9`) và `flows/new_account.py` (sử dụng cho luồng newbie tài khoản mới) đều import và sử dụng chung danh sách hành động từ module `builder.py` này.
