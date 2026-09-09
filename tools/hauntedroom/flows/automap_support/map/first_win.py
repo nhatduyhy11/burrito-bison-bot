@@ -10,21 +10,29 @@ from .model_state import FirstWinContext, MapLifecycleStep, MapState
 DAILY_FIRST_WIN_TEMPLATE_THRESHOLD = 0.90
 DAILY_FIRST_WIN_CHECKBOX_THRESHOLD = 0.95
 DAILY_FIRST_WIN_CHECK_DELAY_MS = 1_000
-DAILY_FIRST_WIN_CHECKBOX_OFFSET = (-88, -1)
-DAILY_FIRST_WIN_CONFIRM_OFFSET = (45, 36)
-DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD = 8
+# The prompt is anchored on the dialog banner ribbon, which carries no
+# localized text: it scores 1.000 on both the Vietnamese and English captures
+# while unrelated screens stay below 0.71, so one template serves every
+# language. Offsets are measured from the banner center on the 640x720 canvas.
+# The decline button is fixed in the dialog layout, but the checkbox sits
+# against the label text and slides with its width across languages (top-left
+# x=221 in English vs x=235 in Vietnamese); the midpoint offset plus a padded
+# search window absorbs that shift.
+DAILY_FIRST_WIN_CHECKBOX_OFFSET = (3, 211)
+DAILY_FIRST_WIN_CONFIRM_OFFSET = (143, 248)
+DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD = 16
 
 
 def find_daily_first_win(
     frame_gray: np.ndarray,
-    daily_first_win_template: np.ndarray,
-    daily_first_win_template_path: Path,
+    daily_first_win_header_template: np.ndarray,
+    daily_first_win_header_template_path: Path,
     find_template_fn,
 ) -> Optional[tuple[int, int, float]]:
     x, y, score = find_template_fn(
         frame_gray,
-        daily_first_win_template,
-        daily_first_win_template_path.name,
+        daily_first_win_header_template,
+        daily_first_win_header_template_path.name,
         scales=(1.0,),
     )
     if score < DAILY_FIRST_WIN_TEMPLATE_THRESHOLD:
@@ -34,13 +42,13 @@ def find_daily_first_win(
 
 def find_daily_first_win_checkbox(
     frame_gray: np.ndarray,
-    label_position: tuple[int, int],
+    banner_position: tuple[int, int],
     checkbox_template: np.ndarray,
     checkbox_template_path: Path,
     find_template_fn,
 ) -> tuple[int, int, float]:
-    expected_x = label_position[0] + DAILY_FIRST_WIN_CHECKBOX_OFFSET[0]
-    expected_y = label_position[1] + DAILY_FIRST_WIN_CHECKBOX_OFFSET[1]
+    expected_x = banner_position[0] + DAILY_FIRST_WIN_CHECKBOX_OFFSET[0]
+    expected_y = banner_position[1] + DAILY_FIRST_WIN_CHECKBOX_OFFSET[1]
     height, width = checkbox_template.shape
     pad = DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD
     left = max(expected_x - width // 2 - pad, 0)
@@ -65,8 +73,8 @@ async def handle_daily_first_win(
     while await context.flow_checkpoint_fn(context.stop_event):
         daily_first_win_match = find_daily_first_win(
             frame_gray,
-            context.daily_first_win_template,
-            context.daily_first_win_template_path,
+            context.daily_first_win_header_template,
+            context.daily_first_win_header_template_path,
             context.find_template_fn,
         )
         if daily_first_win_match is None:
@@ -152,8 +160,8 @@ async def handle_first_win(
 
     first_win_match = find_daily_first_win(
         frame_gray,
-        context.daily_first_win_template,
-        context.daily_first_win_template_path,
+        context.daily_first_win_header_template,
+        context.daily_first_win_header_template_path,
         context.find_template_fn,
     )
     if first_win_match is None:

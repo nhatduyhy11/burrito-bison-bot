@@ -187,8 +187,10 @@ async def finish_map(
         first_win=FirstWinContext(
             page=page,
             stop_event=stop_event,
-            daily_first_win_template=templates.daily_first_win,
-            daily_first_win_template_path=config.daily_first_win_template_path,
+            daily_first_win_header_template=templates.daily_first_win_header,
+            daily_first_win_header_template_path=(
+                config.daily_first_win_header_template_path
+            ),
             daily_first_win_checkbox_template=templates.daily_first_win_checkbox,
             daily_first_win_checkbox_template_path=(
                 config.daily_first_win_checkbox_template_path

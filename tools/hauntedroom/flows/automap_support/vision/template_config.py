@@ -21,7 +21,9 @@ LV_SPIN_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "lv_spin.png"
 MAP_END_TEMPLATE_PATH = AUTOMAP_TEMPLATE_DIR / "map_end.png"
 WIN_REWARD_TEMPLATE_PATH = MAP_WIN_TEMPLATE_DIR / "win_reward.png"
 REWARD_LIST_TITLE_TEMPLATE_PATH = MAP_WIN_TEMPLATE_DIR / "reward_list_title.png"
-DAILY_FIRST_WIN_TEMPLATE_PATH = MAP_WIN_TEMPLATE_DIR / "daily_first_win.png"
+DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH = (
+    MAP_WIN_TEMPLATE_DIR / "daily_first_win_header.png"
+)
 DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH = (
     MAP_WIN_TEMPLATE_DIR / "daily_first_win_checkbox.png"
 )
@@ -57,7 +59,9 @@ class AutomapConfig:
     map_end_template_path: Path = MAP_END_TEMPLATE_PATH
     win_reward_template_path: Path = WIN_REWARD_TEMPLATE_PATH
     reward_list_title_template_path: Path = REWARD_LIST_TITLE_TEMPLATE_PATH
-    daily_first_win_template_path: Path = DAILY_FIRST_WIN_TEMPLATE_PATH
+    daily_first_win_header_template_path: Path = (
+        DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH
+    )
     daily_first_win_checkbox_template_path: Path = (
         DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
     )

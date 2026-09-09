@@ -70,8 +70,8 @@ class MapRunState:
 class FirstWinContext:
     page: object
     stop_event: object
-    daily_first_win_template: np.ndarray
-    daily_first_win_template_path: Path
+    daily_first_win_header_template: np.ndarray
+    daily_first_win_header_template_path: Path
     daily_first_win_checkbox_template: np.ndarray
     daily_first_win_checkbox_template_path: Path
     daily_first_win_checked_template: np.ndarray

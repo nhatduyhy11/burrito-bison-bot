@@ -21,7 +21,6 @@ thuộc phạm vi audit.
 | Train (`Shift+T`) — bắt đầu | `tools/rooms/start_battle.png`: "Khiêu chiến" | `flows/train.py`, JSON macro mẫu | Không vào được train battle | Rất cao |
 | Auto-map / start-auto / train handoff — kết thúc map | `tools/rooms/automap/map_end.png`: "Quay lại" | `vision/template_config.py` | Không nhận ra map đã kết thúc; auto-map tiếp tục polling | Rất cao |
 | Auto-map / start-auto / train handoff — reward fallback | `tools/rooms/automap/map_win/reward_list_title.png`: phần chữ "mừng" | `vision/template_config.py` | Mất compatibility fallback khi primary panel detector không xác nhận được popup | Trung bình |
-| Auto-map / start-auto / train handoff — daily first win | `tools/rooms/automap/map_win/daily_first_win.png`: "Không nhắc lại hôm nay" | `vision/template_config.py` | Không vào isolated flow để tick/confirm prompt; cleanup reward có thể không hoàn tất | Cao |
 
 Các path trong `vision/template_config.py` được load qua
 `tools/hauntedroom/flows/automap_support/templates.py`. Phần xử lý tương ứng nằm

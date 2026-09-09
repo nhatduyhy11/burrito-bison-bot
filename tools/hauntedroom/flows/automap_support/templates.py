@@ -22,7 +22,7 @@ class AutomapTemplates:
     map_end: np.ndarray
     win_reward: np.ndarray
     reward_list_title: np.ndarray
-    daily_first_win: np.ndarray
+    daily_first_win_header: np.ndarray
     daily_first_win_checkbox: np.ndarray
     daily_first_win_checked: np.ndarray
     boss_hp: np.ndarray
@@ -47,7 +47,9 @@ class AutomapTemplates:
             map_end=loader(config.map_end_template_path),
             win_reward=loader(config.win_reward_template_path),
             reward_list_title=loader(config.reward_list_title_template_path),
-            daily_first_win=loader(config.daily_first_win_template_path),
+            daily_first_win_header=loader(
+                config.daily_first_win_header_template_path
+            ),
             daily_first_win_checkbox=loader(
                 config.daily_first_win_checkbox_template_path
             ),

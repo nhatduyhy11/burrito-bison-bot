@@ -22,7 +22,7 @@ from hauntedroom.core.template_matching import load_template as load_real_templa
 from hauntedroom.flows.automap import (
     DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
     DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
-    DAILY_FIRST_WIN_TEMPLATE_PATH,
+    DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH,
 )
 from hauntedroom.flows.automap_support.map.first_win import (
     DAILY_FIRST_WIN_CHECK_DELAY_MS,
@@ -38,7 +38,7 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
         self.page = Mock()
 
     def test_daily_first_win_templates_match_supplied_screens(self):
-        label_template = load_real_template(DAILY_FIRST_WIN_TEMPLATE_PATH)
+        header_template = load_real_template(DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH)
         checkbox_template = load_real_template(
             DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
         )
@@ -48,6 +48,7 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
 
         for fixture_name in (
             "daily_first_win.png",
+            "daily_first_win_en.png",
             "daily_first_win_checked.png",
         ):
             with self.subTest(fixture_name=fixture_name):
@@ -56,10 +57,10 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
                     cv2.IMREAD_GRAYSCALE,
                 )
                 self.assertIsNotNone(frame)
-                _x, _y, label_score = find_real_template(
+                _x, _y, header_score = find_real_template(
                     frame,
-                    label_template,
-                    DAILY_FIRST_WIN_TEMPLATE_PATH.name,
+                    header_template,
+                    DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH.name,
                     scales=(1.0,),
                 )
                 _x, _y, unchecked_score = find_real_template(
@@ -74,13 +75,13 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
                     DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH.name,
                     scales=(1.0,),
                 )
-                self.assertGreaterEqual(label_score, 0.90)
-                if fixture_name == "daily_first_win.png":
-                    self.assertGreaterEqual(unchecked_score, 0.95)
-                    self.assertLess(checked_score, 0.95)
-                else:
+                self.assertGreaterEqual(header_score, 0.90)
+                if fixture_name == "daily_first_win_checked.png":
                     self.assertLess(unchecked_score, 0.95)
                     self.assertGreaterEqual(checked_score, 0.95)
+                else:
+                    self.assertGreaterEqual(unchecked_score, 0.95)
+                    self.assertLess(checked_score, 0.95)
 
     async def test_daily_first_win_retries_until_checkbox_is_confirmed(self):
         find_template = Mock()
@@ -89,8 +90,8 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
         unchecked_scores = iter((0.99, 0.99))
 
         def match_with_checkbox_state(_frame, _template, name, **_kwargs):
-            if name == DAILY_FIRST_WIN_TEMPLATE_PATH.name:
-                return (332, 442, 0.99)
+            if name == DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH.name:
+                return (234, 230, 0.99)
             if name == DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH.name:
                 return (10, 10, next(checked_scores))
             return (10, 10, next(unchecked_scores))
@@ -107,8 +108,12 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
             FirstWinContext(
                 page=self.page,
                 stop_event=asyncio.Event(),
-                daily_first_win_template=np.zeros((18, 150), dtype=np.uint8),
-                daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
+                daily_first_win_header_template=np.zeros(
+                    (43, 44), dtype=np.uint8
+                ),
+                daily_first_win_header_template_path=(
+                    DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH
+                ),
                 daily_first_win_checkbox_template=np.zeros(
                     (19, 19), dtype=np.uint8
                 ),
@@ -155,10 +160,12 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
             FirstWinContext(
                 page=self.page,
                 stop_event=asyncio.Event(),
-                daily_first_win_template=load_real_template(
-                    DAILY_FIRST_WIN_TEMPLATE_PATH
+                daily_first_win_header_template=load_real_template(
+                    DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH
                 ),
-                daily_first_win_template_path=DAILY_FIRST_WIN_TEMPLATE_PATH,
+                daily_first_win_header_template_path=(
+                    DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH
+                ),
                 daily_first_win_checkbox_template=load_real_template(
                     DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH
                 ),

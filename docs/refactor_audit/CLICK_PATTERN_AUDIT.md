@@ -77,7 +77,7 @@ Ngoài ra mẫu cũ còn có các vấn đề cần tránh:
 | 6 | `diamond_collection.py::_collect_detail_popup` | **Giữ custom flow** | Phân loại cũ không chính xác: card được click ở caller; helper này xử lý reward, reserve clicks và close popup qua nhiều state/action. |
 | 7 | `boss_action.py::deploy_boss_pet` | **Giữ custom flow** | Sau khi mở menu còn phải detect và click summon target động; không phải một transition đơn giản. |
 | 8 | `gear_action.py::_soft_fail_initial_gear` | **Giữ custom recovery** | Có exception policy và cố ý tránh click lại khi không xác minh được trạng thái menu. |
-| 9 | `map/first_win.py::handle_daily_first_win` | **Giữ custom state machine** | Detect label, checkbox unchecked/checked, toggle rồi confirm; target và action thay đổi theo state. |
+| 9 | `map/first_win.py::handle_daily_first_win` | **Giữ custom state machine** | Detect banner, checkbox unchecked/checked, toggle rồi confirm; target và action thay đổi theo state. |
 | 10 | `new_account.py::run_new_account_flow` | **Giữ custom state machine** | Chỉ được click khi screen là `NEW_ACCOUNT`; screen lạ phải poll, không được click mù cho tới `AUTOMAP`. |
 
 Trong danh sách trên, chỉ #3 và #5 gần với helper fixed-target. #1 có thể tham gia nếu xác định rõ timeout policy. Điều này **không tạo yêu cầu phải migrate chúng ngay**.

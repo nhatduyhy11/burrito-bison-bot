@@ -139,8 +139,8 @@ class MapRewardFlowTest(IsolatedAsyncioTestCase):
         def match_by_name(_frame, _template, name, **_kwargs):
             if name == "map_end.png":
                 return 300, 400, 0.91
-            if name == "daily_first_win.png":
-                return 332, 442, next(daily_scores)
+            if name == "daily_first_win_header.png":
+                return 234, 230, next(daily_scores)
             if name == "daily_first_win_checked.png":
                 return 10, 10, 0.99
             if name == "reward_list_title.png":

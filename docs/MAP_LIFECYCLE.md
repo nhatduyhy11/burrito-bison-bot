@@ -185,8 +185,12 @@ complete.
 
 ## Daily first-win
 
-Handler chỉ chạy khi first-win còn pending và daily label xuất hiện. Nó bảo đảm
-checkbox ở trạng thái checked rồi mới decline; visual chưa rõ thì chờ frame mới,
+Handler chỉ chạy khi first-win còn pending và daily banner xuất hiện. Prompt được
+neo vào banner ribbon đầu dialog (`map_win/daily_first_win_header.png`, threshold
+`0.90`) — banner không chứa chữ nên bất khả thi ngôn ngữ; checkbox được tìm trong
+window quanh banner vì nó trượt theo độ rộng chữ label giữa các ngôn ngữ, còn
+nút decline click qua offset cố định từ banner center. Handler bảo đảm checkbox
+ở trạng thái checked rồi mới decline; visual chưa rõ thì chờ frame mới,
 không click mù. Thành công trả `CONTINUE` và đánh dấu done cho cả command run;
 không có prompt trả `NOT_HANDLED`, còn checkpoint/wait bị ngắt trả `STOP`.
 

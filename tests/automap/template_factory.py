@@ -29,7 +29,7 @@ def build_test_automap_templates(
         map_end=image,
         win_reward=image,
         reward_list_title=image,
-        daily_first_win=image,
+        daily_first_win_header=image,
         daily_first_win_checkbox=image,
         daily_first_win_checked=image,
         boss_hp=image,

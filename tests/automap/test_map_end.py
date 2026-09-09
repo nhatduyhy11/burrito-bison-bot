@@ -12,7 +12,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 from hauntedroom.flows.automap import (
     DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
     DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
-    DAILY_FIRST_WIN_TEMPLATE_PATH,
+    DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH,
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_PATH,
     run_automap_flow,
@@ -39,7 +39,7 @@ class MapEndAutomapAdapterTest(IsolatedAsyncioTestCase):
         template_paths = (
             WIN_REWARD_TEMPLATE_PATH,
             REWARD_LIST_TITLE_TEMPLATE_PATH,
-            DAILY_FIRST_WIN_TEMPLATE_PATH,
+            DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH,
             DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
             DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
         )
