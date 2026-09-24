@@ -14,6 +14,7 @@ from hauntedroom.core.template_matching import find_template, load_template
 from hauntedroom.core.terminal import GREEN, colorize
 from hauntedroom.flows.automap_support.map.model_state import MapEndOutcome, MapState
 from hauntedroom.flows.train_support.common import (
+    TRAIN_END_SETTLE_MS,
     TRAIN_WIN_BUTTON_GEOMETRY,
     TRAIN_WIN_BUTTON_REGION,
     TRAIN_WIN_TEMPLATE_PATH,
@@ -38,7 +39,6 @@ class TrainEndLifecycle:
         *,
         state: MapState | None = None,
         on_win: Callable[[], int] | None = None,
-        template: np.ndarray | None = None,
         template_path: Path = TRAIN_WIN_TEMPLATE_PATH,
         template_threshold: float = TRAIN_WIN_TEMPLATE_THRESHOLD,
         button_region: tuple[int, int, int, int] = TRAIN_WIN_BUTTON_REGION,
@@ -53,11 +53,7 @@ class TrainEndLifecycle:
         self.state = state or MapState()
         self.on_win = on_win
         self.template_path = template_path
-        self.template = (
-            template
-            if template is not None
-            else load_template(template_path)
-        )
+        self.template = load_template(template_path)
         self.template_threshold = template_threshold
         self.button_region = button_region
         self.button_geometry = button_geometry
@@ -65,27 +61,26 @@ class TrainEndLifecycle:
         self.wait_for_flow_timeout_fn = wait_for_flow_timeout_fn
         self.find_template_fn = find_template_fn
         self.find_colored_button_fn = find_colored_button_fn
-        self.last_check_time: float | None = None
         self.loop = asyncio.get_running_loop()
 
     async def handle_map_end(
         self,
         frame_gray: np.ndarray,
-        frame_bgr: np.ndarray | None = None,
+        frame_bgr: np.ndarray,
     ) -> MapEndOutcome:
         if self.state.completed:
             return MapEndOutcome(handled=True, completed=True)
 
         now = self.loop.time()
         if (
-            self.last_check_time is not None
-            and now - self.last_check_time < TRAIN_WIN_CHECK_INTERVAL_SEC
+            self.state.last_map_end_check is not None
+            and now - self.state.last_map_end_check < TRAIN_WIN_CHECK_INTERVAL_SEC
         ):
             return MapEndOutcome(handled=False)
 
-        self.last_check_time = now
+        self.state.last_map_end_check = now
 
-        x, y, score = self.find_template_fn(
+        _, _, score = self.find_template_fn(
             frame_gray,
             self.template,
             self.template_path.name,
@@ -94,9 +89,6 @@ class TrainEndLifecycle:
         if score < self.template_threshold:
             return MapEndOutcome(handled=False)
 
-        if frame_bgr is None:
-            return MapEndOutcome(handled=True, completed=False)
-
         button = self.find_colored_button_fn(
             frame_bgr,
             self.button_region,
@@ -104,11 +96,14 @@ class TrainEndLifecycle:
             self.button_geometry,
         )
         if button is None:
+            # The victory banner can render before the button animates in.
+            # Stay unhandled so the automap loop keeps polling for it.
             print(
-                f"Train win detected (score={score:.3f}), waiting for bottom red button...",
+                f"Train win detected (score={score:.3f}); "
+                "waiting for bottom red button...",
                 flush=True,
             )
-            return MapEndOutcome(handled=True, completed=False)
+            return MapEndOutcome(handled=False)
 
         click_x, click_y = button.center
         print(
@@ -126,6 +121,10 @@ class TrainEndLifecycle:
         if self.on_win is not None:
             self.state.total_win = self.on_win()
 
-        await self.wait_for_flow_timeout_fn(self.page, 1000, self.stop_event)
+        await self.wait_for_flow_timeout_fn(
+            self.page,
+            TRAIN_END_SETTLE_MS,
+            self.stop_event,
+        )
 
         return MapEndOutcome(handled=True, completed=True)

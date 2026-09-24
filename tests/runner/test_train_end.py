@@ -7,20 +7,30 @@ from unittest.mock import AsyncMock, Mock
 
 import cv2
 
-from hauntedroom.flows.automap import run_automap_flow
 from hauntedroom.flows.automap_support.flow import AutomapFlow
+from hauntedroom.flows.automap_support.map.lifecycle import MapLifecycle
 from hauntedroom.flows.automap_support.map.model_state import MapState
 from hauntedroom.flows.automap_support.templates import AutomapTemplates
 from hauntedroom.flows.automap_support.vision.template_config import AutomapConfig
-from hauntedroom.flows.train_support.common import (
-    TRAIN_WIN_BUTTON_GEOMETRY,
-    TRAIN_WIN_BUTTON_REGION,
-    TRAIN_WIN_TEMPLATE_PATH,
-    TRAIN_WIN_TEMPLATE_THRESHOLD,
-)
 from hauntedroom.flows.train_support.train_end import TrainEndLifecycle
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "train_flow"
+
+
+def _load_fixture(name: str) -> tuple:
+    img_bgr = cv2.imread(str(FIXTURES / name))
+    assert img_bgr is not None, f"Fixture {name} must exist"
+    return img_bgr, cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+
+
+def _build_lifecycle(page, stop_event, state, **overrides) -> TrainEndLifecycle:
+    defaults = dict(
+        state=state,
+        click_fn=AsyncMock(),
+        wait_for_flow_timeout_fn=AsyncMock(),
+    )
+    defaults.update(overrides)
+    return TrainEndLifecycle(page, stop_event, **defaults)
 
 
 class TrainEndLifecycleTest(IsolatedAsyncioTestCase):
@@ -29,28 +39,13 @@ class TrainEndLifecycleTest(IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.page = Mock()
         self.stop_event = asyncio.Event()
-        self.click_mock = AsyncMock()
-        self.wait_mock = AsyncMock()
 
     async def test_detects_train_win_and_clicks_red_button(self):
-        img_bgr = cv2.imread(str(FIXTURES / "train_win.png"))
-        self.assertIsNotNone(img_bgr, "Fixture train_win.png must exist")
-        img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        img_bgr, img_gray = _load_fixture("train_win.png")
 
         state = MapState()
         on_win = Mock(return_value=1)
-        lifecycle = TrainEndLifecycle(
-            self.page,
-            self.stop_event,
-            state=state,
-            on_win=on_win,
-            template_path=TRAIN_WIN_TEMPLATE_PATH,
-            template_threshold=TRAIN_WIN_TEMPLATE_THRESHOLD,
-            button_region=TRAIN_WIN_BUTTON_REGION,
-            button_geometry=TRAIN_WIN_BUTTON_GEOMETRY,
-            click_fn=self.click_mock,
-            wait_for_flow_timeout_fn=self.wait_mock,
-        )
+        lifecycle = _build_lifecycle(self.page, self.stop_event, state, on_win=on_win)
 
         outcome = await lifecycle.handle_map_end(img_gray, img_bgr)
         self.assertTrue(outcome.handled)
@@ -60,26 +55,14 @@ class TrainEndLifecycleTest(IsolatedAsyncioTestCase):
         self.assertEqual(state.total_win, 1)
         on_win.assert_called_once()
 
-        self.click_mock.assert_awaited_once_with(self.page, 319, 556)
-        self.wait_mock.assert_awaited_once()
+        lifecycle.click_fn.assert_awaited_once_with(self.page, 319, 556)
+        lifecycle.wait_for_flow_timeout_fn.assert_awaited_once()
 
     async def test_detects_train_win_empty_and_clicks_red_button(self):
-        img_bgr = cv2.imread(str(FIXTURES / "train_win_empty.png"))
-        self.assertIsNotNone(img_bgr, "Fixture train_win_empty.png must exist")
-        img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        img_bgr, img_gray = _load_fixture("train_win_empty.png")
 
         state = MapState()
-        lifecycle = TrainEndLifecycle(
-            self.page,
-            self.stop_event,
-            state=state,
-            template_path=TRAIN_WIN_TEMPLATE_PATH,
-            template_threshold=TRAIN_WIN_TEMPLATE_THRESHOLD,
-            button_region=TRAIN_WIN_BUTTON_REGION,
-            button_geometry=TRAIN_WIN_BUTTON_GEOMETRY,
-            click_fn=self.click_mock,
-            wait_for_flow_timeout_fn=self.wait_mock,
-        )
+        lifecycle = _build_lifecycle(self.page, self.stop_event, state)
 
         outcome = await lifecycle.handle_map_end(img_gray, img_bgr)
         self.assertTrue(outcome.handled)
@@ -87,25 +70,18 @@ class TrainEndLifecycleTest(IsolatedAsyncioTestCase):
         self.assertTrue(state.completed)
         self.assertTrue(state.win_recorded)
 
-        self.click_mock.assert_awaited_once_with(self.page, 319, 508)
-        self.wait_mock.assert_awaited_once()
+        lifecycle.click_fn.assert_awaited_once_with(self.page, 319, 508)
+        lifecycle.wait_for_flow_timeout_fn.assert_awaited_once()
 
-    async def test_returns_not_handled_on_non_win_frame(self):
-        img_bgr = cv2.imread(str(FIXTURES / "train_available.png"))
-        self.assertIsNotNone(img_bgr, "Fixture train_available.png must exist")
-        img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    async def test_keeps_polling_while_red_button_is_missing(self):
+        img_bgr, img_gray = _load_fixture("train_win.png")
 
         state = MapState()
-        lifecycle = TrainEndLifecycle(
+        lifecycle = _build_lifecycle(
             self.page,
             self.stop_event,
-            state=state,
-            template_path=TRAIN_WIN_TEMPLATE_PATH,
-            template_threshold=TRAIN_WIN_TEMPLATE_THRESHOLD,
-            button_region=TRAIN_WIN_BUTTON_REGION,
-            button_geometry=TRAIN_WIN_BUTTON_GEOMETRY,
-            click_fn=self.click_mock,
-            wait_for_flow_timeout_fn=self.wait_mock,
+            state,
+            find_colored_button_fn=Mock(return_value=None),
         )
 
         outcome = await lifecycle.handle_map_end(img_gray, img_bgr)
@@ -113,11 +89,23 @@ class TrainEndLifecycleTest(IsolatedAsyncioTestCase):
         self.assertFalse(outcome.completed)
         self.assertFalse(state.completed)
         self.assertFalse(state.win_recorded)
-        self.click_mock.assert_not_awaited()
+        lifecycle.click_fn.assert_not_awaited()
+
+    async def test_returns_not_handled_on_non_win_frame(self):
+        img_bgr, img_gray = _load_fixture("train_available.png")
+
+        state = MapState()
+        lifecycle = _build_lifecycle(self.page, self.stop_event, state)
+
+        outcome = await lifecycle.handle_map_end(img_gray, img_bgr)
+        self.assertFalse(outcome.handled)
+        self.assertFalse(outcome.completed)
+        self.assertFalse(state.completed)
+        self.assertFalse(state.win_recorded)
+        lifecycle.click_fn.assert_not_awaited()
 
     async def test_automap_flow_with_train_mode_uses_train_end(self):
-        img_bgr = cv2.imread(str(FIXTURES / "train_win.png"))
-        img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        img_bgr, img_gray = _load_fixture("train_win.png")
 
         config = AutomapConfig()
         templates = AutomapTemplates.load(config)
@@ -133,10 +121,19 @@ class TrainEndLifecycleTest(IsolatedAsyncioTestCase):
         )
         self.assertIsInstance(flow.end_lifecycle, TrainEndLifecycle)
 
-        flow.end_lifecycle.click_fn = self.click_mock
-        flow.end_lifecycle.wait_for_flow_timeout_fn = self.wait_mock
+        flow.end_lifecycle.click_fn = AsyncMock()
+        flow.end_lifecycle.wait_for_flow_timeout_fn = AsyncMock()
 
         handled = await flow.handle_map_end(img_bgr, img_gray)
         self.assertTrue(handled)
         self.assertTrue(state.completed)
-        self.click_mock.assert_awaited_once_with(self.page, 319, 556)
+        flow.end_lifecycle.click_fn.assert_awaited_once_with(self.page, 319, 556)
+
+    async def test_automap_flow_default_mode_uses_map_end(self):
+        flow = AutomapFlow(
+            self.page,
+            asyncio.Event(),
+            AutomapConfig(),
+            AutomapTemplates.load(AutomapConfig()),
+        )
+        self.assertIsInstance(flow.end_lifecycle, MapLifecycle)

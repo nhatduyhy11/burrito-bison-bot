@@ -118,7 +118,6 @@ class AutomapFlow:
                 stop_event,
                 state=self.state,
                 on_win=on_win,
-                template_path=config.train_win_template_path,
             )
         else:
             self.end_lifecycle = MapLifecycle(
@@ -133,7 +132,6 @@ class AutomapFlow:
                 find_template_fn=find_template,
                 find_template_matches_fn=find_template_matches,
             )
-        self.map_lifecycle = self.end_lifecycle
 
     async def handle_new_account_lubu_close(
         self,
