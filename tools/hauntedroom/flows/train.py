@@ -86,6 +86,7 @@ async def run_train_flow(
             stop_event,
             debug=debug,
             run_state=run_state,
+            battle_mode="train",
         )
 
     # 2 & 3. Modes: EXIT_IMMEDIATELY / PET_AND_AD

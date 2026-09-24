@@ -24,6 +24,7 @@ from hauntedroom.flows.train_support import (
     exit_flow as train_exit_flow_support,
     hero_selection as train_hero_selection_support,
     pet_and_ad as train_pet_and_ad_support,
+    train_end as train_end_support,
 )
 from hauntedroom.flows.artifact import run_artifact_flow
 from hauntedroom.flows.diamond_collection import run_diamond_collection_flow
@@ -206,6 +207,7 @@ def get_train_flow(dev_reload: bool = False):
     importlib.reload(train_hero_selection_support)
     importlib.reload(train_pet_and_ad_support)
     importlib.reload(train_exit_flow_support)
+    importlib.reload(train_end_support)
     importlib.reload(train_support)
     reloaded_train = importlib.reload(train)
     print("Train modules reloaded.", flush=True)

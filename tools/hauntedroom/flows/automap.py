@@ -20,6 +20,7 @@ from hauntedroom.flows.automap_support.vision.template_config import (
     MAP_END_TEMPLATE_PATH,
     REWARD_LIST_TITLE_TEMPLATE_PATH,
     START_HOME_TEMPLATE_PATH,
+    TRAIN_WIN_TEMPLATE_PATH,
     WIN_REWARD_TEMPLATE_PATH,
     AutomapConfig,
 )
@@ -73,6 +74,8 @@ async def run_automap_flow(
     on_win: Callable[[], int] | None = None,
     run_state: MapRunState | None = None,
     new_account_lubu_popup_active: bool = False,
+    battle_mode: str = "map",
+    train_win_template_path: Path = TRAIN_WIN_TEMPLATE_PATH,
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -96,6 +99,7 @@ async def run_automap_flow(
         map_blocker_template_paths=map_blocker_template_paths,
         hero_levelup_template_paths=hero_levelup_template_paths,
         capture_hero_fallback_screenshots=capture_hero_fallback_screenshots,
+        train_win_template_path=train_win_template_path,
         debug=debug,
     )
     templates = AutomapTemplates.load(config)
@@ -111,4 +115,5 @@ async def run_automap_flow(
         state=state,
         run_state=run_state,
         on_win=on_win,
+        battle_mode=battle_mode,
     ).run()
