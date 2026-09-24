@@ -221,7 +221,7 @@ class GearActionTest(IsolatedAsyncioTestCase):
         self.page.mouse.down.assert_not_awaited()
 
     @patch(
-        "hauntedroom.flows.automap_support.flow.deploy_initial_gear",
+        "hauntedroom.flows.automap_support.gear_action.deploy_initial_gear",
         new_callable=AsyncMock,
     )
     async def test_flow_attempts_gear_only_once_after_unlock(

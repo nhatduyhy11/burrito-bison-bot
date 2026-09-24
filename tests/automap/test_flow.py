@@ -18,6 +18,8 @@ from hauntedroom.flows.automap import (
 )
 from hauntedroom.flows.automap_support.flow import (
     BOSS_RECHECK_INTERVAL_MS,
+)
+from hauntedroom.flows.automap_support.new_account_lubu import (
     LUBU_CLOSE_TEMPLATE_THRESHOLD,
 )
 from hauntedroom.flows.automap_support.map.model_state import MapRunState, MapState

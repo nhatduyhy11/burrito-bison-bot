@@ -1,5 +1,6 @@
 """One-shot deployment of the first low-map gear."""
 
+from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
@@ -188,3 +189,32 @@ async def deploy_initial_gear(
             f"Initial gear deployment failed: {error}.",
             menu_was_open=menu_was_open,
         )
+
+
+@dataclass(frozen=True)
+class InitialGearOutcome:
+    handled: bool
+    attempted: bool = False
+    placed: bool = False
+
+
+async def handle_initial_gear(
+    page,
+    frame_bgr: np.ndarray,
+    *,
+    unlocked: bool,
+    attempted: bool,
+) -> InitialGearOutcome:
+    """Place the first gear once, after the first stable upgrade milestone."""
+    if not unlocked or attempted:
+        return InitialGearOutcome(handled=False)
+    if find_gear_button(frame_bgr) is None:
+        return InitialGearOutcome(handled=False)
+
+    # Mark before interacting: a failed drag must not loop forever or move
+    # another control on a later animated frame.
+    return InitialGearOutcome(
+        handled=True,
+        attempted=True,
+        placed=await deploy_initial_gear(page, frame_bgr),
+    )

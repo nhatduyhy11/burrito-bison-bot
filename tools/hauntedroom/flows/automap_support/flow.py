@@ -20,13 +20,15 @@ from hauntedroom.core.template_matching import (
     find_template,
     find_template_matches,
 )
-from hauntedroom.core.terminal import BLUE, GREEN, RED, colorize
+from hauntedroom.core.terminal import GREEN, RED, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.boss_action import deploy_boss_pet
 from hauntedroom.flows.automap_support.boss_flow import (
     handle_boss_critical as _handle_boss_critical,
 )
-from hauntedroom.flows.automap_support.gear_action import deploy_initial_gear
+from hauntedroom.flows.automap_support.gear_action import (
+    handle_initial_gear as _handle_initial_gear,
+)
 from hauntedroom.flows.automap_support.hero_action import (
     handle_hero_levelup as _handle_hero_levelup,
 )
@@ -35,9 +37,12 @@ from hauntedroom.flows.automap_support.map.model_state import (
     MapRunState,
     MapState,
 )
+from hauntedroom.flows.automap_support.new_account_lubu import (
+    LUBU_CLOSE_TEMPLATE_NAME,
+    handle_new_account_lubu_close as _handle_new_account_lubu_close,
+)
 from hauntedroom.flows.automap_support.templates import AutomapTemplates
 from hauntedroom.flows.automap_support.upgrade_action import (
-    AUTOMAP_ACTION_DELAY_MS,
     AUTOMAP_POLL_MS,
 )
 from hauntedroom.flows.automap_support.upgrade_action import (
@@ -56,15 +61,12 @@ from hauntedroom.flows.automap_support.vision.boss_progress import (
 from hauntedroom.flows.automap_support.vision.build import (
     find_first_available_build_option,
 )
-from hauntedroom.flows.automap_support.vision.gear import find_gear_button
 from hauntedroom.flows.automap_support.vision.hero_levelup import (
     hero_levelup_price_is_available,
 )
 from hauntedroom.flows.automap_support.vision.template_config import AutomapConfig
 
 BOSS_RECHECK_INTERVAL_MS = 400
-LUBU_CLOSE_TEMPLATE_NAME = "lubu_close.png"
-LUBU_CLOSE_TEMPLATE_THRESHOLD = 0.80
 
 SituationHandler = Callable[[np.ndarray, np.ndarray], Awaitable[bool]]
 
@@ -144,49 +146,17 @@ class AutomapFlow:
             or self.lubu_close_template is None
         ):
             return False
-
-        x, y, score = find_template(
-            frame_gray,
-            self.lubu_close_template,
-            LUBU_CLOSE_TEMPLATE_NAME,
-        )
-        if score < LUBU_CLOSE_TEMPLATE_THRESHOLD:
-            return False
-
-        print(
-            colorize(
-                f"Lu Bu close at {x},{y}, score={score:.3f}; clicking, then "
-                f"confirming disappearance in {AUTOMAP_ACTION_DELAY_MS}ms.",
-                BLUE,
-            ),
-            flush=True,
-        )
-        await _click(self.page, x, y)
-        if not await wait_for_flow_timeout(
+        return await _handle_new_account_lubu_close(
             self.page,
-            AUTOMAP_ACTION_DELAY_MS,
             self.stop_event,
-        ):
-            return True
-
-        confirm_frame = _to_grayscale(await capture_page_bgr(self.page))
-        _, _, confirm_score = find_template(
-            confirm_frame,
-            self.lubu_close_template,
-            LUBU_CLOSE_TEMPLATE_NAME,
+            frame_gray,
+            template=self.lubu_close_template,
+            find_template_fn=find_template,
+            capture_page_bgr_fn=capture_page_bgr,
+            to_grayscale_fn=_to_grayscale,
+            click_fn=_click,
+            wait_for_flow_timeout_fn=wait_for_flow_timeout,
         )
-        if confirm_score < LUBU_CLOSE_TEMPLATE_THRESHOLD:
-            print(
-                colorize("Lu Bu close disappeared; resuming auto-map.", BLUE),
-                flush=True,
-            )
-        else:
-            print(
-                f"Lu Bu close is still present, score={confirm_score:.3f}; "
-                "will retry.",
-                flush=True,
-            )
-        return True
 
     async def click_level_spin_if_present(self, frame_gray: np.ndarray) -> bool:
         return await _click_level_spin_if_present(
@@ -254,19 +224,16 @@ class AutomapFlow:
         _frame_gray: np.ndarray,
     ) -> bool:
         """Place the first gear once, after the first stable upgrade milestone."""
-        if not self.state.initial_gear_unlocked or self.state.initial_gear_attempted:
-            return False
-        if find_gear_button(frame_bgr) is None:
-            return False
-
-        # Mark before interacting: a failed drag must not loop forever or move
-        # another control on a later animated frame.
-        self.state.initial_gear_attempted = True
-        self.state.initial_gear_placed = await deploy_initial_gear(
+        outcome = await _handle_initial_gear(
             self.page,
             frame_bgr,
+            unlocked=self.state.initial_gear_unlocked,
+            attempted=self.state.initial_gear_attempted,
         )
-        return True
+        if outcome.handled:
+            self.state.initial_gear_attempted = outcome.attempted
+            self.state.initial_gear_placed = outcome.placed
+        return outcome.handled
 
     async def handle_boss_critical(
         self,
