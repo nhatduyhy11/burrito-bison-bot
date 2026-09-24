@@ -127,7 +127,7 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
                 "hauntedroom.flows.automap_support.map.lifecycle.find_template",
                 return_value=(10, 20, 0.99),
             ):
-                result = await flow.map_lifecycle.handle_map_end(
+                result = await flow.end_lifecycle.handle_map_end(
                     np.zeros((2, 2), dtype=np.uint8)
                 )
 
@@ -147,9 +147,9 @@ class AutomapFlowTest(IsolatedAsyncioTestCase):
             run_state=MapRunState(new_account_lubu_popup_active=True),
         )
         map_end_detector = Mock(return_value=(334, 645, 0.903))
-        flow.map_lifecycle.find_template_fn = map_end_detector
+        flow.end_lifecycle.find_template_fn = map_end_detector
 
-        outcome = await flow.map_lifecycle.handle_map_end(
+        outcome = await flow.end_lifecycle.handle_map_end(
             np.zeros((720, 640), dtype=np.uint8)
         )
 

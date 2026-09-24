@@ -136,6 +136,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             stop_event,
             debug=True,
             run_state=run_state,
+            battle_mode="train",
         )
 
     @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)

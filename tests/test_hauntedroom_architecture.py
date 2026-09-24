@@ -102,6 +102,7 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.train_support.exit_flow",
                 "hauntedroom.flows.train_support.hero_selection",
                 "hauntedroom.flows.train_support.pet_and_ad",
+                "hauntedroom.flows.train_support.train_end",
             },
             "common.py": {
                 "hauntedroom.core.template_matching",
@@ -140,6 +141,15 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.core.vision",
                 "hauntedroom.flows.automap_support.upgrade_action",
                 "hauntedroom.flows.train_support.common",
+            },
+            "train_end.py": {
+                "hauntedroom.core.mouse",
+                "hauntedroom.core.runtime",
+                "hauntedroom.core.template_matching",
+                "hauntedroom.core.terminal",
+                "hauntedroom.flows.automap_support.map.model_state",
+                "hauntedroom.flows.train_support.common",
+                "hauntedroom.vision.buttons",
             },
         }
         train_support_dir = PACKAGE_DIR / "flows" / "train_support"

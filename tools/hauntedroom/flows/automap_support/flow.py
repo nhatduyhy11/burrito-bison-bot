@@ -89,6 +89,9 @@ class AutomapFlow:
         state: MapState | None = None,
         run_state: MapRunState | None = None,
         on_win: Callable[[], int] | None = None,
+        *,
+        battle_mode: str = "map",
+        end_lifecycle: object | None = None,
     ) -> None:
         self.page = page
         self.stop_event = stop_event
@@ -96,6 +99,7 @@ class AutomapFlow:
         self.templates = templates
         self.state = state or MapState()
         self.run_state = run_state or MapRunState()
+        self.battle_mode = battle_mode
         self.lubu_close_template = next(
             (
                 template
@@ -104,18 +108,30 @@ class AutomapFlow:
             ),
             None,
         )
-        self.map_lifecycle = MapLifecycle(
-            page,
-            stop_event,
-            config=config,
-            templates=templates,
-            state=self.state,
-            run_state=self.run_state,
-            on_win=on_win,
-            capture_page_bgr_fn=capture_page_bgr,
-            find_template_fn=find_template,
-            find_template_matches_fn=find_template_matches,
-        )
+        if end_lifecycle is not None:
+            self.end_lifecycle = end_lifecycle
+        elif battle_mode == "train":
+            from hauntedroom.flows.train_support.train_end import TrainEndLifecycle
+
+            self.end_lifecycle = TrainEndLifecycle(
+                page,
+                stop_event,
+                state=self.state,
+                on_win=on_win,
+            )
+        else:
+            self.end_lifecycle = MapLifecycle(
+                page,
+                stop_event,
+                config=config,
+                templates=templates,
+                state=self.state,
+                run_state=self.run_state,
+                on_win=on_win,
+                capture_page_bgr_fn=capture_page_bgr,
+                find_template_fn=find_template,
+                find_template_matches_fn=find_template_matches,
+            )
 
     async def handle_new_account_lubu_close(
         self,
@@ -196,10 +212,13 @@ class AutomapFlow:
 
     async def handle_map_end(
         self,
-        _frame_bgr: np.ndarray,
+        frame_bgr: np.ndarray,
         frame_gray: np.ndarray,
     ) -> bool:
-        outcome = await self.map_lifecycle.handle_map_end(frame_gray)
+        if self.battle_mode == "train":
+            outcome = await self.end_lifecycle.handle_map_end(frame_gray, frame_bgr)
+        else:
+            outcome = await self.end_lifecycle.handle_map_end(frame_gray)
         return outcome.handled
 
     async def hero_levelup(
@@ -366,8 +385,13 @@ class AutomapFlow:
                                     colorize(f">>> [{displayed_win}] win", GREEN),
                                     flush=True,
                                 )
+                            flow_label = (
+                                "Train"
+                                if self.battle_mode == "train"
+                                else "Auto-map"
+                            )
                             print(
-                                "Auto-map flow completed; runner is idle.",
+                                f"{flow_label} flow completed; runner is idle.",
                                 flush=True,
                             )
                         return self.state.completed

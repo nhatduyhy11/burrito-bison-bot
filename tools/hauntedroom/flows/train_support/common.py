@@ -84,6 +84,17 @@ LV_SPIN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "automap" / "lv_spin.png"
 EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
 TRAIN_SCREEN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "train_screen.png"
 TRAIN_SCREEN_TEMPLATE_SCALES = (1.0, 0.8, 0.67)
+TRAIN_WIN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "train_win.png"
+TRAIN_WIN_TEMPLATE_THRESHOLD = 0.85
+TRAIN_END_SETTLE_MS = 1_000
+TRAIN_WIN_BUTTON_REGION = (200, 450, 440, 600)
+TRAIN_WIN_BUTTON_GEOMETRY = ButtonGeometry(
+    min_area=2_000,
+    min_width=80,
+    max_width=140,
+    min_height=20,
+    max_height=50,
+)
 
 
 def train_is_available(frame_bgr: np.ndarray) -> bool:

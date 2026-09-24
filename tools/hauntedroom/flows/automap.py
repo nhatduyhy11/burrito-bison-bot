@@ -73,6 +73,7 @@ async def run_automap_flow(
     on_win: Callable[[], int] | None = None,
     run_state: MapRunState | None = None,
     new_account_lubu_popup_active: bool = False,
+    battle_mode: str = "map",
 ) -> bool:
     """Build and run one auto-map flow while preserving the public API."""
     config = AutomapConfig(
@@ -111,4 +112,5 @@ async def run_automap_flow(
         state=state,
         run_state=run_state,
         on_win=on_win,
+        battle_mode=battle_mode,
     ).run()
