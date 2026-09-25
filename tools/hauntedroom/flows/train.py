@@ -10,8 +10,8 @@ from typing import Awaitable, Callable, Optional, Union
 
 from hauntedroom.flows.train_support.common import TrainCycleResult, TrainMode
 from hauntedroom.flows.train_support.entry import (
-    check_and_click_train_challenge,
-    wait_and_click_start_battle,
+    check_and_click_train_start,
+    start_train_battle,
 )
 from hauntedroom.flows.train_support.exit_flow import (
     run_train_ad_exit_cycle,
@@ -71,10 +71,10 @@ async def run_train_flow(
 
     # 1. Mode: NORMAL (full normal train flow)
     if selected_mode is TrainMode.NORMAL:
-        if not await check_and_click_train_challenge(page, stop_event):
+        if not await check_and_click_train_start(page, stop_event):
             return False
 
-        if not await wait_and_click_start_battle(page, stop_event):
+        if not await start_train_battle(page, stop_event):
             return False
 
         if not await select_train_heroes(page, stop_event, raise_on_timeout=True):

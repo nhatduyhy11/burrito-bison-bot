@@ -18,7 +18,6 @@ thuộc phạm vi audit.
 |---|---|---|---|---|
 | HOME entry / spawn-exit / auto-map — blocker | `tools/rooms/blocker/overlay_close.png`: "Nhấn khu vực trống để đóng" | `runner/commands.py`, `vision/template_config.py`, JSON macro mẫu | Không đóng được overlay; action hoặc map-completion cleanup có thể timeout | Cao |
 | HOME entry / spawn-exit / auto-map — blocker | `tools/rooms/blocker/overlay_close_2.png`: cùng nội dung trên | `runner/commands.py`, `vision/template_config.py`, JSON macro mẫu | Không đóng được overlay; action hoặc map-completion cleanup có thể timeout | Cao |
-| Train (`Shift+T`) — bắt đầu | `tools/rooms/start_battle.png`: "Khiêu chiến" | `flows/train.py`, JSON macro mẫu | Không vào được train battle | Rất cao |
 | Auto-map / start-auto / train handoff — kết thúc map | `tools/rooms/automap/map_end.png`: "Quay lại" | `vision/template_config.py` | Không nhận ra map đã kết thúc; auto-map tiếp tục polling | Rất cao |
 | Auto-map / start-auto / train handoff — reward fallback | `tools/rooms/automap/map_win/reward_list_title.png`: phần chữ "mừng" | `vision/template_config.py` | Mất compatibility fallback khi primary panel detector không xác nhận được popup | Trung bình |
 

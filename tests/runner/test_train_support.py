@@ -11,17 +11,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_ad_exit_screen"
+HERO_CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
 
 from hauntedroom.core.runtime import FlowControl
 from hauntedroom.flows.automap_support.train_select import TrainChoice
-from hauntedroom.core.template_detection import (
-    TemplateWaitResult,
-    TemplateWaitStatus,
-)
 from hauntedroom.flows.train import run_train_flow
 from hauntedroom.flows.train_support.entry import (
-    check_and_click_train_challenge,
-    wait_and_click_start_battle,
+    check_and_click_train_start,
+    start_train_battle,
 )
 from hauntedroom.flows.train_support.hero_selection import select_train_heroes
 from hauntedroom.flows.train_support.pet_and_ad import (
@@ -37,6 +34,7 @@ from hauntedroom.flows.train_support.exit_flow import (
     wait_for_train_screen,
 )
 from hauntedroom.flows.train_support.common import (
+    TRAIN_BOTTOM_SCAN_INTERVAL_MS,
     TRAIN_SCREEN_TEMPLATE_PATH,
     TrainCycleResult,
 )
@@ -56,8 +54,8 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
 
     async def _run_composite_cycle(self, *, pet_and_ad: bool):
         phases = {
-            "wait_for_train_challenge_available": AsyncMock(return_value=True),
-            "wait_and_click_start_battle": AsyncMock(return_value=True),
+            "wait_for_train_start_available": AsyncMock(return_value=True),
+            "start_train_battle": AsyncMock(return_value=True),
             "select_train_heroes": AsyncMock(return_value=True),
             "wait_for_match_start": AsyncMock(return_value=True),
             "run_pet_and_ad_phase": AsyncMock(return_value=True),
@@ -77,39 +75,121 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         return result, stop_event, phases
 
     @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
-    async def test_check_and_click_train_challenge_not_available(self, capture_page_bgr):
+    async def test_check_and_click_train_start_not_available(self, capture_page_bgr):
         # Empty black frame
         capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
-        self.assertFalse(await check_and_click_train_challenge(self.page))
+        self.assertFalse(await check_and_click_train_start(self.page))
         self.page.mouse.click.assert_not_called()
 
     @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
-    async def test_check_and_click_train_challenge_success(self, capture_page_bgr):
+    async def test_check_and_click_train_start_success(self, capture_page_bgr):
         available = cv2.imread(str(FIXTURES / "train_available.png"))
         capture_page_bgr.return_value = available
-        self.assertTrue(await check_and_click_train_challenge(self.page))
+        self.assertTrue(await check_and_click_train_start(self.page))
         self.page.mouse.click.assert_awaited_once_with(400, 646)
 
-    @patch("hauntedroom.flows.train_support.entry.load_template")
-    @patch("hauntedroom.flows.train_support.entry.wait_for_template", new_callable=AsyncMock)
-    async def test_wait_and_click_start_battle(self, wait_for_template, load_template):
-        load_template.return_value = Mock()
-        wait_for_template.return_value = TemplateWaitResult(
-            TemplateWaitStatus.MATCHED,
-            (401, 644, 0.95),
-        )
-        self.assertTrue(await wait_and_click_start_battle(self.page))
-        self.page.mouse.click.assert_awaited_once_with(401, 644)
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_start_train_battle_clicks_strip_then_battle_button(
+        self,
+        capture_page_bgr,
+    ):
+        available = cv2.imread(str(FIXTURES / "train_available.png"))
+        hero_select = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
+        capture_page_bgr.side_effect = [
+            available,
+            available,
+            np.zeros((720, 640, 3), dtype=np.uint8),
+            hero_select,
+        ]
 
-    @patch("hauntedroom.flows.train_support.entry.load_template")
-    @patch("hauntedroom.flows.train_support.entry.wait_for_template", new_callable=AsyncMock)
-    async def test_wait_and_click_start_battle_stopped(self, wait_for_template, load_template):
-        load_template.return_value = Mock()
-        wait_for_template.return_value = TemplateWaitResult(
-            TemplateWaitStatus.STOPPED,
-            None,
+        self.assertTrue(await start_train_battle(self.page))
+
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(400, 646), call(319, 689)],
         )
-        self.assertFalse(await wait_and_click_start_battle(self.page))
+        self.assertEqual(
+            self.page.wait_for_timeout.await_args_list,
+            [call(TRAIN_BOTTOM_SCAN_INTERVAL_MS)] * 3,
+        )
+
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_start_train_battle_claims_reward_button_first(self, capture_page_bgr):
+        reward = cv2.imread(str(FIXTURES / "train_reward.png"))
+        hero_select = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
+        capture_page_bgr.side_effect = [
+            reward,
+            reward,
+            np.zeros((720, 640, 3), dtype=np.uint8),
+            hero_select,
+        ]
+
+        self.assertTrue(await start_train_battle(self.page))
+
+        self.assertEqual(self.page.mouse.click.await_args_list[0], call(319, 646))
+
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_start_train_battle_clicks_dimmed_button_behind_popup(
+        self,
+        capture_page_bgr,
+    ):
+        collect = cv2.imread(str(FIXTURES / "train_reward_collect.png"))
+        hero_select = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
+        capture_page_bgr.side_effect = [
+            collect,
+            collect,
+            np.zeros((720, 640, 3), dtype=np.uint8),
+            hero_select,
+        ]
+
+        self.assertTrue(await start_train_battle(self.page))
+
+        self.assertEqual(self.page.mouse.click.await_args_list[0], call(405, 645))
+
+    @patch(
+        "hauntedroom.flows.train_support.entry.save_timeout_screenshot",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_start_train_battle_times_out_when_battle_button_is_missing(
+        self,
+        capture_page_bgr,
+        save_timeout_screenshot,
+    ):
+        capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
+        save_timeout_screenshot.return_value = None
+
+        with self.assertRaises(TimeoutError):
+            await start_train_battle(
+                self.page,
+                screen_timeout_ms=30,
+                screen_poll_ms=10,
+            )
+
+        save_timeout_screenshot.assert_awaited_once()
+
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_start_train_battle_returns_false_when_stopped_during_hero_wait(
+        self,
+        capture_page_bgr,
+    ):
+        stop_event = asyncio.Event()
+        zeros = np.zeros((720, 640, 3), dtype=np.uint8)
+
+        def _capture_and_stop(_page):
+            stop_event.set()
+            return zeros
+
+        capture_page_bgr.side_effect = _capture_and_stop
+
+        self.assertFalse(await start_train_battle(self.page, stop_event))
+        self.page.mouse.click.assert_not_called()
+
+    async def test_start_train_battle_respects_stop_event(self):
+        stop_event = asyncio.Event()
+        stop_event.set()
+
+        self.assertFalse(await start_train_battle(self.page, stop_event))
         self.page.mouse.click.assert_not_called()
 
     @patch("hauntedroom.flows.train_support.hero_selection.capture_page_bgr", new_callable=AsyncMock)
@@ -208,10 +288,10 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         )
 
         self.assertIs(result, TrainCycleResult.COMPLETED)
-        phases["wait_for_train_challenge_available"].assert_awaited_once_with(
+        phases["wait_for_train_start_available"].assert_awaited_once_with(
             self.page, stop_event
         )
-        phases["wait_and_click_start_battle"].assert_awaited_once_with(
+        phases["start_train_battle"].assert_awaited_once_with(
             self.page, stop_event
         )
         phases["select_train_heroes"].assert_awaited_once_with(
@@ -236,10 +316,10 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         )
 
         self.assertIs(result, TrainCycleResult.COMPLETED)
-        phases["wait_for_train_challenge_available"].assert_awaited_once_with(
+        phases["wait_for_train_start_available"].assert_awaited_once_with(
             self.page, stop_event
         )
-        phases["wait_and_click_start_battle"].assert_awaited_once_with(
+        phases["start_train_battle"].assert_awaited_once_with(
             self.page, stop_event
         )
         phases["select_train_heroes"].assert_awaited_once_with(

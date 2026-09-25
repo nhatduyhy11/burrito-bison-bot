@@ -27,8 +27,8 @@ from hauntedroom.flows.train_support.common import (
     TrainCycleResult,
 )
 from hauntedroom.flows.train_support.entry import (
-    wait_and_click_start_battle,
-    wait_for_train_challenge_available,
+    start_train_battle,
+    wait_for_train_start_available,
 )
 from hauntedroom.flows.train_support.hero_selection import select_train_heroes
 from hauntedroom.flows.train_support.pet_and_ad import (
@@ -112,21 +112,21 @@ async def run_train_ad_exit_cycle(
     pet_and_ad: bool = True,
 ) -> TrainCycleResult:
     """Execute a single train ad-exit cycle:
-    1. Wait for train challenge available and click it.
-    2. Wait for start battle button and click it.
+    1. Wait for train start button available and click it.
+    2. Click bottom yellow buttons (claim, popup, challenge) until clear.
     3. Select 5 rounds of heroes.
     4. Wait for match start (detecting money template).
     5. If pet_and_ad: activate middle pet + summon + dismiss spin.
     6. Exit match via pause-exit.
     7. Wait for train screen to return.
     """
-    # 1. Wait until train is available and challenge clicked
-    if not await wait_for_train_challenge_available(page, stop_event):
+    # 1. Wait until train is available and start button clicked
+    if not await wait_for_train_start_available(page, stop_event):
         return _failure_result(stop_event, retryable=False)
 
-    # 2. Wait for start battle button and click
-    print("Waiting for start battle button...", flush=True)
-    if not await wait_and_click_start_battle(page, stop_event):
+    # 2. Click bottom yellow buttons until the strip clears
+    print("Clicking bottom yellow buttons to start the battle...", flush=True)
+    if not await start_train_battle(page, stop_event):
         return _failure_result(stop_event, retryable=True)
 
     # 3. Hero Card Selection (Rounds 1-5)

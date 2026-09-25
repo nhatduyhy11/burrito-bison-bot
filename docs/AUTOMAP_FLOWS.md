@@ -273,9 +273,9 @@ Các số này là giá trị của dict `START_AUTO_HOTKEYS` trong
 
 Mỗi vòng chạy theo thứ tự:
 
-1. Tái sử dụng các action enter/exit từ đầu tới hết action click
-   `start_battle.png`; các action exit không được chạy. Entry actions được thử
-   tối đa 2 lần khi timeout và dừng ngay sau lần đầu tiên hoàn thành thành công.
+1. Tái sử dụng các action entry (Home entry / Hero select battle); các action
+   exit không được chạy. Entry actions được thử tối đa 2 lần khi timeout và dừng
+   ngay sau lần đầu tiên hoàn thành thành công.
 2. Gọi `run_automap_flow()` để chạy trọn một lượt business core giống one-map.
    Khi map-end match, lời gọi này chỉ trả thành công sau khi win-map completion
    bridge đã dọn UI và xác nhận home.

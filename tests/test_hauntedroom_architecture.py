@@ -106,12 +106,12 @@ class HauntedRoomDependencyTest(TestCase):
             },
             "common.py": {
                 "hauntedroom.core.template_matching",
+                "hauntedroom.core.vision",
                 "hauntedroom.vision.buttons",
             },
             "entry.py": {
                 "hauntedroom.core.mouse",
                 "hauntedroom.core.runtime",
-                "hauntedroom.core.template_detection",
                 "hauntedroom.core.template_matching",
                 "hauntedroom.core.vision",
                 "hauntedroom.flows.train_support.common",

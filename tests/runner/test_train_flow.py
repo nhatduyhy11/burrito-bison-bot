@@ -5,26 +5,29 @@ from unittest import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, Mock, call, patch
 
 import cv2
+import numpy as np
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
+HERO_CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
+HEADER_TEMPLATE_PATH = (
+    PROJECT_ROOT / "tools" / "rooms" / "hero_select_battle_banner_top.png"
+)
 
 from hauntedroom.flows.automap_support.train_select import TrainChoice
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
-from hauntedroom.core.template_detection import (
-    TemplateWaitResult,
-    TemplateWaitStatus,
-)
 from hauntedroom.flows.train import TrainMode, run_train_flow
 from hauntedroom.flows.train_support.common import TrainCycleResult
 from hauntedroom.flows.train_support import (
-    TRAIN_BATTLE_LOAD_MS,
+    TRAIN_BOTTOM_BUTTON_REGION,
+    TRAIN_BOTTOM_SCAN_INTERVAL_MS,
     TRAIN_ENTRY_SETTLE_MS,
     TRAIN_SELECTION_ROUNDS,
     TRAIN_SELECTION_SETTLE_MS,
-    find_train_challenge_click,
+    find_hero_select_battle_click,
+    find_train_bottom_button_click,
     train_is_available,
 )
 
@@ -41,21 +44,57 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         frame = cv2.imread(str(FIXTURES / "train_available.png"))
         self.assertTrue(train_is_available(frame))
 
-    def test_finds_live_train_challenge_button_center(self):
+    def test_finds_challenge_button_center_in_bottom_strip(self):
         frame = cv2.imread(str(FIXTURES / "train_available.png"))
 
-        self.assertEqual(find_train_challenge_click(frame), (400, 646))
+        self.assertEqual(find_train_bottom_button_click(frame), (400, 646))
 
-    def test_does_not_invent_click_when_challenge_button_is_absent(self):
+    def test_finds_reward_claim_button_center_in_bottom_strip(self):
+        frame = cv2.imread(str(FIXTURES / "train_reward.png"))
+
+        self.assertEqual(find_train_bottom_button_click(frame), (319, 646))
+
+    def test_finds_dimmed_challenge_button_behind_reward_popup(self):
+        frame = cv2.imread(str(FIXTURES / "train_reward_collect.png"))
+
+        self.assertEqual(find_train_bottom_button_click(frame), (405, 645))
+
+    def test_does_not_invent_click_when_bottom_strip_is_clear(self):
         frame = cv2.imread(str(FIXTURES / "train_available.png"))
-        frame[620:680, 320:480] = 0
+        left, top, right, bottom = TRAIN_BOTTOM_BUTTON_REGION
+        frame[top:bottom, left:right] = 0
 
-        self.assertIsNone(find_train_challenge_click(frame))
+        self.assertIsNone(find_train_bottom_button_click(frame))
 
-    @patch("hauntedroom.flows.train.check_and_click_train_challenge", new_callable=AsyncMock)
+    def test_bottom_scan_rejects_empty_frame(self):
+        frame = np.zeros((720, 640, 3), dtype=np.uint8)
+
+        self.assertIsNone(find_train_bottom_button_click(frame))
+
+    def test_finds_battle_button_on_hero_select_screen(self):
+        frame = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
+        header = cv2.imread(str(HEADER_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+
+        self.assertEqual(find_hero_select_battle_click(frame, header), (319, 689))
+
+    def test_battle_button_requires_hero_select_banner(self):
+        frame = np.zeros((720, 640, 3), dtype=np.uint8)
+        frame[672:706, 265:374] = (0, 200, 255)
+        header = cv2.imread(str(HEADER_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+
+        self.assertIsNone(find_hero_select_battle_click(frame, header))
+
+    def test_hero_select_without_battle_button_is_rejected(self):
+        frame = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
+        frame[650:719, 230:410] = 0
+        header = cv2.imread(str(HEADER_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
+
+        self.assertIsNone(find_hero_select_battle_click(frame, header))
+
+    @patch("hauntedroom.flows.train.check_and_click_train_start", new_callable=AsyncMock)
     async def test_mode_normal_requires_automap_before_entering_train(
         self,
-        check_and_click_train_challenge,
+        check_and_click_train_start,
     ):
         with self.assertRaisesRegex(
             ValueError,
@@ -63,30 +102,29 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         ):
             await run_train_flow(self.page, mode=TrainMode.NORMAL)
 
-        check_and_click_train_challenge.assert_not_awaited()
+        check_and_click_train_start.assert_not_awaited()
 
     @patch("hauntedroom.flows.train_support.hero_selection.TrainHeroMatcher")
-    @patch("hauntedroom.flows.train_support.entry.load_template")
-    @patch("hauntedroom.flows.train_support.entry.wait_for_template", new_callable=AsyncMock)
     @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
     @patch("hauntedroom.flows.train_support.hero_selection.capture_page_bgr", new_callable=AsyncMock)
     async def test_mode_normal_confirms_five_rounds_then_hands_off_to_automap(
         self,
         hero_capture_page_bgr,
         entry_capture_page_bgr,
-        wait_for_template,
-        load_template,
         matcher_type,
     ):
         """Mode 1: Normal train flow."""
         available = cv2.imread(str(FIXTURES / "train_available.png"))
-        entry_capture_page_bgr.return_value = available
+        clear = np.zeros((720, 640, 3), dtype=np.uint8)
+        hero_select = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
+        entry_capture_page_bgr.side_effect = [
+            available,
+            available,
+            available,
+            clear,
+            hero_select,
+        ]
         hero_capture_page_bgr.return_value = available
-        wait_for_template.return_value = TemplateWaitResult(
-            TemplateWaitStatus.MATCHED,
-            (401, 644, 0.95),
-        )
-        load_template.return_value = Mock()
         matcher = matcher_type.return_value
         choices = []
         for _ in range(TRAIN_SELECTION_ROUNDS):
@@ -113,8 +151,8 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
 
         self.assertTrue(result)
         self.assertEqual(
-            self.page.mouse.click.await_args_list[:2],
-            [call(400, 646), call(401, 644)],
+            self.page.mouse.click.await_args_list[:3],
+            [call(400, 646), call(400, 646), call(319, 689)],
         )
         confirm_clicks = [
             click_args
@@ -124,12 +162,13 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         self.assertEqual(len(confirm_clicks), TRAIN_SELECTION_ROUNDS)
         self.assertEqual(
             self.page.wait_for_timeout.await_args_list,
-            [call(TRAIN_ENTRY_SETTLE_MS), call(TRAIN_BATTLE_LOAD_MS)]
+            [
+                call(TRAIN_ENTRY_SETTLE_MS),
+                call(TRAIN_BOTTOM_SCAN_INTERVAL_MS),
+                call(TRAIN_BOTTOM_SCAN_INTERVAL_MS),
+                call(TRAIN_BOTTOM_SCAN_INTERVAL_MS),
+            ]
             + [call(TRAIN_SELECTION_SETTLE_MS)] * 15,
-        )
-        self.assertEqual(
-            wait_for_template.await_args.kwargs["template_scales"],
-            (1.0, 0.67),
         )
         automap_flow.assert_awaited_once_with(
             self.page,
