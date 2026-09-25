@@ -178,6 +178,132 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             battle_mode="train",
         )
 
+    @patch("hauntedroom.flows.train.select_train_heroes", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train.start_train_battle", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.train.wait_for_train_start_available",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.flows.train.wait_for_train_screen", new_callable=AsyncMock)
+    async def test_mode_normal_loop_repeats_until_entry_waits_fail(
+        self,
+        wait_for_train_screen,
+        wait_for_train_start_available,
+        start_train_battle,
+        select_train_heroes,
+    ):
+        """Mode 1 loop: wins back to back, then keeps waiting for attempts."""
+        wait_for_train_screen.return_value = True
+        wait_for_train_start_available.side_effect = [True, True, False]
+        start_train_battle.return_value = True
+        select_train_heroes.return_value = True
+        automap_flow = AsyncMock(return_value=True)
+        stop_event = asyncio.Event()
+        run_state = MapRunState()
+
+        result = await run_train_flow(
+            self.page,
+            automap_flow,
+            stop_event,
+            debug=False,
+            run_state=run_state,
+            mode=TrainMode.NORMAL,
+            loop=True,
+        )
+
+        self.assertFalse(result)
+        self.assertEqual(automap_flow.await_count, 2)
+        self.assertEqual(start_train_battle.await_count, 2)
+        self.assertEqual(select_train_heroes.await_count, 2)
+        self.assertEqual(wait_for_train_start_available.await_count, 3)
+        self.assertEqual(
+            automap_flow.await_args_list,
+            [
+                call(
+                    self.page,
+                    stop_event,
+                    debug=False,
+                    run_state=run_state,
+                    battle_mode="train",
+                ),
+                call(
+                    self.page,
+                    stop_event,
+                    debug=False,
+                    run_state=run_state,
+                    battle_mode="train",
+                ),
+            ],
+        )
+
+    @patch("hauntedroom.flows.train.select_train_heroes", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train.start_train_battle", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.train.wait_for_train_start_available",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.flows.train.wait_for_train_screen", new_callable=AsyncMock)
+    async def test_mode_normal_loop_stops_when_battle_reports_stop(
+        self,
+        wait_for_train_screen,
+        wait_for_train_start_available,
+        start_train_battle,
+        select_train_heroes,
+    ):
+        """Mode 1 loop: a stopped auto-battle ends the whole train loop."""
+        wait_for_train_screen.return_value = True
+        wait_for_train_start_available.return_value = True
+        start_train_battle.return_value = True
+        select_train_heroes.return_value = True
+        automap_flow = AsyncMock(return_value=False)
+
+        result = await run_train_flow(
+            self.page,
+            automap_flow,
+            asyncio.Event(),
+            mode=TrainMode.NORMAL,
+            loop=True,
+        )
+
+        self.assertFalse(result)
+        automap_flow.assert_awaited_once()
+        wait_for_train_start_available.assert_awaited_once()
+
+    @patch("hauntedroom.flows.train.select_train_heroes", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train.start_train_battle", new_callable=AsyncMock)
+    @patch(
+        "hauntedroom.flows.train.wait_for_train_start_available",
+        new_callable=AsyncMock,
+    )
+    @patch("hauntedroom.flows.train.wait_for_train_screen", new_callable=AsyncMock)
+    async def test_mode_normal_loop_stops_on_hero_selection_failure(
+        self,
+        wait_for_train_screen,
+        wait_for_train_start_available,
+        start_train_battle,
+        select_train_heroes,
+    ):
+        """Mode 1 loop: hero selection must not raise mid-loop; stop instead."""
+        wait_for_train_screen.return_value = True
+        wait_for_train_start_available.return_value = True
+        start_train_battle.return_value = True
+        select_train_heroes.return_value = False
+        automap_flow = AsyncMock()
+
+        result = await run_train_flow(
+            self.page,
+            automap_flow,
+            asyncio.Event(),
+            mode=TrainMode.NORMAL,
+            loop=True,
+        )
+
+        self.assertFalse(result)
+        automap_flow.assert_not_awaited()
+        self.assertEqual(
+            select_train_heroes.await_args.kwargs, {"raise_on_timeout": False}
+        )
+
     @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_mode_exit_immediately_single_cycle(self, mock_cycle):
         """Mode 2: Exit immediately after match start."""

@@ -1,6 +1,7 @@
 """Unified Train Flow supporting 3 execution modes:
 
 1. NORMAL: Enter train -> 5 hero card selections -> full normal auto-battle.
+   With loop=True the flow repeats back to back and waits out unavailable attempts.
 2. EXIT_IMMEDIATELY: Enter train -> 5 hero selections -> wait match start -> exit immediately.
 3. PET_AND_AD: Enter train -> 5 hero selections -> wait match start -> active pet + summon + wait spin -> exit.
 """
@@ -8,14 +9,17 @@
 import asyncio
 from typing import Awaitable, Callable, Optional, Union
 
+from hauntedroom.core.terminal import BLUE, colorize
 from hauntedroom.flows.train_support.common import TrainCycleResult, TrainMode
 from hauntedroom.flows.train_support.entry import (
     check_and_click_train_start,
     start_train_battle,
+    wait_for_train_start_available,
 )
 from hauntedroom.flows.train_support.exit_flow import (
     run_train_ad_exit_cycle,
     run_train_ad_exit_loop,
+    wait_for_train_screen,
 )
 from hauntedroom.flows.train_support.hero_selection import select_train_heroes
 
@@ -58,6 +62,8 @@ async def run_train_flow(
 
     - TrainMode.NORMAL (default):
         Enter challenge -> start battle -> 5 hero selections -> normal auto-battle.
+        With loop=True the flow repeats back to back, waiting for the next
+        available attempt after each win, until stopped.
     - TrainMode.EXIT_IMMEDIATELY:
         Enter challenge -> start battle -> 5 hero selections -> wait match start -> exit immediately.
     - TrainMode.PET_AND_AD:
@@ -71,6 +77,14 @@ async def run_train_flow(
 
     # 1. Mode: NORMAL (full normal train flow)
     if selected_mode is TrainMode.NORMAL:
+        if loop is True:
+            return await run_normal_train_loop(
+                page,
+                automap_flow,
+                stop_event,
+                debug=debug,
+                run_state=run_state,
+            )
         if not await check_and_click_train_start(page, stop_event):
             return False
 
@@ -106,6 +120,48 @@ async def run_train_flow(
         pet_and_ad=is_pet_mode,
     )
     return cycle_result is TrainCycleResult.COMPLETED
+
+
+async def run_normal_train_loop(
+    page,
+    automap_flow: Callable[..., Awaitable[bool]],
+    stop_event: Optional[asyncio.Event] = None,
+    debug: bool = False,
+    run_state: Optional[object] = None,
+) -> bool:
+    """Run normal train cycles back to back until stopped.
+
+    Each cycle dismisses any leftover overlay, waits for the next available
+    train attempt (polling while none is offered), then runs the full
+    entry -> hero selection -> auto-battle sequence again.
+    """
+    loop_count = 0
+    while True:
+        loop_count += 1
+        print(
+            "\n" + colorize(f"--- Train Loop #{loop_count} (normal) ---", BLUE),
+            flush=True,
+        )
+        if not await wait_for_train_screen(page, stop_event):
+            return False
+        if not await wait_for_train_start_available(page, stop_event):
+            return False
+        if not await start_train_battle(page, stop_event):
+            print("Train battle entry failed; stopping train loop.", flush=True)
+            return False
+        if not await select_train_heroes(page, stop_event, raise_on_timeout=False):
+            print("Hero selection failed; stopping train loop.", flush=True)
+            return False
+        print("All 5 train selections confirmed; starting normal auto-battle.", flush=True)
+        if not await automap_flow(
+            page,
+            stop_event,
+            debug=debug,
+            run_state=run_state,
+            battle_mode="train",
+        ):
+            return False
+        print(f"Train loop #{loop_count} completed!", flush=True)
 
 
 async def run_train_ad_exit_flow(

@@ -14,6 +14,7 @@ CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_ad_exit_screen"
 HERO_CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
 
 from hauntedroom.core.runtime import FlowControl
+from hauntedroom.core.template_matching import load_template
 from hauntedroom.flows.automap_support.train_select import TrainChoice
 from hauntedroom.flows.train import run_train_flow
 from hauntedroom.flows.train_support.entry import (
@@ -35,8 +36,9 @@ from hauntedroom.flows.train_support.exit_flow import (
 )
 from hauntedroom.flows.train_support.common import (
     TRAIN_BOTTOM_SCAN_INTERVAL_MS,
-    TRAIN_SCREEN_TEMPLATE_PATH,
+    TRAIN_SCREEN_ANCHOR_PATH,
     TrainCycleResult,
+    is_train_screen,
 )
 
 
@@ -48,9 +50,9 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         self.page.mouse.click = AsyncMock()
         self.page.wait_for_timeout = AsyncMock()
 
-    def test_train_screen_template_is_a_runtime_asset(self):
-        self.assertTrue(TRAIN_SCREEN_TEMPLATE_PATH.is_file())
-        self.assertNotIn("tests", TRAIN_SCREEN_TEMPLATE_PATH.parts)
+    def test_train_screen_anchor_is_a_runtime_asset(self):
+        self.assertTrue(TRAIN_SCREEN_ANCHOR_PATH.is_file())
+        self.assertNotIn("tests", TRAIN_SCREEN_ANCHOR_PATH.parts)
 
     async def _run_composite_cycle(self, *, pet_and_ad: bool):
         phases = {
@@ -269,18 +271,36 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         self.assertTrue(await exit_train_match(self.page))
         click_pause_exit.assert_awaited_once()
 
-    @patch("hauntedroom.flows.train_support.exit_flow.load_template")
-    @patch("hauntedroom.flows.train_support.exit_flow.find_template")
+    @patch("hauntedroom.flows.train_support.exit_flow.is_train_screen")
     @patch("hauntedroom.flows.train_support.exit_flow.capture_page_bgr", new_callable=AsyncMock)
-    async def test_wait_for_train_screen(self, capture_page_bgr, find_template, load_template):
+    async def test_wait_for_train_screen(self, capture_page_bgr, is_train_screen_mock):
         capture_page_bgr.return_value = np.zeros((720, 640, 3), dtype=np.uint8)
-        load_template.return_value = Mock()
-        find_template.side_effect = [
-            (100, 100, 0.20),  # not visible
-            (100, 100, 0.95),  # visible
+        is_train_screen_mock.side_effect = [
+            False,  # not visible yet
+            True,  # visible
         ]
         self.assertTrue(await wait_for_train_screen(self.page))
         self.page.mouse.click.assert_awaited_once_with(251, 633)
+
+    def test_is_train_screen_detects_lobby_regardless_of_station_state(self):
+        anchor = load_template(TRAIN_SCREEN_ANCHOR_PATH)
+        station22 = cv2.imread(
+            str(FIXTURES / "train_screen_station22.png"), cv2.IMREAD_GRAYSCALE
+        )
+        available = cv2.imread(str(FIXTURES / "train_available.png"), cv2.IMREAD_GRAYSCALE)
+
+        self.assertTrue(is_train_screen(station22, anchor))
+        self.assertTrue(is_train_screen(available, anchor))
+
+    def test_is_train_screen_rejects_other_screens(self):
+        anchor = load_template(TRAIN_SCREEN_ANCHOR_PATH)
+        hero_select = cv2.imread(
+            str(HERO_CAPTURES / "hero_select_screen_vn.png"), cv2.IMREAD_GRAYSCALE
+        )
+        zeros = np.zeros((720, 640), dtype=np.uint8)
+
+        self.assertFalse(is_train_screen(hero_select, anchor))
+        self.assertFalse(is_train_screen(zeros, anchor))
 
     async def test_pet_and_ad_cycle_runs_every_phase(self):
         result, stop_event, phases = await self._run_composite_cycle(

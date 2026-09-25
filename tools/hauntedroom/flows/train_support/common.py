@@ -86,8 +86,15 @@ MONEY_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "automap" / "money.png"
 PET_ACTIVE_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "boss" / "pet_active.png"
 LV_SPIN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "automap" / "lv_spin.png"
 EXIT_CLICK_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "exit_click.png"
-TRAIN_SCREEN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "train_screen.png"
-TRAIN_SCREEN_TEMPLATE_SCALES = (1.0, 0.8, 0.67)
+# The train lobby is recognized by its broken station board ("Trạm N!") — a
+# small stable anchor. A full-screen template stopped matching whenever the
+# station number, hero, or reward progress differed from the capture.
+TRAIN_SCREEN_ANCHOR_PATH = ROOM_TEMPLATE_DIR / "screen_detect" / "train_broken_board.png"
+# Content-relative (70, 70, 210, 180) on the 405px content column centered in
+# the 640px frame — the same anchor screen_detect uses for ScreenName.TRAIN.
+TRAIN_SCREEN_ANCHOR_REGION = (187, 70, 327, 180)
+TRAIN_SCREEN_ANCHOR_THRESHOLD = 0.85
+TRAIN_SCREEN_ANCHOR_SCALES = (1.0, 0.9, 1.1, 0.67)
 TRAIN_WIN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "train_win.png"
 TRAIN_WIN_TEMPLATE_THRESHOLD = 0.85
 TRAIN_END_SETTLE_MS = 1_000
@@ -183,6 +190,21 @@ def find_hero_select_battle_click(
         HERO_SELECT_BATTLE_BUTTON_PATTERN,
     )
     return button.center if button is not None else None
+
+
+def is_train_screen(
+    frame_gray: np.ndarray,
+    anchor_template: np.ndarray,
+) -> bool:
+    """Check the station-board anchor marking the train lobby."""
+    _x, _y, score = find_template(
+        frame_gray,
+        anchor_template,
+        TRAIN_SCREEN_ANCHOR_PATH.name,
+        scales=TRAIN_SCREEN_ANCHOR_SCALES,
+        region=TRAIN_SCREEN_ANCHOR_REGION,
+    )
+    return score >= TRAIN_SCREEN_ANCHOR_THRESHOLD
 
 
 def is_pet_menu_open(
