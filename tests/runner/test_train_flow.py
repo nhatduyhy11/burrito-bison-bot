@@ -44,6 +44,23 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         frame = cv2.imread(str(FIXTURES / "train_available.png"))
         self.assertTrue(train_is_available(frame))
 
+    def test_unavailable_fixture_keeps_yellow_button_but_rejects_entry(self):
+        frame = cv2.imread(str(FIXTURES / "train_unavailable.png"))
+        self.assertEqual(find_train_bottom_button_click(frame), (400, 646))
+        self.assertFalse(train_is_available(frame))
+
+    def test_reward_actions_remain_available(self):
+        for name in ("train_reward.png", "train_reward_collect.png", "train_screen_station22.png"):
+            with self.subTest(name=name):
+                self.assertTrue(train_is_available(cv2.imread(str(FIXTURES / name))))
+
+    def test_other_notifications_cannot_enable_an_unmarked_challenge(self):
+        frame = cv2.imread(str(FIXTURES / "train_unavailable.png"))
+        available = cv2.imread(str(FIXTURES / "train_available.png"))
+        # Give the exhausted lobby the available screenshot's AFK badge.
+        frame[260:295, 490:520] = available[260:295, 490:520]
+        self.assertFalse(train_is_available(frame))
+
     def test_finds_challenge_button_center_in_bottom_strip(self):
         frame = cv2.imread(str(FIXTURES / "train_available.png"))
 

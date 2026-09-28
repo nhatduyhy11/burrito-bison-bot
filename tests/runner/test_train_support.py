@@ -20,6 +20,7 @@ from hauntedroom.flows.train import run_train_flow
 from hauntedroom.flows.train_support.entry import (
     check_and_click_train_start,
     start_train_battle,
+    wait_for_train_start_available,
 )
 from hauntedroom.flows.train_support.hero_selection import select_train_heroes
 from hauntedroom.flows.train_support.pet_and_ad import (
@@ -89,6 +90,40 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         capture_page_bgr.return_value = available
         self.assertTrue(await check_and_click_train_start(self.page))
         self.page.mouse.click.assert_awaited_once_with(400, 646)
+
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_unavailable_lobby_stops_all_entry_paths_without_clicking(self, capture_page_bgr):
+        capture_page_bgr.return_value = cv2.imread(str(FIXTURES / "train_unavailable.png"))
+        for entry in (check_and_click_train_start, wait_for_train_start_available, start_train_battle):
+            with self.subTest(entry=entry.__name__):
+                self.assertFalse(await entry(self.page))
+        self.page.mouse.click.assert_not_awaited()
+
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_start_rechecks_badge_before_clicking(self, capture_page_bgr):
+        capture_page_bgr.side_effect = [
+            cv2.imread(str(FIXTURES / "train_available.png")),
+            cv2.imread(str(FIXTURES / "train_unavailable.png")),
+        ]
+        self.assertFalse(await start_train_battle(self.page))
+        self.page.mouse.click.assert_not_awaited()
+
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_reward_chain_stops_at_exhausted_challenge(self, capture_page_bgr):
+        reward = cv2.imread(str(FIXTURES / "train_reward.png"))
+        collect = cv2.imread(str(FIXTURES / "train_reward_collect.png"))
+        exhausted = cv2.imread(str(FIXTURES / "train_unavailable.png"))
+        capture_page_bgr.side_effect = [reward, reward, collect, collect, exhausted]
+        self.assertFalse(await start_train_battle(self.page))
+        self.assertEqual(self.page.mouse.click.await_args_list, [call(319, 646), call(405, 645)])
+
+    @patch("hauntedroom.flows.train_support.entry.save_timeout_screenshot", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_stuck_marked_button_has_bounded_clicks(self, capture_page_bgr, save_screenshot):
+        capture_page_bgr.return_value = cv2.imread(str(FIXTURES / "train_available.png"))
+        self.assertFalse(await start_train_battle(self.page, max_start_clicks=3))
+        self.assertEqual(self.page.mouse.click.await_count, 3)
+        save_screenshot.assert_awaited_once_with(self.page, "train_start_stalled.png")
 
     @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
     async def test_start_train_battle_clicks_strip_then_battle_button(

@@ -1,7 +1,7 @@
 """Unified Train Flow supporting 3 execution modes:
 
 1. NORMAL: Enter train -> 5 hero card selections -> full normal auto-battle.
-   With loop=True the flow repeats back to back and waits out unavailable attempts.
+   With loop=True the flow repeats back to back until attempts are unavailable.
 2. EXIT_IMMEDIATELY: Enter train -> 5 hero selections -> wait match start -> exit immediately.
 3. PET_AND_AD: Enter train -> 5 hero selections -> wait match start -> active pet + summon + wait spin -> exit.
 """
@@ -62,8 +62,8 @@ async def run_train_flow(
 
     - TrainMode.NORMAL (default):
         Enter challenge -> start battle -> 5 hero selections -> normal auto-battle.
-        With loop=True the flow repeats back to back, waiting for the next
-        available attempt after each win, until stopped.
+        With loop=True the flow repeats back to back until attempts run out
+        or the user stops it.
     - TrainMode.EXIT_IMMEDIATELY:
         Enter challenge -> start battle -> 5 hero selections -> wait match start -> exit immediately.
     - TrainMode.PET_AND_AD:
@@ -131,9 +131,9 @@ async def run_normal_train_loop(
 ) -> bool:
     """Run normal train cycles back to back until stopped.
 
-    Each cycle dismisses any leftover overlay, waits for the next available
-    train attempt (polling while none is offered), then runs the full
-    entry -> hero selection -> auto-battle sequence again.
+    Each cycle dismisses any leftover overlay, checks the next train action,
+    then runs entry -> hero selection -> auto-battle again. An unmarked
+    yellow lobby button ends the loop instead of waiting for a daily reset.
     """
     loop_count = 0
     while True:

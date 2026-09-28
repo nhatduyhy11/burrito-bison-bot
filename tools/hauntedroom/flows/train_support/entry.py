@@ -18,6 +18,7 @@ from hauntedroom.flows.train_support.common import (
     HERO_SELECT_SCREEN_TIMEOUT_MS,
     TRAIN_BOTTOM_SCAN_INTERVAL_MS,
     TRAIN_ENTRY_SETTLE_MS,
+    TRAIN_START_MAX_CLICKS,
     find_hero_select_battle_click,
     find_train_bottom_button_click,
     train_is_available,
@@ -60,7 +61,7 @@ async def wait_for_train_start_available(
     poll_ms: int = 1000,
     settle_ms: int = TRAIN_ENTRY_SETTLE_MS,
 ) -> bool:
-    """Poll continuously until train attempt is available and the start button is clicked."""
+    """Wait for entry UI, but stop when its yellow button has no availability badge."""
     start_click = None
     while start_click is None:
         if not await flow_checkpoint(stop_event):
@@ -68,6 +69,9 @@ async def wait_for_train_start_available(
         frame_bgr = await capture_page_bgr(page)
         if train_is_available(frame_bgr):
             start_click = find_train_bottom_button_click(frame_bgr)
+        elif find_train_bottom_button_click(frame_bgr) is not None:
+            print("No train attempt is currently available; runner is idle.", flush=True)
+            return False
         if start_click is None:
             print("Train is not available or start button not found. Waiting...", flush=True)
             if not await wait_for_flow_timeout(page, poll_ms, stop_event):
@@ -84,31 +88,47 @@ async def start_train_battle(
     scan_interval_ms: int = TRAIN_BOTTOM_SCAN_INTERVAL_MS,
     screen_timeout_ms: int = HERO_SELECT_SCREEN_TIMEOUT_MS,
     screen_poll_ms: int = HERO_SELECT_SCREEN_POLL_MS,
+    max_start_clicks: int = TRAIN_START_MAX_CLICKS,
 ) -> bool:
     """Click bottom yellow buttons until the strip clears, then start the battle.
 
     The lobby chain (reward claim, claim popup, challenge) always renders the
     current action as a yellow button in the bottom strip. Each pass waits one
     scan interval after a detection, re-scans for the live button, clicks it,
-    and stops scanning as soon as no yellow button is detected anymore. The
+    and requires its availability badge before clicking. Unmarked buttons stop
+    the flow; a click limit also stops entry if the UI never progresses. The
     hero-select team screen appears next and needs its own yellow battle
     button clicked before the card picker shows up, so the hand-off polls for
     that banner-gated button before returning.
     """
+    start_clicks = 0
     while True:
         if not await flow_checkpoint(stop_event):
             return False
-        click_at = find_train_bottom_button_click(await capture_page_bgr(page))
+        frame_bgr = await capture_page_bgr(page)
+        click_at = find_train_bottom_button_click(frame_bgr)
         if click_at is None:
             break
+        if not train_is_available(frame_bgr):
+            print("Train start button has no availability badge; stopping train flow.", flush=True)
+            return False
+        if start_clicks >= max_start_clicks:
+            await save_timeout_screenshot(page, "train_start_stalled.png")
+            print("Train start click limit reached; stopping train flow.", flush=True)
+            return False
         if not await wait_for_flow_timeout(page, scan_interval_ms, stop_event):
             return False
-        click_at = find_train_bottom_button_click(await capture_page_bgr(page))
+        frame_bgr = await capture_page_bgr(page)
+        click_at = find_train_bottom_button_click(frame_bgr)
         if click_at is None:
             break
+        if not train_is_available(frame_bgr):
+            print("Train start button has no availability badge; stopping train flow.", flush=True)
+            return False
         print(f"Yellow start button detected at {click_at}; clicking.", flush=True)
         if not await click_and_wait(page, click_at, scan_interval_ms, stop_event):
             return False
+        start_clicks += 1
 
     print(
         "No yellow start button left in the bottom strip; waiting for the "

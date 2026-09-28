@@ -7,7 +7,7 @@ from typing import Optional
 import cv2
 import numpy as np
 
-from hauntedroom.core.template_matching import find_template
+from hauntedroom.core.template_matching import find_template, load_template
 from hauntedroom.core.vision import ColorComponentPattern, find_color_component
 from hauntedroom.vision.buttons import ButtonGeometry
 
@@ -29,8 +29,8 @@ class TrainCycleResult(Enum):
     FATAL_FAILURE = "fatal_failure"
 
 
-TRAIN_AVAILABLE_REGION = (126, 196, 222, 213)
-TRAIN_AVAILABLE_MIN_TEXT_PIXELS = 30
+TRAIN_AVAILABLE_BADGE_THRESHOLD = 0.55
+TRAIN_START_MAX_CLICKS = 6
 
 # Every start-train action (reward claim, claim popup, challenge) renders a
 # yellow button somewhere in the bottom strip. Scan the whole strip instead of
@@ -82,6 +82,7 @@ EXIT_DELAY_MS = 200
 
 # Template paths
 ROOM_TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "rooms"
+TRAIN_AVAILABLE_BADGE_PATH = ROOM_TEMPLATE_DIR / "misc" / "research_available.png"
 MONEY_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "automap" / "money.png"
 PET_ACTIVE_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "boss" / "pet_active.png"
 LV_SPIN_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "automap" / "lv_spin.png"
@@ -132,18 +133,25 @@ HERO_SELECT_SCREEN_POLL_MS = 500
 
 
 def train_is_available(frame_bgr: np.ndarray) -> bool:
-    """Read the green `Lượt vượt ải` row without OCR."""
-    if frame_bgr.ndim != 3 or frame_bgr.shape[:2] != (720, 640):
+    """Require a notification badge on the bottom challenge/claim button.
+
+    The yellow button and attempt-row text remain visible at zero attempts.
+    Reuse the shared badge, restricted to the button's upper-right corner so
+    notifications on AFK, the shop, or reward items cannot enable entry.
+    Reward claims (including a dimmed button behind the popup) stay actionable.
+    """
+    click_at = find_train_bottom_button_click(frame_bgr)
+    if click_at is None:
         return False
-    left, top, right, bottom = TRAIN_AVAILABLE_REGION
-    hsv = cv2.cvtColor(frame_bgr[top:bottom, left:right], cv2.COLOR_BGR2HSV)
-    available_text = (
-        (hsv[:, :, 0] >= 14)
-        & (hsv[:, :, 0] <= 25)
-        & (hsv[:, :, 1] >= 100)
-        & (hsv[:, :, 2] >= 80)
+    x, y = click_at
+    _x, _y, score = find_template(
+        cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY),
+        load_template(TRAIN_AVAILABLE_BADGE_PATH),
+        TRAIN_AVAILABLE_BADGE_PATH.name,
+        scales=(1.0,),
+        region=(x + 25, y - 35, x + 70, y + 5),
     )
-    return int(np.count_nonzero(available_text)) >= TRAIN_AVAILABLE_MIN_TEXT_PIXELS
+    return score >= TRAIN_AVAILABLE_BADGE_THRESHOLD
 
 
 def find_train_bottom_button_click(
