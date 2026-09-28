@@ -27,6 +27,28 @@ Codebase đang có ba thứ dễ nhầm tên. Refactor này chỉ thay đổi th
 Phase thứ hai và thứ ba nằm ngoài phạm vi; chỉ đổi tên nếu cần để không
 nhầm với phase thứ nhất.
 
+### Train card options đang bị xé làm ba, hai mảnh nằm sai package
+
+Train card options là logic thuần train (không flow nào khác dùng), nhưng
+hiện tại nằm ở ba mảnh trên hai package:
+
+- `automap_support/vision/train.py` — detect card; chỉ train dùng.
+- `automap_support/train_select.py` — policy chọn card (`TrainHeroMatcher`:
+  tên ưu tiên, purple-first, confirm 2/4); chỉ train dùng.
+- `train_support/hero_selection.py` — loop 5 round; mảnh duy nhất đứng đúng
+  chỗ.
+
+Nguyên nhân: `train_select.py` tái dùng bộ template asset của level-up
+picker (`automap_support/vision/hero_levelup.py`), nên code được đặt cạnh
+asset trong `automap_support` thay vì về `train_support`. Hệ quả là
+`train_support` phụ thuộc ngược vào `automap_support` cho một logic không
+liên quan automap, và lệch này được pin cứng vào allowlist trong
+`tests/test_hauntedroom_architecture.py`.
+
+Trạng thái đích: toàn bộ train card options về `train_support`, chỉ giữ
+template asset dùng chung ở nơi trung tính. Ngoài phạm vi refactor này —
+làm đợt riêng sau khi ranh giới hero-select ổn định.
+
 ## Lý do refactor
 
 Logic hero-select hiện có nguy cơ bị lặp giữa automap và train. Khi detector,
