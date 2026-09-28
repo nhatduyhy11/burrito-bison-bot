@@ -7,11 +7,7 @@ import cv2
 
 from hauntedroom.actions.pause_exit import click_pause_exit
 from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
-from hauntedroom.core.template_matching import (
-    DEFAULT_TEMPLATE_THRESHOLD,
-    find_template,
-    load_template,
-)
+from hauntedroom.core.template_matching import load_template
 from hauntedroom.core.terminal import BLUE, colorize
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.train_support.common import (
@@ -22,13 +18,13 @@ from hauntedroom.flows.train_support.common import (
     EXIT_RETRY_TEMPLATE_REGION,
     EXIT_TIMEOUT_MS,
     TRAIN_OVERLAY_DISMISS_CLICK,
-    TRAIN_SCREEN_TEMPLATE_PATH,
-    TRAIN_SCREEN_TEMPLATE_SCALES,
+    TRAIN_SCREEN_ANCHOR_PATH,
     TrainCycleResult,
+    is_train_screen,
 )
 from hauntedroom.flows.train_support.entry import (
-    wait_and_click_start_battle,
-    wait_for_train_challenge_available,
+    start_train_battle,
+    wait_for_train_start_available,
 )
 from hauntedroom.flows.train_support.hero_selection import select_train_heroes
 from hauntedroom.flows.train_support.pet_and_ad import (
@@ -79,21 +75,15 @@ async def wait_for_train_screen(
 ) -> bool:
     """Wait until train screen appears again, clicking overlay dismiss point if needed."""
     print("Waiting for train screen to appear again...", flush=True)
-    train_screen_template = load_template(TRAIN_SCREEN_TEMPLATE_PATH)
+    anchor_template = load_template(TRAIN_SCREEN_ANCHOR_PATH)
 
     while True:
         if not await flow_checkpoint(stop_event):
             return False
         frame_bgr = await capture_page_bgr(page)
         frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
-        x, y, score = find_template(
-            frame_gray,
-            train_screen_template,
-            TRAIN_SCREEN_TEMPLATE_PATH.name,
-            scales=TRAIN_SCREEN_TEMPLATE_SCALES,
-        )
-        if score >= DEFAULT_TEMPLATE_THRESHOLD:
-            print(f"Train screen appeared! score={score:.3f}", flush=True)
+        if is_train_screen(frame_gray, anchor_template):
+            print("Train screen appeared!", flush=True)
             return True
 
         print(
@@ -112,21 +102,21 @@ async def run_train_ad_exit_cycle(
     pet_and_ad: bool = True,
 ) -> TrainCycleResult:
     """Execute a single train ad-exit cycle:
-    1. Wait for train challenge available and click it.
-    2. Wait for start battle button and click it.
+    1. Wait for train start button available and click it.
+    2. Click bottom yellow buttons (claim, popup, challenge) until clear.
     3. Select 5 rounds of heroes.
     4. Wait for match start (detecting money template).
     5. If pet_and_ad: activate middle pet + summon + dismiss spin.
     6. Exit match via pause-exit.
     7. Wait for train screen to return.
     """
-    # 1. Wait until train is available and challenge clicked
-    if not await wait_for_train_challenge_available(page, stop_event):
+    # 1. Wait until train is available and start button clicked
+    if not await wait_for_train_start_available(page, stop_event):
         return _failure_result(stop_event, retryable=False)
 
-    # 2. Wait for start battle button and click
-    print("Waiting for start battle button...", flush=True)
-    if not await wait_and_click_start_battle(page, stop_event):
+    # 2. Click bottom yellow buttons until the strip clears
+    print("Clicking bottom yellow buttons to start the battle...", flush=True)
+    if not await start_train_battle(page, stop_event):
         return _failure_result(stop_event, retryable=True)
 
     # 3. Hero Card Selection (Rounds 1-5)

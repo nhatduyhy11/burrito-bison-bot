@@ -110,6 +110,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
                 stop_event,
                 debug,
                 run_state=run_state,
+                loop=True,
             )
 
         return ResolvedFlow(actions, run)

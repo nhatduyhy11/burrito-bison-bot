@@ -58,7 +58,7 @@ the default command table by `tools/hauntedroom/runner/default_commands.py`:
   `flows.start_auto.run_start_automap_loop()`, while `Shift+4` passes the
   refreshed auto-map callable into the train flow.
 - `get_train_flow(dev_reload=True)` reloads `automap_support/train_select.py`
-  followed by `flows/train.py` for `Shift+4`.
+  followed by `flows/autotrain.py` for `Shift+4`.
 - `get_exp_available_flow(dev_reload=True)` and
   `get_hero_up_available_flow(dev_reload=True)` reload their detector/flow
   modules for `Shift+5` and `Shift+6`.
@@ -96,7 +96,7 @@ hotkey, assuming the runner was started with `--dev-reload`.
 | Action loader/runner | `tools/hauntedroom/actions/*.py` | action defaults, loader validation, runner behavior | Reloaded for `Shift+1`, and before `Shift+2`/`Shift+3`/`Shift+4`; start-auto and train receive the refreshed dependencies through the command resolver. |
 | Blocker fallback Python code | `tools/hauntedroom/control_events/*.py` | blocker fallback behavior, popup host/path used by Python fallback | Reloaded for action flows. Already injected JavaScript guards are not re-injected. |
 | Research flow | `tools/hauntedroom/flows/research.py` | research templates, threshold, scale, poll/miss counts | Reloaded when `Shift+9` starts. |
-| Train flow | `tools/hauntedroom/flows/train.py`, `tools/hauntedroom/flows/automap_support/train_select.py` | availability/button detector, selection matcher, click positions and delays | Reloaded when `Shift+4` starts; its auto-map dependency is refreshed separately by `get_automap_runtime()`. |
+| Train flow | `tools/hauntedroom/flows/autotrain.py`, `tools/hauntedroom/flows/automap_support/train_select.py` | availability/button detector, selection matcher, click positions and delays | Reloaded when `Shift+4` starts; its auto-map dependency is refreshed separately by `get_automap_runtime()`. |
 | EXP available flow | `tools/hauntedroom/flows/exp_available.py` | EXP badge color/slot detector and click delay | Reloaded when `Shift+5` starts. |
 | Hero breakthrough flow | `tools/hauntedroom/flows/hero_up_available.py` | yellow popup button plus red `!` availability detector, click positions and delays | Reloaded when `Shift+6` starts. |
 | JSON action loop | `tools/json_macro/macro.env.json` or `--actions` | action sequence and timing | Loaded every time `Shift+5` starts. |

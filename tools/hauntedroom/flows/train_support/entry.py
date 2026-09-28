@@ -1,114 +1,172 @@
-"""Train battle entry phase: availability checking, challenge click, and battle start."""
+"""Train battle entry phase: availability checking and yellow-button start."""
 
 import asyncio
 from typing import Optional
 
 from hauntedroom.core.mouse import click_and_wait
-from hauntedroom.core.runtime import flow_checkpoint, wait_for_flow_timeout
-from hauntedroom.core.template_detection import (
-    TemplateWaitStatus,
-    wait_for_template,
+from hauntedroom.core.runtime import (
+    flow_checkpoint,
+    flow_time,
+    save_timeout_screenshot,
+    wait_for_flow_timeout,
 )
-from hauntedroom.core.template_matching import (
-    DEFAULT_TEMPLATE_THRESHOLD,
-    TEMPLATE_SCALES,
-    load_template,
-)
+from hauntedroom.core.template_matching import load_template
 from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.train_support.common import (
-    TRAIN_BATTLE_LOAD_MS,
+    HERO_SELECT_HEADER_TEMPLATE_PATH,
+    HERO_SELECT_SCREEN_POLL_MS,
+    HERO_SELECT_SCREEN_TIMEOUT_MS,
+    TRAIN_BOTTOM_SCAN_INTERVAL_MS,
     TRAIN_ENTRY_SETTLE_MS,
-    TRAIN_START_BATTLE_POLL_MS,
-    TRAIN_START_BATTLE_TEMPLATE_PATH,
-    TRAIN_START_BATTLE_TIMEOUT_MS,
-    find_train_challenge_click,
+    TRAIN_START_MAX_CLICKS,
+    find_hero_select_battle_click,
+    find_train_bottom_button_click,
     train_is_available,
 )
 
 
-async def check_and_click_train_challenge(
+async def check_and_click_train_start(
     page,
     stop_event: Optional[asyncio.Event] = None,
     *,
     settle_ms: int = TRAIN_ENTRY_SETTLE_MS,
 ) -> bool:
-    """Check if train is available and click the challenge button once."""
+    """Check if train is available and click the bottom yellow button once."""
     frame_bgr = await capture_page_bgr(page)
     if not train_is_available(frame_bgr):
         print("No train attempt is currently available; runner is idle.", flush=True)
         return False
 
-    challenge_click = find_train_challenge_click(frame_bgr)
-    if challenge_click is None:
+    start_click = find_train_bottom_button_click(frame_bgr)
+    if start_click is None:
         print(
-            "Train attempt available, but the challenge button was not found; "
-            "runner is idle.",
+            "Train attempt available, but no yellow start button was found in "
+            "the bottom strip; runner is idle.",
             flush=True,
         )
         return False
 
     print(
-        f"Train attempt available; challenge button detected at "
-        f"{challenge_click}; clicking.",
+        f"Train attempt available; start button detected at "
+        f"{start_click}; clicking.",
         flush=True,
     )
-    return await click_and_wait(page, challenge_click, settle_ms, stop_event)
+    return await click_and_wait(page, start_click, settle_ms, stop_event)
 
 
-async def wait_for_train_challenge_available(
+async def wait_for_train_start_available(
     page,
     stop_event: Optional[asyncio.Event] = None,
     *,
     poll_ms: int = 1000,
     settle_ms: int = TRAIN_ENTRY_SETTLE_MS,
 ) -> bool:
-    """Poll continuously until train attempt is available and challenge button is clicked."""
-    challenge_click = None
-    while challenge_click is None:
+    """Wait for entry UI, but stop when its yellow button has no availability badge."""
+    start_click = None
+    while start_click is None:
         if not await flow_checkpoint(stop_event):
             return False
         frame_bgr = await capture_page_bgr(page)
         if train_is_available(frame_bgr):
-            challenge_click = find_train_challenge_click(frame_bgr)
-        if challenge_click is None:
-            print("Train is not available or challenge button not found. Waiting...", flush=True)
+            start_click = find_train_bottom_button_click(frame_bgr)
+        elif find_train_bottom_button_click(frame_bgr) is not None:
+            print("No train attempt is currently available; runner is idle.", flush=True)
+            return False
+        if start_click is None:
+            print("Train is not available or start button not found. Waiting...", flush=True)
             if not await wait_for_flow_timeout(page, poll_ms, stop_event):
                 return False
 
-    print(f"Train attempt available; clicking challenge button at {challenge_click}.", flush=True)
-    return await click_and_wait(page, challenge_click, settle_ms, stop_event)
+    print(f"Train attempt available; clicking start button at {start_click}.", flush=True)
+    return await click_and_wait(page, start_click, settle_ms, stop_event)
 
 
-async def wait_and_click_start_battle(
+async def start_train_battle(
     page,
     stop_event: Optional[asyncio.Event] = None,
     *,
-    timeout_ms: int = TRAIN_START_BATTLE_TIMEOUT_MS,
-    poll_ms: int = TRAIN_START_BATTLE_POLL_MS,
-    load_ms: int = TRAIN_BATTLE_LOAD_MS,
+    scan_interval_ms: int = TRAIN_BOTTOM_SCAN_INTERVAL_MS,
+    screen_timeout_ms: int = HERO_SELECT_SCREEN_TIMEOUT_MS,
+    screen_poll_ms: int = HERO_SELECT_SCREEN_POLL_MS,
+    max_start_clicks: int = TRAIN_START_MAX_CLICKS,
 ) -> bool:
-    """Wait for start battle button (Khieu chien) and click it."""
-    template_path = TRAIN_START_BATTLE_TEMPLATE_PATH
-    wait_result = await wait_for_template(
-        page,
-        load_template(template_path),
-        template_path.name,
-        DEFAULT_TEMPLATE_THRESHOLD,
-        timeout_ms,
-        poll_ms,
-        stop_event,
-        template_scales=TEMPLATE_SCALES,
-    )
-    if wait_result.status is TemplateWaitStatus.STOPPED:
-        return False
-    if wait_result.match is None:
-        print("Timed out waiting for start battle button.", flush=True)
-        return False
+    """Click bottom yellow buttons until the strip clears, then start the battle.
 
-    x, y, score = wait_result.match
+    The lobby chain (reward claim, claim popup, challenge) always renders the
+    current action as a yellow button in the bottom strip. Each pass waits one
+    scan interval after a detection, re-scans for the live button, clicks it,
+    and requires its availability badge before clicking. Unmarked buttons stop
+    the flow; a click limit also stops entry if the UI never progresses. The
+    hero-select team screen appears next and needs its own yellow battle
+    button clicked before the card picker shows up, so the hand-off polls for
+    that banner-gated button before returning.
+    """
+    start_clicks = 0
+    while True:
+        if not await flow_checkpoint(stop_event):
+            return False
+        frame_bgr = await capture_page_bgr(page)
+        click_at = find_train_bottom_button_click(frame_bgr)
+        if click_at is None:
+            break
+        if not train_is_available(frame_bgr):
+            print("Train start button has no availability badge; stopping train flow.", flush=True)
+            return False
+        if start_clicks >= max_start_clicks:
+            await save_timeout_screenshot(page, "train_start_stalled.png")
+            print("Train start click limit reached; stopping train flow.", flush=True)
+            return False
+        if not await wait_for_flow_timeout(page, scan_interval_ms, stop_event):
+            return False
+        frame_bgr = await capture_page_bgr(page)
+        click_at = find_train_bottom_button_click(frame_bgr)
+        if click_at is None:
+            break
+        if not train_is_available(frame_bgr):
+            print("Train start button has no availability badge; stopping train flow.", flush=True)
+            return False
+        print(f"Yellow start button detected at {click_at}; clicking.", flush=True)
+        if not await click_and_wait(page, click_at, scan_interval_ms, stop_event):
+            return False
+        start_clicks += 1
+
     print(
-        f"Train start battle detected at {x},{y}, "
-        f"score={score:.3f}; clicking.",
+        "No yellow start button left in the bottom strip; waiting for the "
+        "hero select battle button...",
         flush=True,
     )
-    return await click_and_wait(page, (x, y), load_ms, stop_event)
+    header_template = load_template(HERO_SELECT_HEADER_TEMPLATE_PATH)
+    deadline = flow_time(stop_event) + screen_timeout_ms / 1000
+    while True:
+        if not await flow_checkpoint(stop_event):
+            return False
+        battle_click = find_hero_select_battle_click(
+            await capture_page_bgr(page),
+            header_template,
+        )
+        if battle_click is not None:
+            print(
+                f"Hero select screen ready; battle button at {battle_click}; "
+                f"clicking.",
+                flush=True,
+            )
+            return await click_and_wait(
+                page,
+                battle_click,
+                scan_interval_ms,
+                stop_event,
+            )
+        if flow_time(stop_event) >= deadline:
+            screenshot_path = await save_timeout_screenshot(
+                page,
+                HERO_SELECT_HEADER_TEMPLATE_PATH.name,
+            )
+            screenshot_suffix = (
+                f", screenshot={screenshot_path}" if screenshot_path else ""
+            )
+            raise TimeoutError(
+                "Timed out waiting for the hero select battle button"
+                f"{screenshot_suffix}."
+            )
+        if not await wait_for_flow_timeout(page, screen_poll_ms, stop_event):
+            return False
