@@ -14,6 +14,19 @@ hero-select là cùng một màn hình, cùng điều kiện nhận diện và c
 đầu trận. Phần này cần có một implementation duy nhất để hai flow luôn giữ hành
 vi giống nhau.
 
+## Phân biệt các phase có tên "hero"
+
+Codebase đang có ba thứ dễ nhầm tên. Refactor này chỉ thay đổi thứ nhất.
+
+| Phase | Thời điểm | Code hiện tại |
+| --- | --- | --- |
+| Hero-select screen: detect banner, click nút vàng để vào trận | Sau lobby, trước trận (cả automap lẫn train) | `actions/hero_select_battle.py` và bản copy trong `train_support/common.py` |
+| Train card options: chọn 2/4 card, 5 round | Đầu trận train, sau khi bấm nút vàng | `train_support/hero_selection.py`, `automap_support/train_select.py` |
+| Hero level-up picker: chọn option khi hero lên cấp | Giữa trận automap | `automap_support/hero_action.py`, `automap_support/vision/hero_levelup.py` |
+
+Phase thứ hai và thứ ba nằm ngoài phạm vi; chỉ đổi tên nếu cần để không
+nhầm với phase thứ nhất.
+
 ## Lý do refactor
 
 Logic hero-select hiện có nguy cơ bị lặp giữa automap và train. Khi detector,
@@ -36,6 +49,8 @@ không mở rộng sang battle, cleanup hoặc các thay đổi không cần thi
 - Cả hai lobby kết thúc khi màn hình hero-select đã sẵn sàng.
 - Hai flow gọi cùng một hero-select implementation để detect, chờ, click và
   settle.
+- Implementation dùng chung nằm trong `flows/hero_select/`, không nằm ở
+  `vision/` hay `actions/`.
 - Battle và cleanup tiếp tục dùng hành vi hiện có.
 - Các API đang được consumer khác sử dụng được giữ lại bằng wrapper mỏng khi
   việc đó giúp giảm phạm vi thay đổi.
@@ -43,8 +58,8 @@ không mở rộng sang battle, cleanup hoặc các thay đổi không cần thi
 Luồng mong muốn ở mức overview:
 
 ```text
-Automap lobby ──> shared hero-select ──> existing automap battle/cleanup
-Train lobby   ──> shared hero-select ──> existing train selection/battle/cleanup
+Automap lobby ──> flows/hero_select/ ──> existing automap battle/cleanup
+Train lobby   ──> flows/hero_select/ ──> existing train selection/battle/cleanup
 ```
 
 ## Đề xuất commit
@@ -52,10 +67,18 @@ Train lobby   ──> shared hero-select ──> existing train selection/battle
 ### Commit 1: `refactor(hero-select): consolidate shared behavior`
 
 - Tạo một implementation dùng chung cho nhận diện và thao tác hero-select.
+- Shared implementation nằm ở `flows/hero_select/`: hằng số anchor, detector
+  và loop detect - chờ - click - settle.
 - Cho code automap và train hiện tại delegate vào implementation này.
+- Giữ `actions/hero_select_battle.py` làm wrapper mỏng: giữ nguyên Action
+  type `click_hero_select_battle`, delegate vào `flows/hero_select/`.
 - Giữ hành vi quan sát được hiện tại, bao gồm timeout, stop handling và click.
 - Thêm hoặc chuyển các test detector/action sang kiểm tra implementation dùng
   chung.
+- Cập nhật `tests/test_hauntedroom_architecture.py`: mở exception scoped cho
+  riêng `actions/hero_select_battle.py` được import
+  `hauntedroom.flows.hero_select` (cùng pattern với exception ngược chiều đã
+  có ở `exit_flow.py`), và bổ sung allowlist import cho `train_support`.
 
 Commit này chỉ loại bỏ duplication của hero-select, chưa thay đổi ranh giới
 lobby.
@@ -78,6 +101,10 @@ tối thiểu trong coordinator.
   cả automap và train.
 - Xác nhận hai flow gọi đúng cùng một shared implementation.
 - Xóa test hoặc constant duplicate sau khi không còn consumer.
+- Đổi tên `tests/hero_select/` thành `tests/hero_levelup/` để tên thư mục
+  test không còn trùng với phase hero-select screen. Tùy chọn kèm đổi
+  `train_support/hero_selection.py` thành `train_support/card_selection.py`
+  vì lý do tương tự.
 - Cập nhật dev reload hoặc tài liệu liên quan nếu shared implementation cần
   được nhận ở lần chạy flow tiếp theo.
 
