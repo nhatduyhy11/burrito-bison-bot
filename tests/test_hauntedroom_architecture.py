@@ -74,7 +74,7 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.automap_support.vision.hero_levelup",
                 "hauntedroom.flows.automap_support.vision.template_config",
             },
-            "train.py": {
+            "autotrain.py": {
                 "hauntedroom.flows.train_support.common",
                 "hauntedroom.flows.train_support.entry",
                 "hauntedroom.flows.train_support.exit_flow",

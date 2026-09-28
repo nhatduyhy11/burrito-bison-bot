@@ -18,7 +18,7 @@ HEADER_TEMPLATE_PATH = (
 
 from hauntedroom.flows.automap_support.train_select import TrainChoice
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
-from hauntedroom.flows.train import TrainMode, run_train_flow
+from hauntedroom.flows.autotrain import TrainMode, run_train_flow
 from hauntedroom.flows.train_support.common import TrainCycleResult
 from hauntedroom.flows.train_support import (
     TRAIN_BOTTOM_BUTTON_REGION,
@@ -108,7 +108,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
 
         self.assertIsNone(find_hero_select_battle_click(frame, header))
 
-    @patch("hauntedroom.flows.train.check_and_click_train_start", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.check_and_click_train_start", new_callable=AsyncMock)
     async def test_mode_normal_requires_automap_before_entering_train(
         self,
         check_and_click_train_start,
@@ -195,13 +195,13 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             battle_mode="train",
         )
 
-    @patch("hauntedroom.flows.train.select_train_heroes", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.train.start_train_battle", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.select_train_heroes", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.start_train_battle", new_callable=AsyncMock)
     @patch(
-        "hauntedroom.flows.train.wait_for_train_start_available",
+        "hauntedroom.flows.autotrain.wait_for_train_start_available",
         new_callable=AsyncMock,
     )
-    @patch("hauntedroom.flows.train.wait_for_train_screen", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.wait_for_train_screen", new_callable=AsyncMock)
     async def test_mode_normal_loop_repeats_until_entry_waits_fail(
         self,
         wait_for_train_screen,
@@ -253,13 +253,13 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             ],
         )
 
-    @patch("hauntedroom.flows.train.select_train_heroes", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.train.start_train_battle", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.select_train_heroes", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.start_train_battle", new_callable=AsyncMock)
     @patch(
-        "hauntedroom.flows.train.wait_for_train_start_available",
+        "hauntedroom.flows.autotrain.wait_for_train_start_available",
         new_callable=AsyncMock,
     )
-    @patch("hauntedroom.flows.train.wait_for_train_screen", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.wait_for_train_screen", new_callable=AsyncMock)
     async def test_mode_normal_loop_stops_when_battle_reports_stop(
         self,
         wait_for_train_screen,
@@ -286,13 +286,13 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         automap_flow.assert_awaited_once()
         wait_for_train_start_available.assert_awaited_once()
 
-    @patch("hauntedroom.flows.train.select_train_heroes", new_callable=AsyncMock)
-    @patch("hauntedroom.flows.train.start_train_battle", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.select_train_heroes", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.start_train_battle", new_callable=AsyncMock)
     @patch(
-        "hauntedroom.flows.train.wait_for_train_start_available",
+        "hauntedroom.flows.autotrain.wait_for_train_start_available",
         new_callable=AsyncMock,
     )
-    @patch("hauntedroom.flows.train.wait_for_train_screen", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.wait_for_train_screen", new_callable=AsyncMock)
     async def test_mode_normal_loop_stops_on_hero_selection_failure(
         self,
         wait_for_train_screen,
@@ -321,7 +321,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
             select_train_heroes.await_args.kwargs, {"raise_on_timeout": False}
         )
 
-    @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_mode_exit_immediately_single_cycle(self, mock_cycle):
         """Mode 2: Exit immediately after match start."""
         mock_cycle.return_value = TrainCycleResult.COMPLETED
@@ -336,7 +336,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         self.assertTrue(result)
         mock_cycle.assert_awaited_once_with(self.page, stop_event, pet_and_ad=False)
 
-    @patch("hauntedroom.flows.train.run_train_ad_exit_loop", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.run_train_ad_exit_loop", new_callable=AsyncMock)
     async def test_mode_exit_immediately_loop(self, mock_loop):
         """Mode 2 loop: Exit immediately after match start in loop."""
         mock_loop.return_value = True
@@ -351,7 +351,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         self.assertTrue(result)
         mock_loop.assert_awaited_once_with(self.page, stop_event, debug=False, pet_and_ad=False)
 
-    @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_mode_pet_and_ad_single_cycle(self, mock_cycle):
         """Mode 3: Pet summon, spin dismissal, then exit."""
         mock_cycle.return_value = TrainCycleResult.COMPLETED
@@ -366,7 +366,7 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         self.assertTrue(result)
         mock_cycle.assert_awaited_once_with(self.page, stop_event, pet_and_ad=True)
 
-    @patch("hauntedroom.flows.train.run_train_ad_exit_loop", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.run_train_ad_exit_loop", new_callable=AsyncMock)
     async def test_mode_pet_and_ad_loop(self, mock_loop):
         """Mode 3 loop: Pet summon, spin dismissal, then exit in loop."""
         mock_loop.return_value = True

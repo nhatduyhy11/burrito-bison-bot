@@ -16,7 +16,7 @@ HERO_CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
 from hauntedroom.core.runtime import FlowControl
 from hauntedroom.core.template_matching import load_template
 from hauntedroom.flows.automap_support.train_select import TrainChoice
-from hauntedroom.flows.train import run_train_flow
+from hauntedroom.flows.autotrain import run_train_flow
 from hauntedroom.flows.train_support.entry import (
     check_and_click_train_start,
     start_train_battle,
@@ -430,7 +430,7 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         run_cycle.assert_not_awaited()
         wait_for_train_screen.assert_not_awaited()
 
-    @patch("hauntedroom.flows.train.run_train_ad_exit_cycle", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.run_train_ad_exit_cycle", new_callable=AsyncMock)
     async def test_unified_run_train_flow_delegates_to_ad_exit_single_cycle(self, mock_cycle):
         mock_cycle.return_value = TrainCycleResult.COMPLETED
         stop_event = asyncio.Event()
@@ -439,7 +439,7 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         self.assertTrue(result)
         mock_cycle.assert_awaited_once_with(self.page, stop_event, pet_and_ad=False)
 
-    @patch("hauntedroom.flows.train.run_train_ad_exit_loop", new_callable=AsyncMock)
+    @patch("hauntedroom.flows.autotrain.run_train_ad_exit_loop", new_callable=AsyncMock)
     async def test_unified_run_train_flow_delegates_to_ad_exit_loop(self, mock_loop):
         mock_loop.return_value = True
         stop_event = asyncio.Event()
