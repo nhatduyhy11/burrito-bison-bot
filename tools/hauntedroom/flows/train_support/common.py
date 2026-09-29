@@ -9,7 +9,7 @@ import numpy as np
 
 from hauntedroom.core.template_matching import find_template, load_template
 from hauntedroom.core.vision import ColorComponentPattern, find_color_component
-from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
+from hauntedroom.vision.buttons import ButtonGeometry
 
 
 class TrainMode(str, Enum):
@@ -108,24 +108,8 @@ TRAIN_WIN_BUTTON_GEOMETRY = ButtonGeometry(
     max_height=50,
 )
 
-# After the bottom strip clears, the hero-select screen (team confirm) still
-# needs its yellow battle button clicked before the card picker appears. Wait
-# for the locale-free top banner, then click that button. Same anchors as
-# actions/hero_select_battle.py, duplicated because flows must not import
-# actions. Button color/geometry go through the shared vision/buttons palette.
-HERO_SELECT_HEADER_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "hero_select_battle_banner_top.png"
-HERO_SELECT_HEADER_REGION = (210, 10, 430, 90)
-HERO_SELECT_HEADER_THRESHOLD = 0.80
-HERO_SELECT_HEADER_SCALES = (1.0,)
-HERO_SELECT_BATTLE_BUTTON_REGION = (230, 650, 410, 719)
-HERO_SELECT_BATTLE_BUTTON_GEOMETRY = ButtonGeometry(
-    min_area=2_400,
-    min_width=95,
-    max_width=130,
-    min_height=28,
-    max_height=45,
-    min_fill_ratio=0.65,
-)
+# Timing for waiting on the hero-select screen after the lobby strip clears;
+# detection itself lives in the shared flows.hero_select package.
 HERO_SELECT_SCREEN_TIMEOUT_MS = 30_000
 HERO_SELECT_SCREEN_POLL_MS = 500
 
@@ -165,38 +149,6 @@ def find_train_bottom_button_click(
         TRAIN_BOTTOM_BUTTON_PATTERN,
     )
     return match.center if match is not None else None
-
-
-def find_hero_select_battle_click(
-    frame_bgr: np.ndarray,
-    header_template: np.ndarray,
-) -> Optional[tuple[int, int]]:
-    """Return the yellow battle button center on the hero-select screen.
-
-    The button is only trusted while the locale-free top banner is visible, so
-    look-alike buttons on other screens are ignored.
-    """
-    if frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
-        return None
-
-    frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
-    _x, _y, score = find_template(
-        frame_gray,
-        header_template,
-        HERO_SELECT_HEADER_TEMPLATE_PATH.name,
-        scales=HERO_SELECT_HEADER_SCALES,
-        region=HERO_SELECT_HEADER_REGION,
-    )
-    if score < HERO_SELECT_HEADER_THRESHOLD:
-        return None
-
-    button = find_colored_button(
-        frame_bgr,
-        HERO_SELECT_BATTLE_BUTTON_REGION,
-        "yellow",
-        HERO_SELECT_BATTLE_BUTTON_GEOMETRY,
-    )
-    return button.center if button is not None else None
 
 
 def is_train_screen(
