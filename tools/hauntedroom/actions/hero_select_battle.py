@@ -1,4 +1,9 @@
-"""Language-agnostic hero-select screen and battle-button detection."""
+"""Lobby_map wrapper for the shared hero-select phase.
+
+The click_hero_select_battle action keeps lobby_map's recovery loop (popup
+tabs, blockers, re-clicking the HOME entry after an interrupted transition);
+detection delegates to the shared hauntedroom.flows.hero_select package.
+"""
 
 import asyncio
 from pathlib import Path
@@ -20,51 +25,8 @@ from hauntedroom.core.template_matching import (
     find_template,
     resolve_blocker_click,
 )
-from hauntedroom.core.vision import (
-    ColorComponentMatch,
-    capture_page_bgr,
-)
-from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
-
-
-# The title text changes by locale. Match only the thin, text-free top edge of
-# its backing plate, restricted to the fixed top-screen neighborhood.
-HERO_SELECT_HEADER_REGION = (210, 10, 430, 90)
-HERO_SELECT_HEADER_THRESHOLD = 0.80
-BATTLE_START_BUTTON_REGION = (230, 650, 410, 719)
-BATTLE_START_BUTTON_GEOMETRY = ButtonGeometry(
-    min_area=2_400,
-    min_width=95,
-    max_width=130,
-    min_height=28,
-    max_height=45,
-    min_fill_ratio=0.65,
-)
-
-
-def find_hero_select_battle_button(
-    image: np.ndarray,
-    header_template: np.ndarray,
-) -> Optional[ColorComponentMatch]:
-    """Return the yellow start button only on the hero-select screen."""
-    if image.ndim != 3 or image.shape[2] != 3:
-        return None
-    screenshot_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, _, header_score = find_template(
-        screenshot_gray,
-        header_template,
-        "hero_select_battle_banner_top.png",
-        scales=(1.0,),
-        region=HERO_SELECT_HEADER_REGION,
-    )
-    if header_score < HERO_SELECT_HEADER_THRESHOLD:
-        return None
-    return find_colored_button(
-        image,
-        BATTLE_START_BUTTON_REGION,
-        "yellow",
-        BATTLE_START_BUTTON_GEOMETRY,
-    )
+from hauntedroom.core.vision import capture_page_bgr
+from hauntedroom.flows.hero_select import find_battle_button
 
 
 async def click_hero_select_battle(
@@ -123,7 +85,7 @@ async def click_hero_select_battle(
             deadline = flow_time(stop_event) + timeout_ms / 1000
             continue
 
-        button = find_hero_select_battle_button(
+        button = find_battle_button(
             screenshot,
             templates[header_template_path],
         )

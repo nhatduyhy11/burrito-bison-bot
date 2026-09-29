@@ -12,9 +12,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
 HERO_CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
-HEADER_TEMPLATE_PATH = (
-    PROJECT_ROOT / "tools" / "rooms" / "hero_select_battle_banner_top.png"
-)
 
 from hauntedroom.flows.automap_support.train_select import TrainChoice
 from hauntedroom.flows.automap_support.map.model_state import MapRunState
@@ -26,7 +23,6 @@ from hauntedroom.flows.train_support import (
     TRAIN_ENTRY_SETTLE_MS,
     TRAIN_SELECTION_ROUNDS,
     TRAIN_SELECTION_SETTLE_MS,
-    find_hero_select_battle_click,
     find_train_bottom_button_click,
     train_is_available,
 )
@@ -87,26 +83,6 @@ class TrainFlowTest(IsolatedAsyncioTestCase):
         frame = np.zeros((720, 640, 3), dtype=np.uint8)
 
         self.assertIsNone(find_train_bottom_button_click(frame))
-
-    def test_finds_battle_button_on_hero_select_screen(self):
-        frame = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
-        header = cv2.imread(str(HEADER_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
-
-        self.assertEqual(find_hero_select_battle_click(frame, header), (319, 689))
-
-    def test_battle_button_requires_hero_select_banner(self):
-        frame = np.zeros((720, 640, 3), dtype=np.uint8)
-        frame[672:706, 265:374] = (0, 200, 255)
-        header = cv2.imread(str(HEADER_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
-
-        self.assertIsNone(find_hero_select_battle_click(frame, header))
-
-    def test_hero_select_without_battle_button_is_rejected(self):
-        frame = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))
-        frame[650:719, 230:410] = 0
-        header = cv2.imread(str(HEADER_TEMPLATE_PATH), cv2.IMREAD_GRAYSCALE)
-
-        self.assertIsNone(find_hero_select_battle_click(frame, header))
 
     @patch("hauntedroom.flows.autotrain.check_and_click_train_start", new_callable=AsyncMock)
     async def test_mode_normal_requires_automap_before_entering_train(

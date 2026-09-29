@@ -18,6 +18,7 @@ from hauntedroom.flows import (
     research,
     train_support,
 )
+from hauntedroom.flows.hero_select import detection as hero_select_detection
 from hauntedroom.flows.train_support import (
     common as train_common_support,
     entry as train_entry_support,
@@ -199,6 +200,7 @@ def get_train_flow(dev_reload: bool = False):
         return autotrain.run_train_flow
 
     importlib.invalidate_caches()
+    importlib.reload(hero_select_detection)
     importlib.reload(hero_levelup_vision)
     importlib.reload(train_vision)
     importlib.reload(train_select)

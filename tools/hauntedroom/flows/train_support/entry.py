@@ -12,14 +12,13 @@ from hauntedroom.core.runtime import (
 )
 from hauntedroom.core.template_matching import load_template
 from hauntedroom.core.vision import capture_page_bgr
+from hauntedroom.flows.hero_select import HEADER_TEMPLATE_PATH, find_battle_button
 from hauntedroom.flows.train_support.common import (
-    HERO_SELECT_HEADER_TEMPLATE_PATH,
     HERO_SELECT_SCREEN_POLL_MS,
     HERO_SELECT_SCREEN_TIMEOUT_MS,
     TRAIN_BOTTOM_SCAN_INTERVAL_MS,
     TRAIN_ENTRY_SETTLE_MS,
     TRAIN_START_MAX_CLICKS,
-    find_hero_select_battle_click,
     find_train_bottom_button_click,
     train_is_available,
 )
@@ -90,16 +89,15 @@ async def start_train_battle(
     screen_poll_ms: int = HERO_SELECT_SCREEN_POLL_MS,
     max_start_clicks: int = TRAIN_START_MAX_CLICKS,
 ) -> bool:
-    """Click bottom yellow buttons until the strip clears, then start the battle.
+    """Click the lobby's bottom yellow buttons until the strip clears.
 
     The lobby chain (reward claim, claim popup, challenge) always renders the
     current action as a yellow button in the bottom strip. Each pass waits one
     scan interval after a detection, re-scans for the live button, clicks it,
     and requires its availability badge before clicking. Unmarked buttons stop
-    the flow; a click limit also stops entry if the UI never progresses. The
-    hero-select team screen appears next and needs its own yellow battle
-    button clicked before the card picker shows up, so the hand-off polls for
-    that banner-gated button before returning.
+    the flow; a click limit also stops entry if the UI never progresses. Once
+    the strip clears, the hero-select phase takes over via
+    wait_and_click_hero_select_battle.
     """
     start_clicks = 0
     while True:
@@ -135,31 +133,57 @@ async def start_train_battle(
         "hero select battle button...",
         flush=True,
     )
-    header_template = load_template(HERO_SELECT_HEADER_TEMPLATE_PATH)
+    return await wait_and_click_hero_select_battle(
+        page,
+        stop_event,
+        screen_timeout_ms=screen_timeout_ms,
+        screen_poll_ms=screen_poll_ms,
+        settle_ms=scan_interval_ms,
+    )
+
+
+async def wait_and_click_hero_select_battle(
+    page,
+    stop_event: Optional[asyncio.Event] = None,
+    *,
+    screen_timeout_ms: int = HERO_SELECT_SCREEN_TIMEOUT_MS,
+    screen_poll_ms: int = HERO_SELECT_SCREEN_POLL_MS,
+    settle_ms: int = TRAIN_BOTTOM_SCAN_INTERVAL_MS,
+) -> bool:
+    """Wait for the hero-select screen, then click its yellow battle button.
+
+    This is the hero-select phase proper on the train side: the lobby_train
+    phase (bottom yellow strip) ends before this runs, and the card picker
+    comes next. No lobby recovery here — the train screen has no blockers.
+    Detection delegates to the shared flows.hero_select package; only the
+    wait and click timing lives here.
+    """
+    header_template = load_template(HEADER_TEMPLATE_PATH)
     deadline = flow_time(stop_event) + screen_timeout_ms / 1000
     while True:
         if not await flow_checkpoint(stop_event):
             return False
-        battle_click = find_hero_select_battle_click(
+        button = find_battle_button(
             await capture_page_bgr(page),
             header_template,
         )
-        if battle_click is not None:
+        if button is not None:
+            x, y = button.center
             print(
-                f"Hero select screen ready; battle button at {battle_click}; "
+                f"Hero select screen ready; battle button at {x},{y}; "
                 f"clicking.",
                 flush=True,
             )
             return await click_and_wait(
                 page,
-                battle_click,
-                scan_interval_ms,
+                (x, y),
+                settle_ms,
                 stop_event,
             )
         if flow_time(stop_event) >= deadline:
             screenshot_path = await save_timeout_screenshot(
                 page,
-                HERO_SELECT_HEADER_TEMPLATE_PATH.name,
+                HEADER_TEMPLATE_PATH.name,
             )
             screenshot_suffix = (
                 f", screenshot={screenshot_path}" if screenshot_path else ""

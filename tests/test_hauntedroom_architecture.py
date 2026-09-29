@@ -34,11 +34,15 @@ class HauntedRoomDependencyTest(TestCase):
             )
 
     def test_actions_do_not_depend_on_flows(self):
+        allowed_flow_imports = {
+            "hero_select_battle.py": {"hauntedroom.flows.hero_select"},
+        }
         for path in (PACKAGE_DIR / "actions").glob("*.py"):
             forbidden = {
                 module
                 for module in internal_imports(path)
                 if module.startswith("hauntedroom.flows")
+                and module not in allowed_flow_imports.get(path.name, set())
             }
             self.assertEqual(forbidden, set(), path.name)
 
@@ -114,6 +118,7 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.core.runtime",
                 "hauntedroom.core.template_matching",
                 "hauntedroom.core.vision",
+                "hauntedroom.flows.hero_select",
                 "hauntedroom.flows.train_support.common",
             },
             "exit_flow.py": {
@@ -177,6 +182,22 @@ class HauntedRoomDependencyTest(TestCase):
                 for module in internal_imports(path)
                 if not module.startswith("hauntedroom.core")
                 and module not in allowed_non_core_imports.get(path.name, set())
+            }
+            self.assertEqual(forbidden, set(), path.name)
+
+    def test_hero_select_package_only_depends_on_core_and_vision(self):
+        hero_select_dir = PACKAGE_DIR / "flows" / "hero_select"
+        for path in hero_select_dir.rglob("*.py"):
+            forbidden = {
+                module
+                for module in internal_imports(path)
+                if not module.startswith(
+                    (
+                        "hauntedroom.core",
+                        "hauntedroom.vision",
+                        "hauntedroom.flows.hero_select",
+                    )
+                )
             }
             self.assertEqual(forbidden, set(), path.name)
 
