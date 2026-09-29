@@ -9,7 +9,7 @@ import numpy as np
 
 from hauntedroom.core.template_matching import find_template, load_template
 from hauntedroom.core.vision import ColorComponentPattern, find_color_component
-from hauntedroom.vision.buttons import ButtonGeometry
+from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
 
 
 class TrainMode(str, Enum):
@@ -112,15 +112,13 @@ TRAIN_WIN_BUTTON_GEOMETRY = ButtonGeometry(
 # needs its yellow battle button clicked before the card picker appears. Wait
 # for the locale-free top banner, then click that button. Same anchors as
 # actions/hero_select_battle.py, duplicated because flows must not import
-# actions.
+# actions. Button color/geometry go through the shared vision/buttons palette.
 HERO_SELECT_HEADER_TEMPLATE_PATH = ROOM_TEMPLATE_DIR / "hero_select_battle_banner_top.png"
 HERO_SELECT_HEADER_REGION = (210, 10, 430, 90)
 HERO_SELECT_HEADER_THRESHOLD = 0.80
 HERO_SELECT_HEADER_SCALES = (1.0,)
 HERO_SELECT_BATTLE_BUTTON_REGION = (230, 650, 410, 719)
-HERO_SELECT_BATTLE_BUTTON_PATTERN = ColorComponentPattern(
-    lower_hsv=(13, 80, 80),
-    upper_hsv=(42, 255, 255),
+HERO_SELECT_BATTLE_BUTTON_GEOMETRY = ButtonGeometry(
     min_area=2_400,
     min_width=95,
     max_width=130,
@@ -192,10 +190,11 @@ def find_hero_select_battle_click(
     if score < HERO_SELECT_HEADER_THRESHOLD:
         return None
 
-    button = find_color_component(
+    button = find_colored_button(
         frame_bgr,
         HERO_SELECT_BATTLE_BUTTON_REGION,
-        HERO_SELECT_BATTLE_BUTTON_PATTERN,
+        "yellow",
+        HERO_SELECT_BATTLE_BUTTON_GEOMETRY,
     )
     return button.center if button is not None else None
 
