@@ -90,16 +90,15 @@ async def start_train_battle(
     screen_poll_ms: int = HERO_SELECT_SCREEN_POLL_MS,
     max_start_clicks: int = TRAIN_START_MAX_CLICKS,
 ) -> bool:
-    """Click bottom yellow buttons until the strip clears, then start the battle.
+    """Click the lobby's bottom yellow buttons until the strip clears.
 
     The lobby chain (reward claim, claim popup, challenge) always renders the
     current action as a yellow button in the bottom strip. Each pass waits one
     scan interval after a detection, re-scans for the live button, clicks it,
     and requires its availability badge before clicking. Unmarked buttons stop
-    the flow; a click limit also stops entry if the UI never progresses. The
-    hero-select team screen appears next and needs its own yellow battle
-    button clicked before the card picker shows up, so the hand-off polls for
-    that banner-gated button before returning.
+    the flow; a click limit also stops entry if the UI never progresses. Once
+    the strip clears, the hero-select phase takes over via
+    wait_and_click_hero_select_battle.
     """
     start_clicks = 0
     while True:
@@ -135,6 +134,29 @@ async def start_train_battle(
         "hero select battle button...",
         flush=True,
     )
+    return await wait_and_click_hero_select_battle(
+        page,
+        stop_event,
+        screen_timeout_ms=screen_timeout_ms,
+        screen_poll_ms=screen_poll_ms,
+        settle_ms=scan_interval_ms,
+    )
+
+
+async def wait_and_click_hero_select_battle(
+    page,
+    stop_event: Optional[asyncio.Event] = None,
+    *,
+    screen_timeout_ms: int = HERO_SELECT_SCREEN_TIMEOUT_MS,
+    screen_poll_ms: int = HERO_SELECT_SCREEN_POLL_MS,
+    settle_ms: int = TRAIN_BOTTOM_SCAN_INTERVAL_MS,
+) -> bool:
+    """Wait for the hero-select screen, then click its yellow battle button.
+
+    This is the hero-select phase proper on the train side: the lobby_train
+    phase (bottom yellow strip) ends before this runs, and the card picker
+    comes next. No lobby recovery here — the train screen has no blockers.
+    """
     header_template = load_template(HERO_SELECT_HEADER_TEMPLATE_PATH)
     deadline = flow_time(stop_event) + screen_timeout_ms / 1000
     while True:
@@ -153,7 +175,7 @@ async def start_train_battle(
             return await click_and_wait(
                 page,
                 battle_click,
-                scan_interval_ms,
+                settle_ms,
                 stop_event,
             )
         if flow_time(stop_event) >= deadline:
