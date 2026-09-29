@@ -135,12 +135,12 @@ Chỉ phần detector là combined; timeout/poll/settle giữ nguyên theo từn
 | Header region / threshold / scales | (210,10,430,90) / 0.80 / (1.0,) | giống | giữ nguyên |
 | Button region | (230,650,410,719) | giống | giữ nguyên |
 | Button geometry | area≥2400, w 95–130, h 28–45, fill 0.65 | giống | giữ nguyên |
-| HSV yellow V min | 90 | 80 | **85** |
+| HSV yellow V min | 90 | 80 → đã đổi sang `vision/buttons` | **90** (palette chung) |
 
-Drift thật duy nhất giữa hai bản là V min; midpoint 85 để rủi ro lệch
-detection đối xứng giữa hai flow. Các giá trị còn lại hai bản đã giống hệt —
-giữ nguyên, không "combined" làm gì. Fixture test của cả hai flow phải chạy
-qua một bộ constant duy nhất.
+Drift V min đã được giải quyết bằng cách train dùng chung `find_colored_button`
++ palette vàng của `vision/buttons` (V min 90); fixture train vẫn detect đúng
+nút battle ở cùng tọa độ. Các giá trị còn lại hai bản đã giống hệt — giữ
+nguyên. Fixture test của cả hai flow phải chạy qua một bộ constant duy nhất.
 
 ## Đề xuất commit
 
