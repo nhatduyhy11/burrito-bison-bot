@@ -259,3 +259,14 @@ nhóm test và biết quy ước quản lý screenshot.
 - Nếu startup navigation timeout, runner tự thay tab và retry tối đa ba lần.
   Xem [TROUBLESHOOTING.md](TROUBLESHOOTING.md) trước khi xóa profile vì xóa
   `.tmp/hauntedroom-profile` sẽ mất session đăng nhập.
+
+# TLDR
+```
+https://www.python.org/downloads/release/pymanager-263/
+-> tải về
+https://github.com/nhatduyhy11/burrito-bison-bot
+-> download zip luôn, xả nén ko cần tên folder
+pip install uv
+python -m uv sync
+python -m uv run python tools/hauntedroom_runner.py --profile .tmp/X
+```
