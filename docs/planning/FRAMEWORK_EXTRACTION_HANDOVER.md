@@ -1,216 +1,159 @@
-# Framework extraction — backlog handover
+# Framework extraction — handover (cấu trúc 3 tầng)
 
-Kiến trúc Haunted Room hiện hành được mô tả tại
-[`ARCHITECTURE.md`](../ARCHITECTURE.md). Quyết định package boundary ban đầu được
-lưu riêng tại
-[`ADR-001-hauntedroom-package-boundaries.md`](../adr/ADR-001-hauntedroom-package-boundaries.md).
-Tài liệu này chỉ là backlog/định hướng và chưa supersede ADR đó.
+Kiến trúc hiện hành mô tả tại [`ARCHITECTURE.md`](../ARCHITECTURE.md). Tài liệu
+này định nghĩa cấu trúc đích cho việc tách framework, và thay thế mental-model
+"framework / game integration / game business" ba vùng của bản trước trong
+chính file này. Vẫn chưa supersede
+[`ADR-001`](../adr/ADR-001-hauntedroom-package-boundaries.md) — ADR mới chỉ
+được viết khi boundary framework/game được chấp nhận chính thức.
 
 ## Status
 
-Đây là backlog cho một phase refactor lớn trong tương lai, không phải kế hoạch
-thực thi ngay. Haunted Room hiện vẫn đang trong giai đoạn hoàn thiện feature;
-không nên đóng cứng abstraction hoặc di chuyển hàng loạt file trước khi các flow
-và state còn thiếu được hiểu rõ.
+- Cấu trúc 3 tầng bên dưới đã chốt làm hướng đi (2026-09-30).
+- Điều kiện tiền đề của handover cũ đã đạt: `ref_cv/` (Burrito Bison) là game
+  thứ hai, đủ evidence để chốt seam transport và bắt đầu extraction.
+- Thứ tự thực thi là phase 1–5 ở cuối tài liệu. Phase 2 trùng với
+  [`refactor_actions_flows_boundary.md`](refactor_actions_flows_boundary.md)
+  đang chờ chạy — không song song.
 
-Mục tiêu dài hạn là giữ lại một automation framework có thể tái sử dụng và thay
-"bộ ruột" Haunted Room bằng business package của game khác với rất ít thay đổi
-ở browser/runtime/runner.
+## Tầng framework — mỏng
 
-## Refactor nội bộ game có thể làm ngay
-
-Việc chưa extract framework không chặn các refactor behavior-preserving bên trong
-Haunted Room. Có thể tách các flow lớn ngay nếu boundary mới giúp phân biệt rõ:
-
-- Immutable config theo từng flow/invocation.
-- Loaded game assets/templates.
-- Mutable state theo một map/flow.
-- State có lifetime dài hơn như run/login/account/game-day.
-- Runtime dependencies và callback do composition root truyền vào.
-
-`AutomapFlow` là ví dụ chuẩn cho migration seam này. Boss, hero, gear, reward,
-map completion, handler priority, threshold và asset của Automap vẫn là game
-business. Có thể tách chúng thành package nội bộ game và giữ
-`flows/automap.py` làm compatibility facade. Không chuyển các module đó vào
-framework chỉ vì chúng dùng vision, polling hoặc state machine.
-
-Trong giai đoạn chuyển tiếp, game business được phép import capability hiện tại
-qua `hauntedroom.core.*`. Khi framework package được extract, các import này được
-đổi sang public framework contracts hoặc được wiring tại composition root mà
-không thay business behavior. Compatibility facade là API tạm thời của game,
-không phải framework contract lâu dài.
-
-Không dùng module global để nối lifetime qua dev reload. Callback như `on_win`
-thuộc từng invocation; daily/first-win state thuộc game-owned state context có
-scope và reset semantics rõ ràng. Có thể bắt đầu bằng in-memory run scope, nhưng
-không trộn nó vào config hoặc map-scoped state.
-
-## Mental model mục tiêu
-
-Tách hệ thống thành ba vùng trách nhiệm:
-
-1. **Reusable framework/capabilities**
-   - Browser lifecycle, navigation và page/session setup.
-   - Cancellation, pause/resume, checkpoint, timeout và flow clock.
-   - Hotkey/event transport và command dispatch tổng quát.
-   - Screenshot capture, diagnostics và logging hooks.
-   - Vision primitives: image capture, template matching, color/component tools.
-   - Browser input primitives: bot click, cooperative click-and-wait and drag gestures.
-   - JSON action DSL: models, validation/parser và generic executor.
-   - Generic flow registry/controller và optional developer reload mechanism.
-2. **Game integration/adapters**
-   - Wiring giữa framework và một game cụ thể.
-   - Command/flow registration, asset registry và game settings.
-   - Browser guards hoặc host-page behavior riêng của game/provider.
-   - Reload policy/module list của game.
-3. **Game business**
-   - Screen/state taxonomy của game.
-   - Boss, hero, gear, reward, map completion, train, research, EXP, v.v.
-   - Threshold, region, priority, transition và policy mang ý nghĩa Haunted Room.
-   - Daily rules và quyết định business dựa trên login/run state.
-
-Dependency mong muốn:
+Nguyên tắc: framework chỉ là wrap của thư viện + capability runtime generic.
+Không game vocabulary, không orchestration business, không biết flow nào.
 
 ```text
-game app/composition root
-        ├── registers game flows and adapters
-        ├── uses reusable runner/runtime
-        └── owns game business and assets
+framework/
+├── transport/               # 2 port duy nhất: capture, input
+│   │                          capture → frame: np.ndarray
+│   │                          input: click / drag / key
+│   └── backends/
+│       └── playwright/      # page lifecycle, profile, JS injection, browser guard
+├── vision/                  # primitive thuần: frame in → match out, sync, không I/O
+├── runtime/                 # flow control generic: checkpoint, timeout, timing,
+│                            #   cancellation, diagnostics screenshot policy
+├── actions/                 # JSON DSL engine — module optional
+├── runner/                  # standby loop, hotkey transport, command registry contract
+└── devtools/                # hot reload, debug capture tools
 
-game business ───────> framework capabilities
-framework ──X───────> Haunted Room modules or vocabulary
+dependency: runner → actions → runtime → transport ports; vision pure, đứng riêng
 ```
 
-Một file "specific quá" nên ở game integration/business, kể cả khi nó có hình
-dáng kỹ thuật giống detector, event hoặc action. Tên package không quyết định
-boundary; ý nghĩa và lý do thay đổi mới quyết định boundary.
+- **Transport là seam duy nhất để swap backend.** Playwright là một backend
+  impl, không phải "lớp browser của framework". Backend sau này: macro
+  BlueStacks, OS window (win/mac/linux) — mỗi cái tự impl 2 port + adapter
+  launch/navigation riêng, framework không đổi dòng nào.
+- Port nói **raw pixel**. Phép dịch content-offset và scale về tọa độ game là
+  việc của game app (BlueStacks sẽ có resolution/scale khác).
+- Hot reload là devtool, không phải contract cho business phụ thuộc.
+- JSON action engine giữ dạng optional; không để nó kéo framework dày lên.
 
-## Hai feature lớn còn thiếu cần ảnh hưởng thiết kế
+## Tầng game — buz_vision < buz_action < flow
 
-### 1. Screen detector / screen-state recognition
+```text
+games/hauntedroom/
+├── vision/                  # BUZ_VISION — pure, sync, frame → typed result
+│   ├── assets/              #   pattern template runtime dùng
+│   ├── screens.py, train.py, hero_select.py, boss.py, ...
+│   └── test_*.py + captures/     # unit test detector + ảnh test, nằm cạnh
+├── actions/                 # BUZ_ACTION — async; cầm page + vision + framework.runtime
+│   └── test_*.py            #   unit test với fake capture; wait/retry/click,
+│                            #   recovery của lobby sống ở đây
+├── flows/                   # composition: mode, loop, run_state
+│   └── test_*.py
+└── app/                     # wiring: command table, reload list, settings,
+                             #   navigation/URL policy, asset registry
+```
 
-Hệ thống cần xác định page hiện đang ở screen/state nào, sau đó switch sang action
-hoặc flow tương ứng thay vì để từng flow tự đoán cục bộ. Theo definition hiện tại,
-`ScreenDetector` và state-driven orchestration là business của game, không phải
-capability của reusable framework:
+**Luật bất biến: bất đồng bộ chỉ bắt đầu ở buz_action.** Detector cần
+"chờ đến khi X" là buz_action, không phải vision. Nhờ đó unit test buz_vision
+là pure-function test với ảnh fixture — không mock page, không async.
 
-- **Framework:** screenshot capture, template/color/component matching, generic
-  polling, timeout, checkpoint và diagnostic capture. Snapshot reuse/cache chỉ
-  extract vào framework nếu chứng minh được nó không phụ thuộc game.
-- **Game business:** `GameScreen`, `ScreenDetector`, screen observation, danh sách
-  state như login/home/map/battle/reward/popup, asset, region, threshold,
-  confidence/priority, unknown/ambiguous handling, transition rule và logic switch
-  action/flow tương ứng.
-- **Runner:** chỉ quản lý lifecycle của top-level game flow; không biết vocabulary
-  như login/home/battle/reward và không switch action theo screen.
+- Tổ chức theo tier-dir (không phải feature-dir) để arch test khóa chiều
+  `flows → actions → vision` bằng đúng 3 rule. Feature chỉ là tiền tố file.
+- Recovery là buz_action của lobby; detector là buz_vision; flow chỉ ráp phase.
+- Framework tests không bao giờ import game package.
+- `tests/` ở repo root chỉ còn test dạng cấu trúc lớn: arch dependency test và
+  e2e live.
 
-Không đưa tên screen, detector contract hoặc transition model Haunted Room vào
-core. Chỉ extract một generic detector/state interface sau này nếu có ít nhất hai
-implementation thực tế chứng minh contract đó thật sự reusable.
+## Quy ước test & asset
 
-Các câu hỏi cần chốt khi feature được implement:
+- Asset path đi qua **một registry duy nhất mỗi game** (`app/assets.py`).
+  Cấm `Path(__file__).resolve().parents[n]` rải rác — arch test chặn.
+- Pattern asset và ảnh test gộp theo feature trong tier `vision/`; unit test
+  actions dùng lại captures đó qua fake capture.
+- Runtime diagnostics (`.tmp/`) không bao giờ nằm trong tests/. Ảnh test trong
+  repo chỉ nhận ảnh đã curate (promote thủ công).
+- `LIVE_SCREENSHOT_DIR` hiện ghi thẳng vào `tests/fixtures/` — bỏ ngay phase 1.
+- Pytest config (rootdir, importmode, đường dẫn asset) chốt từ commit đầu của
+  `games/` để không sinh ra hệ `parents[n]` thứ hai.
 
-- Game business detection là pull tại checkpoint hay một background observer?
-- Một screenshot có được reuse cho nhiều detector để tránh capture lặp không?
-- Confidence/priority xử lý thế nào khi hai screen cùng match?
-- State ổn định cần bao nhiêu frame liên tiếp trước khi emit transition?
-- Business flow consume current snapshot, transition event hay cả hai?
-- Khi state unknown quá lâu, game policy recover thế nào và dùng framework
-  diagnostics để capture/debug ra sao?
+## Mapping hiện tại → đích
 
-### 2. Login state và daily/run state
+| Hiện tại | Đi đâu |
+| --- | --- |
+| `core/mouse.py`, capture trong `core/vision.py`, `browser_hook.py` | framework transport + playwright backend |
+| `core/template_matching.py`, `template_detection.py` | framework vision |
+| `core/runtime.py` nửa generic (checkpoint/timeout/timing) | framework runtime |
+| `core/runtime.py` nửa boss-pause + `LIVE_SCREENSHOT_DIR` | game app / framework diag policy |
+| `vision/buttons.py` (cơ chế tìm button) | framework vision, color/geometry thành tham số |
+| `flows/*/detection.py`, `automap_support/vision/`, `train_select.py` | game `vision/` |
+| `train_support/entry.py`, `exit_flow.py`, wait-and-click | game `actions/` |
+| `autotrain.py`, `start_auto.py`, `new_account.py` | game `flows/` |
+| `runner/standby.py`, `commands.py` (contract) | framework runner |
+| `default_commands.py`, `reload.py`, `cli.py` URL | game `app/` |
+| `screen_detect.py` vòng scoring anchors | generic → framework vision; `ScreenName` + spec → game `vision/screens.py` |
 
-Cần nhận diện login/session state để flow có thể track lifecycle daily trong một
-run. Cũng phải tách mechanism khỏi Haunted Room policy:
+Gần như toàn bộ là rename/split — không rewrite. Phần viết mới duy nhất là 2
+interface transport port.
 
-- **Framework:** state store/context theo scope, lifecycle reset, typed event,
-  timestamp và optional persistence interface.
-- **Game integration:** cách nhận diện logged-out/logging-in/logged-in, account
-  identity nếu có, reconnect/session recovery.
-- **Game business:** daily-first-win đã xử lý chưa, ngày game reset lúc nào, state
-  nào giữ trong một map/process/login/account và rule nào invalidates state.
+## Vấn đề còn mở (giữ từ bản trước, rút gọn)
 
-Không mặc định "daily" đồng nghĩa với process lifetime. Trước khi implement phải
-chốt timezone/reset boundary, account scope và behavior khi logout/relogin hoặc
-đổi account. Run-scoped in-memory state có thể là bước đầu, nhưng contract không
-nên chặn persistence về sau.
+1. **Screen-state recognition**: pull tại checkpoint hay background observer;
+   reuse snapshot giữa nhiều detector; confidence khi 2 screen cùng match; bao
+   nhiêu frame liên tiếp trước khi emit transition; unknown quá lâu thì recover
+   thế nào. Thuộc game `vision/screens.py` + `flows/`; framework chỉ giữ
+   polling/timeout primitive.
+2. **Login / daily-run state**: scope state (invocation/run/login/account/
+   game-day), reset boundary, timezone, hành vi khi relogin. Callback như
+   `on_win` thuộc từng invocation; daily/first-win state thuộc game-owned state
+   context có reset semantics rõ ràng. Framework chỉ giữ state store generic;
+   daily policy là game.
 
-## Coupling hiện tại cần xử lý trong phase refactor
+## Phase thực hiện
 
-- `core/cli.py` chứa URL/default/profile và wording riêng Haunted Room; phù hợp
-  với app bootstrap/config hơn reusable core.
-- `core/runtime.py` trộn `FlowControl`/timing generic với hotkey JavaScript,
-  screenshot path, click logger và global mang tên Haunted Room.
-- `runner/reload.py` biết toàn bộ dependency graph boss/gear/hero/completion; reload
-  framework nên nhận game-owned reload policy/registration.
-- `runner/commands.py` vừa cung cấp generic `FlowCommand` vừa wiring các flow cụ
-  thể; tách contract khỏi Haunted Room command registry/composition root.
-- `actions` phần lớn reusable nhưng executor/blocker còn biết popup guard và
-  JavaScript global của Haunted Room. Cần hook/adapter thay vì hard dependency.
-- `control_events` đang gom browser guard và visual game action dưới một tên;
-  phân loại lại theo capability, adapter và business event.
-- `settings.py` là game/application config, không phải framework config tổng quát.
-
-## Cách thực hiện an toàn khi đến phase
-
-Không bắt đầu bằng move/rename toàn bộ tree. Làm theo seam và giữ behavior:
-
-1. Hoàn thiện hoặc làm rõ các feature/state quan trọng, nhất là screen detection
-   và login/daily lifecycle. Điều này chặn việc generalize/extract contract tương
-   ứng vào framework, nhưng không chặn refactor nội bộ game theo migration seam
-   ở trên.
-2. Ghi dependency rules bằng architecture tests trước khi di chuyển code.
-3. Tách interface/contract nhỏ tại boundary hiện hữu: flow registration, reload
-   policy, screen detector, state context, browser guard hooks.
-4. Chuyển các primitive thực sự generic sang namespace framework và giữ adapter
-   compatibility tạm thời nếu cần.
-5. Chuyển Haunted Room wiring/settings/assets/policy vào game package.
-6. Tạo một fake/minimal second game để chứng minh framework không còn implicit
-   dependency vào Haunted Room. Không cần game đầy đủ; chỉ cần launch, detect một
-   screen, chạy một flow JSON và stop/pause được.
-7. Xóa compatibility layer sau khi test và entry point mới ổn định.
-
-Ưu tiên extraction theo độ ổn định:
-
-1. Vision primitives và flow-control/timing.
-2. Generic runner contracts và command registry.
-3. JSON action engine cùng extension hooks.
-4. Browser lifecycle/hotkey/diagnostics.
-5. Game-owned screen detector/orchestration và state store sau khi behavior thực
-   tế đủ rõ; chỉ extract primitive đã chứng minh reusable.
-6. Hot reload cuối cùng; đây là developer infrastructure phụ thuộc mạnh vào
-   module graph sau refactor.
+1. **Transport port + asset registry**: định nghĩa 2 port; playwright chuyển
+   thành backend impl đầu tiên; mỗi game một `assets.py`; bỏ
+   `LIVE_SCREENSHOT_DIR` khỏi `tests/`; chốt pytest config.
+2. **Chạy nốt actions↔flows boundary** (C1a→C3 của
+   [`refactor_actions_flows_boundary.md`](refactor_actions_flows_boundary.md))
+   — pattern phase thuần thành convention chung.
+3. **Tách runtime và screen_detect**: `core/runtime.py` split generic/game;
+   vòng scoring của `screen_detect` generic hóa; spec table về game.
+4. **Physical move** sang `framework/` + `games/hauntedroom/` — mechanical vì
+   imports đã kỷ luật; rewrite arch test theo cấu trúc đích, bỏ allowlist cũ.
+5. **Port Burrito Bison** (`ref_cv`) lên framework — minimal: capture, một
+   template match, một flow, stop/pause. Đây là proof-of-extraction; coi là
+   một phần của công việc, không phải "việc sau".
 
 ## Guardrails
 
-- Big refactor phải behavior-preserving; feature change đi thành bước riêng có
-  test riêng.
-- Không generalize một abstraction chỉ từ một game-specific example.
-- Framework không import package Haunted Room và không chứa vocabulary của game.
-- Business không trực tiếp điều khiển runner internals; giao tiếp qua context,
-  control/event và registered flow contracts.
-- Không biến mọi detector/action thành JSON nếu code typed rõ và testable hơn.
-- Tránh một `core` hoặc `runtime` mới trở thành thư mục/file miscellaneous.
-- Asset path, screen name, threshold và transition policy thuộc game package.
-- Preserve cooperative cancellation tại mọi wait/poll/click boundary.
+- Framework không import game, không chứa game vocabulary.
+- Framework mỏng: 2 port là đủ cho đến khi backend thứ hai thật sự cần thêm.
+- Không promote abstraction từ một ví dụ duy nhất; vision primitive chỉ
+  promote khi ≥2 ngữ cảnh dùng.
+- buz_vision pure — vi phạm là bug kiến trúc, không phải style.
+- Behavior-preserving trong từng phase; mỗi phase commit độc lập, suite xanh.
 
-## Definition of done dài hạn
+## Điều kiện hoàn thành
 
-- Haunted Room chạy qua public framework contracts, không dùng framework internals.
-- Framework tests không cần import Haunted Room.
-- Architecture test chặn dependency framework → game.
-- Có minimal second-game fixture chứng minh swap business package.
-- Screen recognition và action switching thuộc game business; framework chỉ giữ
-  vision/runtime primitives đã chứng minh reusable.
-- Login/daily state có scope và reset semantics rõ ràng, có test transition.
-- JSON action engine hỗ trợ game-specific extension qua registration/hook thay vì
-  hard-coded import.
-- Hot reload được khai báo bởi game/application composition root.
-- Tài liệu mô tả entry point, lifecycle, extension points và dependency rules.
+- Framework tests không import hauntedroom; arch test chặn dependency 2 chiều.
+- Không còn `parents[n]` asset magic ngoài registry.
+- `ref_cv` chạy minimal trên framework.
+- `tests/` repo chỉ còn arch + e2e.
 
 ## Ghi chú quyết định
 
-Chưa chọn structure/package name cuối cùng. Các tên như `framework`, `automation`,
-`games/hauntedroom` chỉ minh họa boundary. Hãy để screen detector, login state và
-những feature còn thiếu cung cấp thêm evidence trước khi đóng structure chính
-thức.
+Tên `framework/`, `games/` chỉ minh họa boundary; có thể đổi khi physical move,
+miễn giữ đúng ranh giới tầng. Screen-state và login-state (hai vấn đề mở trên)
+phải được giải quyết trong tầng game trước khi physical move (phase 4) đóng
+cứng contract tương ứng.
