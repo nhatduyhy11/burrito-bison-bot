@@ -18,12 +18,14 @@ TRAIN_CARD_HALF_WIDTH = 44
 TRAIN_CARD_TOP = 498
 TRAIN_CARD_BOTTOM = 635
 
-# One yellow top-left bracket is sufficient to tell whether a card is selected.
+# A selected card has a yellow top-left bracket.  Checking only for yellow
+# pixels is not enough: hero art can have yellow glow in this area too.
 TRAIN_CORNER_TOP = 496
 TRAIN_CORNER_BOTTOM = 512
 TRAIN_CORNER_LEFT_OFFSET = -47
 TRAIN_CORNER_RIGHT_OFFSET = -32
-TRAIN_SELECTED_MIN_YELLOW_PIXELS = 8
+TRAIN_SELECTED_MIN_HORIZONTAL_RUN = 7
+TRAIN_SELECTED_MAX_HORIZONTAL_START = 5
 
 # The solid left edge is stable even when the card artwork differs. Purple card
 # edges have OpenCV HSV hue ~140; red card edges wrap around hue 0/180.
@@ -68,7 +70,29 @@ def _card_is_selected(frame_hsv: np.ndarray, x: int) -> bool:
         & (corner[:, :, 1] >= 120)
         & (corner[:, :, 2] >= 150)
     )
-    return int(np.count_nonzero(yellow)) >= TRAIN_SELECTED_MIN_YELLOW_PIXELS
+
+    # The marker's top stroke begins at the left edge of this crop and spans
+    # at least seven pixels.  A yellow art effect may be larger overall, but
+    # it does not reproduce that left-aligned horizontal stroke.
+    for row in yellow:
+        run_start = None
+        for column, is_yellow in enumerate(row):
+            if is_yellow and run_start is None:
+                run_start = column
+            elif not is_yellow and run_start is not None:
+                if (
+                    run_start <= TRAIN_SELECTED_MAX_HORIZONTAL_START
+                    and column - run_start >= TRAIN_SELECTED_MIN_HORIZONTAL_RUN
+                ):
+                    return True
+                run_start = None
+        if (
+            run_start is not None
+            and run_start <= TRAIN_SELECTED_MAX_HORIZONTAL_START
+            and len(row) - run_start >= TRAIN_SELECTED_MIN_HORIZONTAL_RUN
+        ):
+            return True
+    return False
 
 
 def find_train_cards(frame_bgr: np.ndarray) -> list[TrainCard]:

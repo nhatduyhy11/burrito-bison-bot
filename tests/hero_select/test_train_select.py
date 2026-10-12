@@ -9,6 +9,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_select"
 TRAIN_FLOW_FIXTURES = PROJECT_ROOT / "tests" / "fixtures" / "train_flow"
+CAPTURES = PROJECT_ROOT / "tests" / "fixtures" / "hauntedroom-captures"
 
 from hauntedroom.flows.automap_support.train_select import (
     TRAIN_CONFIRM_CLICK,
@@ -48,6 +49,14 @@ class TrainSelectTest(TestCase):
         choice = self.matcher.find_choice(image)
         self.assertEqual((choice.x, choice.y), (172, 566))
         self.assertFalse(choice.confirm)
+
+    def test_cn_hero_art_glow_does_not_count_as_a_selected_card(self):
+        image = cv2.imread(str(CAPTURES / "train_select2_cn_fail.png"))
+        self.assertIsNotNone(image)
+
+        cards = find_train_cards(image)
+
+        self.assertEqual([card.index for card in cards if card.is_selected], [0])
 
     def test_two_selected_cards_confirm_without_tracking_grayout(self):
         choice = self.matcher.find_choice(self.load("2_selected.png"))
