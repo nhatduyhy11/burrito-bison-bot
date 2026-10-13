@@ -1,4 +1,4 @@
-# Haunted Room Runner
+# Haunted Room Runner x
 
 Bot tự động hóa Haunted Room bằng Playwright và OpenCV. Runner điều khiển trang
 game trong một browser profile riêng, nhận diện màn hình/template từ screenshot
