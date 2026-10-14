@@ -22,6 +22,54 @@ HEADER_TEMPLATE = cv2.imread(
 
 
 class HeroSelectBattleActionTest(IsolatedAsyncioTestCase):
+    async def test_out_of_food_prompt_stops_before_waiting_or_clicking(self):
+        fixture_path = FIXTURES_DIR / "special_flow" / "out-food.png"
+        stop_template_path = Path("out_of_food.png")
+        page = Mock()
+        page.context.pages = [page]
+        page.screenshot = AsyncMock(return_value=fixture_path.read_bytes())
+        page.wait_for_timeout = AsyncMock()
+        page.evaluate = AsyncMock()
+        page.mouse.click = AsyncMock()
+
+        completed = await click_hero_select_battle(
+            page=page,
+            blocker_paths=(),
+            header_template_path=Path("header.png"),
+            entry_template_path=Path("entry.png"),
+            templates={
+                Path("header.png"): HEADER_TEMPLATE,
+                Path("entry.png"): np.zeros((2, 2), dtype=np.uint8),
+                stop_template_path: cv2.imread(
+                    str(
+                        PROJECT_ROOT
+                        / "tools"
+                        / "rooms"
+                        / "misc"
+                        / "out_of_food.png"
+                    ),
+                    cv2.IMREAD_GRAYSCALE,
+                ),
+            },
+            threshold=0.9,
+            timeout_ms=1_000,
+            poll_ms=100,
+            delay_ms=0,
+            click_positions={},
+            entry_click_position="mid_left",
+            entry_template_scales=(1.0,),
+            stop_if_template_path=stop_template_path,
+            stop_template_threshold=0.85,
+            stop_template_scales=(1.0,),
+            stop_template_region=(150, 440, 250, 530),
+            label="Start Battle",
+            stop_event=Event(),
+        )
+
+        self.assertFalse(completed)
+        page.wait_for_timeout.assert_not_awaited()
+        page.mouse.click.assert_not_awaited()
+
     async def test_clicks_detected_button_center(self):
         fixture_path = (
             FIXTURES_DIR

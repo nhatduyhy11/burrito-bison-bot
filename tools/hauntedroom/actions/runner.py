@@ -33,6 +33,8 @@ def collect_template_paths(actions: list[Action]) -> set[Path]:
             template_paths.update(action.blocker_paths)
             template_paths.add(action.header_template_path)
             template_paths.add(action.entry_template_path)
+            if action.stop_if_template_path is not None:
+                template_paths.add(action.stop_if_template_path)
         elif isinstance(action, ClickMapExitBackAction):
             if action.skip_if_template_path is not None:
                 template_paths.add(action.skip_if_template_path)

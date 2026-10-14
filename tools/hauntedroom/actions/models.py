@@ -81,6 +81,10 @@ class ClickHeroSelectBattleAction:
     poll_ms: int = DEFAULT_TEMPLATE_POLL_MS
     delay_ms: int = DEFAULT_CLICK_DELAY_MS
     click_positions: dict[str, ClickPosition] = field(default_factory=dict)
+    stop_if_template_path: Optional[Path] = None
+    stop_template_threshold: float = DEFAULT_TEMPLATE_THRESHOLD
+    stop_template_scales: tuple[float, ...] = (1.0,)
+    stop_template_region: Optional[Region] = None
     note: Optional[str] = None
 
     type: ClassVar[Literal["click_hero_select_battle"]] = (

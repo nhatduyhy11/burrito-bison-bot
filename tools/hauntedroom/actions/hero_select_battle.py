@@ -22,6 +22,7 @@ from hauntedroom.core.runtime import (
 )
 from hauntedroom.core.template_matching import (
     ClickPosition,
+    Region,
     find_template,
     resolve_blocker_click,
 )
@@ -43,6 +44,10 @@ async def click_hero_select_battle(
     entry_click_position: ClickPosition,
     entry_template_scales: tuple[float, ...],
     label: str,
+    stop_if_template_path: Optional[Path] = None,
+    stop_template_threshold: float = 0.9,
+    stop_template_scales: tuple[float, ...] = (1.0,),
+    stop_template_region: Optional[Region] = None,
     stop_event: Optional[asyncio.Event] = None,
 ) -> bool:
     """Clear overlays, confirm hero-select, then click its yellow button."""
@@ -54,6 +59,23 @@ async def click_hero_select_battle(
         await close_profile_popup_tabs(page, label)
         screenshot = await capture_page_bgr(page)
         screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+
+        if stop_if_template_path is not None:
+            stop_x, stop_y, stop_score = find_template(
+                screenshot_gray,
+                templates[stop_if_template_path],
+                stop_if_template_path.name,
+                scales=stop_template_scales,
+                region=stop_template_region,
+            )
+            if stop_score >= stop_template_threshold:
+                print(
+                    f"{label}: stop condition {stop_if_template_path.name} "
+                    f"detected at {stop_x},{stop_y}, "
+                    f"score={stop_score:.3f}; stopping flow",
+                    flush=True,
+                )
+                return False
 
         blocker_match = None
         for blocker_path in blocker_paths:

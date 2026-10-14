@@ -193,6 +193,10 @@ async def execute_action(
             click_positions=action.click_positions,
             entry_click_position=action.entry_click_position,
             entry_template_scales=action.entry_template_scales,
+            stop_if_template_path=action.stop_if_template_path,
+            stop_template_threshold=action.stop_template_threshold,
+            stop_template_scales=action.stop_template_scales,
+            stop_template_region=action.stop_template_region,
             label=label,
             stop_event=stop_event,
         )

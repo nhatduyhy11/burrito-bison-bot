@@ -50,6 +50,14 @@ class StartAutomapLoopTest(IsolatedAsyncioTestCase):
     def test_spawn_exit_uses_language_agnostic_pause_button_pair(self):
         actions = build_spawn_exit_lvup_actions()
 
+        self.assertEqual(
+            actions[2].stop_if_template_path.name,
+            "out_of_food.png",
+        )
+        self.assertEqual(actions[2].stop_template_region, (150, 440, 250, 530))
+        self.assertIsNone(
+            build_start_battle_actions()[2].stop_if_template_path,
+        )
         self.assertEqual(actions[3].region, (120, 125, 175, 175))
         self.assertIsInstance(actions[4], ClickPauseExitAction)
         self.assertEqual(actions[4].retry_template_path.name, "exit_click.png")

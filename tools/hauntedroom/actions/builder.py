@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 from hauntedroom.actions.models import (
     Action,
@@ -13,6 +14,11 @@ ROOMS_DIR = Path(__file__).resolve().parents[2] / "rooms"
 # 640x720 viewport. Searching only this rail prevents game sprites from being
 # mistaken for the tiny 22x24 icon.
 PAUSE_TRIGGER_REGION = (120, 125, 175, 175)
+# The reserve-food banner is fixed near the bottom of the 640x720 HOME screen.
+# Restricting the search to it avoids matching similar food icons elsewhere.
+OUT_OF_FOOD_TEMPLATE_PATH = ROOMS_DIR / "misc" / "out_of_food.png"
+OUT_OF_FOOD_REGION = (150, 440, 250, 530)
+OUT_OF_FOOD_THRESHOLD = 0.85
 BLOCKER_PRIORITY = (
     "lubu_close.png",
     "overlay_close.png",
@@ -62,8 +68,18 @@ def build_spawn_exit_lvup_actions() -> list[Action]:
     blocker_paths = tuple(
         ROOMS_DIR / "blocker" / name for name in BLOCKER_PRIORITY
     )
+    start_actions = build_start_battle_actions()
+    start_battle = start_actions[-1]
+    assert isinstance(start_battle, ClickHeroSelectBattleAction)
+    start_actions[-1] = replace(
+        start_battle,
+        stop_if_template_path=OUT_OF_FOOD_TEMPLATE_PATH,
+        stop_template_threshold=OUT_OF_FOOD_THRESHOLD,
+        stop_template_scales=(1.0,),
+        stop_template_region=OUT_OF_FOOD_REGION,
+    )
     return [
-        *build_start_battle_actions(),
+        *start_actions,
         ClickTemplateAction(
             template_path=ROOMS_DIR / "exit_click.png",
             threshold=0.70,  # Lowered threshold to handle newbie tooltip overlaps
