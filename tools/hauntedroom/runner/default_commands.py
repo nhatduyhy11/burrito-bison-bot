@@ -25,6 +25,7 @@ SCREEN_FLOW_COMMANDS = {
     ScreenName.EXP_HERO: FLOW_DEFINITIONS["exp_available"],
     ScreenName.HERO_AVAILABLE: FLOW_DEFINITIONS["hero_up_available"],
     ScreenName.TRAIN: FLOW_DEFINITIONS["train"],
+    ScreenName.NIGHT: FLOW_DEFINITIONS["night"],
     ScreenName.NEW_ACCOUNT: FLOW_DEFINITIONS["new_account"],
     ScreenName.AUTOMAP: FLOW_DEFINITIONS["automap"],
 }

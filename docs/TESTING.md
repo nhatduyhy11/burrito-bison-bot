@@ -1,5 +1,11 @@
 # Testing
 
+## Temporary recapture rule
+
+`tests/fixtures/tmp_recapture/` is prompt-only scratch material. It may be
+used to identify an ROI, but production templates must be cropped from the
+corresponding full capture. Never commit files from this directory.
+
 Test suite ở root bảo vệ runner Haunted Room, gồm dependency rule, vision/template
 matching và hành vi của các flow. Project tham khảo trong `ref_cv/` có test suite
 độc lập và không thuộc các lệnh bên dưới.

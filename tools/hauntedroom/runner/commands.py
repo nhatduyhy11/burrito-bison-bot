@@ -115,6 +115,18 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_night(
+        actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        night_flow = reload_policy.get_night_flow(dev_reload)
+
+        async def run(page, stop_event, debug: bool):
+            return await night_flow(page, stop_event, debug)
+
+        return ResolvedFlow(actions, run)
+
     def resolve_train_ad_exit(
         actions: list[Action],
         dev_reload: bool,
@@ -279,6 +291,12 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "train then auto-battle",
             "Train mode then auto-battle",
             resolve_train,
+        ),
+        "night": FlowCommand(
+            "night",
+            "night-run loop",
+            "Night run (20 loops)",
+            resolve_night,
         ),
         "train_ad_exit": FlowCommand(
             "train_ad_exit",

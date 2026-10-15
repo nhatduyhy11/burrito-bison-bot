@@ -155,6 +155,7 @@ class HauntedRoomDependencyTest(TestCase):
                 "hauntedroom.flows.automap_support.map.model_state",
                 "hauntedroom.flows.train_support.common",
                 "hauntedroom.vision.buttons",
+                "hauntedroom.vision.victory",
             },
         }
         train_support_dir = PACKAGE_DIR / "flows" / "train_support"

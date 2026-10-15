@@ -15,10 +15,16 @@ from hauntedroom.flows import (
     hero_up_available,
     autotrain,
     new_account,
+    night,
     research,
     train_support,
 )
 from hauntedroom.flows.hero_select import detection as hero_select_detection
+from hauntedroom.vision import (
+    buttons as button_vision,
+    night as night_vision,
+    victory as victory_vision,
+)
 from hauntedroom.flows.train_support import (
     common as train_common_support,
     entry as train_entry_support,
@@ -68,6 +74,7 @@ from hauntedroom.flows.automap_support.vision import (
 )
 from hauntedroom.flows.exp_available import run_exp_available_flow
 from hauntedroom.flows.hero_up_available import run_hero_up_available_flow
+from hauntedroom.flows.night import run_night_flow
 from hauntedroom.flows.research import run_research_flow
 
 load_actions = actions_loader.load_actions
@@ -191,6 +198,23 @@ def get_new_account_flow(dev_reload: bool = False):
     return reloaded_new_account.run_new_account_flow
 
 
+def get_night_flow(dev_reload: bool = False):
+    global run_night_flow
+
+    if not dev_reload:
+        return run_night_flow
+
+    importlib.invalidate_caches()
+    importlib.reload(vision)
+    importlib.reload(button_vision)
+    importlib.reload(victory_vision)
+    importlib.reload(night_vision)
+    reloaded_night = importlib.reload(night)
+    run_night_flow = reloaded_night.run_night_flow
+    print("Night modules reloaded.", flush=True)
+    return run_night_flow
+
+
 def get_automap_flow(dev_reload: bool = False):
     return get_automap_runtime(dev_reload).automap_flow
 
@@ -200,6 +224,7 @@ def get_train_flow(dev_reload: bool = False):
         return autotrain.run_train_flow
 
     importlib.invalidate_caches()
+    importlib.reload(victory_vision)
     importlib.reload(hero_select_detection)
     importlib.reload(hero_levelup_vision)
     importlib.reload(train_vision)

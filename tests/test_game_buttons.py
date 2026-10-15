@@ -8,7 +8,11 @@ import numpy as np
 TOOLS_DIR = Path(__file__).resolve().parents[1] / "tools"
 sys.path.insert(0, str(TOOLS_DIR))
 
-from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
+from hauntedroom.vision.buttons import (
+    ButtonGeometry,
+    find_colored_button,
+    find_red_yellow_button_pair,
+)
 
 
 class GameButtonVisionTest(TestCase):
@@ -64,3 +68,22 @@ class GameButtonVisionTest(TestCase):
                 self.geometry,
             )
         )
+
+    def test_finds_adjacent_red_yellow_popup_pair(self):
+        frame = np.zeros((50, 100, 3), dtype=np.uint8)
+        frame[15:25, 10:30] = (0, 0, 220)
+        frame[15:25, 50:70] = (0, 200, 255)
+
+        pair = find_red_yellow_button_pair(
+            frame,
+            (0, 0, 40, 50),
+            (40, 0, 100, 50),
+            self.geometry,
+            self.geometry,
+            min_gap=15,
+            max_gap=25,
+        )
+
+        self.assertIsNotNone(pair)
+        self.assertEqual(pair.red.center, (20, 20))
+        self.assertEqual(pair.yellow.center, (60, 20))

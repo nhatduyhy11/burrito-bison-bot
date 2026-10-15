@@ -46,6 +46,10 @@ class ScreenDetectionTest(TestCase):
         ("fixtures/train_flow/train_available.png", ScreenName.TRAIN),
         ("fixtures/train_flow/train_reward.png", ScreenName.TRAIN),
         (
+            "fixtures/hauntedroom-captures/night/night-solo.png",
+            ScreenName.NIGHT,
+        ),
+        (
             "fixtures/special_flow/diamond_collection.png",
             ScreenName.DIAMOND_COLLECTION,
         ),

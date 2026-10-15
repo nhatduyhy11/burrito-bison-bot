@@ -21,6 +21,7 @@ from hauntedroom.flows.train_support.common import (
     TRAIN_WIN_TEMPLATE_THRESHOLD,
 )
 from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
+from hauntedroom.vision.victory import victory_panel_visible
 
 TRAIN_WIN_CHECK_INTERVAL_SEC = 1.0
 
@@ -47,6 +48,7 @@ class TrainEndLifecycle:
         wait_for_flow_timeout_fn=wait_for_flow_timeout,
         find_template_fn=find_template,
         find_colored_button_fn=find_colored_button,
+        victory_panel_visible_fn=victory_panel_visible,
     ) -> None:
         self.page = page
         self.stop_event = stop_event
@@ -61,6 +63,7 @@ class TrainEndLifecycle:
         self.wait_for_flow_timeout_fn = wait_for_flow_timeout_fn
         self.find_template_fn = find_template_fn
         self.find_colored_button_fn = find_colored_button_fn
+        self.victory_panel_visible_fn = victory_panel_visible_fn
         self.loop = asyncio.get_running_loop()
 
     async def handle_map_end(
@@ -80,14 +83,19 @@ class TrainEndLifecycle:
 
         self.state.last_map_end_check = now
 
-        _, _, score = self.find_template_fn(
-            frame_gray,
-            self.template,
-            self.template_path.name,
-            scales=(1.0,),
-        )
-        if score < self.template_threshold:
-            return MapEndOutcome(handled=False)
+        shared_panel_visible = self.victory_panel_visible_fn(frame_bgr)
+        score = 1.0
+        detection = "symmetric red victory panel"
+        if not shared_panel_visible:
+            _, _, score = self.find_template_fn(
+                frame_gray,
+                self.template,
+                self.template_path.name,
+                scales=(1.0,),
+            )
+            if score < self.template_threshold:
+                return MapEndOutcome(handled=False)
+            detection = f"template score={score:.3f}"
 
         button = self.find_colored_button_fn(
             frame_bgr,
@@ -99,7 +107,7 @@ class TrainEndLifecycle:
             # The victory banner can render before the button animates in.
             # Stay unhandled so the automap loop keeps polling for it.
             print(
-                f"Train win detected (score={score:.3f}); "
+                f"Train win detected by {detection}; "
                 "waiting for bottom red button...",
                 flush=True,
             )
@@ -108,7 +116,7 @@ class TrainEndLifecycle:
         click_x, click_y = button.center
         print(
             colorize(
-                f"Train win detected (score={score:.3f}); clicking bottom red button at "
+                f"Train win detected by {detection}; clicking bottom red button at "
                 f"{click_x},{click_y} to complete train flow.",
                 GREEN,
             ),

@@ -42,6 +42,14 @@ class ButtonGeometry:
     min_fill_ratio: float = 0.0
 
 
+@dataclass(frozen=True)
+class ButtonPair:
+    """Adjacent red cancel and yellow accept buttons from a modal popup."""
+
+    red: ColorComponentMatch
+    yellow: ColorComponentMatch
+
+
 def find_colored_button(
     image: np.ndarray,
     region: Region,
@@ -70,3 +78,31 @@ def find_colored_button(
     if not matches:
         return None
     return max(matches, key=lambda match: match.area)
+
+
+def find_red_yellow_button_pair(
+    image: np.ndarray,
+    red_region: Region,
+    yellow_region: Region,
+    red_geometry: ButtonGeometry,
+    yellow_geometry: ButtonGeometry,
+    *,
+    min_gap: int = 0,
+    max_gap: int = 60,
+    max_y_delta: int = 4,
+    max_height_delta: int = 5,
+) -> Optional[ButtonPair]:
+    """Find the game's reusable cancel/accept popup control pair."""
+    red = find_colored_button(image, red_region, "red", red_geometry)
+    yellow = find_colored_button(image, yellow_region, "yellow", yellow_geometry)
+    if red is None or yellow is None:
+        return None
+
+    gap = yellow.x - (red.x + red.width)
+    if (
+        not min_gap <= gap <= max_gap
+        or abs(red.y - yellow.y) > max_y_delta
+        or abs(red.height - yellow.height) > max_height_delta
+    ):
+        return None
+    return ButtonPair(red=red, yellow=yellow)

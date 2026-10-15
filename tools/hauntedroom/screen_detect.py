@@ -16,6 +16,7 @@ from hauntedroom.core.vision import capture_page_bgr
 from hauntedroom.flows.automap_support.vision.boss_progress import (
     find_boss_progress_anchor,
 )
+from hauntedroom.vision.night import night_lobby_visible
 
 
 SCREEN_TEMPLATE_DIR = Path(__file__).resolve().parents[1] / "rooms" / "screen_detect"
@@ -33,6 +34,7 @@ class ScreenName(str, Enum):
     EXP_HERO = "exp_hero"
     HERO_AVAILABLE = "hero_avail"
     TRAIN = "train"
+    NIGHT = "night"
     DIAMOND_COLLECTION = "diamond_collection"
     NEW_ACCOUNT = "new_account"
     AUTOMAP = "automap"
@@ -160,6 +162,10 @@ def detect_screen(frame_bgr: np.ndarray) -> ScreenName:
     if frame_bgr.size == 0 or frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
         return ScreenName.UNKNOWN
 
+    # The Night lobby can contain artwork that resembles the in-battle boss
+    # progress icon, so its explicit crow anchor takes precedence.
+    if night_lobby_visible(frame_bgr):
+        return ScreenName.NIGHT
     # Auto-map already owns a robust color/geometry detector for this icon.
     if find_boss_progress_anchor(frame_bgr) is not None:
         return ScreenName.AUTOMAP

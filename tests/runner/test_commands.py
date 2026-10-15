@@ -45,6 +45,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
                 ScreenName.EXP_HERO: "EXP available",
                 ScreenName.HERO_AVAILABLE: "hero breakthrough available",
                 ScreenName.TRAIN: "train then auto-battle",
+                ScreenName.NIGHT: "night-run loop",
                 ScreenName.NEW_ACCOUNT: "new-account setup then auto-map",
                 ScreenName.AUTOMAP: "auto-map battle",
             },

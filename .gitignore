@@ -8,5 +8,6 @@ dist/
 .idea/
 
 .tmp/
+tests/fixtures/tmp_recapture/
 env.*
 *.env.*
