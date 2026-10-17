@@ -20,6 +20,24 @@ HEADER_TEMPLATE = cv2.imread(
 
 
 class HeroSelectBattleVisionTest(TestCase):
+    def test_train_hero_select_with_unloaded_background_finds_battle_button(self):
+        image = cv2.imread(
+            str(FIXTURES_DIR / "train_flow" / "hero_select_assets_loading.png")
+        )
+
+        button = find_battle_button(image, HEADER_TEMPLATE)
+
+        self.assertIsNotNone(button)
+        self.assertEqual(button.center, (319, 689))
+
+    def test_train_lobby_buttons_are_rejected(self):
+        for name in ("train_available", "train_reward", "train_reward_collect"):
+            with self.subTest(name=name):
+                image = cv2.imread(
+                    str(FIXTURES_DIR / "train_flow" / f"{name}.png")
+                )
+                self.assertIsNone(find_battle_button(image, HEADER_TEMPLATE))
+
     def test_vn_hero_select_screen_finds_yellow_button_without_reading_text(self):
         image = cv2.imread(
             str(

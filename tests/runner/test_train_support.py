@@ -151,6 +151,25 @@ class TrainSupportTest(IsolatedAsyncioTestCase):
         )
 
     @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
+    async def test_start_train_battle_handles_loading_frames_before_partial_hero_screen(
+        self, capture_page_bgr,
+    ):
+        available = cv2.imread(str(FIXTURES / "train_available.png"))
+        loading = np.zeros((720, 640, 3), dtype=np.uint8)
+        partial_hero_select = cv2.imread(
+            str(FIXTURES / "hero_select_assets_loading.png")
+        )
+        capture_page_bgr.side_effect = [
+            available, available, loading, loading, partial_hero_select,
+        ]
+
+        self.assertTrue(await start_train_battle(self.page))
+        self.assertEqual(
+            self.page.mouse.click.await_args_list,
+            [call(400, 646), call(319, 689)],
+        )
+
+    @patch("hauntedroom.flows.train_support.entry.capture_page_bgr", new_callable=AsyncMock)
     async def test_start_train_battle_claims_reward_button_first(self, capture_page_bgr):
         reward = cv2.imread(str(FIXTURES / "train_reward.png"))
         hero_select = cv2.imread(str(HERO_CAPTURES / "hero_select_screen_vn.png"))

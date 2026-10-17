@@ -20,7 +20,10 @@ ROOMS_DIR = Path(__file__).resolve().parents[3] / "rooms"
 HEADER_TEMPLATE_PATH = ROOMS_DIR / "hero_select_battle_banner_top.png"
 
 # The title text changes by locale. Match only the thin, text-free top edge of
-# its backing plate, restricted to the fixed top-screen neighborhood.
+# its backing plate, restricted to the fixed top-screen neighborhood. The
+# reference also contains scenery above/left of the plate, which can still be
+# black while game assets load. Exclude that scenery from the comparison.
+HERO_SELECT_HEADER_TEMPLATE_REGION = (8, 14, 47, 23)
 HERO_SELECT_HEADER_REGION = (210, 10, 430, 90)
 HERO_SELECT_HEADER_THRESHOLD = 0.80
 HERO_SELECT_HEADER_SCALES = (1.0,)
@@ -42,10 +45,12 @@ def find_battle_button(
     """Return the yellow start button only on the hero-select screen."""
     if image.ndim != 3 or image.shape[2] != 3:
         return None
+    left, top, right, bottom = HERO_SELECT_HEADER_TEMPLATE_REGION
+    header_edge = header_template[top:bottom, left:right]
     screenshot_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     _, _, header_score = find_template(
         screenshot_gray,
-        header_template,
+        header_edge,
         HEADER_TEMPLATE_PATH.name,
         scales=HERO_SELECT_HEADER_SCALES,
         region=HERO_SELECT_HEADER_REGION,
