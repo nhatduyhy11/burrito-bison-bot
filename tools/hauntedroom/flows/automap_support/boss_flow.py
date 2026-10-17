@@ -42,18 +42,30 @@ async def handle_boss_critical(
     wait_for_flow_timeout_fn,
 ) -> BossCriticalOutcome:
     match = find_boss_health_bar_fn(frame_gray, boss_hp_template)
-    if match is None:
+    progress_only = (
+        match is None
+        and getattr(stop_event, "is_boss_standby", False)
+        and boss_progress_is_full_fn(frame_bgr)
+    )
+    if match is None and not progress_only:
         return BossCriticalOutcome(False, boss_detection_logged=False)
 
-    x, y, score = match
-    is_final_boss = boss_progress_is_full_fn(frame_bgr)
-    boss_kind = "Final boss" if is_final_boss else "Mini-boss"
+    is_final_boss = progress_only or boss_progress_is_full_fn(frame_bgr)
+    final_boss_detected = match is not None and is_final_boss
+    boss_kind = (
+        "Full boss progress" if progress_only
+        else "Final boss" if is_final_boss else "Mini-boss"
+    )
     should_log_detection = not boss_detection_logged
     if should_log_detection:
-        detection_message = (
-            f"{boss_kind} HP entered upper search region at {x},{y}, "
-            f"score={score:.3f}."
-        )
+        if progress_only:
+            detection_message = "Boss progress is full; pausing before boss HP appears."
+        else:
+            x, y, score = match
+            detection_message = (
+                f"{boss_kind} HP entered upper search region at {x},{y}, "
+                f"score={score:.3f}."
+            )
         print(
             colorize(detection_message, ORANGE)
             if is_final_boss
@@ -120,7 +132,7 @@ async def handle_boss_critical(
                 return BossCriticalOutcome(
                     True,
                     boss_detection_logged=True,
-                    final_boss_detected=is_final_boss,
+                    final_boss_detected=final_boss_detected,
                 )
             pause_frame_bgr = await capture_page_bgr_fn(page)
             pause_frame_gray = cv2.cvtColor(
@@ -142,9 +154,13 @@ async def handle_boss_critical(
         return BossCriticalOutcome(
             True,
             boss_detection_logged=True,
-            final_boss_detected=is_final_boss,
+            final_boss_detected=final_boss_detected,
         )
 
+    if match is None:
+        return BossCriticalOutcome(False)
+
+    x, y, _score = match
     if is_final_boss and not final_boss_pet_deployed:
         deployed = await deploy_boss_pet_fn(
             page,

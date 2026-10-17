@@ -267,8 +267,10 @@ pause một lần khi nhận diện final boss. Hai policy boss có thể thay t
 trước khi trigger.
 Trong trận, `Shift+9` chuyển sang standby: ngắt chuỗi thao tác đang chạy,
 chỉ chụp và dò boss theo interval `AUTOMAP_POLL_MS` cũ (600 ms), không nâng cấp,
-xây, chọn tướng, đặt gear/pet hay xử lý map-end. Khi thấy boss bất kỳ, kể cả
-mini boss, bot bấm pause game, chờ xác nhận popup rồi pause script. `Shift+1`
+xây, chọn tướng, đặt gear/pet hay xử lý map-end. Khi thấy boss bất kỳ (kể cả
+mini boss) hoặc thanh progress được detect là full, điều kiện nào tới trước
+thì bot bấm pause game, chờ xác nhận popup rồi pause script. Giữ nguyên logic
+detect progress hiện tại; chấp nhận pause sớm trước khi boss xuất hiện. `Shift+1`
 thoát standby để chạy auto tiếp; `Shift+2`/`Shift+3` thay standby bằng policy
 pause-at-boss tương ứng và cho các thao tác auto chạy lại. Khi đã pause ở boss,
 `Shift+1` resume script theo cơ chế hiện có. Khi runner idle, `Shift+9` vẫn chạy

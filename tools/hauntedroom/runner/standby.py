@@ -55,7 +55,7 @@ def format_start_auto_hotkeys(hotkeys: Mapping[str, str]) -> str:
         f"    Shift+{hotkeys['pause_resume']} pause/resume\n"
         f"    Shift+{hotkeys['pause_at_boss']} pause at boss\n"
         f"    Shift+{hotkeys['pause_at_final_boss']} pause at final boss\n"
-        f"    Shift+{hotkeys['standby_at_boss']} standby until boss\n"
+        f"    Shift+{hotkeys['standby_at_boss']} standby until boss or full progress\n"
         f"    Shift+{hotkeys['screenshot']} screenshot\n"
         f"    Shift+{hotkeys['stop']} stop"
     )
@@ -67,7 +67,7 @@ def format_start_auto_control_guide(hotkeys: Mapping[str, str]) -> str:
         f"  Shift+{hotkeys['pause_resume']} pause/resume\n"
         f"  Shift+{hotkeys['pause_at_boss']} pause at boss\n"
         f"  Shift+{hotkeys['pause_at_final_boss']} pause at final boss\n"
-        f"  Shift+{hotkeys['standby_at_boss']} standby until boss\n"
+        f"  Shift+{hotkeys['standby_at_boss']} standby until boss or full progress\n"
         f"  Shift+{hotkeys['screenshot']} screenshot\n"
         f"  Shift+{hotkeys['stop']} stop"
     )
@@ -169,7 +169,8 @@ async def handle_control_command(
                 print(
                     colorize(
                         "Auto-map standby: gameplay actions disabled; watching "
-                        "for any boss (including mini-boss) to pause the game.",
+                        "for any boss (including mini-boss) or full boss "
+                        "progress to pause the game.",
                         YELLOW,
                     ),
                     flush=True,

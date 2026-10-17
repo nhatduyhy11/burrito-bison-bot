@@ -33,7 +33,7 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
             "    Shift+1 pause/resume\n"
             "    Shift+2 pause at boss\n"
             "    Shift+3 pause at final boss\n"
-            "    Shift+9 standby until boss\n"
+            "    Shift+9 standby until boss or full progress\n"
             "    Shift+8 screenshot\n"
             "    Shift+0 stop",
         )
@@ -45,7 +45,7 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
             "  Shift+1 pause/resume\n"
             "  Shift+2 pause at boss\n"
             "  Shift+3 pause at final boss\n"
-            "  Shift+9 standby until boss\n"
+            "  Shift+9 standby until boss or full progress\n"
             "  Shift+8 screenshot\n"
             "  Shift+0 stop",
         )

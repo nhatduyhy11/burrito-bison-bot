@@ -16,8 +16,8 @@ from tests.automap.template_factory import build_test_automap_templates
 
 class BossStandbyTest(IsolatedAsyncioTestCase):
     async def test_standby_polls_without_actions_then_pauses_at_any_boss(self):
-        for final_boss in (False, True):
-            with self.subTest(final_boss=final_boss):
+        for final_boss, progress_only in ((False, False), (True, False), (True, True)):
+            with self.subTest(final_boss=final_boss, progress_only=progress_only):
                 control = FlowControl()
                 control.standby_at_next_boss()
                 page = Mock()
@@ -39,9 +39,9 @@ class BossStandbyTest(IsolatedAsyncioTestCase):
                     patch("hauntedroom.flows.automap_support.flow.capture_page_bgr",
                           AsyncMock(return_value=frame)) as capture,
                     patch("hauntedroom.flows.automap_support.flow.find_boss_health_bar",
-                          side_effect=[None, None, (250, 280, 0.99)]),
+                          side_effect=[None, None, None if progress_only else (250, 280, 0.99)]),
                     patch("hauntedroom.flows.automap_support.flow.boss_progress_is_full",
-                          return_value=final_boss),
+                          side_effect=[False, False, final_boss]),
                     patch("hauntedroom.flows.automap_support.flow.find_pause_exit_button",
                           side_effect=[None, (100, 100)]),
                     patch("hauntedroom.flows.automap_support.flow.find_template",
@@ -57,6 +57,7 @@ class BossStandbyTest(IsolatedAsyncioTestCase):
                             await asyncio.sleep(0)
                         self.assertTrue(control.is_paused)
                         self.assertFalse(control.is_boss_standby)
+                        self.assertEqual(flow.state.map_end_armed, final_boss and not progress_only)
                         page.mouse.click.assert_awaited_once_with(612, 35)
                         self.assertEqual(capture.await_count, 4)
                         self.assertEqual(

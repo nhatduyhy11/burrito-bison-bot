@@ -85,7 +85,7 @@ class FlowControl:
         await self._boss_standby_event.wait()
 
     def standby_at_next_boss(self) -> bool:
-        """Stop gameplay actions while watching for any boss, including minis."""
+        """Stop gameplay actions while watching for any boss or full progress."""
         if not self.pause_at_next_boss(final_only=False):
             return False
         self._boss_standby_event.set()
