@@ -330,10 +330,19 @@ class AutomapFlow:
         while await flow_checkpoint(self.stop_event):
             frame_bgr = await capture_page_bgr(self.page)
             frame_gray = _to_grayscale(frame_bgr)
+            if getattr(self.stop_event, "is_boss_standby", False):
+                # Only boss detection and the confirmed game-pause action may run.
+                await boss_handler(frame_bgr, frame_gray)
+                await wait_for_flow_timeout(
+                    self.page, AUTOMAP_POLL_MS, self.stop_event,
+                )
+                continue
             for handler in handlers:
                 if not await flow_checkpoint(self.stop_event):
                     break
-                if await handler(frame_bgr, frame_gray):
+                if getattr(self.stop_event, "is_boss_standby", False):
+                    break
+                if await self.run_interruptible_handler(handler, frame_bgr, frame_gray):
                     if handler is boss_handler:
                         await wait_for_flow_timeout(
                             self.page,
@@ -375,3 +384,34 @@ class AutomapFlow:
             flush=True,
         )
         return False
+
+    async def run_interruptible_handler(
+        self,
+        handler: SituationHandler,
+        frame_bgr: np.ndarray,
+        frame_gray: np.ndarray,
+    ) -> bool:
+        """Interrupt an in-flight action sequence when boss standby is requested."""
+        wait_for_standby = getattr(self.stop_event, "wait_for_boss_standby", None)
+        if wait_for_standby is None:
+            return await handler(frame_bgr, frame_gray)
+
+        async def run_handler() -> bool:
+            if getattr(self.stop_event, "is_boss_standby", False):
+                return False
+            return await handler(frame_bgr, frame_gray)
+
+        action_task = asyncio.create_task(run_handler())
+        standby_task = asyncio.create_task(wait_for_standby())
+        try:
+            done, _ = await asyncio.wait(
+                (action_task, standby_task), return_when=asyncio.FIRST_COMPLETED,
+            )
+            if action_task in done:
+                return action_task.result()
+            return False
+        finally:
+            for task in (action_task, standby_task):
+                if not task.done():
+                    task.cancel()
+            await asyncio.gather(action_task, standby_task, return_exceptions=True)

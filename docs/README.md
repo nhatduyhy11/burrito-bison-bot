@@ -135,8 +135,8 @@ có thể sửa rồi thử lại.
 Các switch không nằm trong CLI được khai báo tại
 `tools/hauntedroom/settings.py`:
 
-- `START_AUTO_HOTKEYS`: remap năm control của auto-map/start-auto. Giữ nguyên
-  tên action, dùng năm digit khác nhau từ `0` đến `9`.
+- `START_AUTO_HOTKEYS`: remap sáu control của auto-map/start-auto. Giữ nguyên
+  tên action, dùng sáu digit khác nhau từ `0` đến `9`.
 - `CAPTURE_HERO_FALLBACK_SCREENSHOTS`: lưu ảnh chẩn đoán vào
   `.tmp/hauntedroom-fallbacks/` khi hero selection phải fallback.
 - `ENABLE_SCRIPT_INJECTION`: bật JavaScript/CSS guard cho profile popup và H5
@@ -149,6 +149,7 @@ START_AUTO_HOTKEYS = {
     "pause_resume": "1",
     "pause_at_boss": "2",
     "pause_at_final_boss": "3",
+    "standby_at_boss": "9",
     "stop": "0",
     "screenshot": "8",
 }

@@ -23,6 +23,7 @@ START_AUTO_HOTKEYS = {
     "pause_resume": "1",
     "pause_at_boss": "2",
     "pause_at_final_boss": "3",
+    "standby_at_boss": "9",
     "stop": "0",
     "screenshot": "8",
 }

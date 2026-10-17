@@ -265,6 +265,14 @@ Trong lúc flow đang chạy, `Shift+1` pause ngay và bấm lại để resume 
 hiện tại; `Shift+2` đặt pause một lần khi nhận diện boss bất kỳ; `Shift+3` đặt
 pause một lần khi nhận diện final boss. Hai policy boss có thể thay thế nhau
 trước khi trigger.
+Trong trận, `Shift+9` chuyển sang standby: ngắt chuỗi thao tác đang chạy,
+chỉ chụp và dò boss theo interval `AUTOMAP_POLL_MS` cũ (600 ms), không nâng cấp,
+xây, chọn tướng, đặt gear/pet hay xử lý map-end. Khi thấy boss bất kỳ, kể cả
+mini boss, bot bấm pause game, chờ xác nhận popup rồi pause script. `Shift+1`
+thoát standby để chạy auto tiếp; `Shift+2`/`Shift+3` thay standby bằng policy
+pause-at-boss tương ứng và cho các thao tác auto chạy lại. Khi đã pause ở boss,
+`Shift+1` resume script theo cơ chế hiện có. Khi runner idle, `Shift+9` vẫn chạy
+flow spawn/exit/level-up như trước.
 `Shift+8` vẫn chụp screenshot, `Shift+0` dừng hẳn flow, còn các Shift+digit khác
 bị ignore cho tới khi flow kết thúc. Flow không restart từ đầu sau khi resume.
 Các control trên hoạt động giống nhau trong one-map và start-auto.

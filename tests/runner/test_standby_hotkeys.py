@@ -20,6 +20,7 @@ VALID_HOTKEYS = {
     "pause_resume": "1",
     "pause_at_boss": "2",
     "pause_at_final_boss": "3",
+    "standby_at_boss": "9",
     "screenshot": "8",
     "stop": "0",
 }
@@ -32,6 +33,7 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
             "    Shift+1 pause/resume\n"
             "    Shift+2 pause at boss\n"
             "    Shift+3 pause at final boss\n"
+            "    Shift+9 standby until boss\n"
             "    Shift+8 screenshot\n"
             "    Shift+0 stop",
         )
@@ -43,6 +45,7 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
             "  Shift+1 pause/resume\n"
             "  Shift+2 pause at boss\n"
             "  Shift+3 pause at final boss\n"
+            "  Shift+9 standby until boss\n"
             "  Shift+8 screenshot\n"
             "  Shift+0 stop",
         )
@@ -133,6 +136,7 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
             "pause_resume": "4",
             "pause_at_boss": "5",
             "pause_at_final_boss": "6",
+            "standby_at_boss": "0",
             "stop": "7",
             "screenshot": "9",
         }
@@ -203,3 +207,21 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
         configured_hotkeys["stop"] = "9"
 
         self.assertEqual(validated, VALID_HOTKEYS)
+
+    async def test_shift_9_stands_by_and_shift_1_resumes_automation(self):
+        for screen in (ScreenName.AUTOMAP, ScreenName.HOME):
+            with self.subTest(screen=screen):
+                control = FlowControl()
+                command = SCREEN_FLOW_COMMANDS[screen]
+                self.assertTrue(await handle_control_command(
+                    "9", Mock(), Mock(), control, command,
+                ))
+                self.assertTrue(control.is_boss_standby)
+                self.assertFalse(control.is_paused)
+                self.assertTrue(control.boss_pause_matches(is_final_boss=False))
+                self.assertTrue(await handle_control_command(
+                    "1", Mock(), Mock(), control, command,
+                ))
+                self.assertFalse(control.is_boss_standby)
+                self.assertFalse(control.is_paused)
+                self.assertIsNone(control.boss_pause_target)

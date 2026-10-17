@@ -26,6 +26,7 @@ class FlowControl:
         self._pause_started: Optional[float] = None
         self._paused_seconds = 0.0
         self._boss_pause_target: Optional[str] = None
+        self._boss_standby_event = asyncio.Event()
 
     def is_set(self) -> bool:
         return self._stop_event.is_set()
@@ -33,6 +34,7 @@ class FlowControl:
     def set(self) -> None:
         self._stop_event.set()
         self._boss_pause_target = None
+        self._boss_standby_event.clear()
         # Release a task blocked in checkpoint() so it can observe the stop.
         self._resume_event.set()
 
@@ -47,6 +49,7 @@ class FlowControl:
         if self.is_set() or self.is_paused:
             return False
         self._boss_pause_target = None
+        self._boss_standby_event.clear()
         self._resume_event.clear()
         self._pause_started = asyncio.get_running_loop().time()
         return True
@@ -68,9 +71,31 @@ class FlowControl:
         """Arm a one-shot pause for the next matching boss detection."""
         if self.is_set() or self.is_paused:
             return False
+        self._boss_standby_event.clear()
         self._boss_pause_target = (
             self.PAUSE_AT_FINAL_BOSS if final_only else self.PAUSE_AT_ANY_BOSS
         )
+        return True
+
+    @property
+    def is_boss_standby(self) -> bool:
+        return self._boss_standby_event.is_set()
+
+    async def wait_for_boss_standby(self) -> None:
+        await self._boss_standby_event.wait()
+
+    def standby_at_next_boss(self) -> bool:
+        """Stop gameplay actions while watching for any boss, including minis."""
+        if not self.pause_at_next_boss(final_only=False):
+            return False
+        self._boss_standby_event.set()
+        return True
+
+    def cancel_boss_standby(self) -> bool:
+        if not self.is_boss_standby:
+            return False
+        self._boss_standby_event.clear()
+        self._boss_pause_target = None
         return True
 
     def boss_pause_matches(self, *, is_final_boss: bool) -> bool:
