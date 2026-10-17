@@ -70,3 +70,36 @@ def find_colored_button(
     if not matches:
         return None
     return max(matches, key=lambda match: match.area)
+
+
+@dataclass(frozen=True)
+class ButtonPairMatch:
+    red: ColorComponentMatch
+    yellow: ColorComponentMatch
+
+
+def find_red_yellow_button_pair(
+    image: np.ndarray,
+    red_region: Region,
+    yellow_region: Region,
+    red_geometry: ButtonGeometry,
+    yellow_geometry: ButtonGeometry,
+    *,
+    min_gap: int = 20,
+    max_gap: int = 50,
+    max_y_delta: int = 3,
+    max_height_delta: int = 4,
+) -> Optional[ButtonPairMatch]:
+    """Require two complete, aligned buttons before accepting a popup pair."""
+    red = find_colored_button(image, red_region, "red", red_geometry)
+    yellow = find_colored_button(image, yellow_region, "yellow", yellow_geometry)
+    if red is None or yellow is None:
+        return None
+    gap = yellow.x - (red.x + red.width)
+    if (
+        not min_gap <= gap <= max_gap
+        or abs(red.y - yellow.y) > max_y_delta
+        or abs(red.height - yellow.height) > max_height_delta
+    ):
+        return None
+    return ButtonPairMatch(red, yellow)

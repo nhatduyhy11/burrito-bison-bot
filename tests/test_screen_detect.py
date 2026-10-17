@@ -21,6 +21,8 @@ from hauntedroom.screen_detect import (  # noqa: E402
 
 class ScreenDetectionTest(TestCase):
     CASES = (
+        ("fixtures/night/night-lobby.png", ScreenName.NIGHT),
+        ("fixtures/night/night-solo.png", ScreenName.UNKNOWN),
         (
             "fixtures/hauntedroom-captures/map_win/rewards_v1.png",
             ScreenName.HOME,

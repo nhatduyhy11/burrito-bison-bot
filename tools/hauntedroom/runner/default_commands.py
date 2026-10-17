@@ -18,6 +18,7 @@ FLOW_COMMANDS = {
 }
 
 SCREEN_FLOW_COMMANDS = {
+    ScreenName.NIGHT: FLOW_DEFINITIONS["night"],
     ScreenName.HOME: FLOW_DEFINITIONS["start_auto"],
     ScreenName.RESEARCH: FLOW_DEFINITIONS["research"],
     ScreenName.ARTIFACT: FLOW_DEFINITIONS["artifact"],

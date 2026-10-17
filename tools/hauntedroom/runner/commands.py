@@ -169,6 +169,18 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
 
         return ResolvedFlow(actions, run)
 
+    def resolve_night(
+        actions: list[Action],
+        dev_reload: bool,
+        _actions_path: Optional[Path],
+    ) -> ResolvedFlow:
+        night_flow = reload_policy.get_night_flow(dev_reload)
+
+        async def run(page, stop_event, _debug: bool):
+            return await night_flow(page, stop_event)
+
+        return ResolvedFlow(actions, run)
+
     def resolve_research(
         actions: list[Action],
         dev_reload: bool,
@@ -252,6 +264,13 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
         return ResolvedFlow(actions, run)
 
     return {
+        "night": FlowCommand(
+            "night",
+            "night challenge",
+            "Night challenge (20 loops)",
+            resolve_night,
+            stops_on_repeat_screen_hotkey=True,
+        ),
         "spawn_exit_lvup": FlowCommand(
             "spawn_exit_lvup",
             "spawn_exit_lvup loop",

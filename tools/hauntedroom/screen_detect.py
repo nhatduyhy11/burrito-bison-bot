@@ -13,6 +13,7 @@ from hauntedroom.core.runtime import save_fallback_screenshot
 from hauntedroom.core.template_matching import find_template, load_template
 from hauntedroom.core.terminal import GREEN, colorize
 from hauntedroom.core.vision import capture_page_bgr
+from hauntedroom.flows.night import find_night_left_candle
 from hauntedroom.flows.automap_support.vision.boss_progress import (
     find_boss_progress_anchor,
 )
@@ -27,6 +28,7 @@ NEW_ACCOUNT_ACTION_REGION = (242, 590, 397, 665)
 
 
 class ScreenName(str, Enum):
+    NIGHT = "night"
     HOME = "home"
     RESEARCH = "research"
     ARTIFACT = "artifact"
@@ -159,6 +161,9 @@ def detect_screen(frame_bgr: np.ndarray) -> ScreenName:
     """Return the screen whose unique anchor best matches the current frame."""
     if frame_bgr.size == 0 or frame_bgr.ndim != 3 or frame_bgr.shape[2] != 3:
         return ScreenName.UNKNOWN
+
+    if find_night_left_candle(frame_bgr) is not None:
+        return ScreenName.NIGHT
 
     # Auto-map already owns a robust color/geometry detector for this icon.
     if find_boss_progress_anchor(frame_bgr) is not None:

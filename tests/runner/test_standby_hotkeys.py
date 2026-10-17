@@ -104,6 +104,7 @@ class StandbyHotkeysTest(IsolatedAsyncioTestCase):
         for screen in (
             ScreenName.RESEARCH,
             ScreenName.ARTIFACT,
+            ScreenName.NIGHT,
             ScreenName.EXP_HERO,
             ScreenName.HERO_AVAILABLE,
         ):

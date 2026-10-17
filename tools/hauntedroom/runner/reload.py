@@ -15,6 +15,7 @@ from hauntedroom.flows import (
     hero_up_available,
     autotrain,
     new_account,
+    night,
     research,
     train_support,
 )
@@ -101,6 +102,17 @@ def get_action_runner(dev_reload: bool = False):
     if not dev_reload:
         return run_actions
     return reload_action_modules()
+
+
+def get_night_flow(dev_reload: bool = False):
+    if dev_reload:
+        from hauntedroom.vision import buttons
+
+        importlib.invalidate_caches()
+        importlib.reload(buttons)
+        importlib.reload(night)
+        print("Night modules reloaded.", flush=True)
+    return night.run_night_flow
 
 
 def get_research_flow(dev_reload: bool = False):

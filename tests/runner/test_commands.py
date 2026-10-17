@@ -38,6 +38,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
         self.assertEqual(
             {screen: command.name for screen, command in SCREEN_FLOW_COMMANDS.items()},
             {
+                ScreenName.NIGHT: "night challenge",
                 ScreenName.HOME: "start-auto loop",
                 ScreenName.RESEARCH: "research",
                 ScreenName.ARTIFACT: "artifact",
@@ -57,6 +58,7 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
                 if command.stops_on_repeat_screen_hotkey
             },
             {
+                ScreenName.NIGHT,
                 ScreenName.RESEARCH,
                 ScreenName.ARTIFACT,
                 ScreenName.DIAMOND_COLLECTION,
@@ -129,3 +131,15 @@ class CommandPolicyTest(IsolatedAsyncioTestCase):
             stop_event=stop_event,
             loop_label="spawn_exit_lvup loop",
         )
+
+
+    @patch("hauntedroom.runner.default_commands.reload_policy.get_night_flow")
+    async def test_night_dispatch_resolves_and_runs_with_stop_event(self, get_flow):
+        flow = AsyncMock(return_value=True)
+        get_flow.return_value = flow
+        actions, page, stop = [Mock()], Mock(), asyncio.Event()
+        resolved = SCREEN_FLOW_COMMANDS[ScreenName.NIGHT].resolve(actions, True, None)
+        self.assertIs(resolved.actions, actions)
+        self.assertTrue(await resolved.run(page, stop, False))
+        get_flow.assert_called_once_with(True)
+        flow.assert_awaited_once_with(page, stop)

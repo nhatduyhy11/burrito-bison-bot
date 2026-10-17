@@ -53,6 +53,7 @@ khi tab game đang focus:
 | `research` | Research. |
 | `artifact` | Artifact. |
 | `exp_hero` | EXP available. |
+| `night` | Click nến trái → xác nhận solo bằng nút vàng nếu có → click cố định góc dưới trái `(140, 680)` mỗi 1 giây tới khi nến trở lại. Tối đa 20 vòng mỗi lần kích hoạt; Shift+1 hoặc Shift+0 để dừng. |
 | `hero_avail` | Hero breakthrough available. |
 | `train` | Chạy train mode rồi auto-battle. |
 | `unknown` | Chỉ ghi log, không khởi chạy flow. |

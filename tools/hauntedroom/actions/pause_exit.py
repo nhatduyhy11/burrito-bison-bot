@@ -19,7 +19,11 @@ from hauntedroom.core.vision import (
     ColorComponentMatch,
     capture_page_bgr,
 )
-from hauntedroom.vision.buttons import ButtonGeometry, find_colored_button
+from hauntedroom.vision.buttons import (
+    ButtonGeometry,
+    find_colored_button,
+    find_red_yellow_button_pair,
+)
 
 
 PAUSE_EXIT_RED_REGION = (180, 600, 325, 665)
@@ -67,29 +71,18 @@ def find_pause_exit_button(
     image: np.ndarray,
 ) -> Optional[ColorComponentMatch]:
     """Return red exit only when its adjacent yellow button also matches."""
-    red = find_colored_button(
+    pair = find_red_yellow_button_pair(
         image,
         PAUSE_EXIT_RED_REGION,
-        "red",
-        PAUSE_EXIT_RED_GEOMETRY,
-    )
-    yellow = find_colored_button(
-        image,
         PAUSE_EXIT_YELLOW_REGION,
-        "yellow",
+        PAUSE_EXIT_RED_GEOMETRY,
         PAUSE_EXIT_YELLOW_GEOMETRY,
+        min_gap=MIN_BUTTON_GAP,
+        max_gap=MAX_BUTTON_GAP,
+        max_y_delta=MAX_BUTTON_Y_DELTA,
+        max_height_delta=MAX_BUTTON_HEIGHT_DELTA,
     )
-    if red is None or yellow is None:
-        return None
-
-    gap = yellow.x - (red.x + red.width)
-    if (
-        not MIN_BUTTON_GAP <= gap <= MAX_BUTTON_GAP
-        or abs(red.y - yellow.y) > MAX_BUTTON_Y_DELTA
-        or abs(red.height - yellow.height) > MAX_BUTTON_HEIGHT_DELTA
-    ):
-        return None
-    return red
+    return pair.red if pair is not None else None
 
 
 def find_map_exit_back_button(
