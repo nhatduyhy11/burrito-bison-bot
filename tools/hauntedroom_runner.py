@@ -17,6 +17,12 @@ from hauntedroom.runner.standby import run_standby_controller
 async def main() -> None:
     args, profile_dir = prepare_runner()
     game_core_guard_task = None
+    translator_task = None
+    translation_enabled = args.translate or args.translate_offline
+    if translation_enabled:
+        from game_translator import INIT, create_reader, translate_page
+
+        reader = await asyncio.to_thread(create_reader, offline=args.translate_offline)
 
     async with async_playwright() as playwright:
         launch_options = {
@@ -37,6 +43,8 @@ async def main() -> None:
         context = await playwright.chromium.launch_persistent_context(**launch_options)
 
         try:
+            if translation_enabled:
+                await context.add_init_script(INIT)
             page = context.pages[0] if context.pages else await context.new_page()
             page = await navigate_to_game(
                 context,
@@ -48,6 +56,8 @@ async def main() -> None:
                 install_game_core_frame_guard_after_delay(page)
             )
             await start_user_click_logger(page)
+            if translation_enabled:
+                translator_task = asyncio.create_task(translate_page(page, reader))
 
             await run_standby_controller(
                 page,
@@ -59,6 +69,9 @@ async def main() -> None:
                 SCREEN_FLOW_COMMANDS,
             )
         finally:
+            if translator_task is not None:
+                translator_task.cancel()
+                await asyncio.gather(translator_task, return_exceptions=True)
             if game_core_guard_task is not None:
                 game_core_guard_task.cancel()
                 await asyncio.gather(game_core_guard_task, return_exceptions=True)

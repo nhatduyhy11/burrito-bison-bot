@@ -41,6 +41,14 @@ def prepare_runner() -> tuple[argparse.Namespace, Path]:
     )
     parser.add_argument("--headless", action="store_true")
     parser.add_argument(
+        "--translate", action="store_true",
+        help="Translate Chinese text to Vietnamese in this game window; Shift+D toggles.",
+    )
+    parser.add_argument(
+        "--translate-offline", action="store_true",
+        help="Enable translation using only local models (implies --translate).",
+    )
+    parser.add_argument(
         "--browser",
         choices=("chrome", "msedge", "chromium"),
         default=DEFAULT_BROWSER,

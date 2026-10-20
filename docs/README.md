@@ -9,6 +9,11 @@ khảo. Code và test ở root hiện chỉ dành cho Haunted Room.
 
 ## Quick start
 
+Dịch chữ server CN sang tiếng Việt: xem [hướng dẫn translator](TRANSLATOR.md).
+Thêm `--translate` vào lệnh runner và dùng `uv run --extra translator`, ví dụ:
+`uv run --extra translator python tools/hauntedroom_runner.py --dev-reload --profile .tmp/pcn --cn --translate`.
+Dịch tự bật trong game; `Shift+D` để bật/tắt.
+
 Yêu cầu:
 
 - Python `>=3.9`.

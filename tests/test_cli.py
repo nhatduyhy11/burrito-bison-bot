@@ -42,3 +42,16 @@ def test_prepare_runner_keeps_explicit_url_override(tmp_path):
         args, _ = prepare_runner()
 
     assert args.url == custom_url
+
+
+def test_cn_runner_accepts_translation_with_existing_profile_and_reload(tmp_path):
+    profile = tmp_path / "pcn"
+    with patch.object(
+        sys, "argv",
+        ["hauntedroom", "--profile", str(profile), "--cn", "--dev-reload", "--translate"],
+    ):
+        args, actual_profile = prepare_runner()
+    assert args.translate
+    assert args.dev_reload
+    assert args.url == CN_URL
+    assert actual_profile == profile

@@ -179,6 +179,7 @@ async def save_screenshot(
             path=str(screenshot_path),
             type="png",
             scale="css",
+            style="#__game_translator { visibility: hidden !important; }",
         )
     except Exception as error:
         print(f"Failed to save {description.lower()} screenshot: {error}", flush=True)

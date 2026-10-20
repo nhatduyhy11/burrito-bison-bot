@@ -10,6 +10,14 @@ dependencies = [
     "playwright>=1.60.0",
 ]
 
+[project.optional-dependencies]
+translator = [
+    "ctranslate2>=4.8.3",
+    "opencc-python-reimplemented>=0.1.7",
+    "rapidocr-onnxruntime>=1.4.4",
+    "sentencepiece>=0.2.2",
+]
+
 [tool.uv]
 package = false
 

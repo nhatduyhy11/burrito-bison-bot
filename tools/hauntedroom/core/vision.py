@@ -37,7 +37,10 @@ class ColorComponentMatch:
 
 
 async def capture_page_grayscale(page) -> np.ndarray:
-    screenshot = await page.screenshot(type="png", scale="css")
+    screenshot = await page.screenshot(
+        type="png", scale="css",
+        style="#__game_translator { visibility: hidden !important; }",
+    )
     encoded = np.frombuffer(screenshot, dtype=np.uint8)
     image = cv2.imdecode(encoded, cv2.IMREAD_GRAYSCALE)
     if image is None:
@@ -46,7 +49,10 @@ async def capture_page_grayscale(page) -> np.ndarray:
 
 
 async def capture_page_bgr(page) -> np.ndarray:
-    screenshot = await page.screenshot(type="png", scale="css")
+    screenshot = await page.screenshot(
+        type="png", scale="css",
+        style="#__game_translator { visibility: hidden !important; }",
+    )
     encoded = np.frombuffer(screenshot, dtype=np.uint8)
     image = cv2.imdecode(encoded, cv2.IMREAD_COLOR)
     if image is None:
