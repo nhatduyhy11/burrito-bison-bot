@@ -29,7 +29,12 @@ hành vi (popup guard, retry navigation) và session cũ vẫn còn hiệu lực
 
 ## Bước 2: Probe mù — chỉ login, chưa bấm gì
 
-Chạy: `socket_capture.py --profile .tmp/m535 --settle 12 --step shot:... --step sleep:...`
+Chạy:
+
+```bash
+uv run python tools/socket_log/socket_capture.py --profile .tmp/m535 --settle 12 --step shot:... --step sleep:...
+```
+
 → Xem screenshot các mốc để biết trạng thái sau login (có popup AFK không, đã vào home chưa).
 
 Kết quả ngay lập tức:

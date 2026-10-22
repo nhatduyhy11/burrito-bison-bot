@@ -66,6 +66,12 @@ vào `.tmp/mine-events/mine-events.jsonl` (dedupe theo id qua restart), `--webho
 alert, tự reload page khi game socket đứt (socket handshake `:19005/` đóng thường xuyên là
 hành vi bình thường — không được tính là mất kết nối).
 
+```bash
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --duration 300   # tự dừng sau 5 phút
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --webhook http://localhost:8000/mine-alerts
+```
+
 ## Đang mở (open items)
 
 - [ ] Chạy listener dài (~1 giờ+) để bắt event phát sinh real-time và xác nhận mọi loại

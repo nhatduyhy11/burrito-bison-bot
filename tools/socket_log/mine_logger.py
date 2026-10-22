@@ -1,6 +1,8 @@
 """Live mine-event logger: keep a game session open and log mine changes as JSONL.
 
 Long-running counterpart of the POC pair (socket_capture.py + socket_decode.py).
+One instance per profile: a lock file refuses a second run, and SIGTERM/SIGHUP
+(closing the terminal) stop it cleanly just like Ctrl+C.
 Listens on every WebSocket frame, decodes broadcast pushes (module 0x13 cmd
 0x0004) live, filters guild-mine events (type 150) and appends new ones to a
 JSONL file, deduplicating by event id across pushes and restarts.
@@ -15,7 +17,9 @@ import argparse
 import asyncio
 import datetime
 import json
+import os
 import pathlib
+import signal
 import struct
 import sys
 from typing import Optional
@@ -36,6 +40,47 @@ BROADCAST_MODULE = 0x13
 BROADCAST_PUSH_CMD = 0x0004
 MINE_EVENT_TYPE = 150
 DEFAULT_OUT = pathlib.Path(".tmp/mine-events/mine-events.jsonl")
+LOCK_FILENAME = ".mine_logger.lock"
+
+
+def acquire_profile_lock(profile_dir: pathlib.Path) -> bool:
+    """Refuse to start when another live logger process still holds the profile."""
+    lock_path = profile_dir / LOCK_FILENAME
+    profile_dir.mkdir(parents=True, exist_ok=True)
+    if lock_path.exists():
+        try:
+            pid = int(lock_path.read_text().strip())
+            os.kill(pid, 0)  # liveness probe; raises when the PID is gone
+        except (ValueError, ProcessLookupError):
+            pass  # corrupt or stale lock from a run that died without cleanup
+        else:
+            print(
+                f"[logger] profile {profile_dir} is already held by PID {pid}; exiting.",
+                flush=True,
+            )
+            return False
+    lock_path.write_text(str(os.getpid()))
+    return True
+
+
+def release_profile_lock(profile_dir: pathlib.Path) -> None:
+    """Drop the lock file only if it still belongs to this process."""
+    lock_path = profile_dir / LOCK_FILENAME
+    try:
+        if lock_path.read_text().strip() == str(os.getpid()):
+            lock_path.unlink()
+    except OSError:
+        pass
+
+
+def install_stop_signals(stop: asyncio.Event) -> None:
+    """Make SIGTERM/SIGHUP (kill, terminal close) stop the logger like Ctrl+C."""
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGTERM, signal.SIGHUP):
+        try:
+            loop.add_signal_handler(sig, stop.set)
+        except NotImplementedError:
+            pass  # platform without add_signal_handler; Ctrl+C still stops the logger
 
 
 def parse_mine_event(payload: bytes) -> list[dict]:
@@ -172,11 +217,16 @@ async def main() -> None:
     parser.add_argument("--duration", type=float, default=None, help="Seconds to run (default: forever)")
     args = parser.parse_args()
 
+    profile_dir = pathlib.Path(args.profile)
+    if not acquire_profile_lock(profile_dir):
+        raise SystemExit(1)
     sink = MineEventSink(args.out, args.webhook)
+    stop = asyncio.Event()
+    install_stop_signals(stop)
 
     async with async_playwright() as playwright:
         context = await playwright.chromium.launch_persistent_context(
-            user_data_dir=str(pathlib.Path(args.profile)),
+            user_data_dir=str(profile_dir),
             channel="chrome",
             headless=False,
             viewport={"width": 640, "height": 720},
@@ -204,13 +254,17 @@ async def main() -> None:
 
             if args.duration:
                 print(f"[logger] running for {args.duration}s...")
-                await asyncio.sleep(args.duration)
+                try:
+                    await asyncio.wait_for(stop.wait(), timeout=args.duration)
+                except asyncio.TimeoutError:
+                    pass
             else:
-                print("[logger] running forever — Ctrl+C to stop")
-                await asyncio.Event().wait()
+                print("[logger] running forever — Ctrl+C or closing the terminal stops it")
+                await stop.wait()
             guard_task.cancel()
         finally:
             await context.close()
+            release_profile_lock(profile_dir)
     print(f"[logger] done — {sink.new_count} new events -> {args.out}")
 
 
