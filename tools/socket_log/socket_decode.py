@@ -136,6 +136,19 @@ def read_packed_varints(buf: bytes) -> list[int]:
     return values
 
 
+def encode_varint(value: int) -> bytes:
+    """Inverse of read_varint — used to build injected request frames."""
+    out = bytearray()
+    while True:
+        byte = value & 0x7F
+        value >>= 7
+        if value:
+            out.append(byte | 0x80)
+        else:
+            out.append(byte)
+            return bytes(out)
+
+
 def extract_mine_state(capture_dir: pathlib.Path) -> dict:
     """Dump the full guild-mine state (module 0x48) from a capture dir.
 

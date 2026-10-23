@@ -30,12 +30,18 @@ response = [len:2 BE][seq:1][01][01][module:1][cmd:2 BE][status:1=00][protobuf b
 | Module | Cmd | Ý nghĩa |
 | --- | --- | --- |
 | 0x02 | 0x0008 | Heartbeat / time sync |
-| 0x13 | 0x0004 | **Push broadcast feed** (chat + system events), nhiều frame ~34KB lúc login |
-| 0x13 | 0x0007 | **Guild chat** (message: sender brief, text, ts, `{"type":2}`) — xuất hiện khi mở guild screen |
+| 0x13 | 0x0004 | **Replay broadcast feed lúc login** (chat + system + mine events), nhiều frame ~34KB |
+| 0x13 | 0x0007 | **Kênh live push**: guild chat **và** event mỏ real-time (entry giống 0x0004: f7=150, f9=JSON args, f3=ts UTC) — mine_logger cần nghe kênh này |
 | 0x1f | 0x000a→0x000b | Capture 2026-10-23: response 0x000b là **visit log** (id, id, ts, JSON `{"rKey","pKey"}`, blob chứa `[6600,6000]`) — KHÔNG phải player brief như nghi ban đầu |
 | 0x0d | 0x001f→0x0020 | **Player brief** — request `f1`=packed player ids; response: f1=id, f2=tên, f4=power?, f33=avatar id, f11=guild nhúng (tên + mô tả), f15=server. **Đây là nguồn id→tên** |
+| 0x0d | 0x0019→0x001a | **Player full profile** (bấm vào 1 player/máy): heroes, items, power… popup "Mỏ Quặng LvX" |
+| 0x24 | 0x0035→0x0036 | **Guild brief** — request f1=guild id (dạng f4 của tile: 5170010…); response f3={f2=tên, f11=server, f10/f3=số thành viên…}. Dùng khi mở minimap overview |
+| 0x24 | 0x0033→0x0034 | **Guild detail**: f2=tên, f14=mô tả, f9/f8=id chủ guild, f13/f16=power, f26=log {thành viên, ts gia nhập}, f24=cửa sổ season guild, f1=id dạng f4 |
 | 0x48 | 0x0001→0x0002 | **Full state khu mỏ** (summary + 65 tile, xem mục riêng) |
+| 0x48 | 0x0006→0x0007 | **Chi tiết 4 điểm của 1 mỏ** (request packed tile id, bắn lúc click vào mỏ): tile như login + slot `f5` = chuỗi phiên đào 60 phút |
+| 0x48 | 0x0008 | **Live push delta tile** (không có request) — tile cập nhật realtime khi có người vào/ra slot |
 | 0x48 | 0x0013→0x0014 | Season Khai Thác Guild: start/end + packed list season tile id (513–544) |
+| 0x48 | 0x0015→0x0016 | Request cùng ids với 0x0006 nhưng response **RỖNG (11B)** — no-op/legacy |
 | 0x48 | 0x001a→0x001b | Feed lịch sử mỏ: entry = {f2: JSON string, f1: type} — type 4 `[player_id, pos, action, ts]` (action 9001/9002/**9003**), type 1 `[7057, 10, ts]` |
 
 ## Lịch sử khu mỏ (mục tiêu POC — ĐÃ XÁC MINH)
@@ -74,6 +80,11 @@ uv run python tools/socket_log/socket_decode.py .tmp/socket-capture/run-mine1 mi
 - **Click nút Log:** `0x0d/0x001f` (packed = đúng các player id trong history feed) → `0x0020`
   briefs để render tên. Lưu ý: kết luận cũ "bấm Log không sinh request nào" chỉ đúng khi
   popup Lịch Sử đang TRỐNG (POC 2026-10-22); khi có entry, popup fetch brief theo id.
+- **Click vào 1 mỏ (zoomin):** `0x48/0x0006→0x0007` (chi tiết 4 điểm, slot mang chuỗi phiên đào),
+  `0x48/0x0015→0x0016` (rỗng), và brief `59 id` = toàn bộ người của mỏ — **tên không lazy theo điểm**
+  (chi tiết: `docs/MINE_STRUCTURE.md` mục 5).
+- **Sự kiện live chạy trên `0x13/0x0007`** — `0x0004` chỉ là replay lúc login; kèm theo đó server
+  đẩy delta tile qua `0x48/0x0008`. ts trong event là UTC thật (đối chiếu wall-clock lệch <1s).
 - Cross-check UI ↔ protocol: countdown "Mua giải tổng kết sau 60:04:31" trên màn mỏ khớp
   season end `2026-10-25 16:55Z` trong `0x48/0x0014` (capture lúc ~04:51Z).
 
@@ -81,25 +92,29 @@ uv run python tools/socket_log/socket_decode.py .tmp/socket-capture/run-mine1 mi
 (513–544 = 32 giá trị liên tiếp; mã hóa chưa chốt, khả năng map*100+tile).
 
 **Map state (`0x48/0x0002`, ~11.5KB):** top-level f1, f2=repeated tile, f3=summary.
-Summary: f1=7057 (pos đang focus / "Vị trí của tôi"?), f2=10, f4=4500, f8=51520,
-f9={30000015, 3, 525}, f6/f7/f10 = timestamp (f6 ≈ thời điểm login).
+Summary: f1=7057 (pos acc đang đứng), f2=10 (**số slot của acc** — khớp history type 1 `[7057, 10, ts]`),
+f4=4500, f8=51520, f9={30000015, 3, 525}, f6/f7/f10 = timestamp (f6 ≈ thời điểm login).
 
-Mỗi tile (65 tile, 7 map: 1×9, 2×20, 3×16, 4×8, 5×4, 6×4, 7×4; pos = map*1000+tile):
+Mỗi tile — **65 tile = 64 điểm mỏ + 1 mỏ phẳng sector 1; 1084 slot = 64×15 + 124**
+(cấu trúc world chi tiết xem `docs/MINE_STRUCTURE.md`):
 
 | Field | Ý nghĩa |
 | --- | --- |
-| f1 | pos = map*1000 + tile (vd 7057 = map 7, tile 57) |
-| f2 | 1–7 (chưa map — nghi loại/tầng mỏ) |
-| f3 | 1–9 (chưa map) |
-| f4 | 0 hoặc dạng 513xxxx/5170010 (nghi liên quan season tile id) |
+| f1 | pos = **id tĩnh của tile trong bảng server** (KHÔNG phải map*1000+tile — dãy id 1058–1065 thuộc sector 4/5); sector đọc từ f2 |
+| f2 | **sector 1–7** [x đã chốt 2026-10-23] |
+| f3 | **level điểm mỏ 1–9** [x đã chốt] — điểm 4 của mỗi mỏ = level trên của title sector |
+| f4 | 0 hoặc `5XX00YY` (5XX ∈ 513–544 trùng season id, YY ∈ 4–12) — nghi node Mỏ Quặng + lượng còn lại |
 | f7 | repeated `{f1: action, f2: count}` — đếm event theo action trên tile trong season |
-| f5 | repeated slot: f1=player id, f2=số slot (1–124 tùy tile, hoặc 9001/9002/9003), f5=packed ts |
+| f5 | repeated slot: f1=player id (0 = trống), f2=số slot (điểm thường: 1–12 + 9001/9002/9003; sector 1: 1–124), f5=packed ts |
 | f5.f5 | timestamps chỉ xuất hiện khi slot **đang được đào**: [start] hoặc [start, end] (thấy cặp cách đúng 60 phút) |
+| f6 | `{1: 9001, 2: 0 hoặc ts}` trên 1 số điểm — nghi event chiếm điểm gần nhất |
+| f8/f9 | hiếm; khi có f8 − f9 = đúng 3600s — cặp cửa sổ 1 giờ, chưa chốt |
+
+State **không chứa tên player/guild** — chỉ có id; tên lấy qua `0x0d/0x001f→0x0020`.
 
 Đối chiếu chéo đã xác minh: tile 6053 chứa đúng 3 player id như feed lịch sử `0x001b`;
-player id trong slot đang đào của tile 7054 khớp visit log `0x1f/0x000b`.
-Player id khoảng 517–519xxxxx chiếm phần lớn slot (id đều/đẹp — nghi "Máy Đào" NPC);
-id 52x–53xxxxxx mới giống player thật.
+acc chính (HuAsura, id 51921435, guild HUNTERS) nằm ở tile 7057 slot 10 — khớp UI
+"sector 7, mỏ Mỏ Huyền Quang, điểm 4 (lv9)".
 
 Trích xuất JSON đầy đủ:
 
@@ -107,12 +122,42 @@ Trích xuất JSON đầy đủ:
 uv run python tools/socket_log/socket_decode.py <capture_dir> mine-state > mine-state.json
 ```
 
-## Listener chạy dài hạn (ĐÃ LÀM — 2026-10-22)
+## Listener chạy dài hạn (ĐÃ LÀM — 2026-10-22; nâng cấp live push 2026-10-23)
 
-`tools/socket_log/mine_logger.py`: giữ session mở vô hạn, decode live broadcast push, ghi event mới
-vào `.tmp/mine-events/mine-events.jsonl` (dedupe theo id qua restart), `--webhook` để đẩy
-alert, tự reload page khi game socket đứt (socket handshake `:19005/` đóng thường xuyên là
-hành vi bình thường — không được tính là mất kết nối).
+`tools/socket_log/mine_logger.py`: giữ session mở vô hạn, tự reload page khi game socket đứt
+(socket handshake `:19005/` đóng thường xuyên là hành vi bình thường — không được tính là mất
+kết nối), `--webhook` đẩy alert. Ghi **5 stream raw** dưới `.tmp/mine-events/`:
+
+| File | Nội dung |
+| --- | --- |
+| `mine-events.jsonl` | broadcast type 150 từ `0x13/0x0004` (replay) + `0x13/0x0007` (live), dedupe id qua restart |
+| `mine-state.jsonl` | snapshot map lúc login `0x48/0x0002` — **server cũng đẩy 0x0002 một phần giữa session**, 1 dòng/tile |
+| `mine-tiles.jsonl` | delta tile `0x48/0x0008` (`--no-tiles` để tắt) |
+| `player-briefs.jsonl` | mọi `0x0d/0x0020` client nhận: id, tên, power, server, **f11 = {id guild, tên guild}** |
+| `guild-briefs.jsonl` | `0x24/0x0036` — response không echo id, map qua **seq** của request `0x24/0x0035` |
+
+**Fetch tên chủ động (mặc định bật, `--no-fetch-names` để tắt):** loggerinject frame
+`0x0d/0x001f` (packed 60 id/lần) thẳng vào game socket qua JS (`WebSocket.prototype.send`
+hook bắt instance, `page.add_init_script` **bậc page** — script bậc context KHÔNG chạy trên
+page có sẵn của persistent profile), rồi đọc response `0x0020` như bình thường. Client không
+bị ảnh hưởng (đã chạy 180s sạch). Đã verify 2026-10-23: 195/195 người trong mỏ có tên,
+không ai chiếm >1 slot (live + offline đều xác nhận quy tắc 1 user = 1 slot).
+
+**Bước tổng hợp (parse lần 2, tách riêng):** `tools/socket_log/mine_report.py` đọc 5 stream raw →
+rebuild world mới nhất (snapshot + delta theo `logged_at`, snapshot ≥32 tile mới reset map) →
+nhóm tile: trong sector sort theo pos, **cắt chunk 4 = 1 mỏ (điểm 1–4)** — sector là dãy id liên
+tiếp nên KHÔNG tách mỏ bằng gap id; pattern level (3 điểm dưới + 1 điểm trên) xác nhận đúng
+16/16 mỏ. Xuất `mine-report.json` + cây sector → mỏ → điểm → user (id, tên, guild, claim/unclaimed,
+slot) kèm cảnh báo (trùng slot, thiếu tên, mỏ thiếu điểm, level pattern lạ). Sector 1 bỏ qua.
+
+```bash
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --snapshot   # 1 vòng snapshot + tên (~20-25s), tự thoát
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --duration 300   # tự dừng sau 5 phút
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --snapshot --dir .tmp/mine-events-$(date +%Y%m%d-%H%M%S)  # một-off vào folder timestamp
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --webhook http://localhost:8000/mine-alerts
+uv run python tools/socket_log/mine_report.py --dir .tmp/mine-events   # tổng hợp 1 folder -> mine-report.json
+```
 
 ```bash
 uv run python tools/socket_log/mine_logger.py --profile .tmp/m535
@@ -122,13 +167,15 @@ uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --webhook http
 
 ## Đang mở (open items)
 
-- [ ] Chạy listener dài (~1 giờ+) để bắt event phát sinh real-time và xác nhận mọi loại
-  thay đổi của mỏ đều đi qua broadcast type 150 (đã thấy action `9002` trong login push,
-  chưa thấy live).
+- [ ] Chạy listener dài (~1 giờ+, logger đã nghe `0x13/0x0007`) để xác nhận mọi loại thay đổi
+  của mỏ đều đi qua broadcast type 150 (live đã thấy: action `9001` rồi `12` cách 6s trên
+  `0x13/0x0007`).
 - [ ] Map `action` 1–12, `9001/9002/9003` và template 28000 (đối chiếu localization trong JS bundle nếu cần).
-- [ ] Map tile f2 (1–7), f3 (1–9), f4 (513xxxx) và các slot 9001/9002/9003 trong map state 0x48.
-- [ ] Giải nghĩa history entry type 1 `[7057, 10, ts]` (nghi event của bản thân/guild ở tile
-  đang chiếm; số lượng không khớp 1:1 với popup Lịch Sử) và summary f9={30000015, 3, 525}.
+- [ ] Giải f6, f8/f9, slot 9001–9003 trong map state — xem open items cuối `docs/MINE_STRUCTURE.md`
+  (nghi vấn "lazy name" + owner guild đã giải xong 2026-10-23: tên fetch nguyên mỏ lúc zoomin;
+  **f4 = id guild chủ điểm**, tra tên qua `0x24/0x0035→0x0036`).
+- [ ] Giải nghĩa history entry type 1 `[7057, 10, ts]` (nghi event về slot của chính mình —
+  pos + slot khớp summary f1/f2; số lượng không khớp 1:1 với popup Lịch Sử) và summary f9={30000015, 3, 525}.
 - [x] id→tên player: request `0x0d/0x001f` với packed ids → `0x0020` trả tên (đã xác minh
   2026-10-23: 6 id trong history feed → HaHuu, UnVila, AESaa, AEDungg, AEBon, OLNiet).
 - [ ] Kiểm tra server CN (`hauntheroesweb.acenetgame.com`) có cùng framing/module không.
