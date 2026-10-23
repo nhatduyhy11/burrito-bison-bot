@@ -28,12 +28,12 @@ Màn "Khai Thác Guild" là bản đồ cuộn dọc, sector 1 (đáy) → secto
 
 ## 2. Điểm mỏ (tile) = 15 slot
 
-Mỗi điểm là 1 "sàn Máy Đào Chính" với 15 slot:
+Mỗi điểm là 1 "sàn Máy Đào Chính" với 15 slot = 12 slot thường + 3 slot claimer:
 
 | Slot | Số lượng | UI (view zoomin) |
 | --- | --- | --- |
 | 1–12 | 12 | Máy đào nhỏ có **tên player** đứng cạnh (zoomin hiện đủ 12 tên ở 7057) |
-| 9001 / 9002 / 9003 | 3 | Slot đặc biệt, vẫn chứa player id trong state nhưng **không label tên** — nghi máy đào chính/phụ |
+| 9001 / 9002 / 9003 | 3 | **[x CHỐT 2026-10-23] slot claimer của điểm** ("Máy Đào Chính"): vẫn chứa player id trong state nhưng **không label tên**. Rule game: 3 acc này **phải cùng 1 guild** và guild đó **= guild đang claim điểm (`f4`)** — bot nhận diện guild chủ điểm ngay từ state, không cần request `0x24/0x0035`; lệch guild = data lỗi, `mine_report.py` đưa vào mục `errors` |
 
 - Sector 1 là ngoại lệ: 1 tile, slot 1–124, không có slot đặc biệt.
 - Slot có player id = 0 là slot trống. Slot **đang đào** mang cặp timestamp ~60 phút (`f5`).
@@ -83,6 +83,9 @@ Mỗi điểm là 1 "sàn Máy Đào Chính" với 15 slot:
 - Tên player của cả mỏ fetch **một lần lúc zoomin**, không lazy theo điểm — nhưng nếu chỉ có login state
   (không click) thì KHÔNG có tên nào; bot phải tự bắn `0x0d/0x001f` theo id —
   `mine_logger.py` đã làm sẵn (inject frame, 60 id/request, verify 195/195 người có tên 2026-10-23).
+- **3 slot 9001–9003 của mỗi điểm = bộ claimer của guild chủ điểm**: 3 acc cùng 1 guild (rule game),
+  guild đó = guild claim `f4` — xác minh được người claim ngay từ state; `mine_report.py` đối chiếu
+  cả 2 phía (đồng bộ giữa 3 claimer, và giữa claimer ↔ `f4`), vi phạm thì đưa vào `errors`.
 - State mỏ tự cập nhật realtime qua `0x48/0x0008` + `0x48/0x0002` một phần — giữ session là có state tươi.
 - **Quy tắc đã xác minh trên data:** 1 user chỉ chiếm đúng 1 slot (195 người = 195 slot, live check);
   mỗi điểm có 0 hoặc 1 guild claim (`f4`), điểm unclaimed vẫn có user ngồi bình thường (40/64 điểm
@@ -96,7 +99,14 @@ Mỗi điểm là 1 "sàn Máy Đào Chính" với 15 slot:
   điểm 1–4 → user (id/tên/guild) + claim/unclaimed + cảnh báo. Output `mine-report.json` + cây text.
   Lưu ý: **mỏ được cắt theo chunk 4 trong dãy id sort tăng dần của sector** (sector là dãy liên tục),
   điểm 4 luôn là tile có id lớn nhất + level trên — khớp 16/16 mỏ.
+- [x] Shape report (chốt lần 2, 2026-10-23): `points` là **dict key `Lv{level}_{n}`** (n đếm trong
+  level: 3 điểm Lv dưới + 1 điểm Lv trên — rule: **id cao nhất của submine = level trên của nó**),
+  mỗi point giữ tile id tĩnh ở field `id`; occupant tách `claimer` (slot 9001–9003) / `users`
+  (slot 1–12); thêm `errors` (vi phạm rule claimer) cạnh `warnings`; tên sector = nhãn level
+  ("Lv2-Lv3") thay tên in-game; mỏ = `sub` 1..n trong sector. f3 lệch mức level suy ra → warning.
 - [ ] Map `action` 1–12, `9001/9002/9003` (9001 thấy khi vào điểm; 12 thấy 6s sau — đối chiếu localization).
-- [ ] Giải `f6`, `f8/f9`, vai trò chính xác slot 9001–9003 (nghi Máy Đào Chính — vẫn có player id), lô 11 id thứ 2 lúc zoomin, summary f9={30000015, 3, 140}, history type 1 `[7057, 10, ts]`.
+- [x] Vai trò slot 9001–9003: **[x CHỐT 2026-10-23] bộ claimer của guild chủ điểm** — xem mục 2/5
+  (3 acc cùng guild = guild claim `f4`; report tự check rule này).
+- [ ] Giải `f6`, `f8/f9`, lô 11 id thứ 2 lúc zoomin, summary f9={30000015, 3, 140}, history type 1 `[7057, 10, ts]`.
 - [ ] Chạy listener dài (~1 giờ+) xác nhận mọi loại thay đổi mỏ đều qua broadcast type 150.
 - [ ] ts mốc 05:23:35 "tương lai" ở run-050330 — kiểm tra lại cờ [start, end] vs window đặt trước.

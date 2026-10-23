@@ -112,6 +112,11 @@ Mỗi tile — **65 tile = 64 điểm mỏ + 1 mỏ phẳng sector 1; 1084 slot 
 
 State **không chứa tên player/guild** — chỉ có id; tên lấy qua `0x0d/0x001f→0x0020`.
 
+Slot 9001–9003 **[x chốt 2026-10-23] = bộ claimer của guild chủ điểm**: 3 acc **cùng 1 guild**
+(rule game) và guild đó = guild claim `f4` của tile — nhận diện người claim ngay từ state mà không
+cần `0x24/0x0035`. `mine_report.py` đối chiếu cả 2 phía, lệch thì đưa vào `errors` (chi tiết
+`docs/MINE_STRUCTURE.md` mục 2).
+
 Đối chiếu chéo đã xác minh: tile 6053 chứa đúng 3 player id như feed lịch sử `0x001b`;
 acc chính (HuAsura, id 51921435, guild HUNTERS) nằm ở tile 7057 slot 10 — khớp UI
 "sector 7, mỏ Mỏ Huyền Quang, điểm 4 (lv9)".
@@ -145,10 +150,13 @@ không ai chiếm >1 slot (live + offline đều xác nhận quy tắc 1 user = 
 
 **Bước tổng hợp (parse lần 2, tách riêng):** `tools/socket_log/mine_report.py` đọc 5 stream raw →
 rebuild world mới nhất (snapshot + delta theo `logged_at`, snapshot ≥32 tile mới reset map) →
-nhóm tile: trong sector sort theo pos, **cắt chunk 4 = 1 mỏ (điểm 1–4)** — sector là dãy id liên
-tiếp nên KHÔNG tách mỏ bằng gap id; pattern level (3 điểm dưới + 1 điểm trên) xác nhận đúng
-16/16 mỏ. Xuất `mine-report.json` + cây sector → mỏ → điểm → user (id, tên, guild, claim/unclaimed,
-slot) kèm cảnh báo (trùng slot, thiếu tên, mỏ thiếu điểm, level pattern lạ). Sector 1 bỏ qua.
+nhóm tile: trong sector sort theo pos, **cắt chunk 4 = 1 mỏ phụ (`sub` 1..n, điểm 1–4)** — sector là
+dãy id liên tiếp nên KHÔNG tách mỏ bằng gap id; **id cao nhất của mỏ phụ = level trên**, 3 điểm còn
+lại level dưới — khớp 16/16 mỏ. Xuất `mine-report.json` + cây sector → mỏ phụ → điểm (**dict key
+`Lv{level}_{n}`** — n đếm trong level, point giữ tile id tĩnh ở field `id`) → occupant
+tách `claimer` (slot 9001–9003, bộ claimer của guild chủ điểm) + `users` (slot 1–12), kèm `warnings`
+(trùng slot, thiếu tên, mỏ thiếu điểm, f3 lệch level suy ra) và `errors` (3 claimer lệch guild nhau hoặc
+lệch guild claim `f4`). Tên sector = nhãn level ("Lv2-Lv3"), không phải tên in-game. Sector 1 bỏ qua.
 
 ```bash
 uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --snapshot   # 1 vòng snapshot + tên (~20-25s), tự thoát
@@ -171,9 +179,10 @@ uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --webhook http
   của mỏ đều đi qua broadcast type 150 (live đã thấy: action `9001` rồi `12` cách 6s trên
   `0x13/0x0007`).
 - [ ] Map `action` 1–12, `9001/9002/9003` và template 28000 (đối chiếu localization trong JS bundle nếu cần).
-- [ ] Giải f6, f8/f9, slot 9001–9003 trong map state — xem open items cuối `docs/MINE_STRUCTURE.md`
-  (nghi vấn "lazy name" + owner guild đã giải xong 2026-10-23: tên fetch nguyên mỏ lúc zoomin;
-  **f4 = id guild chủ điểm**, tra tên qua `0x24/0x0035→0x0036`).
+- [ ] Giải f6, f8/f9 — xem open items cuối `docs/MINE_STRUCTURE.md`
+  (nghi vấn "lazy name" + owner guild + slot 9001–9003 đã giải xong 2026-10-23: tên fetch nguyên mỏ
+  lúc zoomin; **f4 = id guild chủ điểm**, tra tên qua `0x24/0x0035→0x0036`;
+  **slot 9001–9003 = bộ claimer của guild chủ điểm** — 3 acc cùng guild, trùng guild claim `f4`).
 - [ ] Giải nghĩa history entry type 1 `[7057, 10, ts]` (nghi event về slot của chính mình —
   pos + slot khớp summary f1/f2; số lượng không khớp 1:1 với popup Lịch Sử) và summary f9={30000015, 3, 525}.
 - [x] id→tên player: request `0x0d/0x001f` với packed ids → `0x0020` trả tên (đã xác minh
