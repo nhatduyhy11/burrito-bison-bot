@@ -9,8 +9,9 @@ Reads from --dir (default .tmp/mine-events, as written by mine_logger.py):
 Rebuilds the latest world (snapshot + deltas in logged_at order), groups tiles into
 submines of 4 consecutive static ids per sector, and writes mine-report.json plus a
 readable tree on stdout. Sector 1 (the flat 124-slot tile) is skipped. Points are
-keyed "Lv{level}_{n}" (n counts within the level: 3 lower-level + 1 upper-level point
-per submine — the highest static id of a submine is its upper level); the point keeps
+keyed "Lv{level}_{position}" — positions follow a submine's 2x2 point layout:
+top_left_1/top_right_2/bot_left_3 at the lower level and bot_right at the upper one
+(the highest static id of a submine is its bot_right point); the point keeps
 its static tile id as `id`. Occupants split into `claimer` (slots 9001-9003 — the
 3 accounts of the guild claiming the point; game rule: all 3 share one guild, which
 is the point's `claim` guild) and `users` (slots 1-12). Rule violations land in
@@ -46,6 +47,9 @@ SECTOR_NAMES = {
     6: "Lv7-Lv8",
     7: "Lv8-Lv9",
 }
+# Point layout inside one submine (the 4-circle overview popup): the 3 lower-level
+# points sit top-left/top-right/bottom-left, the highest id is bottom-right (upper level).
+POINT_POS = ("top_left_1", "top_right_2", "bot_left_3")
 STATE_FILE = "mine-state.jsonl"
 TILE_FILE = "mine-tiles.jsonl"
 BRIEF_FILE = "player-briefs.jsonl"
@@ -134,13 +138,16 @@ def build_report(directory: pathlib.Path) -> dict:
                 warnings.append(
                     f"s{sector}/sub{sub_no}: expected 4 consecutive tiles, got {len(run)}: {[t['pos'] for t in run]}"
                 )
-            level_counts: dict[int, int] = collections.Counter()
             points_out: dict[str, dict] = {}
             for idx, tile in enumerate(run):
-                # chốt trên data: id cao nhất của submine = điểm level trên, 3 điểm còn lại level dưới
-                level = high if idx == len(run) - 1 else low
-                level_counts[level] += 1
-                key = f"Lv{level}_{level_counts[level]}"
+                # chốt trên data: id cao nhất của submine = điểm bot_right (level trên),
+                # 3 điểm còn lại level dưới theo layout 2x2 top_left/top_right/bot_left
+                if idx == len(run) - 1:
+                    level, pos = high, "bot_right"
+                else:
+                    level = low
+                    pos = POINT_POS[idx] if idx < len(POINT_POS) else f"extra_{idx + 1}"
+                key = f"Lv{level}_{pos}"
                 if (tile.get("level") or 0) != level:
                     warnings.append(
                         f"s{sector}/sub{sub_no}/{key}: tile f3 level {tile.get('level')} "

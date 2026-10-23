@@ -32,7 +32,9 @@ response = [len:2 BE][seq:1][01][01][module:1][cmd:2 BE][status:1=00][protobuf b
 | 0x02 | 0x0008 | Heartbeat / time sync |
 | 0x13 | 0x0004 | **Replay broadcast feed lúc login** (chat + system + mine events), nhiều frame ~34KB |
 | 0x13 | 0x0007 | **Kênh live push**: guild chat **và** event mỏ real-time (entry giống 0x0004: f7=150, f9=JSON args, f3=ts UTC) — mine_logger cần nghe kênh này |
-| 0x1f | 0x000a→0x000b | Capture 2026-10-23: response 0x000b là **visit log** (id, id, ts, JSON `{"rKey","pKey"}`, blob chứa `[6600,6000]`) — KHÔNG phải player brief như nghi ban đầu |
+| 0x1f | 0x0007 | **Leaderboard PvP mỏ** (push lúc login): entry = {f2: rank, f3: score, f1: profile đầy đủ nhúng (power, skins, avatar, blob config f17)} |
+| 0x1f | 0x000a→0x000b | **Lịch sử đánh nhau ở mỏ** (trước nay nhầm "visit log"): entry = {f1: attacker, f2: defender, f3: ts, f5: battle id, f4: **bên thắng (1=attacker, 2=defender)**, f7/f6: JSON `{"rKey","pKey"}` rating attacker/defender, f9: profile defender nhúng}. Verify: HuAsura đánh OLNaji 2 lần đều f4=2 (thua) |
+| 0x65 | 0x0009, 0x000c | Capture 2026-10-23: 0x9 = summary lượt đánh (nhóm 3 fighter {f1: id, f3: cờ thắng, f2: ?} + f3 = id winner); 0xc = list guild {f4: id chủ guild, f3 repeated: {f1: id thành viên, f2–f6: stat}} — chưa map đủ |
 | 0x0d | 0x001f→0x0020 | **Player brief** — request `f1`=packed player ids; response: f1=id, f2=tên, f4=power?, f33=avatar id, f11=guild nhúng (tên + mô tả), f15=server. **Đây là nguồn id→tên** |
 | 0x0d | 0x0019→0x001a | **Player full profile** (bấm vào 1 player/máy): heroes, items, power… popup "Mỏ Quặng LvX" |
 | 0x24 | 0x0035→0x0036 | **Guild brief** — request f1=guild id (dạng f4 của tile: 5170010…); response f3={f2=tên, f11=server, f10/f3=số thành viên…}. Dùng khi mở minimap overview |
@@ -153,7 +155,8 @@ rebuild world mới nhất (snapshot + delta theo `logged_at`, snapshot ≥32 ti
 nhóm tile: trong sector sort theo pos, **cắt chunk 4 = 1 mỏ phụ (`sub` 1..n, điểm 1–4)** — sector là
 dãy id liên tiếp nên KHÔNG tách mỏ bằng gap id; **id cao nhất của mỏ phụ = level trên**, 3 điểm còn
 lại level dưới — khớp 16/16 mỏ. Xuất `mine-report.json` + cây sector → mỏ phụ → điểm (**dict key
-`Lv{level}_{n}`** — n đếm trong level, point giữ tile id tĩnh ở field `id`) → occupant
+`Lv{level}_{vị trí}`** — layout 2x2: top_left_1/top_right_2/bot_left_3 = 3 điểm level dưới,
+bot_right = điểm level trên; point giữ tile id tĩnh ở field `id`) → occupant
 tách `claimer` (slot 9001–9003, bộ claimer của guild chủ điểm) + `users` (slot 1–12), kèm `warnings`
 (trùng slot, thiếu tên, mỏ thiếu điểm, f3 lệch level suy ra) và `errors` (3 claimer lệch guild nhau hoặc
 lệch guild claim `f4`). Tên sector = nhãn level ("Lv2-Lv3"), không phải tên in-game. Sector 1 bỏ qua.

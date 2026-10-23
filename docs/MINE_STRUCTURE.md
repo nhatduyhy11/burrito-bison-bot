@@ -58,10 +58,10 @@ Mỗi điểm là 1 "sàn Máy Đào Chính" với 15 slot = 12 slot thường +
 | `f4` | 0 hoặc `5XX00YY` | **[x CHỐT 2026-10-23] id guild chủ điểm**: 5170010=HUNTERS, 5140005=OLYMPUS, 5320011=LxVN — verify bằng cách request chính id này qua `0x24/0x0035` và guild detail `0x24/0x0034` trả `f1=5170010, f2="HUNTERS"`. f4=0 ở sector thấp (chưa/chẳng ai chiếm?) |
 | `f5` | repeated slot | Xem mục 2 |
 | `f6` | `{1: 9001, 2: 0 hoặc ts}` (chỉ 1 số điểm) | Nghi sự kiện **chiếm điểm** gần nhất (action 9001 + thời điểm) |
-| `f7` | repeated `{action: count}` | Đếm event theo action trên điểm trong season |
+| `f7` | repeated `{slot: streak}` | **[x CHỐT 2026-10-23] chuỗi thắng (win streak) theo slot** — key là **slot no** (1–12 + 9001–9003), không phải action như nghi ban đầu. Verify: tile 7055 slot 9001 (OLNaji) = 9 lúc 05:00 → **11 lúc ~10:15, đúng bằng "11 chuỗi thắng" hiện trong game**; slot thường đa số = 1, claimer thắng liên tiếp thì tăng (thắng = đẩy lùi attacker, xem 0x1f/0xb) |
 | `f8`/`f9` | hiếm; khi có thì **f8 − f9 = đúng 3600s** | Cặp cửa sổ 1 giờ (nghi lần chiếm/đào gần nhất) — chưa chốt |
 | slot `f1`/`f2` | player id / số slot | id 0 = trống |
-| slot `f5` | packed ts | **[x sửa 2026-10-23] chuỗi mốc giờ cách đúng 60 phút** = ranh giới các phiên đào trên slot (vd máy 9001: 07:10/08:10/09:10/10:10 = 4 phiên). Chi tiết hơn ở bản `0x48/0x0007` (mục 5) |
+| slot `f5` | packed ts | **[x CHỐT 2026-10-23] chuỗi mốc hết-hạn +60 phút trong TƯƠNG LAI = số tầng debuff (icon nắm đấm trên popup "Lv\|Lv Máy Đào Chính")** — 战神 (7054, slot 9001): 4 mốc 11:04/12:04/13:04/14:04UTC = **4 tầng**, đếm ngược trên UI 16:40 = mốc đầu − now ✓; OLNaji (7055): 1 mốc = 1 tầng, 23:21 ✓; slot không có mốc = không icon. Đọc sai trước đây là "các phiên đào quá khứ" |
 
 - **State `0x48` không chứa tên player/tên guild** — chỉ có id. Tên player qua `0x0d/0x001f→0x0020`,
   tên guild qua `0x24/0x0035→0x0036` (nhận đúng id dạng f4).
@@ -99,14 +99,22 @@ Mỗi điểm là 1 "sàn Máy Đào Chính" với 15 slot = 12 slot thường +
   điểm 1–4 → user (id/tên/guild) + claim/unclaimed + cảnh báo. Output `mine-report.json` + cây text.
   Lưu ý: **mỏ được cắt theo chunk 4 trong dãy id sort tăng dần của sector** (sector là dãy liên tục),
   điểm 4 luôn là tile có id lớn nhất + level trên — khớp 16/16 mỏ.
-- [x] Shape report (chốt lần 2, 2026-10-23): `points` là **dict key `Lv{level}_{n}`** (n đếm trong
-  level: 3 điểm Lv dưới + 1 điểm Lv trên — rule: **id cao nhất của submine = level trên của nó**),
-  mỗi point giữ tile id tĩnh ở field `id`; occupant tách `claimer` (slot 9001–9003) / `users`
-  (slot 1–12); thêm `errors` (vi phạm rule claimer) cạnh `warnings`; tên sector = nhãn level
+- [x] Shape report (chốt lần 2, 2026-10-23): `points` là **dict key `Lv{level}_{vị trí}`** — layout
+  2x2 của mỏ phụ: `top_left_1`/`top_right_2`/`bot_left_3` = 3 điểm level dưới, `bot_right` = điểm
+  level trên (rule: **id cao nhất của submine = bot_right của nó**), mỗi point giữ tile id tĩnh ở
+  field `id`; occupant tách `claimer` (slot 9001–9003) / `users` (slot 1–12);
+  thêm `errors` (vi phạm rule claimer) cạnh `warnings`; tên sector = nhãn level
   ("Lv2-Lv3") thay tên in-game; mỏ = `sub` 1..n trong sector. f3 lệch mức level suy ra → warning.
 - [ ] Map `action` 1–12, `9001/9002/9003` (9001 thấy khi vào điểm; 12 thấy 6s sau — đối chiếu localization).
 - [x] Vai trò slot 9001–9003: **[x CHỐT 2026-10-23] bộ claimer của guild chủ điểm** — xem mục 2/5
   (3 acc cùng guild = guild claim `f4`; report tự check rule này).
 - [ ] Giải `f6`, `f8/f9`, lô 11 id thứ 2 lúc zoomin, summary f9={30000015, 3, 140}, history type 1 `[7057, 10, ts]`.
+- [x] **DEBUFF tầng N + chuỗi thắng trên popup "Lv\|Lv Máy Đào Chính"**: cả hai nằm trong tile
+  state — tầng = **số mốc trong slot `f5`** (mục 4), chuỗi thắng = **`f7` {slot: N}** (mục 4).
+  Popup render từ `0x48/0x0007` + briefs, KHÔNG sinh request riêng (verify run-s7-lv8-v3).
+  Decode recipe + UI navigation + backlog: `docs/planning/2026-10-23-mine-streak-debuff-decode.md`.
+- [ ] Đưa streak (`f7`) + tầng debuff (số mốc `f5` của slot) vào `mine_report.py` khi cần —
+  `parse_tile` hiện đang bỏ `f5` (giữ mỗi id/slot), `f6`–`f9` bỏ hoàn toàn
+  (đã probe xác nhận: `f7` = {slot: streak}, `f8−f9` = 3600s trên tile 1060/4044/6052).
 - [ ] Chạy listener dài (~1 giờ+) xác nhận mọi loại thay đổi mỏ đều qua broadcast type 150.
 - [ ] ts mốc 05:23:35 "tương lai" ở run-050330 — kiểm tra lại cờ [start, end] vs window đặt trước.
