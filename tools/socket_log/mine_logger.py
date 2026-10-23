@@ -17,9 +17,7 @@ import argparse
 import asyncio
 import datetime
 import json
-import os
 import pathlib
-import signal
 import struct
 import sys
 from typing import Optional
@@ -28,6 +26,11 @@ from playwright.async_api import Page, WebSocket, async_playwright
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))  # hauntedroom lives in tools/
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from process_guard import (  # noqa: E402
+    acquire_profile_lock,
+    install_stop_signals,
+    release_profile_lock,
+)
 from socket_decode import decode_proto, split_frame  # noqa: E402
 
 from hauntedroom.control_events.new_tab_blocker import (
@@ -41,46 +44,6 @@ BROADCAST_PUSH_CMD = 0x0004
 MINE_EVENT_TYPE = 150
 DEFAULT_OUT = pathlib.Path(".tmp/mine-events/mine-events.jsonl")
 LOCK_FILENAME = ".mine_logger.lock"
-
-
-def acquire_profile_lock(profile_dir: pathlib.Path) -> bool:
-    """Refuse to start when another live logger process still holds the profile."""
-    lock_path = profile_dir / LOCK_FILENAME
-    profile_dir.mkdir(parents=True, exist_ok=True)
-    if lock_path.exists():
-        try:
-            pid = int(lock_path.read_text().strip())
-            os.kill(pid, 0)  # liveness probe; raises when the PID is gone
-        except (ValueError, ProcessLookupError):
-            pass  # corrupt or stale lock from a run that died without cleanup
-        else:
-            print(
-                f"[logger] profile {profile_dir} is already held by PID {pid}; exiting.",
-                flush=True,
-            )
-            return False
-    lock_path.write_text(str(os.getpid()))
-    return True
-
-
-def release_profile_lock(profile_dir: pathlib.Path) -> None:
-    """Drop the lock file only if it still belongs to this process."""
-    lock_path = profile_dir / LOCK_FILENAME
-    try:
-        if lock_path.read_text().strip() == str(os.getpid()):
-            lock_path.unlink()
-    except OSError:
-        pass
-
-
-def install_stop_signals(stop: asyncio.Event) -> None:
-    """Make SIGTERM/SIGHUP (kill, terminal close) stop the logger like Ctrl+C."""
-    loop = asyncio.get_running_loop()
-    for sig in (signal.SIGTERM, signal.SIGHUP):
-        try:
-            loop.add_signal_handler(sig, stop.set)
-        except NotImplementedError:
-            pass  # platform without add_signal_handler; Ctrl+C still stops the logger
 
 
 def parse_mine_event(payload: bytes) -> list[dict]:
@@ -218,7 +181,7 @@ async def main() -> None:
     args = parser.parse_args()
 
     profile_dir = pathlib.Path(args.profile)
-    if not acquire_profile_lock(profile_dir):
+    if not acquire_profile_lock(profile_dir, LOCK_FILENAME):
         raise SystemExit(1)
     sink = MineEventSink(args.out, args.webhook)
     stop = asyncio.Event()
@@ -264,7 +227,7 @@ async def main() -> None:
             guard_task.cancel()
         finally:
             await context.close()
-            release_profile_lock(profile_dir)
+            release_profile_lock(profile_dir, LOCK_FILENAME)
     print(f"[logger] done — {sink.new_count} new events -> {args.out}")
 
 
