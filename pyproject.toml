@@ -1,25 +1,12 @@
 [project]
-name = "hauntedroom-bot"
+name = "burrito-socket-capture"
 version = "0.1.0"
-description = "Playwright and OpenCV automation for Haunted Room"
+description = "WebSocket packet capture and protocol decoding for the Haunted Room H5 game"
 readme = "docs/README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "numpy",
-    "opencv-python",
     "playwright>=1.60.0",
-]
-
-[project.optional-dependencies]
-translator = [
-    "ctranslate2>=4.8.3",
-    "opencc-python-reimplemented>=0.1.7",
-    "rapidocr-onnxruntime>=1.4.4",
-    "sentencepiece>=0.2.2",
 ]
 
 [tool.uv]
 package = false
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]

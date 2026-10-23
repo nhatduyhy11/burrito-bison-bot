@@ -26,13 +26,13 @@ from typing import Optional, Union
 
 from playwright.async_api import Page, async_playwright
 
-sys.path.insert(0, str(Path(__file__).parent.parent))  # hauntedroom lives in tools/
+sys.path.insert(0, str(Path(__file__).parent))
 
-from hauntedroom.control_events.new_tab_blocker import (
+from navigation import navigate_to_game  # noqa: E402
+from page_guards import (  # noqa: E402
     install_game_core_frame_guard_after_delay,
     install_profile_popup_guard,
 )
-from hauntedroom.runner.navigation import navigate_to_game
 
 DEFAULT_OUT_DIR = Path(".tmp/socket-capture")
 

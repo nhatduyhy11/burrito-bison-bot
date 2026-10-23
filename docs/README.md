@@ -1,279 +1,39 @@
-# Haunted Room Runner x
+# burrito-socket-capture
 
-Bot tự động hóa Haunted Room bằng Playwright và OpenCV. Runner điều khiển trang
-game trong một browser profile riêng, nhận diện màn hình/template từ screenshot
-và gửi click qua Playwright; không điều khiển chuột ở cấp hệ điều hành.
+Nhánh nghiên cứu **websocket-only**: bắt và giải mã packet WS của game H5
+(Haunted Room / Haunt Heroes). Toàn bộ logic bot vision cũ (automap, train,
+night, hero select, runner…) đã bị xoá khỏi nhánh này — lịch sử vẫn còn trên
+`master`.
 
-Mã Burrito Bison cũ được giữ độc lập tại [`ref_cv/`](../ref_cv/README.md) để tham
-khảo. Code và test ở root hiện chỉ dành cho Haunted Room.
+## Tools (`tools/socket_log/`)
 
-## Quick start
-
-Dịch chữ server CN sang tiếng Việt: xem [hướng dẫn translator](TRANSLATOR.md).
-Thêm `--translate` vào lệnh runner và dùng `uv run --extra translator`, ví dụ:
-`uv run --extra translator python tools/hauntedroom_runner.py --dev-reload --profile .tmp/pcn --cn --translate`.
-Dịch tự bật trong game; `Shift+D` để bật/tắt.
-
-Yêu cầu:
-
-- Python `>=3.9`.
-- [`uv`](https://docs.astral.sh/uv/) có trong `PATH`.
-- Google Chrome đã được cài. Có thể dùng Edge hoặc Chromium qua tùy chọn CLI.
-- Chạy mọi lệnh từ thư mục gốc của repo.
-
-Cài dependency và mở runner:
-
-```shell
-uv sync
-uv run python tools/hauntedroom_runner.py
-```
-
-Runner mở game tại `https://hauntedroomvnh5.joynetgame.com/` (hoặc server Trung
-Quốc qua cờ `--cn`) với viewport mặc định `640x720` và profile
-`.tmp/hauntedroom-profile`. Profile giữ cookie, localStorage và phiên đăng nhập
-giữa các lần chạy. Không mở đồng thời hai runner dùng chung profile này.
-
-## Cách vận hành
-
-Với cấu hình mặc định `ACTION_LOOP_COUNT = 0`, runner vào standby và nhận hotkey
-khi tab game đang focus:
-
-| Hotkey | Khi runner idle |
+| File | Vai trò |
 | --- | --- |
-| `Shift+1` | Chụp một frame, nhận diện màn hình hiện tại và chạy flow phù hợp. |
-| `Shift+T` | Chạy train mode rồi auto-battle. |
-| `Shift+5` | Lazy-load `--actions` rồi chạy action JSON lặp vô hạn cho đến khi dừng. |
-| `Shift+9` | Chạy macro đặc biệt `spawn_exit_lvup`: vào room, bắt đầu battle, thoát room rồi lặp lại liên tục. |
-| `Shift+8` | Lưu screenshot vào `tests/fixtures/hauntedroom-captures/`; không đổi trạng thái flow. |
-| `Shift+0` | Dừng mềm flow hiện tại và quay lại standby. |
-| `Ctrl+C` | Đóng runner và browser. |
+| `socket_capture.py` | POC bắt frame: hook mọi WebSocket, dump payload nguyên vẹn ra `frames/NNNNN-{S\|R}.bin` + `index.jsonl`, kèm step DSL (`click:X,Y`, `shot:NAME`, `sleep:S`, `mark:LABEL`) |
+| `socket_decode.py` | Decoder wire-format generic (không cần schema `.proto`), annotate timestamp heuristic |
+| `mine_logger.py` | Logger dài hạn: giữ session game mở, ghi JSONL (mine-events / mine-state / mine-tiles / player-briefs / guild-briefs), fetch tên người chơi qua injected request |
+| `mine_report.py` | Aggregate các JSONL trên thành báo cáo |
+| `process_guard.py` | Lock theo profile (chặn chạy 2 instance) + xử lý stop signals |
+| `page_guards.py` | Chặn popup profile, ẩn iframe H5 SDK (inlined từ bot cũ) |
+| `navigation.py` | `navigate_to_game` có retry qua transient hang (inlined từ bot cũ) |
 
-`Shift+1` dispatch theo kết quả detect:
+## Usage
 
-| Màn hình | Flow được chạy |
-| --- | --- |
-| `home` | Start-auto loop: vào trận, chạy auto-map và lặp map. |
-| `automap` | Chạy đúng một lượt auto-map. |
-| `new_account` | Custom flow riêng cho tài khoản mới. Xem [tài liệu New Account](NEW_ACCOUNT_FLOW.md). |
-| `research` | Research. |
-| `artifact` | Artifact. |
-| `exp_hero` | EXP available. |
-| `night` | Click nến trái → xác nhận solo bằng nút vàng nếu có → click cố định góc dưới trái `(140, 680)` mỗi 1 giây tới khi nến trở lại. Tối đa 20 vòng mỗi lần kích hoạt; Shift+1 hoặc Shift+0 để dừng. |
-| `hero_avail` | Hero breakthrough available. |
-| `train` | Chạy train mode rồi auto-battle. |
-| `unknown` | Chỉ ghi log, không khởi chạy flow. |
+```bash
+# Bắt frame thô (POC)
+uv run python tools/socket_log/socket_capture.py --profile .tmp/m535 --settle 12 --step shot:home
 
-Khi auto-map hoặc start-auto đang chạy, các phím số được dùng làm control:
-
-| Hotkey mặc định | Control |
-| --- | --- |
-| `Shift+1` | Pause/resume ngay tại checkpoint của flow. |
-| `Shift+2` | Pause một lần khi gặp boss kế tiếp. |
-| `Shift+3` | Pause một lần khi gặp final boss. |
-| `Shift+8` | Chụp screenshot và tiếp tục flow. |
-| `Shift+0` | Dừng flow, kể cả khi flow đang pause. |
-
-Các Shift+digit khác bị bỏ qua trong lúc auto-map/start-auto giữ quyền điều
-khiển. Hotkey dựa trên vị trí phím vật lý (`Digit0` đến `Digit9`, `KeyT`) và chỉ
-hoạt động trong trang browser đang focus.
-
-## Tùy chọn CLI
-
-Ví dụ thường dùng:
-
-```shell
-# Cách chạy thường dùng nhất
-uv run python tools/hauntedroom_runner.py --dev-reload --profile .tmp/pdd
-
-# Chạy trên server Trung Quốc (CN) thay vì server mặc định (VN)
-uv run python tools/hauntedroom_runner.py --cn
-
-# Hot-reload code/template/action giữa các lần khởi chạy flow
-uv run python tools/hauntedroom_runner.py --dev-reload
-
-# Dùng action JSON khác
-uv run python tools/hauntedroom_runner.py --actions tools/json_macro/macro_simple.json
-
-# Dùng Edge hoặc Chromium do Playwright quản lý
-uv run python tools/hauntedroom_runner.py --browser msedge
-uv run python tools/hauntedroom_runner.py --browser chromium
-
-# Bật log/debug behavior của flow auto-map
-uv run python tools/hauntedroom_runner.py --debug
+# Logger dài hạn
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --snapshot        # 1 pass state + tên, rồi thoát
+uv run python tools/socket_log/mine_logger.py --profile .tmp/m535 --duration 300    # tự dừng sau 5 phút
 ```
 
-Các option hiện có:
+Cần profile `.tmp/<name>` đã có session đăng nhập (persistent context của
+Playwright). Raw streams ghi dưới `.tmp/mine-events/`.
 
-- `--actions`: action JSON được load khi bấm `Shift+5`, mặc định
-  `tools/json_macro/macro.env.json`. File local này bị Git ignore; khởi tạo từ
-  `macro_simple.json` và chỉnh tự do theo máy/phiên chạy.
+## Docs
 
-Các macro tham khảo được track trong `tools/json_macro/`:
-
-- `macro_simple.json`: click `(440, 500)` rồi đợi một giây.
-- `macro_record.json`: chuỗi click/wait dài được ghi lại trước đây.
-- `hauntedroom_actions.sample.json`: ví dụ phức tạp dùng template matching và
-  blocker clearing.
-- `--profile`: browser profile, mặc định `.tmp/hauntedroom-profile`.
-- `--cn`: dùng server Trung Quốc (`https://hauntheroesweb.acenetgame.com/`). Mặc định runner dùng server Việt Nam (`https://hauntedroomvnh5.joynetgame.com/`).
-- `--url`: ghi đè trực tiếp URL game (mặc định được chọn tự động theo `--cn` / VN server).
-- `--browser {chrome,msedge,chromium}`: Chrome là mặc định; `chromium` cần
-  browser binary do Playwright quản lý (`uv run playwright install chromium`).
-- `--width`, `--height`: viewport, mặc định `640x720`.
-- `--headless`: chạy không hiện cửa sổ browser.
-- `--dev-reload`: reload flow, vision, template và action liên quan mỗi lần
-  `Shift+1` dispatch; các direct flow cũng reload module tương ứng.
-- `--debug`: truyền debug mode vào train/auto-map/start-auto.
-
-Xem help trực tiếp để tránh lệch với CLI:
-
-```shell
-uv run python tools/hauntedroom_runner.py --help
-```
-
-Vòng lặp phát triển khuyến nghị là chạy với `--dev-reload`, sau đó
-`Shift+0` → sửa code/template/action JSON → dùng hotkey để chạy lại. Browser và
-session được giữ nguyên. Nếu reload lỗi syntax/import/JSON, runner vẫn ở idle để
-có thể sửa rồi thử lại.
-
-## Runtime settings
-
-Các switch không nằm trong CLI được khai báo tại
-`tools/hauntedroom/settings.py`:
-
-- `START_AUTO_HOTKEYS`: remap sáu control của auto-map/start-auto. Giữ nguyên
-  tên action, dùng sáu digit khác nhau từ `0` đến `9`.
-- `CAPTURE_HERO_FALLBACK_SCREENSHOTS`: lưu ảnh chẩn đoán vào
-  `.tmp/hauntedroom-fallbacks/` khi hero selection phải fallback.
-- `ENABLE_SCRIPT_INJECTION`: bật JavaScript/CSS guard cho profile popup và H5
-  SDK iframe. Mặc định hiện là `False`; thay đổi setting này cần restart runner.
-
-Ví dụ remap control:
-
-```python
-START_AUTO_HOTKEYS = {
-    "pause_resume": "1",
-    "pause_at_boss": "2",
-    "pause_at_final_boss": "3",
-    "standby_at_boss": "9",
-    "stop": "0",
-    "screenshot": "8",
-}
-```
-
-Khi dùng `--dev-reload`, settings của auto-map được đọc lại trước khi bắt đầu
-auto-map/start-auto mới.
-
-## Action JSON
-
-File action là một JSON array. Đường dẫn template được resolve tương đối từ vị
-trí file JSON. Bốn action type được hỗ trợ:
-
-- `click`: click tọa độ `x`, `y`.
-- `click_template`: poll screenshot đến khi template match rồi click.
-- `clear_blockers`: click lần lượt các blocker cho đến khi màn hình đích xuất
-  hiện và không còn blocker.
-- `wait`: chờ theo `ms`.
-
-Ví dụ tối thiểu:
-
-```json
-[
-  {
-    "type": "clear_blockers",
-    "templates_dir": "rooms/blocker",
-    "until_template": "rooms/start_home.png"
-  },
-  {
-    "type": "click_template",
-    "template": "rooms/start_home.png",
-    "note": "Start HOME"
-  },
-  {
-    "type": "click",
-    "x": 366,
-    "y": 536,
-    "button": "left"
-  },
-  {
-    "type": "wait",
-    "ms": 1000
-  }
-]
-```
-
-`click_template` hỗ trợ `threshold`, `timeout_ms`, `poll_ms`, `delay_ms`,
-`click_count`, `repeat_delay_ms`, `recheck_before_repeat`, `button`, `note`,
-`skip_if_template`, `click_position`, `scales`, `skip_template_scales` và
-`region: [left, top, right, bottom]`.
-
-`clear_blockers` hỗ trợ `priority`, `click_positions`, `threshold`,
-`timeout_ms`, `poll_ms`, `delay_ms`, `note` và `until_template_scales`. Các vị
-trí click hợp lệ là `center`, `top_middle`, `mid_left`, `bottom_left`. Template
-nằm trong `FIXED_BLOCKER_CLICKS` (`core.template_matching`, hiện có
-`overlay_newbie.png`) bị bỏ qua `click_positions` và luôn được click tại tọa
-độ cố định vì màn tương ứng đóng bằng "nhấn khu vực trống".
-
-Action JSON chủ yếu phục vụ đoạn vào/ra room. Auto-map, train, research,
-artifact, EXP và hero breakthrough là flow Python riêng. Mỗi timeout sẽ lưu ảnh
-vào `.tmp/hauntedroom-timeouts/`; timeout hai lần liên tiếp làm action runner
-dừng, còn một loop thành công sẽ reset bộ đếm.
-
-## Testing
-
-Chạy toàn bộ test suite:
-
-```shell
-uv run python -m unittest discover -s tests -v
-```
-
-Fixture nằm trong `tests/fixtures/`. Xem [TESTING.md](TESTING.md) để chạy từng
-nhóm test và biết quy ước quản lý screenshot.
-
-## Cấu trúc chính
-
-- `tools/hauntedroom_runner.py`: entrypoint, browser bootstrap và shutdown.
-- `tools/hauntedroom/core/`: CLI, runtime, vision, template matching và mouse.
-- `tools/hauntedroom/actions/`: model, loader và runner cho action JSON.
-- `tools/hauntedroom/runner/`: standby controller, command registry, navigation
-  và dev reload.
-- `tools/hauntedroom/flows/`: các business flow.
-- `tools/hauntedroom/flows/automap_support/`: phase/action/vision của auto-map.
-- `tools/rooms/`: template PNG production.
-- `tests/`: test và fixture regression.
-
-## Tài liệu liên quan
-
-- [Auto-map internals](AUTOMAP_FLOWS.md)
-- [Map lifecycle](MAP_LIFECYCLE.md)
-- [Hero level-up selection](../tools/rooms/automap/hero_levelup/README.md)
-- [Testing](TESTING.md)
-- [Troubleshooting](TROUBLESHOOTING.md)
-- [Capture audit](CAPTURE_AUDIT.md)
-- [Kiến trúc hiện tại](ARCHITECTURE.md)
-- [ADR-001: Haunted Room package boundaries](adr/ADR-001-hauntedroom-package-boundaries.md)
-- [Framework extraction backlog](planning/FRAMEWORK_EXTRACTION_HANDOVER.md)
-- [Vision/OCR audit](audit/VISION_OCR_AUDIT.md)
-
-## Giới hạn và lưu ý
-
-- Template matching phụ thuộc viewport/scale và asset đã capture; giữ viewport
-  đúng với môi trường tạo template để có kết quả ổn định.
-- Screen auto-switch chỉ chạy flow khi detector nhận ra một màn hình đã map.
-  Trường hợp `unknown` được lưu ảnh vào `.tmp/hauntedroom-fallbacks/` để debug.
-- Runner chặn service worker trong automation context để tránh worker cũ làm
-  kẹt navigation, nhưng vẫn giữ cookie/localStorage trong persistent profile.
-- Nếu startup navigation timeout, runner tự thay tab và retry tối đa ba lần.
-  Xem [TROUBLESHOOTING.md](TROUBLESHOOTING.md) trước khi xóa profile vì xóa
-  `.tmp/hauntedroom-profile` sẽ mất session đăng nhập.
-
-# TLDR
-```
-https://www.python.org/downloads/release/pymanager-263/
--> tải về
-https://github.com/nhatduyhy11/burrito-bison-bot
--> download zip luôn, xả nén ko cần tên folder
-pip install uv
-python -m uv sync
-python -m uv run python tools/hauntedroom_runner.py --profile .tmp/X
-```
+- [`SOCKET_PROTOCOL.md`](SOCKET_PROTOCOL.md) — reference protocol WS (framing, module/cmd, decode)
+- [`MINE_STRUCTURE.md`](MINE_STRUCTURE.md) — cấu trúc world mỏ: map UI ↔ protocol
+- `planning/` — research notes còn tồn động (socket research, leaderboard WS, conventions)
+- `assets/` — ảnh in-game dùng đối chiếu protocol

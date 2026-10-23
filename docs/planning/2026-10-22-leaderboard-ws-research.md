@@ -8,9 +8,9 @@
 ## Quyết định đã chốt
 
 - **Browser-only** (2026-10-22): game chạy trong Chromium do Playwright điều
-  khiển (`tools/hauntedroom_runner.py:43`, persistent context) nên mọi traffic
-  đều thấy được từ trong page — chỉ dùng browser + WebSocket hook, không can
-  thiệp tầng mạng.
+  khiển (persistent context, hiện nằm trong `tools/socket_log/mine_logger.py`)
+  nên mọi traffic đều thấy được từ trong page — chỉ dùng browser + WebSocket
+  hook, không can thiệp tầng mạng.
 
 ## Findings
 

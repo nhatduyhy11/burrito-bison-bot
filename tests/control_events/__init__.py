@@ -1,1 +1,0 @@
-"""Control-event tests."""

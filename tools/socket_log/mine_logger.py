@@ -34,7 +34,6 @@ from typing import Optional
 
 from playwright.async_api import Page, WebSocket, async_playwright
 
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))  # hauntedroom lives in tools/
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from process_guard import (  # noqa: E402
     acquire_profile_lock,
@@ -43,11 +42,11 @@ from process_guard import (  # noqa: E402
 )
 from socket_decode import decode_proto, encode_varint, read_packed_varints, split_frame  # noqa: E402
 
-from hauntedroom.control_events.new_tab_blocker import (
+from navigation import navigate_to_game  # noqa: E402
+from page_guards import (  # noqa: E402
     install_game_core_frame_guard_after_delay,
     install_profile_popup_guard,
 )
-from hauntedroom.runner.navigation import navigate_to_game
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # cp1252 consoles choke on player names
 

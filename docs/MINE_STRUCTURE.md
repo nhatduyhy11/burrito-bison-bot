@@ -1,6 +1,6 @@
 # Khai Thác Guild — Cấu Trúc Khu Mỏ (map UI ↔ protocol)
 
-> Mô tả cấu trúc world mỏ từ ảnh in-game (`tests/fixtures/hauntedroom-captures/mine-detail/`)
+> Mô tả cấu trúc world mỏ từ ảnh in-game (`docs/assets/mine-detail/`)
 > đối chiếu với state server đẩy về (`0x48/0x0002`, xem `docs/SOCKET_PROTOCOL.md`).
 > Ảnh tham chiếu: profile chính, acc **HuAsura** (id `51921435`, guild **HUNTERS**),
 > đang ngồi **sector 7 — mỏ Mỏ Huyền Quang — điểm 4 (lv9)**, slot 10.

@@ -6,7 +6,9 @@
 
 ## Bước 0: Dựng lại bối cảnh từ code có sẵn (5 phút)
 
-Đọc `tools/hauntedroom_runner.py` + `hauntedroom/core/cli.py` để biết:
+Đọc phần launch browser trong `tools/socket_log/mine_logger.py` (thời điểm đó
+nằm ở `tools/hauntedroom_runner.py` + `hauntedroom/core/cli.py`, đã xoá cùng
+logic bot cũ) để biết:
 - Browser launch thế nào: `launch_persistent_context(user_data_dir=.tmp/<profile>)`,
   viewport 640x720, channel `chrome`, `service_workers: block`, URL VN/CN mặc định.
 - Profile `.tmp/m535` đã có session đăng nhập → không cần xử lý auth thủ công.

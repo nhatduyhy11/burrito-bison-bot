@@ -2,11 +2,10 @@
 name: refactor-file
 description: >-
   Audit một file Python quá lớn và đề xuất plan tách thành các module con vừa đủ.
-  Dùng khi user muốn refactor / breakdown / split một file (thường là file 200+
-  dòng trong snapshot của docs/refactor_audit/REFACTOR.md), truyền target file
+  Dùng khi user muốn refactor / breakdown / split một file, truyền target file
   làm args. Skill phân tích trách nhiệm, đề xuất tên file con + ước lượng line
   count theo heuristic 100–<200 dòng (không quá 300), gộp mảnh quá nhỏ, tôn trọng
-  dependency rule trong docs/ARCHITECTURE.md, rồi thực thi sau khi user duyệt plan.
+  dependency direction hiện có, rồi thực thi sau khi user duyệt plan.
 ---
 
 # Refactor file: tách file lớn thành module con vừa đủ
@@ -15,8 +14,7 @@ Mục tiêu: nhận một target file, đưa ra **plan audit** breakdown thành 
 hơn, rồi thực thi sau khi user duyệt. Đây là project cá nhân — tách vừa đủ để dễ
 đọc/review, **không** chia nhỏ tới mức atomic.
 
-Target file lấy từ args. Nếu user không chỉ rõ, hỏi lại 1 câu; hoặc gợi ý chọn từ
-snapshot line count trong `docs/refactor_audit/REFACTOR.md`.
+Target file lấy từ args. Nếu user không chỉ rõ, hỏi lại 1 câu.
 
 ## Heuristic sizing (bắt buộc tuân thủ)
 
@@ -27,9 +25,8 @@ snapshot line count trong `docs/refactor_audit/REFACTOR.md`.
   boundary rõ ràng → gộp vào file con họ hàng gần nhất thay vì tạo file riêng.
 - Ưu tiên số lượng file con **ít mà mỗi file cân**, hơn là nhiều file vụn.
   Đừng chia chỉ để chạm mốc dòng.
-- Line count chỉ là tín hiệu. Boundary theo **trách nhiệm** mới là tiêu chí chính
-  (xem `docs/refactor_audit/REFACTOR.md`: line count không tự động đồng nghĩa với
-  over-responsibility).
+- Line count chỉ là tín hiệu. Boundary theo **trách nhiệm** mới là tiêu chí chính —
+  line count không tự động đồng nghĩa với over-responsibility.
 
 ## Quy trình
 
@@ -53,15 +50,12 @@ Chú ý coupling: symbol dùng chung state/helper nội bộ nên ở cùng file
 
 ### 3. Đối chiếu kiến trúc
 
-- Đọc `docs/ARCHITECTURE.md`. Xác định target file thuộc boundary nào
-  (`core` / `actions` / `control_events` / `runner` / `flows` / `screen_detect`).
-- Plan tách **không được** vi phạm dependency rule (mục "Dependency direction" +
-  các invariant). Ví dụ: không tạo file con trong `actions/` mà import `flows/`;
-  `core` không import tầng trên.
-- Nếu file là coordinator/public API (kiểu `automap.py`), giữ lại một file
-  **coordinator mỏng** làm entrypoint public, đẩy phase/detail xuống package con
-  (kiểu `automap_support/`). Không đổi public import path mà không nêu rõ.
-- Kiểm tra `tests/test_hauntedroom_architecture.py` để không phá guardrail import.
+- Xác định target file thuộc tầng nào trong package, và hướng import hiện có
+  (tầng dưới không import tầng trên).
+- Plan tách **không được** vi phạm dependency direction hiện có.
+- Nếu file là coordinator/public API, giữ lại một file **coordinator mỏng** làm
+  entrypoint public, đẩy phase/detail xuống package con. Không đổi public import
+  path mà không nêu rõ.
 
 ### 4. Đề xuất tên file con
 
@@ -82,7 +76,7 @@ Kèm:
 - file coordinator/entrypoint còn lại sau khi tách (và ~dòng);
 - các import/`__init__` re-export cần thêm để giữ nguyên public API;
 - rủi ro circular import và cách xử lý;
-- test nào có thể phải sửa (đường dẫn import trong `tests/`).
+- test/call site nào có thể phải sửa theo import path mới.
 
 Nếu đang ở plan mode, đóng gói phần này qua ExitPlanMode. Nếu không, hỏi user xác
 nhận trước khi sửa file. **Không tự thực thi khi chưa được duyệt.**
@@ -96,17 +90,10 @@ nhận trước khi sửa file. **Không tự thực thi khi chưa được duy�
 
 ### 7. Verify
 
-- Chạy baseline từ repository root:
-
-  ```shell
-  uv run --with pytest pytest -q
-  ```
-
-- So với baseline trong `docs/refactor_audit/REFACTOR.md`
-  (hiện `316 passed, 4 skipped, 103 subtests passed`). Không được giảm.
-- Nếu file gốc từng nằm trong "Snapshot line count" của REFACTOR.md, cập nhật
-  snapshot đó: xóa/sửa entry cũ, thêm file con mới nếu ≥ 200 dòng. Tuân quy tắc
-  duy trì file của REFACTOR.md (không changelog, chỉ current state).
+- Nếu repo còn test suite: chạy baseline từ repository root và so trước/sau,
+  **không được giảm**.
+- Nếu không: `uv run python -m py_compile` từng file đổi, và smoke-test entrypoint
+  (ví dụ `--help`) để chắc import không gãy.
 
 ## Nhắc
 
