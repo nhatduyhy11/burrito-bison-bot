@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 
-from hauntedroom.core.terminal import GREEN, colorize
+from hauntedroom.core.terminal import GREEN, YELLOW, colorize
 
 from .model_state import MapLifecycleStep, MapRewardContext, MapState
 
@@ -17,6 +17,9 @@ WIN_REWARD_HOTSPOT_RATIO = (341 / 640, 414 / 720)
 # calculated from the ratio above; this name remains useful to tests/docs.
 WIN_REWARD_FOLLOWUP_CLICK = (341, 414)
 WIN_REWARD_FOLLOWUP_CLICK_COUNT = 2
+# After the blind follow-ups, keep clicking every few seconds for as long as
+# the reward chests are still visible. The cap counts every hotspot click.
+WIN_REWARD_MAX_CLICK_COUNT = 10
 REWARD_LIST_TITLE_TEMPLATE_THRESHOLD = 0.90
 REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
 # The reward-list panel is a large, stable red surface. Detecting its color and
@@ -185,4 +188,72 @@ async def handle_reward_followup(
 
     await context.click_fn(context.page, click_x, click_y)
     state.reward_followup_click_count += 1
+    return MapLifecycleStep.CONTINUE
+
+
+def _win_reward_visible(context: MapRewardContext, frame_gray: np.ndarray) -> bool:
+    return bool(
+        context.find_template_matches_fn(
+            frame_gray,
+            context.win_reward_template,
+            context.win_reward_template_path.name,
+            threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
+            scales=(1.0,),
+        )
+    )
+
+
+async def handle_reward_retry(
+    context: MapRewardContext,
+    state: MapState,
+    frame_gray: np.ndarray,
+) -> MapLifecycleStep:
+    """Keep clicking the reward card while the chests remain on screen.
+
+    Each retry is two-phase: wait first, then click only if a fresh frame
+    still shows the chests, so a popup that opened late is not clicked through.
+    """
+    if (
+        state.reward_followup_click_count < WIN_REWARD_FOLLOWUP_CLICK_COUNT
+        or state.reward_list_title_seen
+    ):
+        return MapLifecycleStep.NOT_HANDLED
+
+    if not _win_reward_visible(context, frame_gray):
+        state.reward_retry_armed = False
+        return MapLifecycleStep.NOT_HANDLED
+
+    if state.reward_followup_click_count >= WIN_REWARD_MAX_CLICK_COUNT:
+        if not state.reward_retry_exhausted_warned:
+            state.reward_retry_exhausted_warned = True
+            print(
+                colorize(
+                    "Reward chests still visible after "
+                    f"{WIN_REWARD_MAX_CLICK_COUNT} clicks; giving up on "
+                    "auto-clicking the reward card. Please check the screen.",
+                    YELLOW,
+                ),
+                flush=True,
+            )
+        return MapLifecycleStep.NOT_HANDLED
+
+    if not state.reward_retry_armed:
+        state.reward_retry_armed = True
+        ready = await context.wait_for_flow_timeout_fn(
+            context.page,
+            WIN_REWARD_EMPTY_DELAY_MS,
+            context.stop_event,
+        )
+        return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP
+
+    state.reward_retry_armed = False
+    click_x, click_y = relative_position(frame_gray, WIN_REWARD_HOTSPOT_RATIO)
+    state.reward_followup_click_count += 1
+    print(
+        "Reward chests still visible; clicking the reward card again at "
+        f"{click_x},{click_y} "
+        f"({state.reward_followup_click_count}/{WIN_REWARD_MAX_CLICK_COUNT}).",
+        flush=True,
+    )
+    await context.click_fn(context.page, click_x, click_y)
     return MapLifecycleStep.CONTINUE

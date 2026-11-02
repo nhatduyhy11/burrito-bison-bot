@@ -100,7 +100,9 @@ không dùng gate này để vẫn hỗ trợ attach/reload giữa trận.
 |---|---|---|
 | `reward_click_position` | Một map | Disable scan reward lần hai và lưu hotspot tương đối đã click. |
 | `reward_list_title_seen` | Một map | Ghi nhận popup đã được xác nhận và cho phép probe home sau khi popup biến mất. |
-| `reward_followup_click_count` | Một map | Giới hạn tổng số click hotspot ở đúng hai lần. |
+| `reward_followup_click_count` | Một map | Đếm tổng số click hotspot: hai click mù đầu tiên, sau đó chỉ click lại mỗi ~3s khi template `win_reward` vẫn khớp, tối đa `WIN_REWARD_MAX_CLICK_COUNT` (10) rồi log cảnh báo. |
+| `reward_retry_armed` | Một map | Retry hai pha: đã chờ 3s, click ở frame kế tiếp nếu rương vẫn hiện. |
+| `reward_retry_exhausted_warned` | Một map | Chỉ log cảnh báo hết lượt retry một lần. |
 | `win_recorded` | Một map | Đảm bảo `on_win()` chỉ chạy một lần sau khi popup reward-list được xác nhận. |
 | `completed` | Một map | Kết quả home-ready gate; không suy ra từ `win_recorded`. |
 | `daily_first_win_done` | Một command run | Bỏ qua daily prompt ở các map sau trong cùng command invocation. |

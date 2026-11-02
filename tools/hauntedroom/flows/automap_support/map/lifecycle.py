@@ -290,6 +290,8 @@ async def finish_map(
             ):
                 state.reward_click_position = None
                 state.reward_followup_click_count = 0
+                state.reward_retry_armed = False
+                state.reward_retry_exhausted_warned = False
             continue
         if step is MapLifecycleStep.STOP:
             break
@@ -297,6 +299,14 @@ async def finish_map(
         outcome = _complete_if_home_ready(context, state, frame_gray)
         if outcome is not None:
             return outcome
+
+        # Runs after blocker/home checks so a blocker eating the clicks is
+        # cleared first, and a finished map is never clicked again.
+        step = await reward.handle_reward_retry(context.reward, state, frame_gray)
+        if step is MapLifecycleStep.CONTINUE:
+            continue
+        if step is MapLifecycleStep.STOP:
+            break
 
         await context.wait_for_flow_timeout_fn(
             context.page,
