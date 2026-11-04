@@ -16,11 +16,12 @@ DAILY_FIRST_WIN_CHECK_DELAY_MS = 1_000
 # language. Offsets are measured from the banner center on the 640x720 canvas.
 # The decline button is fixed in the dialog layout, but the checkbox sits
 # against the label text and slides with its width across languages (top-left
-# x=221 in English vs x=235 in Vietnamese); the midpoint offset plus a padded
-# search window absorbs that shift.
+# x=221 in English, x=235 in Vietnamese, x=266 in PCN). Keep the vertical
+# window tight, but allow enough horizontal movement for all three layouts.
 DAILY_FIRST_WIN_CHECKBOX_OFFSET = (3, 211)
 DAILY_FIRST_WIN_CONFIRM_OFFSET = (143, 248)
 DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD = 16
+DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD_X = 64
 
 
 def find_daily_first_win(
@@ -51,9 +52,10 @@ def find_daily_first_win_checkbox(
     expected_y = banner_position[1] + DAILY_FIRST_WIN_CHECKBOX_OFFSET[1]
     height, width = checkbox_template.shape
     pad = DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD
-    left = max(expected_x - width // 2 - pad, 0)
+    pad_x = DAILY_FIRST_WIN_CHECKBOX_SEARCH_PAD_X
+    left = max(expected_x - width // 2 - pad_x, 0)
     top = max(expected_y - height // 2 - pad, 0)
-    right = min(expected_x + (width + 1) // 2 + pad, frame_gray.shape[1])
+    right = min(expected_x + (width + 1) // 2 + pad_x, frame_gray.shape[1])
     bottom = min(expected_y + (height + 1) // 2 + pad, frame_gray.shape[0])
     checkbox_frame = frame_gray[top:bottom, left:right]
     x, y, score = find_template_fn(

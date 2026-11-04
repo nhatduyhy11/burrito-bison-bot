@@ -26,6 +26,7 @@ from hauntedroom.flows.automap import (
 )
 from hauntedroom.flows.automap_support.map.first_win import (
     DAILY_FIRST_WIN_CHECK_DELAY_MS,
+    find_daily_first_win_checkbox,
     handle_daily_first_win,
 )
 from hauntedroom.flows.automap_support.map.model_state import (
@@ -49,6 +50,7 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
         for fixture_name in (
             "daily_first_win.png",
             "daily_first_win_en.png",
+            "daily_first_win_pcn.png",
             "daily_first_win_checked.png",
         ):
             with self.subTest(fixture_name=fixture_name):
@@ -57,23 +59,25 @@ class DailyFirstWinTest(IsolatedAsyncioTestCase):
                     cv2.IMREAD_GRAYSCALE,
                 )
                 self.assertIsNotNone(frame)
-                _x, _y, header_score = find_real_template(
+                banner_x, banner_y, header_score = find_real_template(
                     frame,
                     header_template,
                     DAILY_FIRST_WIN_HEADER_TEMPLATE_PATH.name,
                     scales=(1.0,),
                 )
-                _x, _y, unchecked_score = find_real_template(
+                _x, _y, unchecked_score = find_daily_first_win_checkbox(
                     frame,
+                    (banner_x, banner_y),
                     checkbox_template,
-                    DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH.name,
-                    scales=(1.0,),
+                    DAILY_FIRST_WIN_CHECKBOX_TEMPLATE_PATH,
+                    find_real_template,
                 )
-                _x, _y, checked_score = find_real_template(
+                _x, _y, checked_score = find_daily_first_win_checkbox(
                     frame,
+                    (banner_x, banner_y),
                     checked_template,
-                    DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH.name,
-                    scales=(1.0,),
+                    DAILY_FIRST_WIN_CHECKED_TEMPLATE_PATH,
+                    find_real_template,
                 )
                 self.assertGreaterEqual(header_score, 0.90)
                 if fixture_name == "daily_first_win_checked.png":

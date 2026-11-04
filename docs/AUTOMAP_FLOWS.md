@@ -106,7 +106,8 @@ Prompt được nhận diện qua banner ribbon đầu dialog (`map_win/daily_fi
 threshold `0.90`) — banner không chứa chữ nên một template dùng được cho mọi
 ngôn ngữ (score 1.000 trên cả capture Việt và Anh; screen khác dưới 0.71).
 Checkbox nằm cạnh label nên vị trí trượt theo độ rộng chữ từng ngôn ngữ; handler
-tìm nó trong window pad rộng quanh offset cố định từ banner center. Handler chỉ
+tìm nó quanh offset cố định từ banner center với pad ngang `64px`, dọc `16px`
+để bao phủ cả layout Việt, Anh và PCN. Handler chỉ
 xử lý prompt khi first-win còn pending: bảo đảm checkbox đã checked rồi mới
 decline và không click khi visual chưa rõ. Khi xử lý xong, hoặc khi reward đã
 được ghi nhận và home-ready xác nhận toàn bộ cleanup hoàn tất mà prompt không
