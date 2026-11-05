@@ -52,15 +52,21 @@ class RewardRetryTest(IsolatedAsyncioTestCase):
         self.assertIs(step, MapLifecycleStep.NOT_HANDLED)
         self.click.assert_not_awaited()
 
-    async def test_no_retry_when_chests_gone(self):
+    async def test_retries_fixed_point_when_template_is_missing(self):
         context = self.make_context(chests_visible=False)
         state = MapState(reward_followup_click_count=WIN_REWARD_FOLLOWUP_CLICK_COUNT)
 
         step = await handle_reward_retry(context, state, FRAME)
 
-        self.assertIs(step, MapLifecycleStep.NOT_HANDLED)
+        self.assertIs(step, MapLifecycleStep.CONTINUE)
         self.click.assert_not_awaited()
-        self.wait.assert_not_awaited()
+        self.wait.assert_awaited_once()
+
+        # A changed frame must not move the pre-calculated click point.
+        step = await handle_reward_retry(context, state, FRAME[:360, :320])
+        self.assertIs(step, MapLifecycleStep.CONTINUE)
+        self.click.assert_awaited_once_with(context.page, 341, 414)
+        context.find_template_matches_fn.assert_not_called()
 
     async def test_retries_until_cap_then_stops(self):
         context = self.make_context(chests_visible=True)

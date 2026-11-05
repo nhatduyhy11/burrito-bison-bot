@@ -98,10 +98,10 @@ không dùng gate này để vẫn hỗ trợ attach/reload giữa trận.
 
 | State | Phạm vi sống | Vai trò |
 |---|---|---|
-| `reward_click_position` | Một map | Disable scan reward lần hai và lưu hotspot tương đối đã click. |
+| `reward_click_position` | Một map | Disable scan reward lần hai và lưu tọa độ cứng đã click. |
 | `reward_list_title_seen` | Một map | Ghi nhận popup đã được xác nhận và cho phép probe home sau khi popup biến mất. |
-| `reward_followup_click_count` | Một map | Đếm tổng số click hotspot: hai click mù đầu tiên, sau đó chỉ click lại mỗi ~3s khi template `win_reward` vẫn khớp, tối đa `WIN_REWARD_MAX_CLICK_COUNT` (10) rồi log cảnh báo. |
-| `reward_retry_armed` | Một map | Retry hai pha: đã chờ 3s, click ở frame kế tiếp nếu rương vẫn hiện. |
+| `reward_followup_click_count` | Một map | Đếm tổng số click hotspot: hai click đầu tiên, sau đó click lại tọa độ cứng `(341,414)` mỗi ~3s nếu chưa xác nhận popup hoặc home, tối đa `WIN_REWARD_MAX_CLICK_COUNT` (10) rồi log cảnh báo. |
+| `reward_retry_armed` | Một map | Retry hai pha: đã chờ 3s, kiểm tra popup/blocker/home trên frame kế tiếp trước khi click. |
 | `reward_retry_exhausted_warned` | Một map | Chỉ log cảnh báo hết lượt retry một lần. |
 | `win_recorded` | Một map | Đảm bảo `on_win()` chỉ chạy một lần sau khi popup reward-list được xác nhận. |
 | `completed` | Một map | Kết quả home-ready gate; không suy ra từ `win_recorded`. |
@@ -207,7 +207,7 @@ cleanup đã hoàn tất. Trạng thái này không thay thế home-ready gate.
 
 - Vision tìm `map_win/win_reward.png` ở scale `1.0`, threshold `0.70` và chỉ dùng
   match đầu tiên.
-- Match không ghi nhận win; action click fixed reward card dưới nhân vật `(341,414)` theo ratio canvas, lưu tọa độ và chờ
+- Match không ghi nhận win; action click tọa độ cứng dưới giường `(341,414)`, tính sẵn cho viewport `640x720`, lưu tọa độ và chờ
   `2 giây`.
 - Khi đã có `reward_click_position`, win-reward query bị disable; nếu một blocker
   xuất hiện sau reward-list, lifecycle re-arm query và fallback để xử lý lại màn
@@ -226,8 +226,11 @@ cleanup đã hoàn tất. Trạng thái này không thay thế home-ready gate.
 
 ### Fallback và blocker
 
-- Nếu các phase trước không handle frame, lifecycle chờ `3 giây` rồi click hotspot
-  tương đối `(50% width, 65% height)`, tối đa hai lần cho mỗi map.
+- Nếu các phase trước không handle frame, lifecycle chờ `3 giây` rồi click tọa độ
+  cứng dưới giường `(341,414)`. Không tính lại theo kích thước frame hay vị trí match.
+- Sau hai click đầu, tiếp tục retry mỗi `3 giây` sau khi kiểm tra popup/blocker/home
+  trên frame mới; không yêu cầu template rương khớp. Tối đa tổng cộng `10` click,
+  sau đó log cảnh báo.
 - Sau hai click, vision tìm blocker theo priority config. `overlay_newbie.png`
   dùng crop quyển sách không chứa chữ để detect; màn hướng dẫn đóng bằng
   "nhấn khu vực trống" nên click tọa độ cố định `(157, 54)` ở vùng đen bên

@@ -29,11 +29,8 @@ from hauntedroom.flows.automap_support.map.model_state import (
 )
 from hauntedroom.flows.automap_support.map.reward import (
     REWARD_LIST_TITLE_TEMPLATE_THRESHOLD,
-    WIN_REWARD_FOLLOWUP_CLICK,
-    WIN_REWARD_HOTSPOT_RATIO,
     WIN_REWARD_TEMPLATE_THRESHOLD,
     handle_reward_list,
-    relative_position,
     reward_list_popup_visible,
 )
 
@@ -120,10 +117,6 @@ class MapRewardVisionTest(IsolatedAsyncioTestCase):
                 threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
                 scales=(1.0,),
             )
-        )
-        self.assertEqual(
-            relative_position(missed_reward, WIN_REWARD_HOTSPOT_RATIO),
-            WIN_REWARD_FOLLOWUP_CLICK,
         )
 
     async def test_red_panel_confirms_win_without_calling_title_matcher(self):
