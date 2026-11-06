@@ -221,7 +221,9 @@ class MapRewardFlowTest(IsolatedAsyncioTestCase):
             self.page.wait_for_timeout.await_args_list,
             [
                 call(WIN_REWARD_EMPTY_DELAY_MS),
+                call(WIN_REWARD_RECHECK_MS),
                 call(WIN_REWARD_EMPTY_DELAY_MS),
+                call(WIN_REWARD_RECHECK_MS),
             ],
         )
 
@@ -282,3 +284,52 @@ class MapRewardFlowTest(IsolatedAsyncioTestCase):
                 call(WIN_REWARD_RECHECK_MS),
             ],
         )
+
+    @patch("hauntedroom.flows.automap_support.templates.load_template")
+    @patch("hauntedroom.flows.automap_support.flow.find_template")
+    @patch("hauntedroom.flows.automap_support.flow.find_template_matches")
+    @patch("hauntedroom.flows.automap_support.flow.capture_page_bgr", new_callable=AsyncMock)
+    async def test_retries_remaining_chests_after_popup_until_home(
+        self, capture_page_bgr, find_template_matches, find_template, load_template,
+    ):
+        load_template.return_value = np.zeros((2, 2), dtype=np.uint8)
+        capture_page_bgr.return_value = self.make_protect_available(
+            np.zeros((720, 640, 3), dtype=np.uint8)
+        )
+        find_template_matches.return_value = [(305, 466, 0.86)]
+        chest_clicks = 0
+        popup_dismissed = False
+
+        async def click(x, y):
+            nonlocal chest_clicks, popup_dismissed
+            if (x, y) == WIN_REWARD_FOLLOWUP_CLICK:
+                chest_clicks += 1
+            elif (x, y) == (318, 237):
+                popup_dismissed = True
+
+        def match(_frame, _template, name, **_kwargs):
+            if name == "map_end.png":
+                return 300, 400, 0.91
+            if name == "reward_list_title.png":
+                return 138, 37, 0.99 if chest_clicks == 1 and not popup_dismissed else 0.0
+            if name == "start_home.png":
+                return 50, 600, 0.95 if chest_clicks >= 3 else 0.0
+            return 0, 0, 0.0
+
+        self.page.mouse.click.side_effect = click
+        find_template.side_effect = match
+        on_win = Mock(return_value=1)
+        with patch("builtins.print"):
+            completed = await run_automap_flow(self.page, asyncio.Event(), on_win=on_win)
+        self.assertTrue(completed)
+        self.assertTrue(popup_dismissed)
+        self.assertEqual(chest_clicks, 3)
+        on_win.assert_called_once_with()
+        self.assertEqual(self.page.wait_for_timeout.await_args_list, [
+            call(WIN_REWARD_RECHECK_MS),
+            call(WIN_REWARD_RECHECK_MS),
+            call(WIN_REWARD_EMPTY_DELAY_MS),
+            call(WIN_REWARD_RECHECK_MS),
+            call(WIN_REWARD_EMPTY_DELAY_MS),
+            call(WIN_REWARD_RECHECK_MS),
+        ])

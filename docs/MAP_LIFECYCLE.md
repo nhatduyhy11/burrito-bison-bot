@@ -229,8 +229,14 @@ cleanup đã hoàn tất. Trạng thái này không thay thế home-ready gate.
 - Nếu các phase trước không handle frame, lifecycle chờ `3 giây` rồi click tọa độ
   cứng dưới giường `(341,414)`. Không tính lại theo kích thước frame hay vị trí match.
 - Sau hai click đầu, tiếp tục retry mỗi `3 giây` sau khi kiểm tra popup/blocker/home
-  trên frame mới; không yêu cầu template rương khớp. Tối đa tổng cộng `10` click,
-  sau đó log cảnh báo.
+  trên frame mới. Khi chưa từng xác nhận popup, không yêu cầu template rương
+  khớp; khi popup đã từng hiện, chỉ retry nếu frame mới vẫn detect được rương.
+  Mọi click reward/followup/retry đều chờ `2 giây` sau click trước khi chụp lại.
+  Tối đa tổng cộng `10` click, sau đó log cảnh báo.
+- Log reward có monotonic timestamp, phase, tọa độ, số lần thử, popup_seen;
+  `click begin` trước khi gửi, `click sent` sau khi lệnh hoàn tất, hoặc
+  `click failed` nếu có exception. `click sent` chưa xác nhận game nhận thao tác.
+  Recheck sau popup log số rương và tọa độ/score match khi trạng thái thay đổi.
 - Sau hai click, vision tìm blocker theo priority config. `overlay_newbie.png`
   dùng crop quyển sách không chứa chữ để detect; màn hướng dẫn đóng bằng
   "nhấn khu vực trống" nên click tọa độ cố định `(157, 54)` ở vùng đen bên

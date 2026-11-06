@@ -1,5 +1,7 @@
 """Map reward handling."""
 
+import time
+
 import cv2
 import numpy as np
 
@@ -14,8 +16,9 @@ WIN_REWARD_EMPTY_DELAY_MS = 3_000
 # Every reward attempt uses this exact point, independent of template matches.
 WIN_REWARD_FOLLOWUP_CLICK = (341, 414)
 WIN_REWARD_FOLLOWUP_CLICK_COUNT = 2
-# After the first two attempts, keep clicking every few seconds until popup
-# confirmation or home readiness. The cap counts every hotspot click.
+# After the first two attempts, keep clicking every few seconds until home
+# readiness. After popup confirmation require visible chests to retry.
+# The cap counts every hotspot click.
 WIN_REWARD_MAX_CLICK_COUNT = 10
 REWARD_LIST_TITLE_TEMPLATE_THRESHOLD = 0.90
 REWARD_LIST_TITLE_SEARCH_REGION = (180, 200, 460, 300)
@@ -74,6 +77,44 @@ def _record_confirmed_win(context: MapRewardContext, state: MapState) -> None:
     print(colorize("Reward popup confirmed; win recorded.", GREEN), flush=True)
 
 
+async def _click_reward(
+    context: MapRewardContext, state: MapState, x: int, y: int, *, phase: str,
+) -> None:
+    started = time.monotonic()
+    details = (
+        f"phase={phase} point={x},{y} "
+        f"attempt={state.reward_followup_click_count}/{WIN_REWARD_MAX_CLICK_COUNT} "
+        f"popup_seen={state.reward_list_title_seen}"
+    )
+    print(f"[reward {started:.3f}] click begin: {details}", flush=True)
+    try:
+        await context.click_fn(context.page, x, y)
+    except Exception as error:
+        print(
+            f"[reward {time.monotonic():.3f}] click failed: {details}; {error!r}",
+            flush=True,
+        )
+        raise
+    print(
+        f"[reward {time.monotonic():.3f}] click sent: {details}; "
+        f"elapsed_ms={(time.monotonic() - started) * 1000:.1f}; "
+        "game response awaits next frame",
+        flush=True,
+    )
+
+
+async def _wait_after_reward_click(context: MapRewardContext) -> MapLifecycleStep:
+    ready = await context.wait_for_flow_timeout_fn(
+        context.page, WIN_REWARD_RECHECK_MS, context.stop_event,
+    )
+    print(
+        f"[reward {time.monotonic():.3f}] post-click wait "
+        f"{WIN_REWARD_RECHECK_MS}ms complete; continue={ready}",
+        flush=True,
+    )
+    return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP
+
+
 async def handle_win_reward(
     context: MapRewardContext,
     state: MapState,
@@ -92,23 +133,18 @@ async def handle_win_reward(
     if not reward_matches:
         return MapLifecycleStep.NOT_HANDLED
 
-    _match_x, _match_y, score = reward_matches[0]
+    match_x, match_y, score = reward_matches[0]
     click_x, click_y = WIN_REWARD_FOLLOWUP_CLICK
     print(
-        f"Win reward visual hint found, score={score:.3f}; "
+        f"Win reward visual hint found at {match_x},{match_y}, score={score:.3f}; "
         "clicking the fixed reward point below the bed at "
         f"{click_x},{click_y} and checking again in 2s.",
         flush=True,
     )
     state.reward_click_position = (click_x, click_y)
     state.reward_followup_click_count += 1
-    await context.click_fn(context.page, click_x, click_y)
-    ready = await context.wait_for_flow_timeout_fn(
-        context.page,
-        WIN_REWARD_RECHECK_MS,
-        context.stop_event,
-    )
-    return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP
+    await _click_reward(context, state, click_x, click_y, phase="initial")
+    return await _wait_after_reward_click(context)
 
 
 async def handle_reward_list(
@@ -149,14 +185,10 @@ async def handle_reward_list(
         f"{click_x},{click_y} and checking again in 2s.",
         flush=True,
     )
-    await context.click_fn(context.page, click_x, click_y)
+    await _click_reward(context, state, click_x, click_y, phase="dismiss-popup")
     state.reward_list_title_seen = True
-    ready = await context.wait_for_flow_timeout_fn(
-        context.page,
-        WIN_REWARD_RECHECK_MS,
-        context.stop_event,
-    )
-    return MapLifecycleStep.CONTINUE if ready else MapLifecycleStep.STOP
+    state.reward_retry_armed = False
+    return await _wait_after_reward_click(context)
 
 
 async def handle_reward_followup(
@@ -170,7 +202,7 @@ async def handle_reward_followup(
     next_click = state.reward_followup_click_count + 1
     click_x, click_y = WIN_REWARD_FOLLOWUP_CLICK
     print(
-        "Reward popup not confirmed; waiting 3s then clicking "
+        "Reward popup absent on current frame; waiting 3s then clicking "
         f"the center reward hotspot at {click_x},{click_y} "
         f"({next_click}/{WIN_REWARD_FOLLOWUP_CLICK_COUNT}) before rechecking.",
         flush=True,
@@ -183,9 +215,9 @@ async def handle_reward_followup(
     if not ready:
         return MapLifecycleStep.STOP
 
-    await context.click_fn(context.page, click_x, click_y)
     state.reward_followup_click_count += 1
-    return MapLifecycleStep.CONTINUE
+    await _click_reward(context, state, click_x, click_y, phase="followup")
+    return await _wait_after_reward_click(context)
 
 
 async def handle_reward_retry(
@@ -193,23 +225,46 @@ async def handle_reward_retry(
     state: MapState,
     frame_gray: np.ndarray,
 ) -> MapLifecycleStep:
-    """Retry the fixed point without requiring a visible reward template.
+    """Retry the fixed point; after a confirmed popup require visible chests.
 
     Wait first, then let the lifecycle check popup/blocker/home on a fresh
     frame before clicking, so a popup that opened late is handled first.
     """
-    if (
-        state.reward_followup_click_count < WIN_REWARD_FOLLOWUP_CLICK_COUNT
-        or state.reward_list_title_seen
-    ):
+    if state.reward_followup_click_count < WIN_REWARD_FOLLOWUP_CLICK_COUNT:
         return MapLifecycleStep.NOT_HANDLED
+
+    # A prior popup confirms the win, not completion of chest collection.
+    # Only retry after that popup if a fresh frame still contains chests.
+    if state.reward_list_title_seen:
+        matches = context.find_template_matches_fn(
+            frame_gray,
+            context.win_reward_template,
+            context.win_reward_template_path.name,
+            threshold=WIN_REWARD_TEMPLATE_THRESHOLD,
+            scales=(1.0,),
+        )
+        observation = (
+            len(matches), state.reward_followup_click_count, state.reward_retry_armed,
+        )
+        if observation != state.reward_last_retry_observation:
+            state.reward_last_retry_observation = observation
+            print(
+                f"[reward {time.monotonic():.3f}] recheck after popup: "
+                f"chests={len(matches)} best={matches[0] if matches else None} "
+                f"attempts={state.reward_followup_click_count} "
+                f"retry_armed={state.reward_retry_armed}",
+                flush=True,
+            )
+        if not matches:
+            state.reward_retry_armed = False
+            return MapLifecycleStep.NOT_HANDLED
 
     if state.reward_followup_click_count >= WIN_REWARD_MAX_CLICK_COUNT:
         if not state.reward_retry_exhausted_warned:
             state.reward_retry_exhausted_warned = True
             print(
                 colorize(
-                    "Reward popup not confirmed after "
+                    "Reward cleanup still pending after "
                     f"{WIN_REWARD_MAX_CLICK_COUNT} clicks; giving up on "
                     "auto-clicking the reward card. Please check the screen.",
                     YELLOW,
@@ -220,6 +275,11 @@ async def handle_reward_retry(
 
     if not state.reward_retry_armed:
         state.reward_retry_armed = True
+        print(
+            f"[reward {time.monotonic():.3f}] retry waiting "
+            f"{WIN_REWARD_EMPTY_DELAY_MS}ms; next frame checks popup/blocker/home first",
+            flush=True,
+        )
         ready = await context.wait_for_flow_timeout_fn(
             context.page,
             WIN_REWARD_EMPTY_DELAY_MS,
@@ -231,10 +291,10 @@ async def handle_reward_retry(
     click_x, click_y = WIN_REWARD_FOLLOWUP_CLICK
     state.reward_followup_click_count += 1
     print(
-        "Reward popup not confirmed; clicking the fixed reward point again at "
+        "Reward popup absent on current frame; clicking the fixed reward point again at "
         f"{click_x},{click_y} "
         f"({state.reward_followup_click_count}/{WIN_REWARD_MAX_CLICK_COUNT}).",
         flush=True,
     )
-    await context.click_fn(context.page, click_x, click_y)
-    return MapLifecycleStep.CONTINUE
+    await _click_reward(context, state, click_x, click_y, phase="retry")
+    return await _wait_after_reward_click(context)

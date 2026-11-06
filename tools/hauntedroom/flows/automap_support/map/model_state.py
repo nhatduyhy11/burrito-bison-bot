@@ -41,6 +41,7 @@ class MapState:
     first_win_done: bool = False
     reward_followup_click_count: int = 0
     reward_retry_armed: bool = False
+    reward_last_retry_observation: tuple[int, int, bool] | None = None
     reward_retry_exhausted_warned: bool = False
     reward_click_position: tuple[int, int] | None = None
     reward_list_title_seen: bool = False
