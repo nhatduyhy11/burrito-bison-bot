@@ -41,6 +41,11 @@ khi tab game đang focus:
 | `Shift+9` | Chạy macro đặc biệt `spawn_exit_lvup`: vào room, bắt đầu battle, thoát room rồi lặp lại liên tục. |
 | `Shift+8` | Lưu screenshot vào `tests/fixtures/hauntedroom-captures/`; không đổi trạng thái flow. |
 | `Shift+0` | Dừng mềm flow hiện tại và quay lại standby. |
+
+Khi hotkey trong game không phản hồi, focus terminal và bấm `Shift+\` (`|`),
+không cần Enter, để remove rồi cài lại hotkey listener trên các frame hiện tại
+của game page. Terminal chỉ log kết quả `[reinject]`, không in lại menu hoặc
+đổi trạng thái flow. Cần restart runner một lần để dùng tính năng này.
 | `Ctrl+C` | Đóng runner và browser. |
 
 `Shift+1` dispatch theo kết quả detect:

@@ -4,10 +4,11 @@ from typing import Mapping, Optional
 
 from hauntedroom import settings
 from hauntedroom.actions.models import Action
-from hauntedroom.core.browser_hook import start_hotkey_listener
+from hauntedroom.core.browser_hook import reinject_hotkey_listener, start_hotkey_listener
 from hauntedroom.core.runtime import save_live_screenshot
 from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
 from hauntedroom.runner.commands import FlowCommand
+from hauntedroom.runner.terminal_input import REINJECT_COMMAND, TerminalInput
 from hauntedroom.screen_detect import ScreenName, detect_current_screen
 
 
@@ -262,7 +263,9 @@ async def run_standby_controller(
     )
 
     command_task = asyncio.create_task(command_queue.get())
+    terminal_input = TerminalInput(asyncio.get_running_loop(), command_queue)
     try:
+        terminal_input.start()
         while True:
             wait_for = {command_task}
             if flow_task is not None:
@@ -282,6 +285,10 @@ async def run_standby_controller(
 
             command_key = command_task.result()
             command_task = asyncio.create_task(command_queue.get())
+
+            if command_key == REINJECT_COMMAND:
+                await reinject_hotkey_listener(page)
+                continue
 
             if command_key == "1" and flow_task is None:
                 screen = await detect_current_screen(page)
@@ -363,6 +370,7 @@ async def run_standby_controller(
                 debug,
             )
     finally:
+        terminal_input.close()
         command_task.cancel()
         await asyncio.gather(command_task, return_exceptions=True)
         if flow_task is not None:

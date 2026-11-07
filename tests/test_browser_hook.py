@@ -60,3 +60,15 @@ class BrowserHookTest(IsolatedAsyncioTestCase):
         await suppress_next_click_log(page)
 
         page.evaluate.assert_awaited_once_with(SUPPRESS_NEXT_CLICK_LOG_SCRIPT)
+
+    async def test_reinject_continues_after_detached_frame_without_rebinding(self):
+        from hauntedroom.core.browser_hook import reinject_hotkey_listener
+
+        page = Mock()
+        broken = Mock(evaluate=AsyncMock(side_effect=RuntimeError("detached")))
+        healthy = Mock(evaluate=AsyncMock())
+        page.frames = [broken, healthy]
+        await reinject_hotkey_listener(page)
+        healthy.evaluate.assert_awaited_once_with(HOTKEY_SCRIPT)
+        page.expose_binding.assert_not_called()
+        page.add_init_script.assert_not_called()

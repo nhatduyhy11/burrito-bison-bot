@@ -6,38 +6,34 @@ import json
 
 HOTKEY_SCRIPT = """
 () => {
-    if (window.__hauntedRoomHotkeysInstalled) {
-        return;
+    if (window.__hauntedRoomHotkeyHandler) {
+        window.removeEventListener("keydown", window.__hauntedRoomHotkeyHandler, true);
     }
 
-    window.__hauntedRoomHotkeysInstalled = true;
-    window.addEventListener(
-        "keydown",
-        (event) => {
-            const command = /^Digit[0-9]$/.test(event.code)
-                ? event.code.slice(-1)
-                : event.code === "KeyT"
-                    ? "t"
-                    : event.code === "KeyE"
-                        ? "e"
-                        : null;
-            if (
-                !event.shiftKey ||
-                event.ctrlKey ||
-                event.altKey ||
-                event.metaKey ||
-                event.repeat ||
-                command === null
-            ) {
-                return;
-            }
+    window.__hauntedRoomHotkeyHandler = (event) => {
+        const command = /^Digit[0-9]$/.test(event.code)
+            ? event.code.slice(-1)
+            : event.code === "KeyT"
+                ? "t"
+                : event.code === "KeyE"
+                    ? "e"
+                    : null;
+        if (
+            !event.shiftKey ||
+            event.ctrlKey ||
+            event.altKey ||
+            event.metaKey ||
+            event.repeat ||
+            command === null
+        ) {
+            return;
+        }
 
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            window.sendHauntedRoomCommand(command);
-        },
-        true
-    );
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.sendHauntedRoomCommand(command);
+    };
+    window.addEventListener("keydown", window.__hauntedRoomHotkeyHandler, true);
 }
 """
 
@@ -89,6 +85,23 @@ async def start_hotkey_listener(
     await page.add_init_script(HOTKEY_SCRIPT)
     for frame in page.frames:
         await frame.evaluate(HOTKEY_SCRIPT)
+
+
+async def reinject_hotkey_listener(page) -> None:
+    """Replace handlers in current frames without registering bindings again."""
+    installed = 0
+    failed = 0
+    for frame in page.frames:
+        try:
+            await frame.evaluate(HOTKEY_SCRIPT)
+            installed += 1
+        except Exception as error:
+            failed += 1
+            print(f"[reinject] Frame failed: {error}", flush=True)
+    print(
+        f"[reinject] Hotkeys installed: {installed} frame(s); failed: {failed}.",
+        flush=True,
+    )
 
 
 async def start_user_click_logger(page) -> None:
