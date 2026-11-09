@@ -17,7 +17,11 @@ HOTKEY_SCRIPT = """
                 ? "t"
                 : event.code === "KeyE"
                     ? "e"
-                    : null;
+                    : event.code === "BracketRight"
+                        ? "]"
+                        : event.code === "BracketLeft"
+                            ? "["
+                            : null;
         if (
             !event.shiftKey ||
             event.ctrlKey ||

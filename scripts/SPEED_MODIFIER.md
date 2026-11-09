@@ -1,6 +1,40 @@
 # SPEED_MODIFIER — Nghiên cứu tốc độ campaign
 
-Ngày: 2026-11-08. Trạng thái: plan nghiên cứu, chưa triển khai hoặc thử runtime.
+Ngày: 2026-11-08. Trạng thái: đã probe runtime 2 lần (2026-11-09); POC hotkey đã code
+(`control_events/battle_speed.py`, `runner/speed_control.py`: Shift+] bật x1.6 khi screen
+detect = automap, watcher 5s re-apply / tắt khi hết trận, Shift+[ khôi phục). Chưa chạy
+POC trên game thật; chưa xác minh server chấp nhận kết quả trận.
+
+## Runtime probe 2026-11-09
+
+- Game chạy ở top frame `hauntedroomvnh5.joynetgame.com`, Cocos `2.4.15`. Handle trận:
+  `cc.director.getScene().getComponentInChildren(__require("BattleMainLoop").BattleMainLoop)`
+  → `null` ngoài trận; trong campaign `blackBoard.battleVo.battleType == 3`
+  (`EBattleTypeHangUpSystem`). Đầu trận `frameSync._isPause = true` một lúc.
+- Tick logic 100ms (10 tick/s), render 60fps; `FrameSyncCocos` tối đa 1 tick / frame
+  render → trần lý thuyết ~x6. `BattleDebugShellComp` của dev dùng `setTimeScale(8)`.
+- Đo: baseline 9.8 tick/s; sau `setTimeScale(1.6)` cửa sổ 6s chỉ đạt 11.0 tick/s và
+  `timeScale` đã về 1 → **game ghi đè trong ~1s**. Trả về 1 thì 10.0 tick/s.
+- Nghi phạm ghi đè (chưa xác nhận cái nào bắn): event `TDModuleEventType.LocalSetSpeed`
+  (`TDOrganCom`, `TDMythicalBeastCom` dispatch với `BattleModule.Ins.getSpeedByBattleType(type)`
+  = speed đã lưu, = 1 nếu chưa bật X2) và `TimeSpeedUpdate` từ operation `SetSpeed`
+  (`BattleTDBaseDirector`) → `BattleFrame._setTimeSpeed`.
+- Probe lần 2 (wrap `setTimeScale` ở instance, log stack):
+  - **Thủ phạm ghi đè đã xác nhận:** operation `SetSpeed` trong luồng operation của trận →
+    `BattleJuChangDirector/BattleTDAdvDirector/BattleTDBaseDirector.handleOperation` →
+    `TimeSpeedUpdate` → `TDBattleFrame._updateTimeSpeed` → `BattleFrame._setTimeSpeed(1)`.
+    Bắn 1 lần ở tick 100 (~10s đầu trận), không thấy lần thứ hai trong 40s quan sát.
+  - Phase A (chỉ set local): bị reset về 1 ở tick 100, trung bình 6.3 tick/s (thấp bất
+    thường, chưa rõ nguyên nhân).
+  - Phase B (`BattleModule.Ins.setSpeedByBattleType(3, 1.6)` + `setTimeScale(1.6)`, sau tick
+    100): **16.0 tick/s = đúng x1.6**, giữ 20s không bị ghi đè. Chưa tách được do lưu cache hay
+    chỉ vì không còn op `SetSpeed` nào sau tick 100.
+  - `setSpeedByBattleType` ghi vào cache bền (`_saveCacheData`) — POC phải trả về giá trị cũ
+    khi tắt. Probe đã restore (`stored=1`, `timeScale=1`).
+- Câu hỏi còn mở: op `SetSpeed` ở tick 100 có phải do client tự gửi theo speed đã lưu (nếu
+  vậy lưu 1.6 trước trận sẽ khiến game gửi `SetSpeed` 1.6 lên server = đi đúng luồng nút X2)
+  hay do server áp; server có chấp nhận kết quả trận ở 1.6 khi acc không có quyền
+  `BattleSpeed` không.
 
 ## Mục tiêu và phạm vi
 
