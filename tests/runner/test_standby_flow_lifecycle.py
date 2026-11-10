@@ -2,7 +2,7 @@ import asyncio
 import sys
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch, call
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
@@ -80,9 +80,13 @@ class StandbyFlowLifecycleTest(IsolatedAsyncioTestCase):
         run_start_automap_loop.side_effect = controllable_flow
         save_live_screenshot.side_effect = RuntimeError("stop test loop")
 
-        with self.assertRaisesRegex(RuntimeError, "stop test loop"):
-            await run_standby_controller(page, [], FLOW_COMMANDS)
+        speed = Mock(set_battle_flow=AsyncMock(), handle_command=AsyncMock(return_value=False), disable=AsyncMock())
+        with patch("hauntedroom.runner.standby.BattleSpeedController", return_value=speed):
+            with self.assertRaisesRegex(RuntimeError, "stop test loop"):
+                await run_standby_controller(page, [], FLOW_COMMANDS)
 
+        self.assertEqual(speed.set_battle_flow.await_args_list[0], call(True))
+        self.assertIn(call(False), speed.set_battle_flow.await_args_list)
         self.assertIsInstance(observed_control, FlowControl)
         self.assertTrue(observed_control.is_set())
         run_start_automap_loop.assert_awaited_once()

@@ -8,6 +8,7 @@ from hauntedroom.core.browser_hook import reinject_hotkey_listener, start_hotkey
 from hauntedroom.core.runtime import save_live_screenshot
 from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
 from hauntedroom.runner.commands import FlowCommand
+from hauntedroom.runner.speed_control import BattleSpeedController
 from hauntedroom.runner.terminal_input import REINJECT_COMMAND, TerminalInput
 from hauntedroom.screen_detect import ScreenName, detect_current_screen
 
@@ -239,6 +240,7 @@ async def run_standby_controller(
     start_auto_hotkeys = validate_start_auto_hotkeys(settings.START_AUTO_HOTKEYS)
     command_queue: asyncio.Queue[str] = asyncio.Queue()
     await start_hotkey_listener(page, command_queue)
+    speed_controller = BattleSpeedController(page)
 
     flow_task = None
     stop_event = None
@@ -252,6 +254,8 @@ async def run_standby_controller(
             "  Shift+1    Detect screen and run its flow\n"
             "  Shift+8    Capture screenshot\n"
             "  Shift+0    Stop current flow\n"
+            "  Shift+]    Campaign speed x2.2 (POC)\n"
+            "  Shift+[    Restore campaign speed\n"
             "  During auto-map/start-auto:\n"
             f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
             "  Ctrl+C     Close runner\n"
@@ -274,6 +278,7 @@ async def run_standby_controller(
             done, _ = await asyncio.wait(wait_for, return_when=asyncio.FIRST_COMPLETED)
 
             if flow_task is not None and flow_task in done:
+                await speed_controller.set_battle_flow(False)
                 finish_flow_task(flow_task)
                 flow_task = None
                 stop_event = None
@@ -288,6 +293,17 @@ async def run_standby_controller(
 
             if command_key == REINJECT_COMMAND:
                 await reinject_hotkey_listener(page)
+                continue
+
+            if command_key == "0":
+                await speed_controller.set_battle_flow(False)
+
+            # The preference can be armed idle; application requires a battle flow.
+            try:
+                if await speed_controller.handle_command(command_key):
+                    continue
+            except Exception as error:
+                print(f"[speed] command failed: {error}", flush=True)
                 continue
 
             if command_key == "1" and flow_task is None:
@@ -362,6 +378,7 @@ async def run_standby_controller(
                     ),
                     flush=True,
                 )
+            await speed_controller.set_battle_flow(command.enters_battle)
             flow_task = start_resolved_flow(
                 command,
                 page,
@@ -370,6 +387,9 @@ async def run_standby_controller(
                 debug,
             )
     finally:
+        await asyncio.gather(
+            speed_controller.disable("runner closing"), return_exceptions=True
+        )
         terminal_input.close()
         command_task.cancel()
         await asyncio.gather(command_task, return_exceptions=True)

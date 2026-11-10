@@ -32,6 +32,7 @@ class FlowCommand:
     control_factory: ControlFactory = asyncio.Event
     uses_automap_controls: bool = False
     stops_on_repeat_screen_hotkey: bool = False
+    enters_battle: bool = False
 
 
 def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand]:
@@ -257,12 +258,14 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "spawn_exit_lvup loop",
             "Spawn / exit / level-up loop",
             resolve_spawn_exit_lvup,
+            enters_battle=True,
         ),
         "automap": FlowCommand(
             "automap",
             "auto-map battle",
             "Auto-map battle",
             resolve_automap,
+            enters_battle=True,
             control_factory=FlowControl,
             uses_automap_controls=True,
         ),
@@ -271,6 +274,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "start-auto loop",
             "Start-auto loop / pause at final boss",
             resolve_start_auto,
+            enters_battle=True,
             control_factory=FlowControl,
             uses_automap_controls=True,
         ),
@@ -279,12 +283,14 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "train then auto-battle",
             "Train mode then auto-battle",
             resolve_train,
+            enters_battle=True,
         ),
         "train_ad_exit": FlowCommand(
             "train_ad_exit",
             "train ad exit loop",
             "Train ad exit loop",
             resolve_train_ad_exit,
+            enters_battle=True,
             control_factory=FlowControl,
         ),
         "train_exit_immediately": FlowCommand(
@@ -292,6 +298,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "train immediate exit loop",
             "Train enter then exit immediately",
             resolve_train_exit_immediately,
+            enters_battle=True,
             control_factory=FlowControl,
         ),
         "exp_available": FlowCommand(
@@ -340,6 +347,7 @@ def build_flow_commands(reload_policy, start_auto_flow) -> dict[str, FlowCommand
             "new-account setup then auto-map",
             "New-account setup then auto-map",
             resolve_new_account,
+            enters_battle=True,
             control_factory=FlowControl,
             uses_automap_controls=True,
         ),
