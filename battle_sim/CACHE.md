@@ -30,18 +30,19 @@ repo, phải giữ nguyên.
 
 ## Đóng gói và giải nén
 
-Ở máy cũ, tại gốc repo (nén giúp copy nhanh hơn nhiều so với 13k file lẻ):
+Ở máy cũ, tại gốc repo (nén giúp copy nhanh hơn nhiều so với 14k file lẻ). File nén ghi vào
+`.tmp/` (đã gitignore) để không lỡ commit ~680MB vào repo:
 
 ```bash
-tar -czf battle_sim_cache.tgz .tmp/battle_sim/bundles .tmp/battle_sim/maps .tmp/battle_sim/config .tmp/battle_sim/mirror .tmp/battle_research/events-*.jsonl
+tar -czf .tmp/battle_sim_cache.tgz .tmp/battle_sim/bundles .tmp/battle_sim/maps .tmp/battle_sim/config .tmp/battle_sim/mirror .tmp/battle_research/events-*.jsonl
 ```
 
 Có trận `--play` thì thêm `.tmp/battle_sim/played` vào lệnh trên.
 
-Ở máy mới, tại gốc repo (sau khi checkout đúng nhánh):
+Ở máy mới, chép file vào `.tmp/` của repo (sau khi checkout đúng nhánh), rồi tại gốc repo:
 
 ```bash
-tar -xzf battle_sim_cache.tgz
+tar -xzf .tmp/battle_sim_cache.tgz
 ```
 
 ```bash
