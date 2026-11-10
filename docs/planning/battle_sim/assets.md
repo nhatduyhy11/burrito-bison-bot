@@ -39,6 +39,8 @@ Khác (hangup, hero, summon, activity…) là lobby/UI ngoài trận — không 
   - Creep/boss campaign: **69 model** (`XG_0xx`, `Boss_0xx`) từ 133 creep code
     (`AdventuretdRoundLO.creep` → `CreepLO.model`).
   - Hero: **36 model** (`HeroLO.model`, `Hero_0xx`, có `_sea`); skin qua `DermaLO.deco`.
+    Mirror lấy đủ mọi hero và skin (270/291 thư mục `Hero_*`; phần thiếu là biến thể vùng
+    `_jp`/`_kr`). Chi tiết: `battle_sim/README.md` §Model hero trong trận.
   - Build: `build_*` (vd `build_cdz_001`, `build_zcm_001` — giường/cửa/công trình).
 - `shuzhi/icon`, `shuzhi/head` — icon tài nguyên, avatar (HUD).
 - Kích thước tham khảo: `Boss_014` json 70KB + atlas 5KB + png 52KB.

@@ -71,6 +71,21 @@ Lần chạy 2026-11-10 (ClientVer 64467): 10 316 file, 587MB (ext-res 362MB, `l
 khi thêm phần cho bước 3: 13 592 file, 662MB. Thêm `hero`: 14 072 file, 677MB, 92 mục
 thiếu (thêm 50 native `cc.Asset` thô của `hero`, ảnh UI đội hình, trận không load).
 
+### Model hero trong trận
+
+- Hero (và creep, boss, build) trong trận là spine ở ext-res
+  `model/<tên>/<tên>_<hash>.{json,skel,atlas,png}`, kèm bản `_h`/`_l` (atlas độ phân giải
+  cao/thấp). Không nằm trong bundle Cocos nào.
+- Tên model lấy từ `HeroLO.model`; hero mặc skin thì lấy từ `DermaLO.deco` (vd `Hero_001_pf2`).
+  Game load khi unit xuất hiện, qua `aswallow.extAssetMgr`, vào `GameSpine` ở node
+  `$_DISPLAY_NODE` của unit.
+- Mirror lấy **toàn bộ** `model/`, không lọc theo account: đổi account, hoặc chơi hero/skin
+  khác bằng `--play`, không cần tải thêm. Kiểm 2026-11-10 so với `ext-res/version_64467.json`:
+  game có 291 thư mục `model/Hero_*`, mirror có 270 (37 hero gốc, mọi skin `_pf1…_pf4`,
+  `_ez`, `_sea`). 21 thư mục không mirror đều là biến thể vùng `_jp`/`_kr`, bản SEA không dùng.
+- Bộ lọc vùng chỉ bỏ tên có hậu tố vùng ở cuối, nên vẫn lọt 46 thư mục dạng
+  `Hero_001_kr_pf1`. Không ảnh hưởng gì, chỉ tốn dung lượng.
+
 ## Boot cách ly (mốc B, bước 2)
 
 ```bash
