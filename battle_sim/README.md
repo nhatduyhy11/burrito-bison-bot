@@ -30,6 +30,9 @@ bundle `battle`.
 Capture trận (`events-*.jsonl`, chứa `StartGameP` + `QuitRoom`):
 `.tmp/battle_research/run_runner_hooked.py` (runner + research hook).
 
+Chuyển sang máy khác: các cache trên đều bị gitignore. Cần copy gì và kiểm tra ra sao, xem
+[CACHE.md](CACHE.md).
+
 ## Mirror asset (mốc B, bước 1)
 
 ```bash
