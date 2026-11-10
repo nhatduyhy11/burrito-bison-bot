@@ -9,6 +9,8 @@
 //   - SocketMgr / GameRoomSocket.send   -> logged, never sent (there is no socket anyway)
 // Captured ops are applied right before the engine's logicTick of their operFrame, exactly
 // like the headless sim (lib/sim.js).
+// ?play: no op log. The player uses the battle UI; the commit / pause stubs above are not
+// installed, so ops take the game's own Local path. ?seed=random|<uuid> changes the RNG seed.
 (function () {
   "use strict";
 
@@ -16,14 +18,23 @@
 
   window.__simBattle = async function ({ sim, step, R }) {
     const M = (name) => R(name)[name];
-    const { start, quit } = sim.capture;
+    const params = new URLSearchParams(location.search);
+    // ?play: the player drives the battle through the game's own UI (no op log). Ops take the
+    // game's normal Local path (TDServerProxy.commitClientRequest -> TDServer.handleClientRequest),
+    // robots are run by the director, and the director pauses on blocking panels as in the game.
+    const play = params.has("play");
+    const { quit } = sim.capture;
+    // StartGameP.uuid seeds the battle RNG: same uuid = same battle as the capture.
+    // ?seed=random (or any 24-hex string) starts a different battle with the same account data.
+    const start = { ...sim.capture.start, uuid: pickSeed(params.get("seed"), sim.capture.start.uuid) };
     const rb = window.makeRebuilder(R);
     const s2c = rb.build("StartGameP_BuildRoom_S2C", start);
-    const ops = rb.listItems(quit.operations).slice().sort((a, b) => a.operFrame - b.operFrame || a.index - b.index);
+    const ops = play ? [] : rb.listItems(quit.operations).slice().sort((a, b) => a.operFrame - b.operFrame || a.index - b.index);
     const myPid = rb.listItems(start.playerInfos)[0].playerId;
+    if (play) window.__simPlayedStart = start; // sandbox.py saves it with the QuitRoom (not polled: ~24KB)
     const report = (sim.battle = {
-      uuid: start.uuid, myPid, ops: ops.length, applied: 0, failed: [], dropped: [], foreignOps: 0,
-      netCalls: [], tick: 0, quit: null,
+      mode: play ? "play" : "replay", uuid: start.uuid, capturedUuid: sim.capture.start.uuid, myPid,
+      ops: ops.length, applied: 0, failed: [], dropped: [], foreignOps: 0, netCalls: [], tick: 0, quit: null,
     });
     const net = (what, extra) => {
       report.netCalls.push({ what, extra });
@@ -64,6 +75,8 @@
     // --- Main-like setup: only what the battle needs (no login, SDK, lobby modules) ---
     cc.view.setDesignResolutionSize(DESIGN.width, DESIGN.height, cc.ResolutionPolicy.FIXED_WIDTH);
     const canvas = cc.director.getScene().getChildByName("Canvas");
+    const canvasWidget = canvas.getComponent(cc.Widget); // boot.js: Canvas stretched to the screen
+    if (canvasWidget) canvasWidget.updateAlignment();
     const viewRoot = new cc.Node("ViewRoot");
     canvas.addChild(viewRoot);
     M("NodeUtils").addWidget(viewRoot, 0, 0, 0, 0).updateAlignment();
@@ -121,6 +134,8 @@
     const BuildProxy = M("BuildProxy").Ins;
     BuildProxy.QuitRoomRequest = function (req, cbs) {
       report.quit = { type: req.type, extra: req.extra, endFrame: req.endFrame, totalTime: req.totalTime, battleType: req.battleType };
+      // Play mode: keep the op log the game would upload, so a played battle can be replayed.
+      if (play) report.quit.operations = rb.listItems(req.operations).map((o) => ({ operationType: o.operationType, playerId: o.playerId, operFrame: o.operFrame, index: o.index, args: o.args }));
       step("QuitRoom (local)", { type: req.type, endFrame: req.endFrame, totalTime: req.totalTime });
       const cb = cbs && cbs[0];
       if (cb) setTimeout(() => cb({ err: 0, result: req.type, clientReward: null, otherReward: null, extra: req.extra }), 0);
@@ -154,7 +169,7 @@
     // committed op is the next logged one (same type + player, already due) the logged op is
     // applied in its place (e.g. the room-ready / start ops at frame 0 that gate the engine);
     // anything else is dropped and reported.
-    TDServerProxy.commitClientRequest = function (op) {
+    if (!play) TDServerProxy.commitClientRequest = function (op) {
       const next = ops[qi];
       const tick = TDServer.curFrame;
       if (next && next.operationType === op.operationType && next.playerId === op.playerId && next.operFrame <= tick) {
@@ -180,10 +195,14 @@
     const UIMgr = M("UIMgr").Ins;
     const WHEEL_VIEW = "TDRouletteWheel";
     const OP_SELECT_ELITE = R("BuildProto").EClientOperationType_Build_Enum.SelectElite;
+    // Play mode keeps the real pause (the player has to answer the panel); only counted.
     report.pausesSkipped = {};
-    M("BattleTDBaseDirector").prototype.pause = function () {
+    const Director = M("BattleTDBaseDirector");
+    const origPause = Director.prototype.pause;
+    Director.prototype.pause = function () {
       const why = this._blockViewName || "?";
       report.pausesSkipped[why] = (report.pausesSkipped[why] || 0) + 1;
+      if (play) return origPause.apply(this, arguments);
     };
     const origTick = Delegate.prototype.logicTick;
     Delegate.prototype.logicTick = function () {
@@ -204,7 +223,9 @@
           applyNext(tick);
         }
         const el = document.getElementById("simStatus");
-        if (el && tick % 50 === 0) el.textContent = `battle ${start.uuid} L${start.level}  tick ${tick}  ops ${qi}/${ops.length}`;
+        if (el && tick % 50 === 0) el.textContent = play
+          ? `play ${start.uuid} L${start.level}  tick ${tick}  ops ${TDServerProxy._clientOperationRecord.length}`
+          : `battle ${start.uuid} L${start.level}  tick ${tick}  ops ${qi}/${ops.length}`;
       }
       return origTick.apply(this, arguments);
     };
@@ -244,13 +265,27 @@
       done = true;
       const st = TDServer._delegate && TDServer._delegate._battleStatistics;
       report.result = st && { result: st.result, resultReason: st.resultReason };
-      report.compare = compare(quit, report.quit);
-      step("battle end", { tick: report.tick, applied: report.applied, failed: report.failed.length, dropped: report.dropped.length, match: report.compare.ok });
+      if (play) {
+        step("battle end", { tick: report.tick, ops: report.quit.operations.length, extra: report.quit.extra && JSON.parse(report.quit.extra) });
+      } else {
+        report.compare = compare(quit, report.quit);
+        step("battle end", { tick: report.tick, applied: report.applied, failed: report.failed.length, dropped: report.dropped.length, match: report.compare.ok });
+      }
       sim.state = "done";
     }
     await M("TDModule").Ins.onStartGamePPush(s2c);
     step("StartGameP pushed", { uuid: start.uuid, level: start.level, battleType: start.battleType });
   };
+
+  // Battle uuid (= RNG seed): ?seed absent -> the captured one; "random" -> fresh 24-hex
+  // (same shape as a server uuid); anything else is used as given.
+  function pickSeed(seed, captured) {
+    if (!seed) return captured;
+    if (seed !== "random") return seed;
+    const b = new Uint8Array(12);
+    crypto.getRandomValues(b);
+    return Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+  }
 
   // Game's QuitRoom (captured) vs the one this page produced.
   function compare(game, mine) {

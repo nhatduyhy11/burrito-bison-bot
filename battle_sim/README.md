@@ -148,6 +148,36 @@ Cả 3 trận đã capture đều khớp `QuitRoom` tuyệt đối:
 Cả 3 trận đều 0 op lỗi, 0 request bị chặn, 0 file 404 (sau khi thêm `summonCreature` và
 `shuzhi/shenbing`).
 
+## Tự chơi trận với đội hình account (mốc B, bước 4)
+
+```bash
+uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play
+```
+
+```bash
+uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --seed random
+```
+
+- `--play` mở `/sim.html?battle=<uuid>&play=1` trong cửa sổ thật (ngầm bật `--keep`, timeout
+  3600s). Người chơi tự bấm UI battle gốc. Lấy `StartGameP` của trận đã capture (hero, build,
+  organ… của account), không dùng op log.
+- Op đi đúng đường `Local` của game: `TDServerProxy.commitClientRequest` gọi
+  `TDServer.handleClientRequest` và ghi op vào `_clientOperationRecord`, không qua mạng. Robot
+  đồng đội do director tự sinh op. Director pause trận khi có bảng chặn (chọn summon, vòng
+  quay), như game thật.
+- `--seed`: `uuid` của `StartGameP` là seed RNG. Không truyền thì dùng uuid đã capture, trận
+  giống bản capture cho tới op đầu tiên khác đi. `random` sinh 24 hex mới, ra trận mới.
+  Chuỗi khác thì dùng nguyên chuỗi đó.
+- Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
+  `BattleResultViewAdventure` vẫn hiện, chỉ không có reward. Script lưu trận vừa chơi vào
+  `.tmp/battle_sim/played/played-<uuid>-<ts>.jsonl` (`StartGameP` + `QuitRoom` kèm op log, cùng
+  định dạng capture). `node battle_sim/replay.js <file>` replay headless file đó và so `QuitRoom`.
+- `--headless --play` là smoke test, không có ai bấm. Bảng vòng quay ở frame 1200 sẽ pause
+  trận vô thời hạn.
+- `boot.js` gắn `cc.Widget` căn 4 cạnh cho Canvas. Engine 2.4 không tự set kích thước Canvas
+  (scene của editor luôn có Widget này). Thiếu Widget thì Canvas là 0×0: UI battle lệch nửa
+  màn hình và click không trúng nút (bước 3 không lộ vì replay không cần click).
+
 ## Chạy
 
 ```bash

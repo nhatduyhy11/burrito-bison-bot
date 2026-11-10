@@ -106,6 +106,13 @@
     const scene = new cc.Scene();
     const canvasNode = new cc.Node("Canvas");
     canvasNode.addComponent(cc.Canvas);
+    // In 2.4 cc.Canvas does not size its node; editor scenes carry a Widget stretched to the
+    // screen. Without it Canvas stays 0x0 at (0,0): every widget under it collapses and touches
+    // miss the drawn buttons.
+    const canvasWidget = canvasNode.addComponent(cc.Widget);
+    canvasWidget.isAlignTop = canvasWidget.isAlignBottom = canvasWidget.isAlignLeft = canvasWidget.isAlignRight = true;
+    canvasWidget.top = canvasWidget.bottom = canvasWidget.left = canvasWidget.right = 0;
+    canvasWidget.alignMode = cc.Widget.AlignMode.ON_WINDOW_RESIZE;
     scene.addChild(canvasNode);
     cc.director.runSceneImmediate(scene);
     step("engine running", { frame: cc.view.getFrameSize() });
