@@ -2,7 +2,7 @@
 
 Status 2026-11-10: phase 1 (vào map, socket), 1b ([hero_option](hero_option.md)), 2
 ([spin](spin.md)), 3/3b ([creep_waves](creep_waves.md), [boss](boss.md)), 4 (thắng map,
-`QuitRoom`) đã xác minh runtime. Asset chưa làm.
+`QuitRoom`) đã xác minh runtime. Asset: đã kiểm kê ([assets](assets.md)), chưa mirror.
 
 Capture map thắng (runner automap + hook):
 `.tmp/battle_research/events-runner-20261110-122739.jsonl` — `QuitRoom` result 1 `EnemyAllDead`,
@@ -15,6 +15,7 @@ Doc phụ:
 - [spin.md](spin.md) — vòng quay (trụ cột 2)
 - [creep_waves.md](creep_waves.md) — lịch spawn quái
 - [boss.md](boss.md) — mini / final boss
+- [assets.md](assets.md) — bundle, ext-res, model, map cần cho battle
 
 Dữ liệu thô + script probe: `.tmp/battle_research/` (gitignored): `events-*.jsonl`,
 `startgamep-<uuid>.json`, `hook.js`, `wrap_random.js`, `launch.py`, `cdp.py`, `driver.py`,
