@@ -132,8 +132,13 @@ async def run(args) -> int:
                     profile,
                     channel=args.browser,
                     headless=args.headless,
-                    viewport={"width": 720, "height": 1280} if args.headless else None,
+                    # Portrait game (design 720x1280, FIXED_WIDTH): a landscape window only shows a
+                    # 720x400 strip. Headed defaults to the hauntedroom runner's 640x720.
+                    viewport=dict(zip(("width", "height"), map(int, args.size.split("x")))),
                     service_workers="block",
+                    **({"record_video_dir": args.record,
+                        "record_video_size": dict(zip(("width", "height"), map(int, args.size.split("x"))))}
+                       if args.record else {}),
                     args=[f"--remote-debugging-port={CDP_PORT}", "--remote-debugging-address=127.0.0.1"],
                 )
 
@@ -241,7 +246,11 @@ def main() -> int:
     ap.add_argument("--headless", action="store_true")
     ap.add_argument("--browser", choices=("chrome", "chromium"), default="chrome")
     ap.add_argument("--timeout", type=float, default=120)
+    ap.add_argument("--record", help="record the page as .webm into this directory (saved when the window closes)")
+    ap.add_argument("--size", help="viewport WxH (default 720x1280 headless, 640x720 headed like the runner)")
     args = ap.parse_args()
+    if not args.size:
+        args.size = "720x1280" if args.headless else "640x720"
     if args.play:
         if not args.battle:
             ap.error("--play needs --battle <uuid> (whose StartGameP to use)")

@@ -77,6 +77,7 @@
     const canvas = cc.director.getScene().getChildByName("Canvas");
     const canvasWidget = canvas.getComponent(cc.Widget); // boot.js: Canvas stretched to the screen
     if (canvasWidget) canvasWidget.updateAlignment();
+    fixMainCamera(canvas);
     const viewRoot = new cc.Node("ViewRoot");
     canvas.addChild(viewRoot);
     M("NodeUtils").addWidget(viewRoot, 0, 0, 0, 0).updateAlignment();
@@ -276,6 +277,29 @@
     await M("TDModule").Ins.onStartGamePPush(s2c);
     step("StartGameP pushed", { uuid: start.uuid, level: start.level, battleType: start.battleType });
   };
+
+  // cc.Canvas's "Main Camera" renders every group and clears color. The battle prefab has its
+  // own camera_battle (groups battle_ground*, depth -10) that renders first, so the Main Camera
+  // wiped it and redrew the map without the battle camera offset (wrong area, no units).
+  // The game's launch scene sets this up in the editor; here: Main Camera = UI only, no color
+  // clear, and a lowest-depth camera that only clears the frame.
+  function fixMainCamera(canvas) {
+    const main = canvas.getComponentInChildren(cc.Camera);
+    if (!main) return;
+    const groups = cc.game.groupList || [];
+    for (const g of ["battle_ground", "battle_ground_bg"]) {
+      const i = groups.indexOf(g);
+      if (i >= 0) main.cullingMask &= ~(1 << i);
+    }
+    main.clearFlags = cc.Camera.ClearFlags.DEPTH | cc.Camera.ClearFlags.STENCIL;
+    const node = new cc.Node("ClearCamera");
+    const clear = node.addComponent(cc.Camera);
+    clear.cullingMask = 0;
+    clear.depth = -100;
+    clear.backgroundColor = cc.Color.BLACK;
+    clear.clearFlags = cc.Camera.ClearFlags.COLOR | cc.Camera.ClearFlags.DEPTH | cc.Camera.ClearFlags.STENCIL;
+    canvas.addChild(node);
+  }
 
   // Battle uuid (= RNG seed): ?seed absent -> the captured one; "random" -> fresh 24-hex
   // (same shape as a server uuid); anything else is used as given.

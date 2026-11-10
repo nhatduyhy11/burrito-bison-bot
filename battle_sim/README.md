@@ -51,8 +51,9 @@ node battle_sim/serve.js
   host. Gồm:
   - file boot (`index.html`, manifest, engine, settings);
   - các bundle `internal`, `main`, `resources`, `login`, `battle`, `battleConfig`,
-    `battleSkillRes`, `towerDefense`, `organ`, `hangup`, `summonCreature` (config, script,
-    import, native); hai bundle cuối được thêm ở bước 3 vì UI battle load chúng;
+    `battleSkillRes`, `towerDefense`, `organ`, `hangup`, `summonCreature`, `hero` (config,
+    script, import, native); ba bundle cuối được thêm ở bước 3 vì UI battle load chúng
+    (`hero` chứa model hero trong trận, thiếu thì hero không hiện);
   - ext-res `model/` (bỏ biến thể vùng jp/kr/tw/us), `model_frame/`, `userProto/`, `data/`,
     và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing}/`.
 - Chỉ là GET ẩn danh tới file tĩnh công khai, không đăng nhập. Chạy lại sẽ bỏ qua file đã có.
@@ -66,7 +67,8 @@ node battle_sim/serve.js
 Lần chạy 2026-11-10 (ClientVer 64467): 10 316 file, 587MB (ext-res 362MB, `login` 90MB,
 `battleSkillRes` 72MB). 74/74 file mẫu khớp từng byte với host. 42 mục thiếu: 40 native
 `cc.Asset` thô và 2 script boot (jquery, clipboard), tất cả đều 404 ngay trên host. Sau
-khi thêm phần cho bước 3: 13 592 file, 662MB.
+khi thêm phần cho bước 3: 13 592 file, 662MB. Thêm `hero`: 14 072 file, 677MB, 92 mục
+thiếu (thêm 50 native `cc.Asset` thô của `hero`, là ảnh UI đội hình, battle không load).
 
 ## Boot cách ly (mốc B, bước 2)
 
@@ -81,6 +83,10 @@ uv run python battle_sim/sandbox.py --headless
   bước boot, kết quả kiểm tra, request bị chặn, file 404 của mirror, lỗi console. Exit 0 chỉ
   khi trạng thái là `ready` và không có request nào bị chặn.
 - `--keep` giữ cửa sổ mở (CDP `127.0.0.1:9334`); bỏ `--headless` để xem bằng mắt.
+- `--size WxH`: viewport. Mặc định 720x1280 khi headless, 640x720 khi headed (giống runner).
+  Game là màn dọc (`FIXED_WIDTH`), cửa sổ ngang chỉ hiện một dải 720×400 nên UI trông như bị
+  phóng to.
+- `--record <dir>`: quay trang thành `.webm` (lưu khi đóng cửa sổ), để xem lại một flow.
 - `boot.js` làm lại `window.boot()` của game tới `cc.game.run`: engine, `settings`,
   `jsList`, bundle `internal`/`login`, rồi `main` (code game). Sau đó chạy **scene rỗng**
   thay cho launch scene, nên `Main` và `LoginMgr` không bao giờ chạy. Tiếp theo:
@@ -177,6 +183,10 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   định dạng capture). `node battle_sim/replay.js <file>` replay headless file đó và so `QuitRoom`.
 - `--headless --play` là smoke test, không có ai bấm. Bảng vòng quay ở frame 1200 sẽ pause
   trận vô thời hạn.
+- `battle.js` sửa `Main Camera` của Canvas: chỉ render UI (bỏ group `battle_ground*`) và
+  không xoá màu; một camera riêng depth -100 lo xoá khung hình. Nếu không, `Main Camera`
+  (render mọi group, xoá màu, vẽ sau `camera_battle` depth -10) xoá hình battle rồi vẽ lại map
+  không theo offset camera: chỉ thấy một vùng map tĩnh, không hero, không creep.
 - `boot.js` gắn `cc.Widget` căn 4 cạnh cho Canvas. Engine 2.4 không tự set kích thước Canvas
   (scene của editor luôn có Widget này). Thiếu Widget thì Canvas là 0×0: UI battle lệch nửa
   màn hình và click không trúng nút (bước 3 không lộ vì replay không cần click).
