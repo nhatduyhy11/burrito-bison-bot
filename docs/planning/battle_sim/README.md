@@ -5,6 +5,8 @@
 đụng server thật. Logic sim headless cùng replay và `snapshot.js` là công cụ test cho
 mục tiêu này, không phải đích đến.
 
+**Bắt đầu session mới:** đọc [NEXT_STEP.md](NEXT_STEP.md), có đủ context cho bước tiếp theo.
+
 ## Nguyên tắc an toàn (vùng xám, tránh dính ban)
 
 Đi đường dài, từng bước, ưu tiên an toàn hơn tốc độ.
@@ -34,11 +36,10 @@ mục tiêu này, không phải đích đến.
    game~~: **xong** 2026-11-10, gồm `battle_sim/sandbox.py` và `web/boot.js`. Browser chặn
    mọi request ra ngoài localhost. Boot tới scene rỗng, nạp config, các bundle battle, map và
    model ext-res. Không có request ra ngoài, không file 404.
-   - Ghi chú cho bước 3: battle còn cần phần khởi tạo mà `Main` làm sau login (`UIMgr.init`,
-     `ResourceManager.init`, `BattleMgr.init`, `AgentConfig`, `ModuleMgr`…). Làm từng phần
-     một trong trang cách ly, có cần thì mới thêm.
-3. Mở trận bằng `StartGameP` đã capture, replay op log có hình. So kết quả với `QuitRoom` và
-   sim headless để chứng minh simulator khớp game.
+3. ~~Mở trận bằng `StartGameP` đã capture, replay op log có hình~~: **xong** 2026-11-10,
+   gồm `web/battle.js`. Vào trận qua `TDModule.onStartGamePPush` với UI battle gốc. Cả 3 trận
+   đã capture: `QuitRoom` khớp tuyệt đối, 0 request ra ngoài. Cơ chế xem
+   `battle_sim/README.md`.
 4. Chơi tương tác với đúng đội hình của account.
 5. Sau cùng mới tính mở khoá, chỉnh số, vẫn chỉ trong bản cách ly.
 

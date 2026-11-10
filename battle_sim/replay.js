@@ -10,30 +10,9 @@ const path = require("path");
 const { Sim } = require("./lib/sim");
 const checkpoints = require("./lib/checkpoints");
 const versions = require("./lib/versions");
+const { listItems, loadAll } = require("./lib/capture");
 
 const root = path.join(__dirname, "..");
-const CAPTURE_DIR = path.join(root, ".tmp/battle_research");
-
-function listItems(j) {
-  if (!j) return [];
-  const n = j._length != null ? j._length : 0;
-  return Array.from({ length: n }, (_, i) => j[String(i)]);
-}
-
-// Battles (StartGameP .. QuitRoom) in one capture file.
-function loadCapture(file) {
-  const lines = fs.readFileSync(file, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
-  const battles = [];
-  let cur = null;
-  for (const e of lines) {
-    const msg = e.data && typeof e.data === "object" ? String(e.data.msg || "") : "";
-    if (e.kind === "room" && msg.includes("StartGameP")) { cur = { file, start: e.data.obj, events: [] }; battles.push(cur); continue; }
-    if (!cur) continue;
-    cur.events.push(e);
-    if (e.kind === "sock" && msg.includes("QuitRoom(")) cur.quit = e.data.obj;
-  }
-  return battles.filter((b) => b.quit);
-}
 
 async function replayBattle(battle) {
   const start = battle.start;
@@ -97,13 +76,8 @@ async function main() {
   const args = process.argv.slice(2);
   const verbose = args.includes("-v");
   const uuids = args.filter((a) => /^[0-9a-f]{24}$/.test(a));
-  let files = args.filter((a) => a !== "-v" && !uuids.includes(a));
-  if (!files.length) {
-    files = fs.readdirSync(CAPTURE_DIR).filter((f) => /^events-.*\.jsonl$/.test(f)).map((f) => path.join(CAPTURE_DIR, f));
-  }
-  const byUuid = new Map();
-  for (const f of files) for (const b of loadCapture(f)) if (!byUuid.has(b.start.uuid)) byUuid.set(b.start.uuid, b);
-  let battles = [...byUuid.values()];
+  const files = args.filter((a) => a !== "-v" && !uuids.includes(a));
+  let battles = loadAll(files.length ? files : undefined);
   if (uuids.length) battles = battles.filter((b) => uuids.includes(b.start.uuid));
   if (!battles.length) throw new Error("no battle with StartGameP + QuitRoom found");
   const detail = verbose || battles.length === 1;

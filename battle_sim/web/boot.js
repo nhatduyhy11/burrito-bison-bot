@@ -2,6 +2,7 @@
 // Mirrors window.boot() (main.<h>.js) up to cc.game.run, but runs an empty scene
 // instead of the launch scene, so Main / LoginMgr (login, SDK, servers) never start.
 // Progress and results land in window.__sim (read by sandbox.py).
+// ?battle=<uuid> additionally loads battle.js, which opens that captured battle after boot.
 (function () {
   "use strict";
   const sim = (window.__sim = { state: "booting", steps: [], checks: {}, error: null });
@@ -38,6 +39,22 @@
     }
   }
 
+  // Globals the game's index.html defines and game code calls (AgentConfig, ThemeModule, ...).
+  // localConfig is the static object embedded in the mirrored index.html; remoteConfig comes
+  // from a server call (get_versionInfoApi) in the real page, so here it stays empty and the
+  // game falls back to its defaults; urlKV (the page's query) is empty too.
+  async function defineIndexGlobals() {
+    const html = await (await fetch("/index.html")).text();
+    const m = /var localConfig = (\{.*\});?\s*$/m.exec(html);
+    const localConfig = m ? JSON.parse(m[1]) : {};
+    const remoteConfig = {};
+    const urlKV = {};
+    window.getLocalAgent = () => localConfig;
+    window.getRemoteAgent = () => remoteConfig;
+    window.getUrlKV = () => urlKV;
+    sim.checks.localConfig = { AgentCode: localConfig.AgentCode, SubAgentCode: localConfig.SubAgentCode, ClientVer: localConfig.ClientVer };
+  }
+
   function loadConfigBin(bytes, parserName) {
     const QuickLZ = R("QuickLZ").QuickLZ;
     const BinaryReader = R("BinaryReader").BinaryReader;
@@ -51,6 +68,15 @@
 
   async function main() {
     const params = new URLSearchParams(location.search);
+    const battleUuid = params.get("battle");
+    if (battleUuid) {
+      // The battle decides the config version (StartGameP.configVersion).
+      sim.capture = await getJson(`/__sim/battle/${battleUuid}.json`);
+      step("capture", { uuid: battleUuid, level: sim.capture.start.level, configVersion: sim.capture.start.configVersion });
+      await loadScript("/__sim_lib/proto_rebuild.js");
+      await loadScript("/__sim/battle.js");
+    }
+    await defineIndexGlobals();
     const deploy = await getJson("/__sim/deploy.json");
     step("deploy", { clientVer: deploy.clientVer, main: deploy.bundleVers.main });
 
@@ -86,7 +112,7 @@
 
     // Remote config, from the local cache (same parsers the game uses after login).
     const configs = await getJson("/__sim/configs.json");
-    const configVer = params.get("config") || configs[0];
+    const configVer = params.get("config") || (sim.capture && sim.capture.start.configVersion) || configs[0];
     if (!configVer) throw new Error("no cached config; replay a battle or run versions.ensureConfig first");
     const pre = loadConfigBin(await getBytes(`/__sim_config/${configVer}/preload_config.bin`), "PreloadConfigParser");
     const cfg = loadConfigBin(await getBytes(`/__sim_config/${configVer}/config.bin`), "ConfigParser");
@@ -119,6 +145,11 @@
     sim.checks.extRes = { url: modelUrl, type: model && model.constructor && cc.js.getClassName(model) };
     step("ext-res", sim.checks.extRes);
 
+    if (battleUuid) {
+      sim.state = "battle";
+      await window.__simBattle({ sim, step, R, cb2p, deploy });
+      return; // battle.js sets the final state
+    }
     sim.state = "ready";
     step("READY");
   }
@@ -132,7 +163,12 @@
     } catch (e) { return String(e.message || e); }
   }
 
-  window.addEventListener("error", (e) => { if (sim.state !== "error") step("window.error", String(e.message)); });
+  window.addEventListener("error", (e) => {
+    if (sim.state === "error") return;
+    const stack = e.error && e.error.stack ? String(e.error.stack).split("\n").slice(1, 6).map((l) => l.trim()).join(" | ") : null;
+    step("window.error", stack ? `${e.message} @ ${stack}` : String(e.message));
+  });
   window.addEventListener("unhandledrejection", (e) => step("unhandledrejection", String(e.reason && e.reason.message || e.reason)));
+  sim.fail = fail;
   main().catch((e) => fail("main", e));
 })();

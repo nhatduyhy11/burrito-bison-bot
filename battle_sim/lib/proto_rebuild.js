@@ -1,4 +1,5 @@
 "use strict";
+// Shared by the Node sim and the isolated browser page (no Node APIs here).
 // Rebuild real proto message instances (with the game's List / Dictionary types)
 // from the JSON produced by the research hook, using the game's own *_Def schemas.
 //
@@ -87,4 +88,5 @@ function makeRebuilder(req) {
   return { build, listItems };
 }
 
-module.exports = { makeRebuilder };
+if (typeof module !== "undefined" && module.exports) module.exports = { makeRebuilder };
+else window.makeRebuilder = makeRebuilder; // battle_sim/web page (served at /__sim_lib/)

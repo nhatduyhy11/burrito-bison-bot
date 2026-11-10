@@ -15,10 +15,11 @@ const cocos = require("./lib/cocos_bundle");
 const { GAME, liveDeploy } = require("./lib/deploy");
 const versions = require("./lib/versions");
 
-const BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ"];
-// ext-res: battle models + frames + data. Region variants other than base/_sea are skipped.
-const EXT_RES_KEEP = /^(model\/|model_frame\/|userProto\/|data\/)/;
-const EXT_RES_REGION = /^model\/([^/]*_(jp|kr|tw|us)|(kr|tw|jp|us)_[^/]*)\//;
+const BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ", "hangup", "summonCreature"];
+// ext-res: battle models + frames + data, plus the shuzhi/ image folders the battle UI loads
+// (portraits, item, skill and artifact icons). Region variants other than base/_sea are skipped.
+const EXT_RES_KEEP = /^(model\/|model_frame\/|userProto\/|data\/|shuzhi\/(head|icon|skillicon|TDBattle|shenbing)\/)/;
+const EXT_RES_REGION = /^(model\/([^/]*_(jp|kr|tw|us)|(kr|tw|jp|us)_[^/]*)\/|shuzhi\/.*(^|[/_])(jp|kr|tw|us)(_|\.))/;
 const CONCURRENCY = 8;
 
 const TEXTURE_EXTS = [".png", ".jpg", ".webp", ".jpeg"];
