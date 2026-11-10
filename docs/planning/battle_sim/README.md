@@ -1,5 +1,41 @@
 # Battle simulator research — main
 
+**Mục tiêu cuối:** mini game battle standalone, chạy local, có hình, mở khoá mọi thứ
+(hero/skin/antique/organ max) để chơi cho vui. Chỉ dùng cá nhân, không phát tán và không
+đụng server thật. Logic sim headless cùng replay và `snapshot.js` là công cụ test cho
+mục tiêu này, không phải đích đến.
+
+## Nguyên tắc an toàn (vùng xám, tránh dính ban)
+
+Đi đường dài, từng bước, ưu tiên an toàn hơn tốc độ.
+
+- **Không gửi gì khác thường lên server thật**: không gói giả, không sửa số, không replay
+  hay tự tạo `QuitRoom`/`EnterRoom`. Session đang đăng nhập chỉ chơi bình thường.
+- **Không can thiệp vào trang game live đang đăng nhập**: không chặn hay giả socket, không
+  gọi thẳng hàm game để mở trận. Trên trang live chỉ được dùng hook **đọc thụ động**
+  (capture như `hook.js`).
+  - Lý do: chặn được socket nhưng còn HTTP/SDK/telemetry, logic reconnect và kiểm tra trận
+    dở dang (`UnfinishedRoom`). Client có thể rơi vào trạng thái lệch với server, và chuyện
+    đó có thể bị ghi nhận.
+- **Simulator chạy cách ly hoàn toàn**: trang local, không đăng nhập, không mở kết nối nào
+  tới server game, chỉ dùng asset công khai đã mirror. Việc giả socket chỉ được làm trong
+  bản cách ly này, khi không có server nào ở đầu bên kia.
+- **Mốc đầu tiên dùng đúng dữ liệu account**: `StartGameP` capture nguyên bản, không chỉnh
+  số. Mở khoá hay sửa số chỉ làm sau khi bản y hệt đã được chứng minh, và cũng chỉ trong bản
+  cách ly.
+
+## Lộ trình mốc B (simulator có hình, cách ly)
+
+1. ~~Mirror asset battle về local, serve tĩnh~~: **xong** 2026-11-10, gồm `battle_sim/mirror.js`
+   và `serve.js`: 587MB, khớp từng byte với host (chi tiết trong `battle_sim/README.md`).
+   Chưa biết file nào thật sự dùng; tới bước 2–3 thì đọc `misses.log` để biết thiếu gì, rồi
+   tính chuyện cắt bớt.
+2. Trang local boot engine và bundle gốc, không qua login và lobby, không kết nối mạng game.
+3. Mở trận bằng `StartGameP` đã capture, replay op log có hình. So kết quả với `QuitRoom` và
+   sim headless để chứng minh simulator khớp game.
+4. Chơi tương tác với đúng đội hình của account.
+5. Sau cùng mới tính mở khoá, chỉnh số, vẫn chỉ trong bản cách ly.
+
 Status 2026-11-10: phase 1 (vào map, socket), 1b ([hero_option](hero_option.md)), 2
 ([spin](spin.md)), 3/3b ([creep_waves](creep_waves.md), [boss](boss.md)), 4 (thắng map,
 `QuitRoom`) đã xác minh runtime. Asset: đã kiểm kê ([assets](assets.md)), chưa mirror. Mốc A logic sim headless: **xong**, replay khớp game tuyệt đối ([logic_sim_plan](logic_sim_plan.md), code `battle_sim/`).

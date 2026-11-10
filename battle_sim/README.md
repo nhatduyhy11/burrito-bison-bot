@@ -30,6 +30,38 @@ bundle `battle`.
 Capture trận (`events-*.jsonl`, chứa `StartGameP` + `QuitRoom`):
 `.tmp/battle_research/run_runner_hooked.py` (runner + research hook).
 
+## Mirror asset (mốc B, bước 1)
+
+```bash
+node battle_sim/mirror.js plan
+```
+
+```bash
+node battle_sim/mirror.js fetch
+```
+
+```bash
+node battle_sim/serve.js
+```
+
+- `mirror.js` tải về `.tmp/battle_sim/mirror/<ClientVer>/`, giữ nguyên cấu trúc URL của
+  host. Gồm:
+  - file boot (`index.html`, manifest, engine, settings);
+  - các bundle `internal`, `main`, `resources`, `login`, `battle`, `battleConfig`,
+    `battleSkillRes`, `towerDefense`, `organ` (config, script, import, native);
+  - ext-res `model/` (bỏ biến thể vùng jp/kr/tw/us), `model_frame/`, `userProto/`, `data/`.
+- Chỉ là GET ẩn danh tới file tĩnh công khai, không đăng nhập. Chạy lại sẽ bỏ qua file đã có.
+- Config bundle không ghi đuôi file native, nên mirror thử đuôi theo loại asset (quy tắc
+  engine: `native/<xx>/<uuid>.<ver><ext>`, font dạng `<uuid>.<ver>/<tên>.ttf`). Không tìm thấy
+  thì ghi vào `missing.json`.
+- `serve.js` serve mirror trên `127.0.0.1:8090`, mặc định **offline**: thiếu file thì trả
+  404, in ra màn hình và ghi `misses.log`. Thêm `--fill` để tải bù file thiếu từ host công
+  khai (chỉ bật khi cố ý).
+
+Lần chạy 2026-11-10 (ClientVer 64467): 10 316 file, 587MB (ext-res 362MB, `login` 90MB,
+`battleSkillRes` 72MB). 74/74 file mẫu khớp từng byte với host. 42 mục thiếu: 40 native
+`cc.Asset` thô và 2 script boot (jquery, clipboard), tất cả đều 404 ngay trên host.
+
 ## Chạy
 
 ```bash
@@ -53,6 +85,8 @@ So sánh:
 
 - `replay.js` — replay + so sánh, 1 hoặc nhiều trận.
 - `snapshot.js` — cache code bundle + map của deploy đang live.
+- `mirror.js` / `serve.js` — mirror asset battle, serve local offline.
+- `lib/deploy.js` — đọc ClientVer / manifest / `bundleVers` của deploy live.
 - `lib/versions.js` — chọn bundle/config/map theo version, tải config.
 - `lib/cocos_bundle.js` — đọc config/import của asset bundle Cocos 2.4 từ host.
 - `lib/http.js` — GET/tải file. Dùng TLS của Node vì curl Windows (schannel) lỗi revocation với CDN.

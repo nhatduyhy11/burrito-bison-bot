@@ -1,7 +1,8 @@
 # Assets cho battle
 
 Status 2026-11-10: kiểm kê từ runtime (bundle config + manifest ext-res) và config LO.
-Chưa tải/mirror thử. Main doc: [README.md](README.md).
+**Đã mirror** bằng `battle_sim/mirror.js`: 587MB, lớn hơn ước tính từ APK vì gồm toàn bộ
+`model/` hero và skin; xem `battle_sim/README.md`. Main doc: [README.md](README.md).
 Dump: `.tmp/battle_research/assets/` (`ext-res-version_64467.json`, `campaign_assets.json`),
 `.tmp/battle_research/bundles.json`.
 

@@ -6,25 +6,10 @@
 // whenever the game updates, before capturing battles you want to replay.
 const fs = require("fs");
 const path = require("path");
-const { getText, getJson, download } = require("./lib/http");
+const { getJson, download } = require("./lib/http");
 const cocos = require("./lib/cocos_bundle");
 const versions = require("./lib/versions");
-
-const GAME = "https://hauntedroomvnh5.joynetgame.com/";
-
-async function liveDeploy() {
-  const html = await getText(GAME);
-  const clientVer = (/"ClientVer":\s*"(\d+)"/.exec(html) || [])[1];
-  if (!clientVer) throw new Error("ClientVer not found in index.html");
-  const manifest = await getText(`${GAME}manifest.${clientVer}.js`);
-  const settingsFile = (/"(src\/settings\.[0-9a-f]+\.js)"/.exec(manifest) || [])[1];
-  if (!settingsFile) throw new Error("settings script not found in manifest");
-  const settings = await getText(GAME + settingsFile);
-  const vers = (/bundleVers:\{([^}]*)\}/.exec(settings) || [])[1];
-  if (!vers) throw new Error("bundleVers not found in settings");
-  const bundleVers = Object.fromEntries([...vers.matchAll(/(\w+):"([0-9a-f]+)"/g)].map((m) => [m[1], m[2]]));
-  return { clientVer, settingsFile, bundleVers };
-}
+const { liveDeploy } = require("./lib/deploy");
 
 async function fetchMainBundle(hash) {
   const dest = path.join(versions.CACHE, "bundles", `index.${hash}.js`);
