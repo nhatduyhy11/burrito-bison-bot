@@ -30,7 +30,13 @@ mục tiêu này, không phải đích đến.
    và `serve.js`: 587MB, khớp từng byte với host (chi tiết trong `battle_sim/README.md`).
    Chưa biết file nào thật sự dùng; tới bước 2–3 thì đọc `misses.log` để biết thiếu gì, rồi
    tính chuyện cắt bớt.
-2. Trang local boot engine và bundle gốc, không qua login và lobby, không kết nối mạng game.
+2. ~~Trang local boot engine và bundle gốc, không qua login và lobby, không kết nối mạng
+   game~~: **xong** 2026-11-10, gồm `battle_sim/sandbox.py` và `web/boot.js`. Browser chặn
+   mọi request ra ngoài localhost. Boot tới scene rỗng, nạp config, các bundle battle, map và
+   model ext-res. Không có request ra ngoài, không file 404.
+   - Ghi chú cho bước 3: battle còn cần phần khởi tạo mà `Main` làm sau login (`UIMgr.init`,
+     `ResourceManager.init`, `BattleMgr.init`, `AgentConfig`, `ModuleMgr`…). Làm từng phần
+     một trong trang cách ly, có cần thì mới thêm.
 3. Mở trận bằng `StartGameP` đã capture, replay op log có hình. So kết quả với `QuitRoom` và
    sim headless để chứng minh simulator khớp game.
 4. Chơi tương tác với đúng đội hình của account.

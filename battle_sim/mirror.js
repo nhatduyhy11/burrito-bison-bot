@@ -86,6 +86,7 @@ function bootJobs(d) {
   const jobs = [{ group: "boot", path: "index.html", body: d.html }];
   jobs.push({ group: "boot", path: d.manifestFile });
   for (const f of [...d.manifest.initial, ...d.manifest.game]) jobs.push({ group: "boot", path: f });
+  for (const f of d.jsList) jobs.push({ group: "boot", path: "src/" + f });
   const refs = [...d.html.matchAll(/(?:src|href)="(?:\.\/|\/)?([^":?#]+\.(?:js|png|jpg|json|css))"/g)].map((m) => m[1]);
   for (const r of new Set(refs)) jobs.push({ group: "boot", path: r });
   return jobs;

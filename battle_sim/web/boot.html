@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Battle Sim Boot</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #111; color: #ddd; font: 12px/1.4 monospace; }
+    #GameDiv { position: absolute; inset: 0; }
+    #GameCanvas { width: 100%; height: 100%; }
+    #splash { display: none; }
+    #simStatus { position: absolute; left: 4px; top: 4px; z-index: 10; white-space: pre; pointer-events: none;
+      background: rgba(0,0,0,.6); padding: 4px 6px; max-width: 95vw; overflow: hidden; }
+  </style>
+</head>
+<body>
+  <div id="GameDiv"><canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas></div>
+  <div id="splash"></div>
+  <div id="simStatus">booting…</div>
+  <script src="/__sim/boot.js"></script>
+</body>
+</html>

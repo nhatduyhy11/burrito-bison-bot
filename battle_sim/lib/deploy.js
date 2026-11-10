@@ -19,7 +19,9 @@ async function liveDeploy() {
   const vers = (/bundleVers:\{([^}]*)\}/.exec(settings) || [])[1];
   if (!vers) throw new Error("bundleVers not found in settings");
   const bundleVers = Object.fromEntries([...vers.matchAll(/(\w+):"([0-9a-f]+)"/g)].map((m) => [m[1], m[2]]));
-  return { clientVer, html, manifestFile, manifest: manifestJson, settingsFile, bundleVers };
+  // Plain scripts loaded from src/ before the bundles (i18n, md5, ...).
+  const jsList = [...(((/jsList:\[([^\]]*)\]/.exec(settings) || [])[1] || "").matchAll(/"([^"]+)"/g))].map((m) => m[1]);
+  return { clientVer, html, manifestFile, manifest: manifestJson, settingsFile, bundleVers, jsList };
 }
 
 module.exports = { GAME, liveDeploy };

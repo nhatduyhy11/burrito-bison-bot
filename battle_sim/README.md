@@ -62,6 +62,31 @@ Lần chạy 2026-11-10 (ClientVer 64467): 10 316 file, 587MB (ext-res 362MB, `l
 `battleSkillRes` 72MB). 74/74 file mẫu khớp từng byte với host. 42 mục thiếu: 40 native
 `cc.Asset` thô và 2 script boot (jquery, clipboard), tất cả đều 404 ngay trên host.
 
+## Boot cách ly (mốc B, bước 2)
+
+```bash
+uv run python battle_sim/sandbox.py --headless
+```
+
+- `sandbox.py` tự chạy `serve.js` và mở Chromium với profile trống tạm thời (không cookie,
+  không account, chặn service worker). Mọi request không phải `http://127.0.0.1:8090/` bị
+  **chặn và ghi log**, WebSocket bị đóng.
+- Trang được mở là `/sim.html` (`web/boot.html` + `web/boot.js`). Kết thúc, script in các
+  bước boot, kết quả kiểm tra, request bị chặn, file 404 của mirror, lỗi console. Exit 0 chỉ
+  khi trạng thái là `ready` và không có request nào bị chặn.
+- `--keep` giữ cửa sổ mở (CDP `127.0.0.1:9334`); bỏ `--headless` để xem bằng mắt.
+- `boot.js` làm lại `window.boot()` của game tới `cc.game.run`: engine, `settings`,
+  `jsList`, bundle `internal`/`login`, rồi `main` (code game). Sau đó chạy **scene rỗng**
+  thay cho launch scene, nên `Main` và `LoginMgr` không bao giờ chạy. Tiếp theo:
+  - nạp config `.bin` từ cache bằng `ConfigParser` của game (query `?config=<ver>`, mặc định
+    bản mới nhất);
+  - nạp các bundle battle;
+  - kiểm tra bảng config, tải prefab map qua engine, tải model ext-res qua
+    `aswallow.extAssetMgr` (sau khi `await init()`).
+
+Lần chạy 2026-11-10: `ready` sau 1.8s; engine 2.4.15; config `sea_65380`; 6 bundle; 36 hero;
+prefab `td_bgs_002`; `model/Boss_014` load được. 0 request bị chặn, 0 file 404, 0 lỗi.
+
 ## Chạy
 
 ```bash
@@ -85,7 +110,9 @@ So sánh:
 
 - `replay.js` — replay + so sánh, 1 hoặc nhiều trận.
 - `snapshot.js` — cache code bundle + map của deploy đang live.
-- `mirror.js` / `serve.js` — mirror asset battle, serve local offline.
+- `mirror.js` / `serve.js` — mirror asset battle, serve local offline (`/sim.html`,
+  `/__sim/*` = `web/`, `/__sim_config/*` = config cache).
+- `sandbox.py` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.
 - `lib/deploy.js` — đọc ClientVer / manifest / `bundleVers` của deploy live.
 - `lib/versions.js` — chọn bundle/config/map theo version, tải config.
 - `lib/cocos_bundle.js` — đọc config/import của asset bundle Cocos 2.4 từ host.

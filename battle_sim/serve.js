@@ -38,16 +38,43 @@ const fill = process.argv.includes("--fill");
 const root = path.join(versions.CACHE, "mirror", ver);
 const missLog = path.join(root, "misses.log");
 
+// Extra local routes next to the mirror:
+//   /sim.html               battle_sim/web/boot.html (the isolated boot page)
+//   /__sim/<file>           battle_sim/web/
+//   /__sim/configs.json     cached config versions (.tmp/battle_sim/config/)
+//   /__sim/deploy.json      the mirror's deploy.json
+//   /__sim_config/<ver>/<f> cached config .bin files
+const WEB = path.join(__dirname, "web");
+const CONFIG = path.join(versions.CACHE, "config");
+
+function within(base, rel) {
+  const abs = path.resolve(base, rel);
+  return abs.startsWith(path.resolve(base) + path.sep) ? abs : null; // no path traversal
+}
+
 function resolve(urlPath) {
   const rel = decodeURIComponent(urlPath.split("?")[0]).replace(/^\/+/, "") || "index.html";
-  const abs = path.resolve(root, rel);
-  if (!abs.startsWith(path.resolve(root) + path.sep)) return null; // no path traversal
-  return { rel: rel.split(path.sep).join("/"), abs };
+  let abs;
+  // The boot page sits at the root so the engine's relative bundle URLs (assets/...) resolve.
+  if (rel === "sim.html") abs = path.join(WEB, "boot.html");
+  else if (rel === "__sim/deploy.json") abs = path.join(root, "deploy.json");
+  else if (rel.startsWith("__sim/")) abs = within(WEB, rel.slice(6));
+  else if (rel.startsWith("__sim_config/")) abs = within(CONFIG, rel.slice(13));
+  else abs = within(root, rel);
+  if (!abs) return null;
+  return { rel: rel.split(path.sep).join("/"), abs, local: rel.startsWith("__sim") || rel === "sim.html" };
 }
 
 const server = http.createServer(async (req, res) => {
+  if (req.url.split("?")[0] === "/__sim/configs.json") {
+    const list = fs.existsSync(CONFIG) ? fs.readdirSync(CONFIG).filter((v) => fs.existsSync(path.join(CONFIG, v, "config.bin"))) : [];
+    list.sort((a, b) => Number(b.split("_").pop()) - Number(a.split("_").pop()));
+    res.writeHead(200, { "Content-Type": TYPES[".json"], "Cache-Control": "no-cache" }).end(JSON.stringify(list));
+    return;
+  }
   const r = resolve(req.url);
   if (!r || req.method !== "GET") { res.writeHead(400).end(); return; }
+  if (r.local && !fs.existsSync(r.abs)) { console.log("404", r.rel); res.writeHead(404).end(); return; }
   let body = null;
   if (fs.existsSync(r.abs) && fs.statSync(r.abs).isFile()) {
     body = fs.readFileSync(r.abs);
