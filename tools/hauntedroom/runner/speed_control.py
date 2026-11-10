@@ -12,6 +12,8 @@ from hauntedroom.core.terminal import BLUE, ORANGE, colorize
 
 SPEED_ON_COMMAND = "]"
 SPEED_OFF_COMMAND = "["
+SPEED_BOOST_COMMAND = "'"
+BOOST_SPEED_SCALE = 3.0
 DEFAULT_SPEED_SCALE = 2.2
 DEFAULT_WATCH_INTERVAL_S = 1.0
 
@@ -26,6 +28,7 @@ class BattleSpeedController:
         interval_s: float = DEFAULT_WATCH_INTERVAL_S,
     ) -> None:
         self._page = page
+        self._base_scale = scale
         self._scale = scale
         self._interval_s = interval_s
         self.enabled = False
@@ -39,9 +42,16 @@ class BattleSpeedController:
 
     async def handle_command(self, command: str) -> bool:
         if command == SPEED_ON_COMMAND:
+            self._scale = self._base_scale
             self.enabled = True
             await self._start()
             _log(f"x{self._scale} enabled for battle flows.")
+            return True
+        if command == SPEED_BOOST_COMMAND:
+            if self.enabled:
+                self._scale = BOOST_SPEED_SCALE
+                await self._start()
+                _log(f"x{self._scale} enabled for battle flows.")
             return True
         if command == SPEED_OFF_COMMAND:
             self.enabled = False

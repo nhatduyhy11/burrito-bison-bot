@@ -256,6 +256,7 @@ async def run_standby_controller(
             "  Shift+0    Stop current flow\n"
             "  Shift+]    Campaign speed x2.2 (POC)\n"
             "  Shift+[    Restore campaign speed\n"
+            "  Shift+'    Battle speed x3 (requires Shift+])\n"
             "  During auto-map/start-auto:\n"
             f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
             "  Ctrl+C     Close runner\n"

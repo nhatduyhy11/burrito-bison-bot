@@ -21,7 +21,9 @@ HOTKEY_SCRIPT = """
                         ? "]"
                         : event.code === "BracketLeft"
                             ? "["
-                            : null;
+                            : event.code === "Quote"
+                                ? "'"
+                                : null;
         if (
             !event.shiftKey ||
             event.ctrlKey ||

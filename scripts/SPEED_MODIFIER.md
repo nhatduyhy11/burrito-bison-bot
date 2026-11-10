@@ -53,7 +53,9 @@ Nếu modifier đã bật trước khi settle, cần apply lại sau lần reset
 
 ## Tích hợp runner
 
-- `Shift+]` bật tùy chọn `2.2×`, có thể bật trước hoặc trong flow. `Shift+[` tắt.
+- `Shift+]` bật/đưa speed về `2.2×`, có thể bật trước hoặc trong flow. `Shift+[` tắt.
+- `Shift+'` chuyển sang `3×` nếu tùy chọn speed đang bật; nếu chưa bật hoặc đã tắt
+  thì bỏ qua. Mức `3×` giữ qua các trận/idle như tùy chọn speed hiện tại.
 - Chỉ flow có `enters_battle=True` mới chạy modifier: auto-map/start-auto, train,
   train ad/exit, spawn/exit và new-account vào auto-map. Flow research, nâng tướng,
   artifact… không kích hoạt modifier. Mode mới có vào trận cần khai báo cờ này.

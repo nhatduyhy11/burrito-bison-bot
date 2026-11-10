@@ -65,6 +65,40 @@ class BattleSpeedControllerTest(IsolatedAsyncioTestCase):
         self.assertFalse(self.controller.active)
         self.mocks["restore"].assert_awaited_once()
 
+    async def test_boost_ignored_until_enabled_and_after_disable(self):
+        await self.controller.set_battle_flow(True)
+        self.assertTrue(await self.controller.handle_command("'"))
+        self.assertFalse(self.controller.enabled)
+        self.mocks["apply"].assert_not_awaited()
+        await self.controller.handle_command("]")
+        await self.controller.handle_command("[")
+        self.mocks["apply"].reset_mock()
+        await self.controller.handle_command("'")
+        self.mocks["apply"].assert_not_awaited()
+        self.assertFalse(self.controller.active)
+
+    async def test_boost_changes_live_speed_and_bracket_resets_to_base(self):
+        await self.controller.set_battle_flow(True)
+        await self.controller.handle_command("]")
+        watcher = self.controller._watcher
+        await self.controller.handle_command("'")
+        self.mocks["apply"].assert_awaited_with(self.frame, 3.0)
+        self.assertIs(watcher, self.controller._watcher)
+        await self.controller.handle_command("'")
+        self.mocks["apply"].assert_awaited_with(self.frame, 3.0)
+        await self.controller.handle_command("]")
+        self.mocks["apply"].assert_awaited_with(self.frame, 2.2)
+
+    async def test_boost_armed_idle_applies_only_in_battle_flow(self):
+        await self.controller.handle_command("]")
+        await self.controller.handle_command("'")
+        self.mocks["apply"].assert_not_awaited()
+        await self.controller.set_battle_flow(True)
+        self.mocks["apply"].assert_awaited_once_with(self.frame, 3.0)
+        await self.controller.set_battle_flow(False)
+        await self.controller.set_battle_flow(True)
+        self.mocks["apply"].assert_awaited_with(self.frame, 3.0)
+
     async def test_watcher_survives_gap_between_battles_and_retries(self):
         self.controller._interval_s = 0.001
         next_battle = asyncio.Event()
