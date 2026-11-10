@@ -13,6 +13,10 @@ Main doc: [README.md](README.md).
 
 Trận thua đầu tiên không dùng được (thiếu `StartGameP` vì hook vào muộn).
 
+Bundle/config/map được chọn theo version trong `StartGameP`. `node battle_sim/replay.js`
+không tham số chạy lại mọi trận đã capture; lần chạy 2026-11-10 khớp 3/3. Mỗi lần game cập
+nhật, phải chạy `snapshot.js` trước khi capture, vì host chỉ giữ bundle và map của bản đang live.
+
 ## Mở
 
 - Tier 3 (hash state theo tick, `getHashCode`/`dumpHash` của delegate) — chưa cần vì tier

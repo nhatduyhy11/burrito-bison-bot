@@ -19,6 +19,7 @@ class Sim {
       group() {}, groupCollapsed() {}, groupEnd() {}, time() {}, timeEnd() {},
     };
     const { require: req, ctx } = loadBundle(bundle, { console: quietConsole });
+    this.bundlePath = bundle;
     this.req = req;
     this.ctx = ctx;
     if (preloadConfig) loadConfig(req, preloadConfig, "PreloadConfigParser");
