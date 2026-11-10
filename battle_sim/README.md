@@ -53,7 +53,8 @@ node battle_sim/serve.js
   - các bundle `internal`, `main`, `resources`, `login`, `battle`, `battleConfig`,
     `battleSkillRes`, `towerDefense`, `organ`, `hangup`, `summonCreature`, `hero` (config,
     script, import, native); ba bundle cuối được thêm ở bước 3 vì UI battle load chúng
-    (`hero` chứa model hero trong trận, thiếu thì hero không hiện);
+    (`hero` là bundle UI màn hero: awake, wash, đội hình, hiệu ứng lên cấp; giống nhau cho mọi
+    account, không chứa model. Trận vẫn request nó nên mirror để không 404);
   - ext-res `model/` (bỏ biến thể vùng jp/kr/tw/us), `model_frame/`, `userProto/`, `data/`,
     và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing}/`.
 - Chỉ là GET ẩn danh tới file tĩnh công khai, không đăng nhập. Chạy lại sẽ bỏ qua file đã có.
@@ -68,7 +69,7 @@ Lần chạy 2026-11-10 (ClientVer 64467): 10 316 file, 587MB (ext-res 362MB, `l
 `battleSkillRes` 72MB). 74/74 file mẫu khớp từng byte với host. 42 mục thiếu: 40 native
 `cc.Asset` thô và 2 script boot (jquery, clipboard), tất cả đều 404 ngay trên host. Sau
 khi thêm phần cho bước 3: 13 592 file, 662MB. Thêm `hero`: 14 072 file, 677MB, 92 mục
-thiếu (thêm 50 native `cc.Asset` thô của `hero`, là ảnh UI đội hình, battle không load).
+thiếu (thêm 50 native `cc.Asset` thô của `hero`, ảnh UI đội hình, trận không load).
 
 ## Boot cách ly (mốc B, bước 2)
 
