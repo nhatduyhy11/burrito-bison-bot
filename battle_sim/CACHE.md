@@ -34,8 +34,12 @@ repo, phải giữ nguyên.
 `.tmp/` (đã gitignore) để không lỡ commit ~680MB vào repo:
 
 ```bash
-tar -czf .tmp/battle_sim_cache.tgz .tmp/battle_sim/bundles .tmp/battle_sim/maps .tmp/battle_sim/config .tmp/battle_sim/mirror .tmp/battle_research/events-*.jsonl
+tar -czf .tmp/battle_sim_cache.tgz --record-size=1M --checkpoint=50 --checkpoint-action='echo=%u MB' .tmp/battle_sim/bundles .tmp/battle_sim/maps .tmp/battle_sim/config .tmp/battle_sim/mirror .tmp/battle_research/events-*.jsonl
 ```
+
+Cứ mỗi 50MB (tính theo dữ liệu gốc, trước khi nén) in một dòng `tar: 50 MB`, `tar: 100 MB`…;
+tổng khoảng 720MB. Bỏ hai cờ `--checkpoint*` nếu không cần theo dõi. Giải nén cũng thêm được
+cùng các cờ đó.
 
 Có trận `--play` thì thêm `.tmp/battle_sim/played` vào lệnh trên.
 
