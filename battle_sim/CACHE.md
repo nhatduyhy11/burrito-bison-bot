@@ -38,7 +38,7 @@ tar -czf .tmp/battle_sim_cache.tgz --record-size=1M --checkpoint=50 --checkpoint
 ```
 
 Cứ mỗi 50MB (tính theo dữ liệu gốc, trước khi nén) in một dòng `tar: 50 MB`, `tar: 100 MB`…;
-tổng khoảng 720MB. Bỏ hai cờ `--checkpoint*` nếu không cần theo dõi. Giải nén cũng thêm được
+tổng khoảng 780MB. Bỏ hai cờ `--checkpoint*` nếu không cần theo dõi. Giải nén cũng thêm được
 cùng các cờ đó.
 
 Có trận `--play` thì thêm `.tmp/battle_sim/played` vào lệnh trên.
