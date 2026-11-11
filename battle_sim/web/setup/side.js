@@ -82,11 +82,11 @@ export function Side({ ctx, battles, profile, initialStatus }) {
     : [["", "(không có capture)"]];
   const playDisabled = playing || !canPlay || problems.length > 0;
   const seedArg = state.seed ? ` --seed ${state.seed}` : "";
-  const playCommand = `uv run python battle_sim/sandbox.py --battle ${state.battle || "<uuid>"} --play${seedArg} --profile <file>.json`;
+  const playCommand = `uv run python battle_sim/sandbox --battle ${state.battle || "<uuid>"} --play${seedArg} --profile <file>.json`;
   const playHint = canPlay
     ? null
     : html`
-        Nút Chơi chỉ chạy khi mở qua <code>uv run python battle_sim/sandbox.py --setup</code>. Hoặc tải JSON rồi
+        Nút Chơi chỉ chạy khi mở qua <code>uv run python battle_sim/sandbox --setup</code>. Hoặc tải JSON rồi
         chạy: <code>${playCommand}</code>
       `;
   return html`
