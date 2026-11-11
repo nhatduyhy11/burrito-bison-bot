@@ -193,6 +193,8 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
 - `--seed`: `uuid` của `StartGameP` là seed RNG. Không truyền thì dùng uuid đã capture, trận
   giống bản capture cho tới op đầu tiên khác đi. `random` sinh 24 hex mới, ra trận mới.
   Chuỗi khác thì dùng nguyên chuỗi đó.
+- `--map 66`: mở Stage 66 với đội hình từ capture. Bỏ cờ này để chơi stage gốc.
+  Config `sea_65380` có stage 1–400.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
   `BattleResultViewAdventure` vẫn hiện, chỉ không có reward. Script lưu trận vừa chơi vào
   `.tmp/battle_sim/played/played-<uuid>-<ts>.jsonl` (`StartGameP` + `QuitRoom` kèm op log, cùng

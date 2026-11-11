@@ -27,6 +27,14 @@
     // StartGameP.uuid seeds the battle RNG: same uuid = same battle as the capture.
     // ?seed=random (or any 24-hex string) starts a different battle with the same account data.
     const start = { ...sim.capture.start, uuid: pickSeed(params.get("seed"), sim.capture.start.uuid) };
+    if (play && params.has("map")) {
+      const stage = Number(params.get("map"));
+      const level = Number.isSafeInteger(stage) && stage > 0 && M("AdventuretdLevelLO").get(stage * 10);
+      if (!level || !M("BattleGroundLO").get(level.battleGroundCode)) {
+        throw new Error(`Unknown campaign stage: ${params.get("map")}`);
+      }
+      start.level = stage;
+    }
     const rb = window.makeRebuilder(R);
     const s2c = rb.build("StartGameP_BuildRoom_S2C", start);
     const ops = play ? [] : rb.listItems(quit.operations).slice().sort((a, b) => a.operFrame - b.operFrame || a.index - b.index);
