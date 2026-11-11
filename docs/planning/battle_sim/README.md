@@ -40,7 +40,7 @@ mục tiêu này, không phải đích đến.
    mọi request ra ngoài localhost. Boot tới scene rỗng, nạp config, các bundle battle, map và
    model ext-res. Không có request ra ngoài, không file 404.
 3. ~~Mở trận bằng `StartGameP` đã capture, replay op log có hình~~: **xong** 2026-11-10,
-   gồm `web/battle.js`. Vào trận qua `TDModule.onStartGamePPush` với UI battle gốc. Cả 3 trận
+   gồm `web/battle/`. Vào trận qua `TDModule.onStartGamePPush` với UI battle gốc. Cả 3 trận
    đã capture: `QuitRoom` khớp tuyệt đối, 0 request ra ngoài. Cơ chế xem
    `battle_sim/README.md`.
 4. Chơi tương tác với đúng đội hình của account.

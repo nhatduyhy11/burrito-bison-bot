@@ -7,7 +7,7 @@
 - Every request that is not http://127.0.0.1:8090/ is aborted and logged, WebSockets are
   closed: the game code cannot reach any game server or third party even if it tries.
 - --battle <uuid> opens /sim.html?battle=<uuid>: replays that captured battle in the game's
-  battle view (web/battle.js) and compares the resulting QuitRoom with the captured one.
+  battle view (web/battle/) and compares the resulting QuitRoom with the captured one.
 - --battle <uuid> --play [--seed random|<uuid>]: play that battle's StartGameP yourself in a
   real window (implies --keep). The played battle is saved to .tmp/battle_sim/played/*.jsonl
   (capture format) for `node battle_sim/replay.js <file>`.

@@ -127,8 +127,8 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --page "/s
 
 - `--battle <uuid>` mở `/sim.html?battle=<uuid>`. `boot.js` lấy capture (`/__sim/battle/<uuid>.json`,
   danh sách ở `/__sim/battles.json`), nạp config theo `StartGameP.configVersion`, boot như bước 2
-  rồi giao cho `web/battle.js`.
-- `battle.js` làm phần `Main` làm sau login, chỉ trong trang này:
+  rồi giao cho `web/battle/` (entry `index.js`).
+- `battle/setup.js` làm phần `Main` làm sau login, chỉ trong trang này:
   - `UIMgr.init`, `ResourceManager.init`, `BattleMgr.init`, driver gọi `UpdateMgr`/`GameMgr` mỗi
     frame;
   - `ModuleMgr` `onLoad` + `onEnterGame` cho cả 96 module, mỗi module chạy cô lập, lỗi thì ghi lại;
@@ -208,7 +208,7 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   định dạng capture). `node battle_sim/replay.js <file>` replay headless file đó và so `QuitRoom`.
 - `--headless --play` là smoke test, không có ai bấm. Bảng vòng quay ở frame 1200 sẽ pause
   trận vô thời hạn.
-- `battle.js` sửa `Main Camera` của Canvas: chỉ render UI (bỏ group `battle_ground*`) và
+- `battle/setup.js` sửa `Main Camera` của Canvas: chỉ render UI (bỏ group `battle_ground*`) và
   không xoá màu; một camera riêng depth -100 lo xoá khung hình. Nếu không, `Main Camera`
   (render mọi group, xoá màu, vẽ sau `camera_battle` depth -10) xoá hình battle rồi vẽ lại map
   không theo offset camera: chỉ thấy một vùng map tĩnh, không hero, không creep.
@@ -242,7 +242,10 @@ So sánh:
 - `mirror.js` / `serve.js` — mirror asset battle, serve local offline (`/sim.html`,
   `/__sim/*` = `web/`, `/__sim_config/*` = config cache).
 - `sandbox.py` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.
-- `web/battle.js` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
+- `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
+  `index.js` (entry, `window.__simBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
+  stub mạng, `QuitRoom`), `replay.js` (op log, tick, pause, so kết quả), `profile.js` +
+  `skin-profile.js` (chỉ load khi `--profile`).
 - `lib/capture.js` — đọc trận (`StartGameP` … `QuitRoom`) từ `events-*.jsonl`.
 - `lib/deploy.js` — đọc ClientVer / manifest / `bundleVers` của deploy live.
 - `lib/versions.js` — chọn bundle/config/map theo version, tải config.

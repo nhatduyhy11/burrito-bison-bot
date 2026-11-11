@@ -42,4 +42,4 @@ lỗi. Dòng `profile skin ranks` trong log sandbox ghi từng skin, rank cuối
   trong perform BT, đây là cách skill 7 màu đổi hiệu ứng của skill cũ.
 
 Chưa xác nhận vì chưa có capture của account có 7 màu: skill 7 màu đứng sau 3 skill
-thường. Phần này nằm trong [skin-profile.js](web/skin-profile.js).
+thường. Phần này nằm trong [skin-profile.js](web/battle/skin-profile.js).

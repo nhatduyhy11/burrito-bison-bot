@@ -25,8 +25,8 @@ Chi tiết trong [README.md §Nguyên tắc an toàn](README.md). Tóm tắt:
 | A — logic sim headless | xong, replay khớp tuyệt đối 3/3 trận | `battle_sim/replay.js`, `lib/sim.js` |
 | B1 — mirror asset | xong, 662MB | `mirror.js`, `serve.js` |
 | B2 — boot cách ly | xong | `sandbox.py`, `web/boot.{html,js}` |
-| B3 — trận có hình, replay op log | xong, `QuitRoom` khớp tuyệt đối (xem dưới) | `web/battle.js`, `lib/capture.js` |
-| B4 — tự chơi trong simulator | đã có `--play`; cần chạy thử UI trên checkout này | `sandbox.py`, `web/battle.js` |
+| B3 — trận có hình, replay op log | xong, `QuitRoom` khớp tuyệt đối (xem dưới) | `web/battle/`, `lib/capture.js` |
+| B4 — tự chơi trong simulator | đã có `--play`; cần chạy thử UI trên checkout này | `sandbox.py`, `web/battle/` |
 
 Cách chạy và cơ chế của B3 (stub, bỏ qua pause của director, đóng bảng vòng quay):
 [battle_sim/README.md §Trận có hình](../../../battle_sim/README.md).

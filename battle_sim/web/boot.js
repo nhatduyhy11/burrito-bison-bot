@@ -2,7 +2,7 @@
 // Mirrors window.boot() (main.<h>.js) up to cc.game.run, but runs an empty scene
 // instead of the launch scene, so Main / LoginMgr (login, SDK, servers) never start.
 // Progress and results land in window.__sim (read by sandbox.py).
-// ?battle=<uuid> additionally loads battle.js, which opens that captured battle after boot.
+// ?battle=<uuid> additionally loads web/battle/ (entry: index.js), which opens that captured battle after boot.
 (function () {
   "use strict";
   const sim = (window.__sim = { state: "booting", steps: [], checks: {}, error: null });
@@ -74,8 +74,10 @@
       sim.capture = await getJson(`/__sim/battle/${battleUuid}.json`);
       step("capture", { uuid: battleUuid, level: sim.capture.start.level, configVersion: sim.capture.start.configVersion });
       await loadScript("/__sim_lib/proto_rebuild.js");
-      if (params.has("play") && params.has("profile")) await loadScript("/__sim/skin-profile.js");
-      await loadScript("/__sim/battle.js");
+      // web/battle/: helpers first, index.js (window.__simBattle) last.
+      const battleScripts = ["stubs", "setup", "replay"];
+      if (params.has("play") && params.has("profile")) battleScripts.push("skin-profile", "profile");
+      for (const name of [...battleScripts, "index"]) await loadScript(`/__sim/battle/${name}.js`);
     }
     await defineIndexGlobals();
     const deploy = await getJson("/__sim/deploy.json");
@@ -156,7 +158,7 @@
     if (battleUuid) {
       sim.state = "battle";
       await window.__simBattle({ sim, step, R, cb2p, deploy });
-      return; // battle.js sets the final state
+      return; // battle/index.js sets the final state
     }
     sim.state = "ready";
     step("READY");
