@@ -86,7 +86,7 @@ function HeroSkinTable({ hero, skins, edit }) {
   return html`
     <div>
       <div class="row">
-        <label>Đang mặc <${Select} options=${wornOptions} value=${hero.worn || ""} onChange=${setWorn} /></label>
+        <label class="skin-picker">Đang mặc <${Select} options=${wornOptions} value=${hero.worn || ""} onChange=${setWorn} /></label>
         <span class="note">${slotNote}</span>
       </div>
       <table>
