@@ -1,6 +1,6 @@
-# NEXT STEP — Mốc B bước 4: chơi tương tác với đội hình account
+# NEXT STEP — Kiểm tra chơi tương tác trong simulator
 
-Status 2026-11-10. Đọc file này đầu tiên khi bắt đầu session mới. Main doc: [README.md](README.md).
+Status 2026-11-11. Đọc file này đầu tiên khi bắt đầu session mới. Main doc: [README.md](README.md).
 
 ## Mục tiêu tổng
 
@@ -26,6 +26,7 @@ Chi tiết trong [README.md §Nguyên tắc an toàn](README.md). Tóm tắt:
 | B1 — mirror asset | xong, 662MB | `mirror.js`, `serve.js` |
 | B2 — boot cách ly | xong | `sandbox.py`, `web/boot.{html,js}` |
 | B3 — trận có hình, replay op log | xong, `QuitRoom` khớp tuyệt đối (xem dưới) | `web/battle.js`, `lib/capture.js` |
+| B4 — tự chơi trong simulator | đã có `--play`; cần chạy thử UI trên checkout này | `sandbox.py`, `web/battle.js` |
 
 Cách chạy và cơ chế của B3 (stub, bỏ qua pause của director, đóng bảng vòng quay):
 [battle_sim/README.md §Trận có hình](../../../battle_sim/README.md).
@@ -37,21 +38,24 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --page "/s
 Kết quả B3: cả 3 trận đã capture (Stage 51 thắng/thua, Stage 97) đều khớp `QuitRoom` tuyệt
 đối, 0 op lỗi, 0 request bị chặn, 0 file 404.
 
-## Bước 4 cần làm
+## Chạy thử B4
 
-Bỏ replay. Người chơi bấm UI battle thật trong trang cách ly với đúng `StartGameP` của account
-(hero, build, organ…), op đi qua `TDServerProxy` chế độ `Local`/`inSandBox` như game thật.
+Nếu checkout mới thiếu mirror hoặc capture, chép và giải nén cache theo
+[battle_sim/CACHE.md](../../../battle_sim/CACHE.md). Chỉ clone repo thì chưa có dữ liệu trận.
 
-Hướng đi:
-- `battle.js` hiện thay `commitClientRequest` để chỉ dùng op từ log. Chế độ chơi cần để op của
-  UI đi thẳng vào `TDServer.handleClientRequest` (game có sẵn cờ `TDServerProxy.inSandBox`).
-  Robot đồng đội thì để director tự sinh op (`BattleTDAdvDirector`, `_checkAILookForRoom`).
-- Bật lại pause của director (bảng summon, vòng quay cần dừng trận như game thật).
-- `uuid` của `StartGameP` là seed RNG: giữ nguyên thì trận giống bản capture, đổi thì ra trận
-  mới. Cần quyết định cách sinh uuid/seed cho trận mới.
-- Hết trận: `QuitRoom` đã được stub trả lời local; màn kết quả (`BattleResultViewAdventure`)
-  cần reward → hiện đang trả `clientReward: null`, kiểm tra màn kết quả có hiện được không.
-- Input chuột/touch: chạy cửa sổ thật (bỏ `--headless`), kiểm tra click vào map, bảng summon.
+```bash
+uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --seed random
+```
+
+`--play` mở cửa sổ Chromium cách ly, dùng đội hình từ `StartGameP` và để UI gửi op
+qua `TDServerProxy` chế độ Local. Director tự điều khiển robot đồng đội và dừng trận
+khi mở bảng chặn. `--seed random` tạo seed mới; có thể chơi tùy ý. Playwright có thể
+kết nối cửa sổ simulator qua CDP `127.0.0.1:9334`.
+
+Lần chạy thử tiếp theo: bấm map và các bảng chọn trong trận, chơi đến màn kết quả,
+rồi kiểm tra file `played-*.jsonl` và log sandbox. Màn kết quả dùng phản hồi local
+với `clientReward: null`. Xem [hướng dẫn tự chơi](../../../battle_sim/README.md#tự-chơi-trận-với-đội-hình-account-mốc-b-bước-4)
+để biết cách replay lại trận vừa chơi.
 
 ## Còn mở từ B3
 
