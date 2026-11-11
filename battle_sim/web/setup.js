@@ -63,6 +63,8 @@
     }
     if (hero.worn && !skins[hero.worn]) hero.worn = null;
     if (hero.worn) hero.skins[hero.worn].owned = true;
+    hero.slots = hero.slots.filter((key) => skins[key]);
+    for (const key of hero.slots) hero.skins[key].owned = true; // a slotted skin is owned
     for (const [key, skin] of Object.entries(skins)) {
       if (!skin.requires || !hero.skins[key].owned) continue;
       for (const required of skin.requires) {
@@ -71,11 +73,22 @@
         s.star = clamp(Math.max(s.star, hero.skins[key].star), 1, skins[required].maxStar);
       }
     }
+    // A slotted colorful skin brings its 3 required skins into battle too: its skills
+    // (dermaIndex PF2-PF4) change the effects of those skins' skills.
+    const forced = heroSlotForced(hero);
     const used = { normal: 0, colorful: 0 };
-    hero.slots = Object.keys(skins).filter((key) => hero.slots.includes(key) && hero.skins[key].owned).filter((key) => {
-      const kind = isNormalHeroSkin(skins[key]) ? "normal" : "colorful";
-      return ++used[kind] <= HERO_SLOTS[kind];
-    });
+    const kept = Object.keys(skins).filter((key) => hero.slots.includes(key) || forced.has(key))
+      .sort((a, b) => forced.has(b) - forced.has(a))
+      .filter((key) => {
+        const kind = isNormalHeroSkin(skins[key]) ? "normal" : "colorful";
+        return ++used[kind] <= HERO_SLOTS[kind];
+      });
+    hero.slots = Object.keys(skins).filter((key) => kept.includes(key)); // config order
+  }
+
+  function heroSlotForced(hero) { // skins slotted because a slotted colorful skin requires them
+    const skins = heroSkins(hero.name);
+    return new Set(hero.slots.flatMap((key) => (skins[key] && !isNormalHeroSkin(skins[key]) && skins[key].requires) || []));
   }
 
   function heroForced(hero) { // key -> minimum star forced by an owned colorful skin (or 1 for the worn skin)
@@ -105,6 +118,8 @@
     entry.skins[base] = { owned: true, star: 1 };
     if (!entry.worn || !skins[entry.worn]) entry.worn = base;
     entry.skins[entry.worn].owned = true;
+    entry.slots = entry.slots.filter((key) => skins[key] && BUILD_SLOTS[skins[key].slot]);
+    for (const key of entry.slots) entry.skins[key].owned = true; // a slotted skin is owned
     for (const [key, skin] of Object.entries(skins)) {
       if (!skin.requires || !entry.skins[key].owned) continue;
       for (const required of skin.requires) {
@@ -113,7 +128,7 @@
         s.star = clamp(Math.max(s.star, entry.skins[key].star), 1, skins[required].maxStar);
       }
     }
-    let slots = entry.slots.filter((key) => skins[key] && entry.skins[key].owned && BUILD_SLOTS[skins[key].slot]);
+    let slots = entry.slots;
     const locked = buildingLocks(building, { slots });
     slots = slots.filter((key) => !locked.has(key));
     const used = { red: 0, gold: 0, special: 0 };
@@ -429,6 +444,7 @@
   function heroSkinTable(hero) {
     const skins = heroSkins(hero.name);
     const forced = heroForced(hero);
+    const slotForced = heroSlotForced(hero);
     const count = (kind) => hero.slots.filter((key) => (isNormalHeroSkin(skins[key]) ? "normal" : "colorful") === kind).length;
     const wornOptions = [["", "model gốc"], ...Object.entries(skins).map(([key, skin]) => [key, optionText(skin)])];
     return el("div", {},
@@ -452,11 +468,17 @@
             el("td", {}, numberInput(s.star, forced[key] || 1, skin.maxStar, (v) => { s.star = v; commit(); }, !s.owned),
               el("span", { class: "note" }, ` /${skin.maxStar}`)),
             el("td", {}, el("input", {
-              type: "checkbox", checked: slotted, disabled: !s.owned || (!slotted && count(kind) >= HERO_SLOTS[kind]),
-              onchange: (e) => { hero.slots = e.target.checked ? [...hero.slots, key] : hero.slots.filter((k) => k !== key); commit(); },
+              type: "checkbox", checked: slotted, disabled: slotForced.has(key) || (!slotted && count(kind) >= HERO_SLOTS[kind]),
+              title: slotForced.has(key) ? "Bắt buộc: skin 7 màu trong slot cần skin này" : null,
+              onchange: (e) => {
+                if (e.target.checked) s.owned = true;
+                hero.slots = e.target.checked ? [...hero.slots, key] : hero.slots.filter((k) => k !== key);
+                commit();
+              },
             })));
         })),
-      el("div", { class: "note" }, "Skin 7 màu cần 3 skin thường ở sao ≥ sao của nó; trang tự nâng. Skill đi theo slot, không theo skin đang mặc."));
+      el("div", { class: "note" }, "Sở hữu: account có skin (cộng chỉ số). Slot: skill của skin vào trận. Skin 7 màu cần 3 skin thường ở sao ≥ sao của nó " +
+        "(trang tự nâng); gắn slot 7 màu thì 3 skin đó cũng vào slot và bị khoá đến khi bỏ slot 7 màu."));
   }
 
   function buildingsSection() {
@@ -508,8 +530,12 @@
             el("td", {}, numberInput(s.star, forced[key] || 1, skin.maxStar, (v) => { s.star = v; commit(); }, !s.owned || skin.default),
               el("span", { class: "note" }, ` /${skin.maxStar}`)),
             el("td", {}, !slottable ? el("span", { class: "note" }, "-") : locked.has(key) ? el("span", { class: "warn" }, "khoá") : el("input", {
-              type: "checkbox", checked: slotted, disabled: !s.owned || (!slotted && full),
-              onchange: (e) => { entry.slots = e.target.checked ? [...entry.slots, key] : entry.slots.filter((k) => k !== key); commit(); },
+              type: "checkbox", checked: slotted, disabled: !slotted && full,
+              onchange: (e) => {
+                if (e.target.checked) s.owned = true;
+                entry.slots = e.target.checked ? [...entry.slots, key] : entry.slots.filter((k) => k !== key);
+                commit();
+              },
             })));
         })));
   }
