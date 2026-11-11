@@ -419,7 +419,7 @@
     return section("Hero", "tối đa 5; tắt = đội hình capture", !!state.heroes, (on) => toggleWithPrefill("heroes", on), () => [
       ...state.heroes.map(heroCard),
       el("div", { class: "row" }, addButton("heroes", newHero)),
-      el("div", { class: "note" }, "Hero có trong capture giữ chỉ số và skill gốc; hero khác dùng chỉ số level 1. " +
+      el("div", { class: "note" }, "Hero có trong capture giữ chỉ số và skill gốc; hero khác mượn chỉ số trung bình, level và level skill của các hero cùng độ hiếm trong capture (gần đúng, ±10%). " +
         "Không tick \"Tùy chỉnh skin\" thì giữ skin từ capture."),
     ]);
   }

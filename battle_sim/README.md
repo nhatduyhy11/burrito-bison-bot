@@ -214,7 +214,11 @@ uv run python battle_sim/sandbox.py --setup
   `{ "mode": "campaign", "stage": 66 }`. Hiện chỉ có `campaign`, và config `sea_65380` có
   stage 1–400. Bỏ `map` thì chơi stage gốc của capture. Đội hình chọn theo tên trong
   [profile-dict.json](web/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
-  trong capture. Hero khác dùng chỉ số cơ bản level 1 và `baseSkills` từ dict.
+  trong capture. Hero khác mượn tiến độ của các hero cùng độ hiếm trong capture (không có thì
+  mọi hero): `attr` trung bình (đã trừ `selfAttr` của skin), level và `breakThrough` của hero
+  trung vị, level skill riêng theo đa số từng slot. Relic/artifact không mượn. Kiểm tra bỏ-một-ra
+  trên 2 capture: chỉ số lệch trong ±10% (Lu Bu lv100 duy nhất thì −20%). Hero cam/tím mượn
+  từ hero đỏ khi capture không có hero cùng độ hiếm, chưa đối chiếu được.
   Xem [cấu hình skin](PROFILE_SKINS.md) để chọn skin, số sao và các skin yêu cầu.
   `traps` thay danh sách trap (tối đa 3): tên (level 1, 1 sao) hoặc
   `{ "name", "level", "star" }`, skill tra từ sao trong config game.
