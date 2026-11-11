@@ -202,8 +202,13 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   Xem [cấu hình skin](PROFILE_SKINS.md) để chọn skin, số sao và các skin yêu cầu.
   `traps` thay danh sách trap (tối đa 3): tên (level 1, 1 sao) hoặc
   `{ "name", "level", "star" }`, skill tra từ sao trong config game.
-  Bỏ một trường để giữ giá trị từ capture. Pet, spell, skin building và hero support hiện
-  vẫn lấy từ capture (dict đã có danh sách, profile chưa áp dụng).
+  `pets` thay danh sách pet (tối đa 3) theo cùng dạng. `skillCodes` lấy theo sao: mỗi loại
+  skill trong `SummonCreatureLO.skill` lấy level cao nhất có `starRequire` ≤ sao.
+  `buildings` chọn skin cửa, giường, chuột, mèo (`door`, `bed`, `generator`, `cat`). Xem
+  [skin building](BUILD_SKINS.md#trong-profile-playtest). `goldenSkinsCount` (ảnh hưởng
+  sát thương pet) đặt bằng tay vì chưa rõ server tính thế nào.
+  Bỏ một trường để giữ giá trị từ capture. Spell và hero support hiện vẫn lấy từ capture
+  (dict đã có danh sách spell, profile chưa áp dụng).
 - `profile-dict.json` được sinh từ config game bằng `node battle_sim/scripts/gen_profile_dict.js
   [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
   lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Gồm `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
@@ -253,7 +258,7 @@ So sánh:
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
   `index.js` (entry, `window.__simBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
   stub mạng, `QuitRoom`), `replay.js` (op log, tick, pause, so kết quả), `profile.js` +
-  `skin-profile.js` (chỉ load khi `--profile`).
+  `skin-profile.js` + `build-skin-profile.js` (chỉ load khi `--profile`).
 - `lib/capture.js` — đọc trận (`StartGameP` … `QuitRoom`) từ `events-*.jsonl`.
 - `lib/deploy.js` — đọc ClientVer / manifest / `bundleVers` của deploy live.
 - `lib/versions.js` — chọn bundle/config/map theo version, tải config.

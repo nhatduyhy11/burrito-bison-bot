@@ -10,5 +10,13 @@
   "traps": [
     { "name": "demon_spike", "level": 1, "star": 3 },
     { "name": "lucky_firecracker", "level": 10, "star": 10 }
-  ]
+  ],
+  "pets": [
+    { "name": "storm_griffin", "star": 5, "level": 39 },
+    "alien_critter"
+  ],
+  "buildings": {
+    "door": { "skin": "grand_circus", "ownedSkins": { "ironfist_door": 5, "aureate_domain": 1 } },
+    "bed": { "skin": "fortune_bed", "star": 5 }
+  }
 }

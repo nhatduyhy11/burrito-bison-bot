@@ -59,7 +59,43 @@ Account pmain (capture `6af3d7da…` và `6af3dacb…`):
 Cả 4 building đều theo đúng 1 đỏ + tối đa 2 vàng. Skin mặc định (10000, 20000, 30000,
 40000) không có skill.
 
+## Trong profile playtest
+
+`buildings` trong profile ánh xạ tên building tới skin chọn. Tên skin lấy trong
+`buildings.<tên>.skins` của [profile-dict.json](web/profile-dict.json). Code nằm trong
+[build-skin-profile.js](web/battle/build-skin-profile.js).
+
+```json
+"buildings": {
+  "door": {
+    "skin": "grand_circus",
+    "star": 1,
+    "ownedSkins": { "ironfist_door": 5, "aureate_domain": 1 },
+    "slots": ["aureate_domain", "grand_circus", "ironfist_door"]
+  },
+  "bed": { "skin": "fortune_bed", "star": 2 }
+}
+```
+
+- `skin` và `star`: skin đang mặc. Bỏ `skin` thì dùng skin mặc định. Skin mặc định luôn
+  được tính là đã sở hữu.
+- `ownedSkins`: các skin khác đã mở kèm số sao. Skin 7 màu tự nâng 3 skin yêu cầu lên số
+  sao của nó.
+- `slots`: skin gắn slot, tối đa 1 đỏ, 2 vàng, 1 loại 3. Skill nối theo đúng thứ tự trong
+  mảng. Gắn 7 màu thì 3 skin yêu cầu của nó không được nằm trong slot. Bỏ `slots` thì tự
+  chọn: ưu tiên 7 màu, sau đó theo thứ tự config, xếp đỏ → vàng → loại 3.
+- Building không có trong `buildings` giữ nguyên từ capture. `skinInfos` chỉ thay phần
+  của building được chọn. `builds[].attr` và skill không thuộc skin nào (như
+  `90000300000`) giữ từ capture.
+
+Kiểm tra: dựng lại profile từ 5 capture (cả pmain `6af3d7da…` và `6af3dacb…`) cho ra
+`builds[]` type 1–4, `skinInfos` và `summonCreatures` khớp tuyệt đối khi dùng `slots` theo
+thứ tự của account.
+
 Còn mở:
+- `goldenSkinsCount` của pmain là 6, không khớp số skin vàng building đã sở hữu (8) hay số
+  skin vàng của hero trong đội hình (4). Có thể là tổng skin vàng hero của cả account.
+  Profile đặt bằng tay qua `goldenSkinsCount`; bỏ trường này thì giữ giá trị capture.
 - Skill `90000300000` (击杀回怒, +25 nộ khi hero giết quái) trên giường không thuộc skin
   nào trong `BuildSkinLO`. Server thêm vào, chưa rõ nguồn.
 - Thứ tự skill do server sắp: cửa xếp vàng trước đỏ, giường xếp đỏ trước vàng. Có thể

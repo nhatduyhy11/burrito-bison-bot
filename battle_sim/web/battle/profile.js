@@ -1,5 +1,6 @@
-// Local playtest profile (?play&profile): map, heroes and traps from /__sim/active-profile.json,
-// resolved by name through profile-dict.json (scripts/gen_profile_dict.js). Hero skins: skin-profile.js.
+// Local playtest profile (?play&profile): map, heroes, traps, pets and building skins from
+// /__sim/active-profile.json, resolved by name through profile-dict.json (scripts/gen_profile_dict.js).
+// Hero skins: skin-profile.js. Building skins: build-skin-profile.js.
 (function () {
   "use strict";
   const SimBattle = (window.SimBattle = window.SimBattle || {});
@@ -68,8 +69,47 @@
       });
       player.organs = asList(traps);
     }
+    if (Object.hasOwn(profile, "pets")) {
+      // A pet is a name (level 1, 1 star) or { name, level, star }.
+      const pets = choices("pets", 3).map(({ option: { code }, selection: { level = 1, star = 1 } }) => {
+        const config = M("SummonCreatureLO").get(code);
+        const mec = config?.mecType;
+        if (!config || !M("SummonCreatureStarLO").get(mec * 10000 + star * 100)
+          || !M("SummonCreatureUpGradeLO").get(mec * 1000 + level)) {
+          throw new Error(`Invalid pet ${code} level ${level} / star ${star}`);
+        }
+        return { code, star, level, skillCodes: asList(petSkillCodes(config, star, M)) };
+      });
+      player.summonCreatures = asList(pets);
+    }
+    if (Object.hasOwn(profile, "buildings")) {
+      Object.assign(player, window.applySimBuildSkinProfile(player, profile.buildings, catalog.buildings, rb, M, (resolved) => {
+        step("profile building skins", resolved);
+      }));
+    }
+    if (Object.hasOwn(profile, "goldenSkinsCount")) {
+      // Server-computed (pet damage bonus); source unconfirmed, so it is set by hand. See BUILD_SKINS.md.
+      const count = profile.goldenSkinsCount;
+      if (!Number.isSafeInteger(count) || count < 0) throw new Error("goldenSkinsCount must be a non-negative integer");
+      player.goldenSkinsCount = count;
+    }
     start.playerInfos = { ...start.playerInfos, 0: player };
   };
+
+  // SummonCreatureLO.skill lists skill types; each type contributes its highest level whose
+  // starRequire the pet's star meets (SummonCreatureSkillLO code = type * 100 + level).
+  function petSkillCodes(config, star, M) {
+    const table = M("SummonCreatureSkillLO");
+    const codes = [];
+    for (const type of JSON.parse(config.skill || "[]")) {
+      let best = 0;
+      for (let level = 1, row; (row = table.get(type * 100 + level)); level++) {
+        if (row.starRequire <= star) best = row.code;
+      }
+      if (best) codes.push(best);
+    }
+    return codes;
+  }
 
   function makeBaseHero(code, config, baseSkills, M) {
     if (!Array.isArray(baseSkills) || !baseSkills.length || baseSkills.some((id) => !M("SkillBaseLO").get(id))) {

@@ -84,20 +84,18 @@ Việc cần làm:
    arg dòng lệnh dài. Map đã chuyển vào JSON (`map: { mode, stage }`), `--map` đã bỏ.
    Chọn mode (hiện chỉ Campaign) rồi stage, 3 trap, 3 pet, 5 hero; panel hero để chọn skin, sao
    và slot. Chọn 7 màu thì khoá 3 skin yêu cầu ở mức sao tối thiểu.
-   Thêm panel skin cho cửa, giường, chuột và mèo (`builds` type 1–4): skin đang mặc,
-   skin sở hữu kèm sao, 1 slot đỏ + 2 slot vàng (+ slot loại 3). Với building, skin 7
-   màu nằm ở slot vàng và **khoá** 3 skin yêu cầu. Profile cần ghép `builds[].skills`,
-   `skinInfos` và `goldenSkinsCount` (ảnh hưởng sát thương pet). Rule xem
-   [BUILD_SKINS.md](../../../battle_sim/BUILD_SKINS.md).
+   Thêm panel skin cho cửa, giường, chuột và mèo: skin đang mặc, skin sở hữu kèm sao,
+   1 slot đỏ + 2 slot vàng (+ slot loại 3). Skin 7 màu nằm ở slot vàng và **khoá** 3 skin
+   yêu cầu. Backend đã đọc `pets`, `buildings` và `goldenSkinsCount`, khớp tuyệt đối với
+   capture. Định dạng xem [BUILD_SKINS.md](../../../battle_sim/BUILD_SKINS.md#trong-profile-playtest).
+2. Backend còn thiếu spell (`daoists`: `code`, `star`, `skillCode`). Dict đã có danh sách
+   spell, profile chưa áp dụng.
 
 ## Trap, pet, spell (capture pmain `6af3dacb1d68f99b52632087`, replay khớp tuyệt đối)
 
 Trận Stage 314 trong `.tmp/battle_research/events-trappet-20261111.jsonl`, 109 op, không
 gặp boss (`bossNum` rỗng).
 
-- Pet nằm ở `playerInfos[].summonCreatures`: `code`, `star`, `level` và `skillCodes`
-  (mã `SummonCreatureSkillLO`, trường `skillCode` trỏ sang `SkillBaseLO`; `starRequire`
-  là sao tối thiểu). Profile cần tra `skillCodes` theo sao từ bảng này, giống trap.
 - Thả trap và pet đều dùng op Create (type 4) với `type` 7 (trap) hoặc 10 (pet) và
   `heroCode` là mã trap hoặc pet.
 - Spell chủ động (thần trong `daoists`) dùng op type 19 `{skillCode}`. Mỗi lần cast tốn
