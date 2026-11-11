@@ -1,0 +1,22 @@
+{
+  "heroes": {
+    "hanuman": {
+      "code": 50000001,
+      "skins": { "pf1": 5000101, "pf2": 5000102, "pf3": 5000103, "colorful": 5000104 }
+    },
+    "archangel": { "code": 50000026 },
+    "frosthealer": { "code": 50000003 },
+    "mage_king": { "code": 50000004 },
+    "dark_lubu": { "code": 50000013 },
+    "venom": {
+      "code": 50000002,
+      "skins": { "pf1": 5000201, "pf2": 5000202, "pf3": 5000203, "colorful": 5000204 },
+      "baseSkills": [10020101000, 10020201000, 10020301000]
+    }
+  },
+  "traps": {
+    "demon_spikes": { "code": 1, "level": 1, "star": 3 },
+    "lucky_cannon": { "code": 7, "level": 10, "star": 10 },
+    "terminal_soldier": { "code": 9, "level": 10, "star": 10 }
+  }
+}

@@ -74,6 +74,7 @@
       sim.capture = await getJson(`/__sim/battle/${battleUuid}.json`);
       step("capture", { uuid: battleUuid, level: sim.capture.start.level, configVersion: sim.capture.start.configVersion });
       await loadScript("/__sim_lib/proto_rebuild.js");
+      if (params.has("play") && params.has("profile")) await loadScript("/__sim/skin-profile.js");
       await loadScript("/__sim/battle.js");
     }
     await defineIndexGlobals();

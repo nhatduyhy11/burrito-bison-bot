@@ -1,0 +1,10 @@
+{
+  "heroes": [
+    { "name": "hanuman", "skin": "colorful", "star": 1 },
+    "archangel",
+    "frosthealer",
+    "mage_king",
+    { "name": "venom", "skin": "colorful", "star": 1 }
+  ],
+  "traps": ["demon_spikes", "lucky_cannon"]
+}

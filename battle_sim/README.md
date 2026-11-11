@@ -195,6 +195,12 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   Chuỗi khác thì dùng nguyên chuỗi đó.
 - `--map 66`: mở Stage 66 với đội hình từ capture. Bỏ cờ này để chơi stage gốc.
   Config `sea_65380` có stage 1–400.
+- `--profile battle_sim/profile.example.json` chọn đội hình theo tên trong
+  [profile-dict.json](web/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
+  trong capture. Hero khác dùng chỉ số cơ bản level 1 và `baseSkills` từ dict.
+  Xem [cấu hình skin](PROFILE_SKINS.md) để chọn skin, số sao và các skin yêu cầu.
+  `traps` thay danh sách trap (tối đa 3), với skill tra từ sao trong config game.
+  Bỏ một trường để giữ giá trị từ capture. Pet và hero support hiện lấy từ capture.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
   `BattleResultViewAdventure` vẫn hiện, chỉ không có reward. Script lưu trận vừa chơi vào
   `.tmp/battle_sim/played/played-<uuid>-<ts>.jsonl` (`StartGameP` + `QuitRoom` kèm op log, cùng

@@ -102,6 +102,7 @@ def start_server() -> subprocess.Popen:
 
 
 async def run(args) -> int:
+    profile_data = json.loads(args.profile.read_text(encoding="utf-8")) if args.profile else None
     log_path = CACHE / f"sandbox-{time.strftime('%Y%m%d-%H%M%S')}.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log = log_path.open("w", encoding="utf-8")
@@ -144,7 +145,9 @@ async def run(args) -> int:
 
                 async def guard(route):
                     url = route.request.url
-                    if url.startswith(ORIGIN + "/"):
+                    if args.profile and url == ORIGIN + "/__sim/active-profile.json":
+                        await route.fulfill(json=profile_data)
+                    elif url.startswith(ORIGIN + "/"):
                         await route.continue_()
                     else:
                         blocked.append(url)
@@ -179,6 +182,8 @@ async def run(args) -> int:
                     url += "&play=1" + (f"&seed={args.seed}" if args.seed else "")
                     if args.map is not None:
                         url += f"&map={args.map}"
+                    if args.profile:
+                        url += "&profile=1"
                 await page.goto(url, wait_until="domcontentloaded")
                 sim = None
                 deadline = time.time() + args.timeout
@@ -245,6 +250,7 @@ def main() -> int:
                     help="with --battle: play that battle's StartGameP yourself instead of replaying (implies --keep)")
     ap.add_argument("--seed", help="with --play: battle uuid / RNG seed ('random' = new battle; default = captured)")
     ap.add_argument("--map", type=int, metavar="STAGE", help="with --play: campaign stage number (default = captured)")
+    ap.add_argument("--profile", type=Path, help="with --play: JSON file with local formation overrides")
     ap.add_argument("--keep", action="store_true", help="keep the window open after the run")
     ap.add_argument("--headless", action="store_true")
     ap.add_argument("--browser", choices=("chrome", "chromium"), default="chrome")
@@ -252,6 +258,8 @@ def main() -> int:
     ap.add_argument("--record", help="record the page as .webm into this directory (saved when the window closes)")
     ap.add_argument("--size", help="viewport WxH (default 720x1280 headless, 640x720 headed like the runner)")
     args = ap.parse_args()
+    if args.profile and not args.play:
+        ap.error("--profile requires --play")
     if args.map is not None:
         if not args.play:
             ap.error("--map requires --play")
