@@ -206,6 +206,16 @@ uv run python battle_sim/sandbox.py --setup
   `TDServer.handleClientRequest` và ghi op vào `_clientOperationRecord`, không qua mạng. Robot
   đồng đội do director tự sinh op. Director pause trận khi có bảng chặn (chọn summon, vòng
   quay), như game thật.
+- Thẻ tháng (chỉ trong trận `--play` của trang cách ly, `stubs.js` `unlockMonthCards`): giả lập
+  đã mua cả 2 thẻ tháng, mọi loại trận. `UnlockLO` khoá 2 tính năng bằng điều kiện
+  `PrivilgeMonthCard` (`MallModule.checkActVipCardIsBuy(NewMonthCard, 7|8)`): 9003 tăng tốc (thẻ 7,
+  `BATTLE_SPEED_TIME_SCALE` [1, 1.6], nút x2 gửi op `SetSpeed`) và 9007 auto (thẻ 8, `HostingMgr`).
+  Nút còn cần `ActivityModule.isOpen(MonthCardDict)`; nút auto bỏ điều kiện loại trận
+  (`NeedAIBtnBattleType`) và level account ≥ 3 (9008, sandbox không có level). `HostingMgr.update`
+  chỉ chạy khi đang trong phòng và socket kết nối, nên sandbox báo trạng thái đó riêng trong lúc
+  update chạy. Hai nút hiện sau khi vào giường, như game. Kiểm tra: x2 đổi `frameSync.timeScale`
+  thành 1.6; auto tự Upgrade/Select/Lottery; trận đã chơi replay headless khớp tuyệt đối.
+  `window.__simBattleFrame` giữ frame trận để điều khiển qua CDP (chẩn đoán).
 - `--seed`: `uuid` của `StartGameP` là seed RNG. Không truyền thì dùng uuid đã capture, trận
   giống bản capture cho tới op đầu tiên khác đi. `random` sinh 24 hex mới, ra trận mới.
   Chuỗi khác thì dùng nguyên chuỗi đó.

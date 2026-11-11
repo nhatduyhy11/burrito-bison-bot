@@ -60,6 +60,66 @@
     step("player", { playerId: PlayerModule.Ins.playerId });
   };
 
+  // Play mode, this page only: act as if both privilege month cards are bought, in every battle type.
+  // UnlockLO gates two battle features on condition PrivilgeMonthCard (type 11), checked through
+  // MallModule.checkActVipCardIsBuy(NewMonthCard, card): 9003 BattleSpeed needs card 7 (x1.6 speed,
+  // BATTLE_SPEED_TIME_SCALE [1, 1.6]) and 9007 BattleAI card 8 (auto, HostingMgr). The buttons also
+  // need ActivityModule.isOpen(MonthCardDict) (speed) and TDModule.isHasAiButton (auto: battle type in
+  // ConstLO NeedAIBtnBattleType and 9008 BattleAIEntrance = player level >= 3, unknown here).
+  SimBattle.unlockMonthCards = function ({ M, R, step }) {
+    const { EActivityType_Activity_Enum: Act } = R("ActivityProto");
+    const { MODULE_Common_Enum: Mod } = R("CommonProto");
+    const mall = M("MallModule").Ins;
+    const isBuy = mall.checkActVipCardIsBuy;
+    mall.checkActVipCardIsBuy = function (type, card) {
+      return type === Act.NewMonthCard || isBuy.apply(this, arguments);
+    };
+    const activity = M("ActivityModule").Ins;
+    const isOpen = activity.isOpen;
+    activity.isOpen = function (code) {
+      return code === Act.MonthCardDict || isOpen.apply(this, arguments);
+    };
+    const unlock = M("UnlockMgr").Ins;
+    const checkPass = unlock.checkPass;
+    unlock.checkPass = function (id) {
+      const result = checkPass.apply(this, arguments);
+      return Number(id) === Mod.BattleAIEntrance ? { ...result, allow: true } : result;
+    };
+    const td = M("TDModule").Ins;
+    td.isHasAiButton = function () {
+      return !this.myPlayerEntity?.isSpectating && unlock.checkPass(Mod.BattleAIEntrance, false).allow;
+    };
+    // Auto play runs in HostingMgr.update, which only ticks while in a room with both sockets
+    // connected (there are none here; robots are driven by the director instead). Report that
+    // state to the game code only for the duration of that update.
+    const hosting = M("HostingMgr").Ins;
+    const roomMgr = M("GameRoomMgr").Ins;
+    const sockets = [M("GameRoomSocket").Ins, M("SocketMgr").Ins];
+    const update = hosting.update;
+    let inUpdate = false;
+    const inRoom = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(roomMgr), "isInRoom");
+    Object.defineProperty(roomMgr, "isInRoom", { configurable: true, get() { return inUpdate || inRoom.get.call(this); } });
+    for (const sock of sockets) {
+      const isConnecting = sock.isConnecting;
+      sock.isConnecting = function () { return inUpdate || isConnecting.apply(this, arguments); };
+    }
+    hosting.update = function () {
+      inUpdate = true;
+      try { return update.apply(this, arguments); } finally { inUpdate = false; }
+    };
+
+    // Diagnostics: keep the battle frame (speed / auto buttons) reachable over CDP.
+    const Frame = M("BattleFrame").prototype;
+    const initUI = Frame.initUI;
+    Frame.initUI = function () {
+      window.__simBattleFrame = this;
+      return initUI.apply(this, arguments);
+    };
+    step("month cards (local)", {
+      speed: unlock.checkPass(Mod.BattleSpeed, false).allow, auto: unlock.checkPass(Mod.BattleAI, false).allow,
+    });
+  };
+
   SimBattle.stubQuitRoom = function ({ M, report, step, rb, play, onQuit }) {
     M("BuildProxy").Ins.QuitRoomRequest = function (req, cbs) {
       report.quit = { type: req.type, extra: req.extra, endFrame: req.endFrame, totalTime: req.totalTime, battleType: req.battleType };

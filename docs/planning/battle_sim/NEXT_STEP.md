@@ -26,7 +26,7 @@ Chi tiết trong [README.md §Nguyên tắc an toàn](README.md). Tóm tắt:
 | B1 — mirror asset | xong, 690MB | `scripts/mirror.js`, `serve.js` |
 | B2 — boot cách ly | xong | `sandbox.py`, `web/boot.{html,js}` |
 | B3 — trận có hình, replay op log | xong, `QuitRoom` khớp tuyệt đối (xem dưới) | `web/battle/`, `lib/capture.js` |
-| B4 — tự chơi trong simulator | đã có `--play` và trang setup `--setup`; cần chơi thử bằng tay | `sandbox.py`, `web/battle/`, `web/setup.html`, `web/setup/` |
+| B4 — tự chơi trong simulator | `--play` + trang setup `--setup`, x2 và auto mở sẵn; trận chơi (auto) replay khớp tuyệt đối, chưa chơi tay đến thắng | `sandbox.py`, `web/battle/`, `web/setup.html`, `web/setup/` |
 
 Cách chạy và cơ chế của B3 (stub, bỏ qua pause của director, đóng bảng vòng quay):
 [battle_sim/README.md §Trận có hình](../../../battle_sim/README.md).
