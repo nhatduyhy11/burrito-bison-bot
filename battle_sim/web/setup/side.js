@@ -1,7 +1,7 @@
 // Right column of the setup page: base capture + seed, actions (play, download, copy, import, reset),
 // status line and the profile JSON. ctx is the same object the form sections get.
 import { useEffect, useRef, useState } from "preact/hooks";
-import { html, Select } from "./ui.js";
+import { html, Select, Accordion } from "./ui.js";
 import { emptyState, fromProfile, toProfile } from "./profile-io.js";
 
 const SEED_OPTIONS = [
@@ -119,9 +119,8 @@ export function Side({ ctx, battles, profile, initialStatus }) {
         <div id="status" class=${`status ${status.kind}`}>${status.text}</div>
       </div>
     </section>
-    <section>
-      <header><h2>Profile JSON</h2></header>
+    <${Accordion} title="Profile JSON">
       <pre id="output">${JSON.stringify(profile, null, 2)}</pre>
-    </section>
+    <//>
   `;
 }

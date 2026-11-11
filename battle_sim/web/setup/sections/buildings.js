@@ -1,5 +1,5 @@
 // "Skin building": each building has its own "Ghi đè" and skin table (1 red / 2 gold / 1 special slot).
-import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select } from "../ui.js";
+import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, Accordion } from "../ui.js";
 import { BUILD_SLOTS, buildingForced, buildingLocks } from "../skin-rules.js";
 import { BUILDINGS, buildSkins, newBuilding } from "../profile-io.js";
 import { headerRow, requiresNote, without } from "./shared.js";
@@ -39,13 +39,12 @@ function BuildingCard({ ctx, building, title }) {
     ? html`<${BuildingSkinTable} entry=${entry} skins=${buildSkins(dict, building)} edit=${edit} />`
     : null;
   return html`
-    <div class="card">
+    <${Accordion} title=${title} hint=${entry ? "đang ghi đè" : "giữ từ capture"}>
       <div class="row">
-        <strong>${title}</strong>
         <label><${Checkbox} checked=${!!entry} onChange=${setEnabled} />Ghi đè</label>
       </div>
-      ${table}
-    </div>
+      <div class="building-skin-table">${table}</div>
+    <//>
   `;
 }
 
