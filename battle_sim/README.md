@@ -237,8 +237,13 @@ uv run python battle_sim/sandbox --setup
   Hero, Mount và Skill Summoner là ba accordion liên tiếp; thu gọn chỉ thay đổi hiển thị.
   `mounts: { "owned": ["azure_drone"], "selected": "azure_drone" }` cấu hình danh sách sở hữu
   và mount đang cưỡi; `selected: null` là không cưỡi. Bỏ `mounts` giữ dữ liệu capture.
-  Catalog riêng: [mount-dict.json](web/mount-dict.json). Mount mới dùng skill rank đầu tiên;
+  Catalog mount nằm ở `mounts` trong [profile-dict.json](web/profile-dict.json). Mount mới dùng skill rank đầu tiên;
   mount có trong capture giữ skill cũ. Các chỉ số account do server tính vẫn lấy từ capture.
+
+  Catalog Đồ Cổ nằm ở `antiques`, kèm bảng màu, bộ sưu tập và chi phí nâng cấp.
+  Mỗi `ranks[].code` là mã theo sao trong capture, ví dụ `300106` là `3001` ở 6 sao.
+  `level` trong capture là giá trị tiến độ dùng để tính hiệu ứng, có giới hạn `haloLevelLimit`
+  theo rank. Config `sea_65380` có tối đa 15 sao cho mỗi món và mốc bộ sưu tập cuối cũng là 15 sao.
 
   `traps` thay danh sách trap (tối đa 3): tên (level 1, 1 sao) hoặc
   `{ "name", "level", "star" }`, skill tra từ sao trong config game.

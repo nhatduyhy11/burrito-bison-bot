@@ -115,12 +115,10 @@ async function savedSetup() {
 }
 
 async function main(root) {
-  const [dict, battles, mountDict] = await Promise.all([
+  const [dict, battles] = await Promise.all([
     getJson("/__sim/profile-dict.json"),
     getJson("/__sim/battles.json").catch(() => []),
-    getJson("/__sim/mount-dict.json"),
   ]);
-  dict.mounts = mountDict.mounts;
   let state = emptyState();
   let initialStatus = null;
   const saved = await savedSetup();

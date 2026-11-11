@@ -78,13 +78,13 @@
       player.heros = asList(heroes);
     }
     if (Object.hasOwn(profile, "mounts")) {
-      const mounts = await read("mount-dict");
+      const mounts = catalog.mounts;
       const { owned, selected = null } = profile.mounts || {};
       if (!Array.isArray(owned) || new Set(owned).size !== owned.length) throw new Error("Invalid owned mounts");
       if (selected !== null && !owned.includes(selected)) throw new Error("Selected mount must be owned");
       const captured = rb.listItems(player.mounts);
       player.mounts = asList(owned.map((name) => {
-        const mount = mounts.mounts[name];
+        const mount = mounts[name];
         const config = mount && M("MountLO").get(mount.code);
         const rank = mount?.ranks[0];
         if (!config || !rank || (rank.showSkill && !M("SkillBaseLO").get(rank.showSkill.code))) {
@@ -92,7 +92,7 @@
         }
         return captured.find((entry) => entry.code === mount.code) || { code: mount.code, skillCode: rank.showSkill?.code || 0 };
       }));
-      player.mountCode = selected === null ? 0 : mounts.mounts[selected].code;
+      player.mountCode = selected === null ? 0 : mounts[selected].code;
     }
     if (Object.hasOwn(profile, "traps")) {
       // A trap is a name (level 1, 1 star) or { name, level, star }.

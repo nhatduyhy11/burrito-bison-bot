@@ -5,7 +5,6 @@ import { emptyState, normalize, fromProfile, toProfile } from '../web/setup/prof
 import { hasSummonedJoker, JOKER_SUMMON } from '../web/hero-lineup.js';
 
 const dict = JSON.parse(readFileSync(new URL('../web/profile-dict.json', import.meta.url)));
-dict.mounts = JSON.parse(readFileSync(new URL('../web/mount-dict.json', import.meta.url))).mounts;
 const base = { battle: '', seed: '' };
 
 test('all setup states retain five editable hero slots, including partial imports', () => {
@@ -41,7 +40,7 @@ test('battle applies owned mount skills independently of the single equipped mou
   const window = {};
   runInNewContext(readFileSync(new URL('../web/battle/profile.js', import.meta.url), 'utf8'), {
     window,
-    fetch: async (url) => ({ ok: true, json: async () => url.includes('active-profile') ? profile : url.includes('mount-dict') ? { mounts: dict.mounts } : dict }),
+    fetch: async (url) => ({ ok: true, json: async () => url.includes('active-profile') ? profile : dict }),
   });
   const rb = { listItems: (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[i]) };
   const M = () => ({ get: () => ({}) });

@@ -1,7 +1,7 @@
 "use strict";
 // Generate web/profile-dict.json (playtest profile catalog) from the game's own config tables:
 // campaign stage range, heroes with their skins, Summoner skins, traps, pets, spells (daoists)
-// and building skins, keyed by a slug
+// building skins, mounts, and antiques, keyed by a slug
 // of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
 // lang_vi.<ver>.bin, public CDN next to config.bin; downloaded once into
 // .tmp/battle_sim/config/<configVersion>/).
@@ -18,7 +18,7 @@ const OUT = path.join(__dirname, "..", "web", "profile-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
 const SKIN_COLOR = { 4: "default", 6: "red", 7: "gold", 8: "colorful" };
 // Rarity = card border in game (HeroLO / OrganLO / SummonCreatureLO .color). Spells have no rarity tiers.
-const RARITY = { 4: "purple", 5: "orange", 6: "red", 7: "gold" };
+const RARITY = { 3: "blue", 4: "purple", 5: "orange", 6: "red", 7: "gold" };
 const BUILD_SLOT = { 0: "none", 1: "red", 2: "gold", 3: "special" };
 
 const slug = (s) => String(s).toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
@@ -33,6 +33,13 @@ function keyed(entries) { // [[name, value]] -> {slug: value}, codes appended on
   return out;
 }
 const rows = (lo) => { const list = []; lo.store.foreach((_k, v) => list.push(v)); return list; };
+const jsonField = (value) => value ? JSON.parse(value) : [];
+function fields(row, jsonFields = []) {
+  return Object.fromEntries(Object.entries(row).map(([key, value]) => {
+    const field = key.slice(1);
+    return [field, jsonFields.includes(field) ? jsonField(value) : value];
+  }));
+}
 function maxBy(lo, field) { // mecType -> max of field
   const max = new Map();
   for (const r of rows(lo)) max.set(r.mecType, Math.max(max.get(r.mecType) || 0, r[field]));
@@ -128,9 +135,58 @@ async function main() {
     .sort((a, b) => a - b);
   const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length } };
 
+  const mountRanks = rows(M("MountStarLO"));
+  const mounts = keyed(rows(M("MountLO")).map((mount) => [mount.name, {
+    code: mount.id, name: mount.name, name_vn: vn("MountLO", mount.id),
+    color: RARITY[mount.color] ?? mount.color,
+    ...(mount.displayA ? { frontModel: mount.displayA } : {}),
+    backModel: mount.displayB, hiddenUntilOwned: !!mount.bHideCond,
+    ranks: mountRanks.filter((rank) => rank.mecType === mount.id).sort((a, b) => a.star - b.star).map((rank) => ({
+      code: rank.code, star: rank.star, attr: Object.fromEntries(jsonField(rank.attr)),
+      privileges: jsonField(rank.privilege),
+      ...(rank.showSkill ? { showSkill: { code: rank.showSkill, name: SkillBase.get(rank.showSkill)?.name,
+        name_vn: vn("SkillBaseLO", rank.showSkill) } } : {}),
+    })),
+  }]));
+  const mountPrivilegeTypes = { 1: "MoveSpeed", 2: "PassWall", 3: "GVGEnergy", 4: "GVGShow" };
+
+  const starRows = rows(M("AntiqueStarLO"));
+  const haloRows = rows(M("AntiqueHaloLO"));
+  const antiqueColors = Object.fromEntries(rows(M("AntiqueColorLO")).map((row) => [row.color, {
+    ...fields(row), name_vn: vn("AntiqueColorLO", row.color), color: RARITY[row.color] ?? row.color,
+  }]));
+  const antiques = keyed(rows(M("AntiqueLO")).map((row) => {
+    const stars = starRows.filter((rank) => rank.type === row.type).sort((a, b) => a.star - b.star);
+    const ranks = haloRows.filter((halo) => halo.antiqueCode === row.code).sort((a, b) => a.star - b.star).map((halo) => {
+      const show = M("AntiqueHaloShowLO").get(halo.code);
+      const showVn = V("AntiqueHaloShowLO").get(halo.code);
+      const upgrade = stars.find((rank) => rank.star === halo.star);
+      return {
+        ...fields(halo, ["showAttr", "attr", "haloParameter", "upAttr", "privilege", "skillFactor", "limitSkillFactor",
+          "skillEffTypeParams", "skillTemplateParams", "perPower"]),
+        ...(upgrade ? { upgrade: fields(upgrade, ["costs"]) } : {}),
+        ...(show ? { display: { ...fields(show), text_vn: showVn?.text,
+          showAttrText1_vn: showVn?.showAttrText1, showAttrText2_vn: showVn?.showAttrText2 } } : {}),
+      };
+    });
+    const task = M("AntiqueHaloTaskLO").get(row.type);
+    return [row.name, {
+      ...fields(row, ["costs", "dupeCosts", "upAttr"]), colorId: row.color, color: RARITY[row.color] ?? row.color,
+      name_vn: vn("AntiqueLO", row.code), desc_vn: V("AntiqueLO").get(row.code)?.desc,
+      maxStar: stars.at(-1)?.star, ...(task ? { task: fields(task) } : {}), ranks,
+    }];
+  }));
+  const suitRanks = rows(M("AntiqueSuitAttrLO"));
+  const antiqueSuits = keyed(rows(M("AntiqueSuitLO")).map((row) => [row.name, {
+    ...fields(row, ["types"]), name_vn: vn("AntiqueSuitLO", row.type),
+    ranks: suitRanks.filter((rank) => rank.type === row.type).map((rank) => fields(rank, ["showAttr", "attr"])),
+  }]));
+  const antiqueUpgradeCosts = Array.from(M("AntiqueUpGradeLO").store, (row) => fields(row, ["costs"]));
+
   const dict = {
     _generated: `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, name_vn: lang_vi)`,
-    maps, heroes, summonerSkins, traps, pets, spells, buildings,
+    maps, heroes, summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes,
+    antiques, antiqueColors, antiqueSuits, antiqueUpgradeCosts,
   };
   fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
   const count = (o) => Object.keys(o).length;
