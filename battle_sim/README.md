@@ -234,7 +234,12 @@ uv run python battle_sim/sandbox --setup
   trang setup mở Joker ở slot 6 với đầy đủ tùy chỉnh skin, sở hữu, sao và slot skill.
   JSON lưu riêng ở `summonedJoker`, cùng định dạng một hero, ví dụ
   `{ "name": "joker", "skin": "nocturnal_burglar", "star": 5 }`; chỉ áp dụng khi Joker được triệu hồi.
-  Hero và Skill Summoner là accordion; thu gọn chỉ thay đổi hiển thị.
+  Hero, Mount và Skill Summoner là ba accordion liên tiếp; thu gọn chỉ thay đổi hiển thị.
+  `mounts: { "owned": ["azure_drone"], "selected": "azure_drone" }` cấu hình danh sách sở hữu
+  và mount đang cưỡi; `selected: null` là không cưỡi. Bỏ `mounts` giữ dữ liệu capture.
+  Catalog riêng: [mount-dict.json](web/mount-dict.json). Mount mới dùng skill rank đầu tiên;
+  mount có trong capture giữ skill cũ. Các chỉ số account do server tính vẫn lấy từ capture.
+
   `traps` thay danh sách trap (tối đa 3): tên (level 1, 1 sao) hoặc
   `{ "name", "level", "star" }`, skill tra từ sao trong config game.
   `pets` thay danh sách pet (tối đa 3) theo cùng dạng. `skillCodes` lấy theo sao: mỗi loại
@@ -306,7 +311,7 @@ So sánh:
   `normalize`, prefill từ capture, boot), `skin-rules.js` (rule skin của input, không DOM, import
   được trong Node), `profile-io.js` (state ↔ profile JSON), `ui.js` (`html`, component nhỏ:
   Accordion, Section "Ghi đè", Select, NumberInput, Checkbox), `sections/` (mỗi khung form một file: `map`,
-  `heroes`, `summoner`, `lists` cho trap/pet/spell, `buildings`, `golden`, `shared`), `side.js` (khung bên
+  `heroes`, `mounts`, `summoner`, `lists` cho trap/pet/spell, `buildings`, `golden`, `shared`), `side.js` (khung bên
   phải). Quy ước: handler đặt tên ở trên, template `html\`\`` không chứa hàm inline; `return html\``
   xuống dòng rồi mới viết nội dung, dấu backtick đóng nằm riêng một dòng (htm bỏ khoảng trắng có
   xuống dòng ở hai đầu nên DOM không đổi).

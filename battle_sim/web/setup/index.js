@@ -36,6 +36,11 @@ const listItems = (list) => Array.from({ length: list?._length || 0 }, (_, i) =>
 async function prefill(dict, battle, group) {
   const start = await capturedStart(battle);
   const player = start && listItems(start.playerInfos)[0];
+  if (group === "mounts") {
+    const owned = listItems(player?.mounts).map(({ code }) => Object.keys(dict.mounts).find((key) => dict.mounts[key].code === code)).filter(Boolean);
+    const selected = owned.find((key) => dict.mounts[key].code === player?.mountCode) || null;
+    return { owned, selected };
+  }
   if (group === "map") return { stage: start?.level || dict.maps.campaign.minStage };
   if (!player) return [];
   const name = (group, code) => Object.keys(dict[group]).find((key) => dict[group][key].code === code);
@@ -110,10 +115,12 @@ async function savedSetup() {
 }
 
 async function main(root) {
-  const [dict, battles] = await Promise.all([
+  const [dict, battles, mountDict] = await Promise.all([
     getJson("/__sim/profile-dict.json"),
     getJson("/__sim/battles.json").catch(() => []),
+    getJson("/__sim/mount-dict.json"),
   ]);
+  dict.mounts = mountDict.mounts;
   let state = emptyState();
   let initialStatus = null;
   const saved = await savedSetup();

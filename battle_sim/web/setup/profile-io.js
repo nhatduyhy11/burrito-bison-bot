@@ -13,7 +13,7 @@ const buildSkins = (dict, building) => dict.buildings[building].skins;
 function emptyState() {
   return {
     battle: "", seed: "", map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
-    summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
+    mounts: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null, summonerSkins: null,
   };
 }
@@ -28,6 +28,7 @@ function newBuilding(dict, building) {
 
 function normalize(state, dict) {
   state.heroes = Array.from({ length: LIMITS.heroes }, (_, i) => state.heroes?.[i] || newHero(""));
+  if (state.mounts && !state.mounts.owned.includes(state.mounts.selected)) state.mounts.selected = null;
   if (state.heroes) for (const hero of state.heroes) R.normalizeHero(hero, heroSkins(dict, hero.name));
   state.summonedJoker ||= newHero(JOKER_SUMMON.summonedHero);
   R.normalizeHero(state.summonedJoker, heroSkins(dict, JOKER_SUMMON.summonedHero));
@@ -57,6 +58,7 @@ function toProfile(state, dict) {
     profile.heroes = state.heroes.filter((hero) => hero.name).map(heroProfile);
     if (state.summonedJoker?.custom) profile.summonedJoker = heroProfile(state.summonedJoker);
   }
+  if (state.mounts) profile.mounts = structuredClone(state.mounts);
   if (state.traps) profile.traps = state.traps.map(({ name, level, star }) => ({ name, level, star }));
   if (state.pets) profile.pets = state.pets.map(({ name, level, star }) => ({ name, level, star }));
   if (state.spells) profile.spells = state.spells.map(({ name, star }) => ({ name, star }));
@@ -109,6 +111,12 @@ function fromProfile(profile, base, dict) {
   };
   if (Array.isArray(profile.heroes)) {
     next.heroes = profile.heroes.slice(0, LIMITS.heroes).map(readHero);
+  }
+  if (profile.mounts !== undefined) {
+    const { owned, selected = null } = profile.mounts || {};
+    if (!Array.isArray(owned) || new Set(owned).size !== owned.length) throw new Error("Mount sở hữu phải là danh sách không trùng");
+    next.mounts = { owned: owned.map((name) => need("mounts", name)), selected };
+    if (selected !== null && !owned.includes(selected)) throw new Error("Mount đang cưỡi phải được sở hữu");
   }
   if (profile.summonedJoker !== undefined) {
     if (entryOf(profile.summonedJoker).name !== JOKER_SUMMON.summonedHero) throw new Error("Slot 6 chỉ dành cho Joker triệu hồi");

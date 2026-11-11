@@ -28,6 +28,15 @@
     .body { margin-top: 8px; }
     .off .body { display: none; }
     strong { font-weight: 600; }
+    .mount-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 8px 0; }
+    .mount-group-title { display: block; margin-bottom: 5px; }
+    .mount-options { display: grid; gap: 6px; }
+    .mount-option { align-items: flex-start; min-width: 0; }
+    .mount-option input { flex: none; margin-top: 2px; }
+    .mount-option > span { min-width: 0; overflow-wrap: anywhere; }
+    .mount-orange { grid-column: 1 / -1; }
+    .mount-orange .mount-options { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; }
+    .c-orange { color: #f0a15b; }
     .skin-picker { min-width: 0; max-width: 100%; white-space: nowrap; }
     .skin-picker select { min-width: 0; width: 260px; }
     .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
