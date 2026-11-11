@@ -837,6 +837,228 @@
       ]
     }
   },
+  "summonerSkins": {
+    "skeletian": {
+      "code": 20200,
+      "name": "Skeletian",
+      "name_vn": "Nhà Thám Hiểm Cổ",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_001_sea",
+      "skill": "Valor Light",
+      "skill_vn": "Ánh Sáng Dũng Khí"
+    },
+    "demon_doll": {
+      "code": 20201,
+      "name": "Demon Doll",
+      "name_vn": "Búp Bê Ma",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_003",
+      "skill": "Dark Vortex",
+      "skill_vn": "Xoáy Nước Hắc Ám"
+    },
+    "night_wander": {
+      "code": 20202,
+      "name": "Night Wander",
+      "name_vn": "Mộng Du Đêm",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_004",
+      "skill": "Dream Come True",
+      "skill_vn": "Giấc Mơ Thành Thật"
+    },
+    "high_school_girl": {
+      "code": 20203,
+      "name": "High School Girl",
+      "name_vn": "Nữ Sinh Cấp 3",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_kr_002",
+      "skill": "Armor Piercer",
+      "skill_vn": "Đạn Xuyên Giáp"
+    },
+    "sanguin_dragoon": {
+      "code": 20204,
+      "name": "Sanguin Dragoon",
+      "name_vn": "Kỵ Sĩ Huyết Long",
+      "color": "gold",
+      "maxStar": 1,
+      "model": "role_huashen_009"
+    },
+    "pyromancer": {
+      "code": 20205,
+      "name": "Pyromancer",
+      "name_vn": "Ảo Thuật Gia Lửa",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_007",
+      "skill": "Magic Flame",
+      "skill_vn": "Ngọn Lửa Ảo Thuật"
+    },
+    "phantom_hacker": {
+      "code": 20206,
+      "name": "Phantom Hacker",
+      "name_vn": "Hacker Bóng Đêm",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_006",
+      "skill": "Hacker Invasion",
+      "skill_vn": "Tin Tặc Đột Nhập"
+    },
+    "crimson_princess": {
+      "code": 20207,
+      "name": "Crimson Princess",
+      "name_vn": "Nữ Kiếm Sĩ Đỏ",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_008",
+      "skill": "Ravenous Edge",
+      "skill_vn": "Lưỡi Dao Khát Huyết"
+    },
+    "fireblade_overlord": {
+      "code": 20208,
+      "name": "Fireblade Overlord",
+      "name_vn": "Bá Chủ Dao Lửa",
+      "color": "gold",
+      "maxStar": 5,
+      "model": "role_huashen_011",
+      "skill": "Pyro Awakening",
+      "skill_vn": "Thức Tỉnh Tim Lửa"
+    },
+    "tempest_overseer": {
+      "code": 20209,
+      "name": "Tempest Overseer",
+      "name_vn": "Kẻ Trị Vì Sóng Dữ",
+      "color": "gold",
+      "maxStar": 5,
+      "model": "role_huashen_013",
+      "skill": "Aquatic Blessing",
+      "skill_vn": "Ơn Huệ Thần Biển"
+    },
+    "nine_tailed_envoy": {
+      "code": 20210,
+      "name": "Nine-Tailed Envoy",
+      "name_vn": "Sứ Giả Cửu Vĩ",
+      "color": "gold",
+      "maxStar": 5,
+      "model": "role_huashen_014",
+      "skill": "Kitsune Poison",
+      "skill_vn": "Cáo Thần Ăn Trùng"
+    },
+    "blade_of_imprisonment": {
+      "code": 20211,
+      "name": "Blade of Imprisonment",
+      "name_vn": "Quỷ Đao Địa Ngục",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_018",
+      "skill": "Hell Slash",
+      "skill_vn": "Địa Ngục Trảm"
+    },
+    "resident_violence": {
+      "code": 20212,
+      "name": "Resident Violence",
+      "name_vn": "Harajuku Bạo Lực",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_017",
+      "skill": "Call of the Hound",
+      "skill_vn": "Linh Khuyển Hô Hoán"
+    },
+    "cloudless_skyline": {
+      "code": 20213,
+      "name": "Cloudless Skyline",
+      "name_vn": "Vạn Tượng Tình Minh",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_016",
+      "skill": "Abyssal Shimmer",
+      "skill_vn": "U Minh Quỷ Hỏa"
+    },
+    "azure_valkyrie": {
+      "code": 20214,
+      "name": "Azure Valkyrie",
+      "name_vn": "Azure Valkyrie",
+      "color": "gold",
+      "maxStar": 5,
+      "model": "role_huashen_023",
+      "skill": "Dimensional Force",
+      "skill_vn": "Sức Mạnh Thứ Nguyên"
+    },
+    "phantom_witch": {
+      "code": 20215,
+      "name": "Phantom Witch",
+      "name_vn": "Phù Thủy Bóng Đêm",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_022",
+      "skill": "Shadow Specter",
+      "skill_vn": "Ám Dạ U Linh"
+    },
+    "genius_catcher": {
+      "code": 20216,
+      "name": "Genius Catcher",
+      "name_vn": "Thợ Săn Thiên Tài",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_019",
+      "skill": "Celestial Split",
+      "skill_vn": "Vút Cần Xé Gió"
+    },
+    "purgatory_fiend": {
+      "code": 20217,
+      "name": "Purgatory Fiend",
+      "name_vn": "Cuồng Đồ Địa Ngục",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_020",
+      "skill": "Purgatory Slash",
+      "skill_vn": "Cuồng Đao Địa Ngục"
+    },
+    "castle_count": {
+      "code": 20218,
+      "name": "Castle Count",
+      "name_vn": "Bá Tước Cổ",
+      "color": "red",
+      "maxStar": 5,
+      "model": "role_huashen_015",
+      "skill": "Castle Wealth",
+      "skill_vn": "Kho Báu Lâu Đài Cổ"
+    },
+    "flamefox_swordheart": {
+      "code": 20221,
+      "name": "Flamefox Swordheart",
+      "name_vn": "Kiếm Tâm Hồ Diễm",
+      "color": "gold",
+      "maxStar": 5,
+      "model": "role_huashen_021",
+      "skill": "Divine Fox Rend",
+      "skill_vn": "Thần Hồ Phệ Giáp",
+      "excludes": 20203
+    },
+    "night_raven_s_whisper": {
+      "code": 20222,
+      "name": "Night Raven's Whisper",
+      "name_vn": "Huyễn Dạ Nha Ngữ",
+      "color": "gold",
+      "maxStar": 5,
+      "model": "role_huashen_025",
+      "skill": "Arcane Amplification",
+      "skill_vn": "Khuếch Đại Ma Năng",
+      "excludes": 20202
+    },
+    "time_traveler": {
+      "code": 20223,
+      "name": "Time Traveler",
+      "name_vn": "Lữ Khách Thời Không",
+      "color": "gold",
+      "maxStar": 5,
+      "model": "role_huashen_024",
+      "skill": "Rapid Reinforcement",
+      "skill_vn": "Chi Viện Thần Tốc"
+    }
+  },
   "traps": {
     "demon_spike": {
       "code": 1,

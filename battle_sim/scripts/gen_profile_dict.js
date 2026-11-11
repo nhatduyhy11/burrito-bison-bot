@@ -1,6 +1,7 @@
 "use strict";
 // Generate web/profile-dict.json (playtest profile catalog) from the game's own config tables:
-// campaign stage range, heroes with their skins, traps, pets, spells (daoists) and building skins, keyed by a slug
+// campaign stage range, heroes with their skins, Summoner skins, traps, pets, spells (daoists)
+// and building skins, keyed by a slug
 // of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
 // lang_vi.<ver>.bin, public CDN next to config.bin; downloaded once into
 // .tmp/battle_sim/config/<configVersion>/).
@@ -55,15 +56,24 @@ async function main() {
   const vn = (table, key) => V(table).get(key)?.name;
   const SkillBase = M("SkillBaseLO");
 
-  // Heroes: base skills 10<NN><slot><lv=01>000 for slots 1-3; skins from DermaLO/DermaStarLO.
+  // Hero and Summoner skins share DermaLO and DermaStarLO.
   const dermaMaxStar = new Map();
   for (const r of rows(M("DermaStarLO"))) dermaMaxStar.set(r.dermaCode, Math.max(dermaMaxStar.get(r.dermaCode) || 0, r.star));
-  const dermas = rows(M("DermaLO")).filter((d) => d.dermatype === 1);
+  const dermas = rows(M("DermaLO"));
+  const heroSkins = dermas.filter((d) => d.dermatype === 1);
+  const summonerSkins = keyed(dermas.filter((d) => d.dermatype === 2).sort((a, b) => a.code - b.code).map((d) => [d.name, {
+    code: d.code, name: d.name, name_vn: vn("DermaLO", d.code), color: SKIN_COLOR[d.color] || d.color,
+    maxStar: dermaMaxStar.get(d.code) || 1, model: d.deco,
+    ...(d.skills?.length ? { skill: SkillBase.get(d.skills.get(0))?.name, skill_vn: vn("SkillBaseLO", d.skills.get(0)) } : {}),
+    ...(d.exclusion ? { excludes: d.exclusion } : {}),
+  }]));
+
+  // Heroes: base skills 10<NN><slot><lv=01>000 for slots 1-3.
   const heroes = keyed(rows(M("HeroLO")).filter((h) => h.isShow).sort((a, b) => a.code - b.code).map((h) => {
     const nn = String(h.code % 1000).padStart(2, "0");
     const baseSkills = [1, 2, 3].map((slot) => Number(`10${nn}0${slot}01000`)).filter((id) => SkillBase.get(id));
     // DermaLO.heroCode holds HeroLO.subType (DermaStarLO.heroCode holds the hero code).
-    const own = dermas.filter((d) => d.heroCode === h.subType).sort((a, b) => a.index - b.index || a.code - b.code);
+    const own = heroSkins.filter((d) => d.heroCode === h.subType).sort((a, b) => a.index - b.index || a.code - b.code);
     const skinKey = new Map(Object.entries(keyed(own.map((d) => [d.name, d]))).map(([k, d]) => [d.code, k]));
     const skins = {};
     for (const d of own) {
@@ -120,12 +130,12 @@ async function main() {
 
   const dict = {
     _generated: `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, name_vn: lang_vi)`,
-    maps, heroes, traps, pets, spells, buildings,
+    maps, heroes, summonerSkins, traps, pets, spells, buildings,
   };
   fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
   const count = (o) => Object.keys(o).length;
   console.log(`wrote ${path.relative(process.cwd(), OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ${count(heroes)} heroes, ${count(traps)} traps, ` +
-    `${count(pets)} pets, ${count(spells)} spells, ` +
+    `${count(pets)} pets, ${count(spells)} spells, ${count(summonerSkins)} Summoner skins, ` +
     Object.entries(buildings).map(([k, b]) => `${k} ${count(b.skins)} skins`).join(", "));
 }
 

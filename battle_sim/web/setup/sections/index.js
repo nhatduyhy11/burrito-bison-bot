@@ -4,6 +4,7 @@
 import { html } from "../ui.js";
 import { MapSection } from "./map.js";
 import { HeroesSection } from "./heroes.js";
+import { SummonerSection } from "./summoner.js";
 import { ListSection } from "./lists.js";
 import { BuildingsSection } from "./buildings.js";
 import { GoldenSection } from "./golden.js";
@@ -15,6 +16,7 @@ export function FormSections({ ctx }) {
   return html`
     <${MapSection} ctx=${ctx} />
     <${HeroesSection} ctx=${ctx} />
+    <${SummonerSection} ctx=${ctx} />
     ${lists}
     <${BuildingsSection} ctx=${ctx} />
     <${GoldenSection} ctx=${ctx} />

@@ -44,6 +44,10 @@ async function prefill(dict, battle, group) {
     traps: () => listItems(player.organs).map((o) => ({ name: name("traps", o.code), level: o.level, star: o.star })),
     pets: () => listItems(player.summonCreatures).map((p) => ({ name: name("pets", p.code), level: p.level, star: p.star })),
     spells: () => listItems(player.daoists).map((d) => ({ name: name("spells", d.code), star: d.star })),
+    summonerSkins: () => listItems(player.summonerInfos).flatMap(({ code, level }) => {
+      const key = name("summonerSkins", code);
+      return dict.summonerSkins[key]?.skill ? [{ name: key, star: level }] : [];
+    }),
   }[group];
   return from().filter((item) => item.name).slice(0, LIMITS[group]);
 }

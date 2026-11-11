@@ -1,4 +1,4 @@
-// Local playtest profile (?play&profile): map, heroes, traps, pets, spells and building skins from
+// Local playtest profile (?play&profile): map, heroes, traps, pets, spells and skins from
 // /__sim/active-profile.json, resolved by name through profile-dict.json (scripts/gen_profile_dict.js).
 // Hero skins: skin-profile.js. Building skins: build-skin-profile.js.
 (function () {
@@ -109,6 +109,23 @@
         return { code, star, skillCode: rank.skillCode };
       });
       player.daoists = asList(spells);
+    }
+    if (Object.hasOwn(profile, "summonerSkins")) {
+      const { SUMMONER_SLOTS, summonerSkillsConflict } = await import("../summoner-skills.js");
+      const slotted = [];
+      player.summonerInfos = asList(choices("summonerSkins", SUMMONER_SLOTS).map(({ option: { code }, selection: { star = 1 } }) => {
+        const skin = M("DermaLO").get(code);
+        const rank = Number.isSafeInteger(star) && star > 0 && M("DermaStarLO").get(code * 100 + star);
+        if (skin?.dermatype !== 2 || !skin.skills?.length || !JSON.parse(rank?.skill || "[]").length) {
+          throw new Error(`Invalid Summoner skin skill ${code} at star ${star}`);
+        }
+        const entry = { code, excludes: skin.exclusion };
+        if (slotted.some((other) => summonerSkillsConflict(other, entry))) {
+          throw new Error(`Conflicting Summoner skin skill ${code}`);
+        }
+        slotted.push(entry);
+        return { code, level: star };
+      }));
     }
     if (Object.hasOwn(profile, "buildings")) {
       Object.assign(player, window.applySimBuildSkinProfile(player, profile.buildings, catalog.buildings, rb, M, (resolved) => {
