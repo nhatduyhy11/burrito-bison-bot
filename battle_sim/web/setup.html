@@ -53,40 +53,13 @@
 <body>
   <h1>Battle Sim Setup</h1>
   <p class="sub">Tạo profile cho <code>sandbox.py --play --profile</code>. Phần nào không bật "Ghi đè" thì giữ nguyên từ capture.</p>
-  <div class="layout">
-    <main id="form">đang tải…</main>
-    <aside class="side">
-      <section>
-        <header><h2>Account gốc</h2></header>
-        <div class="body">
-          <div class="row"><label>Capture <select id="battle"></select></label></div>
-          <div class="note">Trận đã capture chỉ dùng làm nguồn dữ liệu account: chỉ số và level hero, attr
-            building, hero support, đồng đội robot, và mọi phần không bật Ghi đè. Stage ghi ở đây là
-            màn của trận capture; màn sẽ chơi do mục "Màn chơi" quyết định (tắt thì dùng màn này).</div>
-          <div class="row"><label>Seed <select id="seed">
-            <option value="">giống capture</option>
-            <option value="random">ngẫu nhiên</option>
-          </select></label></div>
-          <div class="row">
-            <button id="play" class="primary">Chơi</button>
-            <button id="download">Tải JSON</button>
-            <button id="copy">Sao chép</button>
-            <label><button id="importBtn">Nhập JSON</button><input id="importFile" type="file" accept=".json,application/json" hidden></label>
-            <button id="reset">Xoá hết</button>
-          </div>
-          <div id="playHint" class="note"></div>
-          <div id="status" class="status note"></div>
-        </div>
-      </section>
-      <section>
-        <header><h2>Profile JSON</h2></header>
-        <pre id="output"></pre>
-      </section>
-    </aside>
-  </div>
+  <div id="app">đang tải…</div>
+  <script src="/__sim/vendor/preact.umd.js"></script>
+  <script src="/__sim/vendor/preact-hooks.umd.js"></script>
+  <script src="/__sim/vendor/htm.umd.js"></script>
   <script src="/__sim/setup/skin-rules.js"></script>
-  <script src="/__sim/setup/dom.js"></script>
   <script src="/__sim/setup/profile-io.js"></script>
+  <script src="/__sim/setup/ui.js"></script>
   <script src="/__sim/setup/sections.js"></script>
   <script src="/__sim/setup/index.js"></script>
 </body>

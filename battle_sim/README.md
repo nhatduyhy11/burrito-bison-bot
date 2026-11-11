@@ -288,10 +288,13 @@ So sánh:
 - `serve.js` — serve mirror local offline (`/sim.html`,
   `/__sim/*` = `web/`, `/__sim_config/*` = config cache, `/__sim/last-setup.json`).
 - `sandbox.py` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.
-- `web/setup.html` + `web/setup/` — trang setup profile (`sandbox.py --setup`): `skin-rules.js`
-  (rule skin của input, không DOM, chạy được trong Node), `dom.js` (helper DOM), `profile-io.js`
-  (state ↔ profile JSON), `sections.js` (các khung form), `index.js` (entry: state, prefill từ
-  capture, khung bên phải, boot).
+- `web/setup.html` + `web/setup/` — trang setup profile (`sandbox.py --setup`), UI bằng Preact +
+  htm (không build, nạp bằng `<script>` thường): `skin-rules.js` (rule skin của input, không DOM,
+  chạy được trong Node), `ui.js` (`html`, component nhỏ: Section "Ghi đè", Select, NumberInput),
+  `profile-io.js` (state ↔ profile JSON), `sections.js` (component các khung form), `index.js`
+  (entry: state một nguồn qua `update()` → `normalize`, prefill từ capture, khung bên phải, boot).
+- `web/vendor/` — thư viện bên thứ ba vendor sẵn (sandbox chặn CDN): Preact 10.29.8 + hooks, htm
+  3.1.1 (bản UMD). Nguồn, version, license: [web/vendor/README.md](web/vendor/README.md).
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
   `index.js` (entry, `window.__simBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
   stub mạng, `QuitRoom`), `replay.js` (op log, tick, pause, so kết quả), `profile.js` +
