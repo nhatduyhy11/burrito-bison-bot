@@ -16,6 +16,9 @@ mục tiêu này, không phải đích đến.
 - **Không can thiệp vào trang game live đang đăng nhập**: không chặn hay giả socket, không
   gọi thẳng hàm game để mở trận. Trên trang live chỉ được dùng hook **đọc thụ động**
   (capture như `hook.js`).
+  - `.tmp/pmain` là account chính (chơi thật, có nạp). **Phải hỏi user trước mỗi lần mở**
+    profile này, kể cả chỉ để đọc. Khi mở thì chỉ dùng `hook.js`, không dùng
+    `wrap_random.js` (nó chạy lại `randomCode` trong game).
   - Lý do: chặn được socket nhưng còn HTTP/SDK/telemetry, logic reconnect và kiểm tra trận
     dở dang (`UnfinishedRoom`). Client có thể rơi vào trạng thái lệch với server, và chuyện
     đó có thể bị ghi nhận.

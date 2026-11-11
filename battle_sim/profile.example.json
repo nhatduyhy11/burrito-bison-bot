@@ -1,4 +1,5 @@
 {
+  "map": { "mode": "campaign", "stage": 66 },
   "heroes": [
     { "name": "hanuman", "skin": "colorful", "star": 1 },
     "archangel",

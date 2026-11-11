@@ -180,8 +180,6 @@ async def run(args) -> int:
                     url += ("&" if "?" in url else "?") + "battle=" + args.battle
                 if args.play:
                     url += "&play=1" + (f"&seed={args.seed}" if args.seed else "")
-                    if args.map is not None:
-                        url += f"&map={args.map}"
                     if args.profile:
                         url += "&profile=1"
                 await page.goto(url, wait_until="domcontentloaded")
@@ -249,7 +247,6 @@ def main() -> int:
     ap.add_argument("--play", action="store_true",
                     help="with --battle: play that battle's StartGameP yourself instead of replaying (implies --keep)")
     ap.add_argument("--seed", help="with --play: battle uuid / RNG seed ('random' = new battle; default = captured)")
-    ap.add_argument("--map", type=int, metavar="STAGE", help="with --play: campaign stage number (default = captured)")
     ap.add_argument("--profile", type=Path, help="with --play: JSON file with local formation overrides")
     ap.add_argument("--keep", action="store_true", help="keep the window open after the run")
     ap.add_argument("--headless", action="store_true")
@@ -260,11 +257,6 @@ def main() -> int:
     args = ap.parse_args()
     if args.profile and not args.play:
         ap.error("--profile requires --play")
-    if args.map is not None:
-        if not args.play:
-            ap.error("--map requires --play")
-        if args.map < 1:
-            ap.error("--map must be a positive campaign stage number")
     if not args.size:
         args.size = "720x1280" if args.headless else "640x720"
     if args.play:

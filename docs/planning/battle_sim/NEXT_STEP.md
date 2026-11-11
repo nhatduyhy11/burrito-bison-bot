@@ -57,10 +57,56 @@ rồi kiểm tra file `played-*.jsonl` và log sandbox. Màn kết quả dùng p
 với `clientReward: null`. Xem [hướng dẫn tự chơi](../../../battle_sim/README.md#tự-chơi-trận-với-đội-hình-account-mốc-b-bước-4)
 để biết cách replay lại trận vừa chơi.
 
+## Skin hero: rule đã xác nhận (capture pmain 2026-11-11)
+
+Nguồn: `HeroDermaModule` trong bundle và trận `6af3d7da1d68f99b52631ef9` trong
+`.tmp/battle_research/events-skin3-20261111.jsonl`.
+
+- Mỗi hero có 3 skin thường: 1 đỏ (color 6) và 2 vàng (color 7). Skin 7 màu (color 8)
+  yêu cầu cả 3 skin thường ở số sao ≥ sao của 7 màu.
+- Skill skin đi theo **slot**, không theo skin đang mặc. Mỗi hero (theo `subType`) có
+  3 slot thường (`HeroDermaSkill.skills`) và 1 slot 7 màu riêng (`colorSkills`).
+- `StartGameP` gắn skill của **mọi skin trong slot**, mỗi skill ở mã của số sao hiện
+  tại, theo thứ tự slot, sau các skill gốc. `index` là vị trí 1-based trong list. Ví dụ
+  Dark Lubu mặc 5001301 vẫn có cả 3 skill 8004131x/8004132x/8004130x. `derma` chỉ là
+  model đang mặc.
+- `dermaIndex` của skill skin (2 = vàng 1, 3 = vàng 2, 4 = 7 màu) đi vào
+  `reserved.dermaIndexsCond`. Perform BT kiểm tra các giá trị này bằng điều kiện
+  `PF2/PF3/PF4` (`ToggleConditionBtNodeParser`), nên hiệu ứng hình phụ thuộc vào bộ skill
+  skin. Không skill skin nào dùng `exclusionGroup`, nên phần logic không bị thay thế.
+- `skin-profile.js` đã theo rule này (`slots`), xem
+  [PROFILE_SKINS.md](../../../battle_sim/PROFILE_SKINS.md). Còn chưa xác nhận: skill 7 màu
+  đứng sau 3 skill thường (chưa có account 7 màu).
+
+Việc cần làm:
+1. Trang setup trong sandbox (HTML thuần, đọc thẳng các bảng config game). Trang sinh
+   **một profile JSON đủ mọi tham số** để đưa vào backend (`--profile`), thay cho các
+   arg dòng lệnh dài. Map đã chuyển vào JSON (`map: { mode, stage }`), `--map` đã bỏ.
+   Chọn mode (hiện chỉ Campaign) rồi stage, 3 trap, 3 pet, 5 hero; panel hero để chọn skin, sao
+   và slot. Chọn 7 màu thì khoá 3 skin yêu cầu ở mức sao tối thiểu.
+   Thêm panel skin cho cửa, giường, chuột và mèo (`builds` type 1–4): skin đang mặc,
+   skin sở hữu kèm sao, 1 slot đỏ + 2 slot vàng (+ slot loại 3). Với building, skin 7
+   màu nằm ở slot vàng và **khoá** 3 skin yêu cầu. Profile cần ghép `builds[].skills`,
+   `skinInfos` và `goldenSkinsCount` (ảnh hưởng sát thương pet). Rule xem
+   [BUILD_SKINS.md](../../../battle_sim/BUILD_SKINS.md).
+
+## Trap, pet, spell (capture pmain `6af3dacb1d68f99b52632087`, replay khớp tuyệt đối)
+
+Trận Stage 314 trong `.tmp/battle_research/events-trappet-20261111.jsonl`, 109 op, không
+gặp boss (`bossNum` rỗng).
+
+- Pet nằm ở `playerInfos[].summonCreatures`: `code`, `star`, `level` và `skillCodes`
+  (mã `SummonCreatureSkillLO`, trường `skillCode` trỏ sang `SkillBaseLO`; `starRequire`
+  là sao tối thiểu). Profile cần tra `skillCodes` theo sao từ bảng này, giống trap.
+- Thả trap và pet đều dùng op Create (type 4) với `type` 7 (trap) hoặc 10 (pet) và
+  `heroCode` là mã trap hoặc pet.
+- Spell chủ động (thần trong `daoists`) dùng op type 19 `{skillCode}`. Mỗi lần cast tốn
+  60 điện (item 30600002). Trận này chỉ có 1 lần cast (frame 3195). Các dòng "激活技能/神兵技能"
+  trong log là thẻ chọn từ lượt quay (op 10 + 8), không phải spell.
+- Chọn base: op type 2 `{roomId}`; người chơi ở room 1.
+
 ## Còn mở từ B3
 
-- Design resolution dùng 720×1280 (mặc định của `UIMgr.init`); `Main` lấy từ Canvas của launch
-  scene, chưa đối chiếu.
 - `remoteConfig` (`getRemoteAgent`) để rỗng: game dùng mặc định cho các `PerformType`. Nếu
   thấy hành vi lệch, cân nhắc lấy `checkConfig` từ capture thụ động.
 - Headless chậm (~10 fps), một trận ~8 phút; cửa sổ thật nhanh hơn.

@@ -193,9 +193,10 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
 - `--seed`: `uuid` của `StartGameP` là seed RNG. Không truyền thì dùng uuid đã capture, trận
   giống bản capture cho tới op đầu tiên khác đi. `random` sinh 24 hex mới, ra trận mới.
   Chuỗi khác thì dùng nguyên chuỗi đó.
-- `--map 66`: mở Stage 66 với đội hình từ capture. Bỏ cờ này để chơi stage gốc.
-  Config `sea_65380` có stage 1–400.
-- `--profile battle_sim/profile.example.json` chọn đội hình theo tên trong
+- `--profile battle_sim/profile.example.json`: mọi tuỳ chỉnh trận nằm trong file JSON này
+  (sau này trang setup sẽ sinh ra file đó). `map` chọn màn chơi, ví dụ
+  `{ "mode": "campaign", "stage": 66 }`. Hiện chỉ có `campaign`, và config `sea_65380` có
+  stage 1–400. Bỏ `map` thì chơi stage gốc của capture. Đội hình chọn theo tên trong
   [profile-dict.json](web/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
   trong capture. Hero khác dùng chỉ số cơ bản level 1 và `baseSkills` từ dict.
   Xem [cấu hình skin](PROFILE_SKINS.md) để chọn skin, số sao và các skin yêu cầu.

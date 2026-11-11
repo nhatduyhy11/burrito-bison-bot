@@ -11,20 +11,35 @@ Tên skin tra trong `skins` của hero tương ứng trong [profile-dict.json](w
   "name": "venom",
   "skin": "colorful",
   "star": 3,
-  "ownedSkins": { "pf1": 1, "pf2": 4 }
+  "ownedSkins": { "pf1": 1, "pf2": 4 },
+  "slots": ["pf1", "pf2", "pf3", "colorful"]
 }
 ```
 
-`star` là sao của skin đang mặc, mặc định 1. `ownedSkins` là các skin khác đã mở và số
-sao tương ứng, có thể bỏ. Trong ví dụ, Colorful vẫn 3 sao, `pf1` được nâng từ 1 lên 3,
-`pf2` giữ 4 và `pf3` được bổ sung ở 3 sao. Simulator áp quy tắc này theo yêu cầu ở đúng
-mốc sao trong `DermaStarLO`. Với Colorful, mỗi skin yêu cầu được nâng tối thiểu bằng sao
-của skin Colorful. Dòng `profile skin ranks` trong log sandbox ghi từng skin và rank cuối.
-Trong config này, cả Venom và Hanuman đều cần `pf1` (mã bậc màu 6) cùng `pf2` và
-`pf3` (mã bậc màu 7). Sao vượt quá rank có trong config báo lỗi.
+- `skin`: skin đang mặc. Chỉ đổi model, không quyết định skill. Bỏ trường này thì hero
+  mặc model gốc (`derma` 0).
+- `star`: sao của skin đang mặc, mặc định 1.
+- `ownedSkins`: các skin khác đã mở và số sao tương ứng, có thể bỏ.
+- `slots`: các skin gắn vào slot skill, gồm tối đa 3 skin thường và 1 skin 7 màu. Bỏ
+  trường này thì mọi skin đã mở đều vào slot: skin thường theo thứ tự trong config, rồi
+  đến skin 7 màu.
 
-Config `sea_65380` có 1–5 sao cho các skin Hanuman và Venom trong dict. Mỗi rank có
-thể đổi mã skill và chỉ số. Simulator dùng model và skill ở rank của skin đang mặc,
-và cộng chỉ số từ các skin đã mở vào hero. Phần này nằm trong
-[skin-profile.js](web/skin-profile.js). Việc cộng dồn chỉ số chưa được đối chiếu với
-capture từ account sở hữu Colorful.
+Skin 7 màu yêu cầu cả 3 skin thường ở số sao ít nhất bằng sao của nó. Simulator tự nâng
+các skin yêu cầu lên mức đó. Trong ví dụ trên, Colorful 3 sao, `pf1` được nâng từ 1 lên
+3, `pf2` giữ 4 và `pf3` được bổ sung ở 3 sao. Sao vượt quá rank có trong config sẽ báo
+lỗi. Dòng `profile skin ranks` trong log sandbox ghi từng skin, rank cuối và các slot.
+
+## Rule của game
+
+Đã đối chiếu với capture pmain `6af3d7da1d68f99b52631ef9` (Venom, Dark Lubu, Frosthealer):
+
+- Mỗi skin trong slot thêm skill ở mã của số sao hiện tại. Các skill này nối sau skill
+  gốc theo thứ tự slot, với `index` là vị trí 1-based trong list. Dark Lubu mặc skin đỏ
+  vẫn có đủ skill của 3 skin.
+- Hero nhận `selfAttr` của mọi skin đã mở. `attr` của skin (ví dụ 1015) không nằm trong
+  chỉ số hero.
+- Chọn 7 màu thì hero có 4 skill skin. `dermaIndex` của các skill này bật nhánh `PF2/PF3/PF4`
+  trong perform BT, đây là cách skill 7 màu đổi hiệu ứng của skill cũ.
+
+Chưa xác nhận vì chưa có capture của account có 7 màu: skill 7 màu đứng sau 3 skill
+thường. Phần này nằm trong [skin-profile.js](web/skin-profile.js).

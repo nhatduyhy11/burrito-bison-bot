@@ -5,9 +5,15 @@
       "skins": { "pf1": 5000101, "pf2": 5000102, "pf3": 5000103, "colorful": 5000104 }
     },
     "archangel": { "code": 50000026 },
-    "frosthealer": { "code": 50000003 },
+    "frosthealer": {
+      "code": 50000003,
+      "skins": { "pf1": 5000301, "pf2": 5000302, "pf3": 5000303 }
+    },
     "mage_king": { "code": 50000004 },
-    "dark_lubu": { "code": 50000013 },
+    "dark_lubu": {
+      "code": 50000013,
+      "skins": { "pf1": 5001301, "pf2": 5001302, "pf3": 5001303 }
+    },
     "venom": {
       "code": 50000002,
       "skins": { "pf1": 5000201, "pf2": 5000202, "pf3": 5000203, "colorful": 5000204 },

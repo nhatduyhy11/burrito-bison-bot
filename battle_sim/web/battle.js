@@ -27,14 +27,6 @@
     // StartGameP.uuid seeds the battle RNG: same uuid = same battle as the capture.
     // ?seed=random (or any 24-hex string) starts a different battle with the same account data.
     const start = { ...sim.capture.start, uuid: pickSeed(params.get("seed"), sim.capture.start.uuid) };
-    if (play && params.has("map")) {
-      const stage = Number(params.get("map"));
-      const level = Number.isSafeInteger(stage) && stage > 0 && M("AdventuretdLevelLO").get(stage * 10);
-      if (!level || !M("BattleGroundLO").get(level.battleGroundCode)) {
-        throw new Error(`Unknown campaign stage: ${params.get("map")}`);
-      }
-      start.level = stage;
-    }
     const rb = window.makeRebuilder(R);
     if (play && params.has("profile")) {
       await applyProfile(start, rb, M, step);
@@ -84,7 +76,16 @@
     }
 
     // --- Main-like setup: only what the battle needs (no login, SDK, lobby modules) ---
-    cc.view.setDesignResolutionSize(DESIGN.width, DESIGN.height, cc.ResolutionPolicy.FIXED_WIDTH);
+    // Main.setDesignResolutionSize: frames wider than 9:16 (desktop windows) use FIXED_HEIGHT
+    // with a 30px status bar, and Main opens BackGroundView to cover the sides.
+    const frame = cc.view.getFrameSize();
+    const sideCover = frame.width / frame.height > DESIGN.width / DESIGN.height;
+    if (!sideCover) {
+      cc.view.setDesignResolutionSize(DESIGN.width, DESIGN.height, cc.ResolutionPolicy.FIXED_WIDTH);
+    } else {
+      M("DeviceUtils").Ins.statusBarHeight = 30;
+      cc.view.setDesignResolutionSize(DESIGN.width, DESIGN.height, cc.ResolutionPolicy.FIXED_HEIGHT);
+    }
     const canvas = cc.director.getScene().getChildByName("Canvas");
     const canvasWidget = canvas.getComponent(cc.Widget); // boot.js: Canvas stretched to the screen
     if (canvasWidget) canvasWidget.updateAlignment();
@@ -94,6 +95,7 @@
     M("NodeUtils").addWidget(viewRoot, 0, 0, 0, 0).updateAlignment();
     R("ResourceManager").resource.ResourceManager.sInstance.init(30, 5, 0);
     M("UIMgr").Ins.init(viewRoot, M("ResPathUtils").ViewPrefabPath, DESIGN.width, viewRoot.height, 60);
+    if (sideCover) M("UIMgr").Ins.open(M("BackGroundView"), M("UILayerType").SideCover);
     const battleRoot = new cc.Node("BattleRoot");
     canvas.addChild(battleRoot);
     M("BattleMgr").Ins.init(battleRoot);
@@ -296,6 +298,15 @@
       return response.json();
     };
     const [profile, catalog] = await Promise.all([read("active-profile"), read("profile-dict")]);
+    if (Object.hasOwn(profile, "map")) {
+      const { mode, stage } = profile.map || {};
+      if (mode !== "campaign") throw new Error(`Unsupported map mode: ${mode}`);
+      const level = Number.isSafeInteger(stage) && stage > 0 && M("AdventuretdLevelLO").get(stage * 10);
+      if (!level || !M("BattleGroundLO").get(level.battleGroundCode)) {
+        throw new Error(`Unknown campaign stage: ${stage}`);
+      }
+      start.level = stage;
+    }
     const player = { ...rb.listItems(start.playerInfos)[0] };
     const asList = (items) => ({ ...items, _length: items.length });
     const choices = (key, max) => {
@@ -324,13 +335,10 @@
         if (!config) throw new Error(`Unknown hero code: ${code}`);
         const hero = captured.find((entry) => entry.code === code)
           || makeBaseHero(code, config, baseSkills, M);
-        if (selection.skin !== undefined) {
+        if (["skin", "star", "ownedSkins", "slots"].some((key) => selection[key] !== undefined)) {
           return window.applySimSkinProfile(hero, selection, skins, rb, M, (resolved) => {
             step("profile skin ranks", resolved);
           });
-        }
-        if (selection.star !== undefined || selection.ownedSkins !== undefined) {
-          throw new Error(`Select a skin before setting skin stars for hero ${code}`);
         }
         return hero;
       });
