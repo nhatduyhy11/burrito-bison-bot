@@ -70,6 +70,8 @@ Lần chạy 2026-11-10 (ClientVer 64467): 10 316 file, 587MB (ext-res 362MB, `l
 `cc.Asset` thô và 2 script boot (jquery, clipboard), tất cả đều 404 ngay trên host. Sau
 khi thêm phần cho bước 3: 13 592 file, 662MB. Thêm `hero`: 14 072 file, 677MB, 92 mục
 thiếu (thêm 50 native `cc.Asset` thô của `hero`, ảnh UI đội hình, trận không load).
+Thêm `shuzhi/machine` (icon trap) và `shuzhi/half` (ảnh nửa người hero), trận có load khi
+dùng trap/hero ngoài capture: 14 352 file, 690MB.
 
 ### Model hero trong trận
 
