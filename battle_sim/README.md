@@ -238,6 +238,13 @@ uv run python battle_sim/sandbox.py --setup
   `BattleResultViewAdventure` vẫn hiện, chỉ không có reward. Script lưu trận vừa chơi vào
   `.tmp/battle_sim/played/played-<uuid>-<ts>.jsonl` (`StartGameP` + `QuitRoom` kèm op log, cùng
   định dạng capture). `node battle_sim/replay.js <file>` replay headless file đó và so `QuitRoom`.
+- Nút pause: `SetPause` được trả lời local (`stubs.js` `stubPause`), bảng pause mở như game và
+  director dừng trận khi bảng mở. "继续战斗" chơi tiếp, "退出战斗" bỏ trận (`Abandon`) → `QuitRoom`
+  → màn kết quả.
+- Đóng màn kết quả (nút "返回", tap nền hoặc tự đóng) sẽ đưa về lobby, mà trang cách ly không có
+  lobby, nên `leaveOnResultClose` đặt `window.__simLeave` thay vào đó. Với `--setup`,
+  `sandbox.py` mở lại trang setup để chơi trận khác; với `--play` thì kết thúc. Trận nào kết thúc
+  (thắng, thua, bỏ) cũng được lưu `played-*.jsonl` trước.
 - `--headless --play` là smoke test, không có ai bấm. Bảng vòng quay ở frame 1200 sẽ pause
   trận vô thời hạn.
 - `battle/setup.js` sửa `Main Camera` của Canvas: chỉ render UI (bỏ group `battle_ground*`) và

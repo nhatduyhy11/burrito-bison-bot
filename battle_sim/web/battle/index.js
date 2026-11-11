@@ -42,6 +42,8 @@
     SimBattle.initModules(ctx);
     if (play) SimBattle.unlockMonthCards(ctx);
     SimBattle.stubQuitRoom({ ...ctx, rb, play, onQuit: finish });
+    SimBattle.stubPause(ctx);
+    if (play) SimBattle.leaveOnResultClose(ctx);
     SimBattle.installReplay({ ...ctx, ops, play, myPid, start });
     SimBattle.ensureBattleConfig({ ...ctx, battleType: start.battleType });
 

@@ -3,6 +3,7 @@
 //   - SocketMgr / GameRoomSocket.send   -> logged, never sent (there is no socket anyway)
 //   - PlayerModule.getMultiPlayerData   -> resolved at once (player data comes from StartGameP)
 //   - BuildProxy.QuitRoomRequest        -> recorded, answered locally with the client's own result
+//   - BuildProxy.SetPauseRequest        -> answered locally (pause button / pause panel)
 (function () {
   "use strict";
   const SimBattle = (window.SimBattle = window.SimBattle || {});
@@ -118,6 +119,30 @@
     step("month cards (local)", {
       speed: unlock.checkPass(Mod.BattleSpeed, false).allow, auto: unlock.checkPass(Mod.BattleAI, false).allow,
     });
+  };
+
+  // Pause button (TDBattleFrame._onClickClose): TDServerProxy.pauseBattle sends SetPause and opens
+  // TDBattlePausePanel only from SetPauseR. Answer locally (no reward preview). The open panel is a
+  // blocking view, so the director pauses the battle; Continue sends SetPause 0 and the director
+  // resumes when the panel closes. Quit dispatches AbandonBattle -> battle ends -> QuitRoom.
+  SimBattle.stubPause = function ({ M, step }) {
+    M("BuildProxy").Ins.SetPauseRequest = function (req, cbs) {
+      step("SetPause (local)", { isPause: req.isPause, frame: req.frame });
+      const cb = cbs && cbs[0];
+      if (cb) setTimeout(() => cb({ err: 0, showRewards: null }), 0);
+    };
+  };
+
+  // Play mode: closing the result view would leave the battle for the lobby, which this page does
+  // not have (it hangs). Flag it instead; sandbox.py goes back to the setup page (or ends the run).
+  SimBattle.leaveOnResultClose = function ({ M, step }) {
+    const View = M("BattleBaseResultView").prototype;
+    const onClose = View.onClose;
+    View.onClose = function () {
+      step("result view closed");
+      window.__simLeave = "result closed";
+      try { return onClose.apply(this, arguments); } catch (e) { /* lobby flow, not available here */ }
+    };
   };
 
   SimBattle.stubQuitRoom = function ({ M, report, step, rb, play, onQuit }) {

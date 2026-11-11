@@ -96,10 +96,12 @@ async def save_played(page, battle):
     print(f"  check: node battle_sim/replay.js {rel}")
 
 
-async def run_setup(page):
-    """Show the setup page until its "Chơi" button calls window.simPlay({battle, seed, profile}).
-    Returns that choice (profile saved under PROFILES), or None if the window was closed first."""
-    chosen = asyncio.get_running_loop().create_future()
+_setup_choice = {}
+
+
+async def install_setup(page):
+    """Expose window.simPlay({battle, seed, profile}) for the setup page's "Chơi" button
+    (once per page: it stays across navigations, so the page can come back to setup)."""
 
     async def sim_play(choice):
         battle, seed, profile = choice.get("battle"), choice.get("seed") or None, choice.get("profile")
@@ -115,11 +117,18 @@ async def run_setup(page):
             (PROFILES / name).write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         rel = (PROFILES / "last.json").relative_to(ROOT).as_posix()
         print(f"setup: battle {battle}, seed {seed or 'captured'}, profile saved to {rel}", flush=True)
-        if not chosen.done():
+        chosen = _setup_choice.get("future")
+        if chosen and not chosen.done():
             chosen.set_result(setup)
         return rel
 
     await page.expose_function("simPlay", sim_play)
+
+
+async def run_setup(page):
+    """Show the setup page until its "Chơi" button is pressed. Returns that choice (profile saved
+    under PROFILES), or None if the window was closed first."""
+    chosen = _setup_choice["future"] = asyncio.get_running_loop().create_future()
     await page.goto(ORIGIN + SETUP_PAGE, wait_until="domcontentloaded")
     print(f"setup page open: {ORIGIN + SETUP_PAGE}", flush=True)
     while not chosen.done():
@@ -233,70 +242,89 @@ async def run(args) -> int:
                 page.on("pageerror", on_pageerror)
 
                 if args.setup:
-                    chosen = await run_setup(page)
-                    if chosen is None:
-                        print("setup page closed without starting a battle")
-                        await ctx.close()
-                        return 0
-                    profile_data, args.battle, args.seed = chosen["profile"], chosen["battle"], chosen["seed"]
+                    await install_setup(page)
+                ok = True
+                while True:
+                    if args.setup:
+                        chosen = await run_setup(page)
+                        if chosen is None:
+                            print("setup page closed without starting a battle")
+                            break
+                        profile_data, args.battle, args.seed = chosen["profile"], chosen["battle"], chosen["seed"]
+                        for seen in (blocked, page_errors, console_errors, misses):
+                            seen.clear()
 
-                url = ORIGIN + args.page
-                if args.battle:
-                    url += ("&" if "?" in url else "?") + "battle=" + args.battle
-                if args.play:
-                    url += "&play=1" + (f"&seed={args.seed}" if args.seed else "")
-                    if profile_data is not None:
-                        url += "&profile=1"
-                await page.goto(url, wait_until="domcontentloaded")
-                sim = None
-                deadline = time.time() + args.timeout
-                next_progress = time.time() + 30
-                while time.time() < deadline:
-                    try:
-                        sim = await page.evaluate("() => window.__sim && JSON.parse(JSON.stringify(window.__sim))")
-                    except Exception as e:  # window closed by the player
-                        print(f"page gone: {str(e).splitlines()[0]}")
+                    url = ORIGIN + args.page
+                    if args.battle:
+                        url += ("&" if "?" in url else "?") + "battle=" + args.battle
+                    if args.play:
+                        url += "&play=1" + (f"&seed={args.seed}" if args.seed else "")
+                        if profile_data is not None:
+                            url += "&profile=1"
+                    await page.goto(url, wait_until="domcontentloaded")
+                    sim = None
+                    deadline = time.time() + args.timeout
+                    next_progress = time.time() + 30
+                    while time.time() < deadline:
+                        try:
+                            sim = await page.evaluate("() => window.__sim && JSON.parse(JSON.stringify(window.__sim))")
+                        except Exception as e:  # window closed by the player
+                            print(f"page gone: {str(e).splitlines()[0]}")
+                            break
+                        if sim and sim.get("state") in TERMINAL:
+                            break
+                        b = (sim or {}).get("battle")
+                        if b and time.time() >= next_progress:
+                            next_progress = time.time() + 30
+                            print(f"  ... tick {b.get('tick')}, ops {b.get('applied')}/{b.get('ops')}", flush=True)
+                        await asyncio.sleep(0.5)
+
+                    print(f"\nstate: {sim and sim.get('state')}" + ("" if sim and sim.get("state") in TERMINAL else " (timeout)"))
+                    for s in (sim or {}).get("steps", []):
+                        extra = "" if s.get("extra") is None else " " + json.dumps(s["extra"], ensure_ascii=False)
+                        print(f"  {s['t'] / 1000:6.1f}s {s['name']}{extra}")
+                    print_battle((sim or {}).get("battle"))
+                    if sim and sim.get("error"):
+                        print("error:", json.dumps(sim["error"], ensure_ascii=False, indent=1))
+                    print(f"\nblocked requests (outside {ORIGIN}): {len(blocked)}")
+                    for u in sorted(set(blocked))[:30]:
+                        print("  ", u)
+                    print(f"mirror 404s: {len(misses)}")
+                    for u in sorted(set(misses))[:30]:
+                        print("  ", u)
+                    print(f"page errors: {len(page_errors)}, console errors: {len(console_errors)}")
+                    for e in (page_errors + console_errors)[:15]:
+                        print("  ", e[:300])
+                    print("log:", log_path.relative_to(ROOT))
+                    if args.play and sim and (sim.get("battle") or {}).get("quit"):
+                        await save_played(page, sim["battle"])
+
+                    # Play mode: closing the result view sets window.__simLeave (web/battle/stubs.js),
+                    # since leaving the battle would go to the lobby this page does not have.
+                    leave = None
+                    if args.keep:
+                        then = "go back to the setup page" if args.setup else "end the run"
+                        print(f"\nwindow kept open (CDP 127.0.0.1:{CDP_PORT}); close the result view to {then}, "
+                              "or close the window to exit", flush=True)
+                        while ctx.pages and not page.is_closed():
+                            try:
+                                leave = await page.evaluate("() => window.__simLeave || null")
+                            except Exception:  # window closed / navigating
+                                leave = None
+                            if leave:
+                                break
+                            await asyncio.sleep(1)
+                    battle = (sim or {}).get("battle") or {}
+                    if args.play:
+                        ok = bool(sim) and sim.get("state") == "done" and not blocked
+                    elif args.battle:
+                        ok = bool(sim) and sim.get("state") == "done" and (battle.get("compare") or {}).get("ok") and not blocked
+                    else:
+                        ok = bool(sim) and sim.get("state") == "ready" and not blocked
+                    if not (args.setup and leave and not page.is_closed()):
                         break
-                    if sim and sim.get("state") in TERMINAL:
-                        break
-                    b = (sim or {}).get("battle")
-                    if b and time.time() >= next_progress:
-                        next_progress = time.time() + 30
-                        print(f"  ... tick {b.get('tick')}, ops {b.get('applied')}/{b.get('ops')}", flush=True)
-                    await asyncio.sleep(0.5)
-
-                print(f"\nstate: {sim and sim.get('state')}" + ("" if sim and sim.get("state") in TERMINAL else " (timeout)"))
-                for s in (sim or {}).get("steps", []):
-                    extra = "" if s.get("extra") is None else " " + json.dumps(s["extra"], ensure_ascii=False)
-                    print(f"  {s['t'] / 1000:6.1f}s {s['name']}{extra}")
-                print_battle((sim or {}).get("battle"))
-                if sim and sim.get("error"):
-                    print("error:", json.dumps(sim["error"], ensure_ascii=False, indent=1))
-                print(f"\nblocked requests (outside {ORIGIN}): {len(blocked)}")
-                for u in sorted(set(blocked))[:30]:
-                    print("  ", u)
-                print(f"mirror 404s: {len(misses)}")
-                for u in sorted(set(misses))[:30]:
-                    print("  ", u)
-                print(f"page errors: {len(page_errors)}, console errors: {len(console_errors)}")
-                for e in (page_errors + console_errors)[:15]:
-                    print("  ", e[:300])
-                print("log:", log_path.relative_to(ROOT))
-                if args.play and sim and (sim.get("battle") or {}).get("quit"):
-                    await save_played(page, sim["battle"])
-
-                if args.keep:
-                    print(f"\nwindow kept open (CDP 127.0.0.1:{CDP_PORT}); close it to exit", flush=True)
-                    while ctx.pages:
-                        await asyncio.sleep(1)
+                    print(f"\n{leave}: back to the setup page\n", flush=True)
                 await ctx.close()
-                battle = (sim or {}).get("battle") or {}
-                if args.play:
-                    ok = bool(sim) and sim.get("state") == "done" and not blocked
-                elif args.battle:
-                    ok = bool(sim) and sim.get("state") == "done" and (battle.get("compare") or {}).get("ok") and not blocked
-                else:
-                    ok = bool(sim) and sim.get("state") == "ready" and not blocked
                 return 0 if ok else 1
     finally:
         server.terminate()
