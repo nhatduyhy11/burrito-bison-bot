@@ -26,7 +26,7 @@ skill trong `BuildSkinLO` (发电机 / 招财猫) mới biết type 3 là chuộ
   7 màu: 10011 cần 10005/10008/10009, 10013 cần 10001/10009/10012. Giường: 20010 cần
   20002/20007/20008, 20012 cần 20005/20009/20011. Chuột và mèo chưa có skin 7 màu. 10013 và
   20012 chưa có tên tiếng Anh, dict dùng key `id_10013` / `id_20012`.
-- `attr` / `addAttr`: chỉ số của skin. Chưa đối chiếu được với `builds[].attr`.
+- `attr` / `addAttr`: chỉ số của skin.
 
 ## Quy tắc slot (`BuildSkinModule`, `BuildSkinEquipSkillPanel`)
 

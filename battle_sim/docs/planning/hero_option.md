@@ -1,7 +1,6 @@
 # Hero option (Summon, 3 lựa chọn)
 
-Trụ cột 1 của simulator. Status 2026-11-10: **client quyết hoàn toàn** — đã xác minh runtime.
-Main doc: [README.md](README.md).
+**Client quyết hoàn toàn**, xác minh runtime 2026-11-10. Index: [research.md](research.md).
 
 ## Kết luận
 

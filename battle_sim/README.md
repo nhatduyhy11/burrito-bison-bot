@@ -1,8 +1,11 @@
-# battle_sim — headless campaign battle (mốc A)
+# battle_sim — campaign battle offline
 
-Chạy trận campaign offline trong Node bằng chính code logic của bundle game
-(`TDServer` + `BattleEngineDelegate` + engine `battleground`), không render, không mạng.
-Nghiên cứu nền: [docs/planning/](docs/planning/README.md).
+Chạy trận campaign offline bằng chính code và asset của game: headless trong Node để replay
+(mốc A), và có hình trong browser cách ly để xem lại hoặc tự chơi (mốc B). Không kết nối
+server game.
+
+Mục tiêu, **nguyên tắc an toàn** và nghiên cứu cơ chế: [docs/planning/research.md](docs/planning/research.md).
+Trạng thái và việc tiếp theo: [docs/planning/NEXT_STEP.md](docs/planning/NEXT_STEP.md).
 
 ## Version / cache
 
@@ -52,11 +55,11 @@ node battle_sim/serve.js
   - file boot (`index.html`, manifest, engine, settings);
   - các bundle `internal`, `main`, `resources`, `login`, `battle`, `battleConfig`,
     `battleSkillRes`, `towerDefense`, `organ`, `hangup`, `summonCreature`, `hero` (config,
-    script, import, native); ba bundle cuối được thêm ở bước 3 vì UI battle load chúng
-    (`hero` là bundle UI màn hero: awake, wash, đội hình, hiệu ứng lên cấp; giống nhau cho mọi
-    account, không chứa model. Trận vẫn request nó nên mirror để không 404);
+    script, import, native). Ba bundle cuối là UI ngoài trận nhưng UI battle vẫn load
+    (`hero`: UI màn hero, không chứa model), nên mirror để không 404;
   - ext-res `model/` (bỏ biến thể vùng jp/kr/tw/us), `model_frame/`, `userProto/`, `data/`,
-    và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing}/`.
+    và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing,machine,half}/`
+    (`machine` icon trap, `half` ảnh nửa người hero).
 - Chỉ là GET ẩn danh tới file tĩnh công khai, không đăng nhập. Chạy lại sẽ bỏ qua file đã có.
 - Config bundle không ghi đuôi file native, nên mirror thử đuôi theo loại asset (quy tắc
   engine: `native/<xx>/<uuid>.<ver><ext>`, font dạng `<uuid>.<ver>/<tên>.ttf`). Không tìm thấy
@@ -65,13 +68,9 @@ node battle_sim/serve.js
   404, in ra màn hình và ghi `misses.log`. Thêm `--fill` để tải bù file thiếu từ host công
   khai (chỉ bật khi cố ý).
 
-Lần chạy 2026-11-10 (ClientVer 64467): 10 316 file, 587MB (ext-res 362MB, `login` 90MB,
-`battleSkillRes` 72MB). 74/74 file mẫu khớp từng byte với host. 42 mục thiếu: 40 native
-`cc.Asset` thô và 2 script boot (jquery, clipboard), tất cả đều 404 ngay trên host. Sau
-khi thêm phần cho bước 3: 13 592 file, 662MB. Thêm `hero`: 14 072 file, 677MB, 92 mục
-thiếu (thêm 50 native `cc.Asset` thô của `hero`, ảnh UI đội hình, trận không load).
-Thêm `shuzhi/machine` (icon trap) và `shuzhi/half` (ảnh nửa người hero), trận có load khi
-dùng trap/hero ngoài capture: 14 352 file, 690MB.
+Mirror hiện tại (ClientVer 64467): 14 352 file, 690MB, file mẫu khớp từng byte với host.
+Các mục trong `missing.json` đều 404 ngay trên host: native `cc.Asset` thô (trận không load)
+và 2 script boot (jquery, clipboard).
 
 ### Model hero trong trận
 
@@ -82,9 +81,9 @@ dùng trap/hero ngoài capture: 14 352 file, 690MB.
   Game load khi unit xuất hiện, qua `aswallow.extAssetMgr`, vào `GameSpine` ở node
   `$_DISPLAY_NODE` của unit.
 - Mirror lấy **toàn bộ** `model/`, không lọc theo account: đổi account, hoặc chơi hero/skin
-  khác bằng `--play`, không cần tải thêm. Kiểm 2026-11-10 so với `ext-res/version_64467.json`:
-  game có 291 thư mục `model/Hero_*`, mirror có 270 (37 hero gốc, mọi skin `_pf1…_pf4`,
-  `_ez`, `_sea`). 21 thư mục không mirror đều là biến thể vùng `_jp`/`_kr`, bản SEA không dùng.
+  khác bằng `--play`, không cần tải thêm. So với `ext-res/version_64467.json`: mirror có
+  270/291 thư mục `model/Hero_*` (37 hero gốc, mọi skin `_pf1…_pf4`, `_ez`, `_sea`); 21 thư
+  mục còn lại là biến thể vùng `_jp`/`_kr`, bản SEA không dùng.
 - Bộ lọc vùng chỉ bỏ tên có hậu tố vùng ở cuối, nên vẫn lọt 46 thư mục dạng
   `Hero_001_kr_pf1`. Không ảnh hưởng gì, chỉ tốn dung lượng.
 
@@ -114,8 +113,7 @@ uv run python battle_sim/sandbox.py --headless
   - kiểm tra bảng config, tải prefab map qua engine, tải model ext-res qua
     `aswallow.extAssetMgr` (sau khi `await init()`).
 
-Lần chạy 2026-11-10: `ready` sau 1.8s; engine 2.4.15; config `sea_65380`; 6 bundle; 36 hero;
-prefab `td_bgs_002`; `model/Boss_014` load được. 0 request bị chặn, 0 file 404, 0 lỗi.
+Kết quả đúng: `ready` sau ~2s (engine 2.4.15), 0 request bị chặn, 0 file 404, 0 lỗi.
 
 ## Trận có hình trong trang cách ly (mốc B, bước 3)
 
@@ -158,22 +156,11 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --page "/s
 - `?trace=Module.method,...`: bọc method để ghi stack khi throw (chẩn đoán lỗi bị game nuốt).
 - Exit 0 khi trận kết thúc, `QuitRoom` khớp capture và không có request nào bị chặn.
 
-Lần chạy 2026-11-10, Stage 51 thắng `6af2ab8a…`: hết trận ở tick 4469 sau 467s headless;
-103/103 op, 0 lỗi; `QuitRoom` (result, resultReason, killNum 425, type2KillNum, totalHurt,
-totalOutput, endFrame 4469, totalTime 446) khớp tuyệt đối. 0 request bị chặn. Có 4 op
-`SelectElite` do bảng vòng quay tự commit muộn bị bỏ (op của log đã được áp đúng frame). Có
-40 lệnh mạng bị stub, đều là lệnh lobby lấy dữ liệu.
-
-Cả 3 trận đã capture đều khớp `QuitRoom` tuyệt đối:
-
-| Trận | Kết thúc | Op | Thời gian headless |
-|---|---|---|---|
-| Stage 51 thắng `6af2ab8a…` | tick 4469 | 103/103 | 467s |
-| Stage 51 thua `6af29854…` | tick 3248 (totalTime) | 30/30 | 331s |
-| Stage 97 thắng `6af2b568…` | tick 4339 | 96/96 | 444s |
-
-Cả 3 trận đều 0 op lỗi, 0 request bị chặn, 0 file 404 (sau khi thêm `summonCreature` và
-`shuzhi/shenbing`).
+Cả 3 trận đã capture (Stage 51 thắng/thua, Stage 97) khớp `QuitRoom` tuyệt đối (result,
+resultReason, killNum, type2KillNum, totalHurt, totalOutput, endFrame, totalTime), 0 op lỗi,
+0 request bị chặn, 0 file 404, 330–470s headless mỗi trận. Bình thường log có vài op
+`SelectElite` do bảng vòng quay tự commit muộn bị bỏ (op của log đã áp đúng frame) và ~40
+lệnh lobby bị stub.
 
 ## Tự chơi trận với đội hình account (mốc B, bước 4)
 
@@ -261,7 +248,7 @@ uv run python battle_sim/sandbox.py --setup
   (scene của editor luôn có Widget này). Thiếu Widget thì Canvas là 0×0: UI battle lệch nửa
   màn hình và click không trúng nút (bước 3 không lộ vì replay không cần click).
 
-## Chạy
+## Replay headless (mốc A)
 
 ```bash
 node battle_sim/replay.js

@@ -1,8 +1,7 @@
 # Hero spin (大转盘 / Lucky Wheel)
 
-Trụ cột 2 của simulator. Status 2026-11-10: **client quyết hoàn toàn** — đã xác minh runtime
-(1 spin, Stage 51). Main doc: [README.md](README.md). Cùng cơ chế random với
-[hero_option.md](hero_option.md).
+**Client quyết hoàn toàn**, xác minh runtime 2026-11-10 (Stage 51). Index:
+[research.md](research.md). Cùng cơ chế random với [hero_option.md](hero_option.md).
 
 ## Trigger (3 nguồn, đã verify trong code + config)
 
@@ -38,17 +37,11 @@ Trụ cột 2 của simulator. Status 2026-11-10: **client quyết hoàn toàn**
 
 ## Quan sát runtime
 
-2 spin, đều do mini boss chết, không packet nào ngoài `UpdateDamage` định kỳ:
-
-| frame | entityId | lifeRatio | 8 ô | trúng |
-|---|---|---|---|---|
-| 1180 | 3100031 | 10000 | 300001004, 300001001, 250010001, 250010026, 250020004, 250010003, 400011013, 300001003 | 250010026, 250010003 |
-| 2310 | 3100112 | 6921 | 250020003, 400011004, 250020026, 250010001, 250020013, 300001026, 300001003, 250020004 | 250020013, 250020026 |
-
-Skip → `大转盘选择` 3 frame sau, áp ngay ("升级" ×2).
-
-Kiểm chứng ngoài game: port `sfc32` sang Python, lấy state RNG sau `randomCode` → draw kế tiếp
-×10000 = 9493.7 và 8314.6 → rơi vào bucket num 2 (8000–9600) đúng như game. RNG port được.
+- Không packet nào ngoài `UpdateDamage` định kỳ. Skip → `大转盘选择` 3 frame sau, áp ngay.
+- Mọi spin (mini boss, final boss, MagicCard) dùng cùng config `BuildRefreshEliteLO` (mọi index
+  giống nhau). Ô về sau "xịn" hơn chỉ vì pool lọc theo level build hiện tại.
+- `lifeRatio` = máu cửa ×10000 → ảnh hưởng filter `lifeRatio` của `BuildSummonLO`.
+- Port `sfc32` sang Python tính lại đúng số ô trúng như game; logic sim khớp 29/29 `randomCode`.
 
 ## Mở
 

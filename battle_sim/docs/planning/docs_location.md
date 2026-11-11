@@ -5,8 +5,9 @@ metadata:
   type: project
 ---
 
-battle_sim docs, planning, research and notes live in `battle_sim/docs/planning/` (moved from
-`docs/planning/battle_sim/` on 2026-11-11). Do not create battle_sim files under the repo-level `docs/`.
+battle_sim docs, planning, research and notes live in `battle_sim/docs/planning/` (entry point
+`research.md`; `battle_sim/README.md` is the only README). Do not create battle_sim files under the
+repo-level `docs/`.
 
 **Why:** battle_sim is sensitive and will later be split out of burrito-bison-bot into its own
 project, so everything it owns must stay inside `battle_sim/` to move out cleanly.
