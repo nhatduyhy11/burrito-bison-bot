@@ -85,8 +85,10 @@ export function Side({ ctx, battles, profile, initialStatus }) {
   const playCommand = `uv run python battle_sim/sandbox.py --battle ${state.battle || "<uuid>"} --play${seedArg} --profile <file>.json`;
   const playHint = canPlay
     ? null
-    : html`Nút Chơi chỉ chạy khi mở qua <code>uv run python battle_sim/sandbox.py --setup</code>. Hoặc tải JSON rồi
-        chạy: <code>${playCommand}</code>`;
+    : html`
+        Nút Chơi chỉ chạy khi mở qua <code>uv run python battle_sim/sandbox.py --setup</code>. Hoặc tải JSON rồi
+        chạy: <code>${playCommand}</code>
+      `;
   return html`
     <section>
       <header><h2>Account gốc</h2></header>

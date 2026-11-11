@@ -9,14 +9,16 @@ const newListItem = (group) => (name) => (group === "spells" ? { name, star: 1 }
 
 export function ListSection({ ctx, group }) {
   const onToggle = (on) => ctx.toggleWithPrefill(group, on);
-  return html`<${Section}
-    title=${LIST_TITLES[group]}
-    hint=${`tối đa ${LIMITS[group]}; tắt = giữ từ capture`}
-    enabled=${!!ctx.state[group]}
-    onToggle=${onToggle}
-  >
-    <${ListBody} ctx=${ctx} group=${group} />
-  <//>`;
+  return html`
+    <${Section}
+      title=${LIST_TITLES[group]}
+      hint=${`tối đa ${LIMITS[group]}; tắt = giữ từ capture`}
+      enabled=${!!ctx.state[group]}
+      onToggle=${onToggle}
+    >
+      <${ListBody} ctx=${ctx} group=${group} />
+    <//>
+  `;
 }
 
 function ListBody({ ctx, group }) {
@@ -40,11 +42,13 @@ function ListRow({ ctx, group, item, index }) {
   const level = info.maxLevel
     ? html`<label>Level <${NumberInput} value=${item.level} min=${1} max=${info.maxLevel} onChange=${setLevel} /></label>`
     : null;
-  return html`<div class="row">
-    <${Select} options=${options} value=${item.name} onChange=${setName} />
-    ${level}
-    <label>Sao <${NumberInput} value=${item.star} min=${1} max=${info.maxStar} onChange=${setStar} /></label>
-    <span class="note">${`max lv ${info.maxLevel || "-"} / ${info.maxStar}★`}</span>
-    <${RemoveButton} ctx=${ctx} group=${group} index=${index} />
-  </div>`;
+  return html`
+    <div class="row">
+      <${Select} options=${options} value=${item.name} onChange=${setName} />
+      ${level}
+      <label>Sao <${NumberInput} value=${item.star} min=${1} max=${info.maxStar} onChange=${setStar} /></label>
+      <span class="note">${`max lv ${info.maxLevel || "-"} / ${info.maxStar}★`}</span>
+      <${RemoveButton} ctx=${ctx} group=${group} index=${index} />
+    </div>
+  `;
 }

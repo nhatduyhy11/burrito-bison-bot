@@ -11,7 +11,9 @@ export const COLOR_LABEL = { red: "đỏ", gold: "vàng", colorful: "7 màu", de
 
 export function label(item) {
   const english = item.name_vn && item.name !== item.name_vn ? ` ${item.name}` : null;
-  return html`${item.name_vn || item.name}${english ? html`<span class="en">${english}</span>` : null}`;
+  return html`
+    ${item.name_vn || item.name}${english ? html`<span class="en">${english}</span>` : null}
+  `;
 }
 
 export const optionText = (item) =>
@@ -22,20 +24,24 @@ export const colorTag = (color) => html`<span class=${`tag c-${color}`}>${COLOR_
 // Committed on "change" (blur / Enter / spinner), clamped to [min, max].
 export function NumberInput({ value, min, max, onChange, disabled }) {
   const handleChange = (e) => onChange(clamp(e.currentTarget.value, min, max));
-  return html`<input
-    type="number"
-    value=${String(value)}
-    min=${min}
-    max=${max}
-    step="1"
-    disabled=${disabled}
-    onChange=${handleChange}
-  />`;
+  return html`
+    <input
+      type="number"
+      value=${String(value)}
+      min=${min}
+      max=${max}
+      step="1"
+      disabled=${disabled}
+      onChange=${handleChange}
+    />
+  `;
 }
 
 export function Checkbox({ checked, disabled, title, onChange }) {
   const handleChange = (e) => onChange(e.currentTarget.checked);
-  return html`<input type="checkbox" checked=${!!checked} disabled=${disabled} title=${title} onChange=${handleChange} />`;
+  return html`
+    <input type="checkbox" checked=${!!checked} disabled=${disabled} title=${title} onChange=${handleChange} />
+  `;
 }
 
 // options: [value, text, disabled?, group?]; consecutive options with a group go in one <optgroup>.
@@ -56,19 +62,23 @@ function groupOptions(options) {
 
 export function Select({ options, value, onChange, ...attrs }) {
   const handleChange = (e) => onChange(e.currentTarget.value);
-  return html`<select ...${attrs} value=${value} onChange=${handleChange}>
-    ${groupOptions(options)}
-  </select>`;
+  return html`
+    <select ...${attrs} value=${value} onChange=${handleChange}>
+      ${groupOptions(options)}
+    </select>
+  `;
 }
 
 // A form section with a "Ghi đè" toggle; children are rendered only when enabled.
 export function Section({ title, hint, enabled, onToggle, children }) {
-  return html`<section class=${enabled ? "" : "off"}>
-    <header>
-      <h2>${title}</h2>
-      <label><${Checkbox} checked=${enabled} onChange=${onToggle} />Ghi đè</label>
-      ${hint ? html`<span class="hint">${hint}</span>` : null}
-    </header>
-    <div class="body">${enabled ? children : null}</div>
-  </section>`;
+  return html`
+    <section class=${enabled ? "" : "off"}>
+      <header>
+        <h2>${title}</h2>
+        <label><${Checkbox} checked=${enabled} onChange=${onToggle} />Ghi đè</label>
+        ${hint ? html`<span class="hint">${hint}</span>` : null}
+      </header>
+      <div class="body">${enabled ? children : null}</div>
+    </section>
+  `;
 }

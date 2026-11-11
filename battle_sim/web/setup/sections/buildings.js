@@ -12,18 +12,22 @@ export function BuildingsSection({ ctx }) {
     ([key, title]) => html`<${BuildingCard} key=${key} ctx=${ctx} building=${key} title=${title} />`,
   );
   const note = any
-    ? html`<div class="note">
-        Slot: 1 đỏ, 2 vàng, 1 loại 3. Skin 7 màu dùng slot vàng và khoá 3 skin yêu cầu khỏi mọi slot. Chỉ số building
-        (attr) và skill do server thêm vẫn giữ từ capture.
-      </div>`
+    ? html`
+        <div class="note">
+          Slot: 1 đỏ, 2 vàng, 1 loại 3. Skin 7 màu dùng slot vàng và khoá 3 skin yêu cầu khỏi mọi slot. Chỉ số building
+          (attr) và skill do server thêm vẫn giữ từ capture.
+        </div>
+      `
     : null;
-  return html`<section>
-    <header><h2>Skin building</h2><span class="hint">mỗi building bật riêng; tắt = giữ từ capture</span></header>
-    <div class="body">
-      ${cards}
-      ${note}
-    </div>
-  </section>`;
+  return html`
+    <section>
+      <header><h2>Skin building</h2><span class="hint">mỗi building bật riêng; tắt = giữ từ capture</span></header>
+      <div class="body">
+        ${cards}
+        ${note}
+      </div>
+    </section>
+  `;
 }
 
 function BuildingCard({ ctx, building, title }) {
@@ -34,13 +38,15 @@ function BuildingCard({ ctx, building, title }) {
   const table = entry
     ? html`<${BuildingSkinTable} entry=${entry} skins=${buildSkins(dict, building)} edit=${edit} />`
     : null;
-  return html`<div class="card">
-    <div class="row">
-      <strong>${title}</strong>
-      <label><${Checkbox} checked=${!!entry} onChange=${setEnabled} />Ghi đè</label>
+  return html`
+    <div class="card">
+      <div class="row">
+        <strong>${title}</strong>
+        <label><${Checkbox} checked=${!!entry} onChange=${setEnabled} />Ghi đè</label>
+      </div>
+      ${table}
     </div>
-    ${table}
-  </div>`;
+  `;
 }
 
 function BuildingSkinTable({ entry, skins, edit }) {
@@ -52,31 +58,35 @@ function BuildingSkinTable({ entry, skins, edit }) {
   const slotNote = `Slot: ${count("red")}/1 đỏ, ${count("gold")}/2 vàng, ${count("special")}/1 loại 3`;
   const rows = Object.entries(skins).map(([key, skin]) => {
     const slotted = entry.slots.includes(key);
-    return html`<${BuildingSkinRow}
-      key=${key}
-      skinKey=${key}
-      skin=${skin}
-      skins=${skins}
-      state=${entry.skins[key]}
-      forcedStar=${forced[key]}
-      slotted=${slotted}
-      locked=${locked.has(key)}
-      slotFull=${!slotted && count(skin.slot) >= BUILD_SLOTS[skin.slot]}
-      edit=${edit}
-    />`;
+    return html`
+      <${BuildingSkinRow}
+        key=${key}
+        skinKey=${key}
+        skin=${skin}
+        skins=${skins}
+        state=${entry.skins[key]}
+        forcedStar=${forced[key]}
+        slotted=${slotted}
+        locked=${locked.has(key)}
+        slotFull=${!slotted && count(skin.slot) >= BUILD_SLOTS[skin.slot]}
+        edit=${edit}
+      />
+    `;
   });
-  return html`<div>
-    <div class="row">
-      <label>Đang mặc <${Select} options=${wornOptions} value=${entry.worn} onChange=${setWorn} /></label>
-      <span class="note">${slotNote}</span>
+  return html`
+    <div>
+      <div class="row">
+        <label>Đang mặc <${Select} options=${wornOptions} value=${entry.worn} onChange=${setWorn} /></label>
+        <span class="note">${slotNote}</span>
+      </div>
+      <table>
+        <tbody>
+          ${headerRow(HEADERS)}
+          ${rows}
+        </tbody>
+      </table>
     </div>
-    <table>
-      <tbody>
-        ${headerRow(HEADERS)}
-        ${rows}
-      </tbody>
-    </table>
-  </div>`;
+  `;
 }
 
 function BuildingSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted, locked, slotFull, edit }) {
@@ -99,19 +109,21 @@ function BuildingSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted
   let slotCell = html`<${Checkbox} checked=${slotted} disabled=${slotFull} onChange=${setSlotted} />`;
   if (!slottable) slotCell = html`<span class="note">-</span>`;
   else if (locked) slotCell = html`<span class="warn">khoá</span>`;
-  return html`<tr>
-    <td class="name">${label(skin)}${requiresNote(skin, skins)}</td>
-    <td>${colorTag(skin.color)}${slotLabel}</td>
-    <td><${Checkbox} checked=${state.owned} disabled=${forcedStar !== undefined} onChange=${setOwned} /></td>
-    <td>
-      <${NumberInput}
-        value=${state.star}
-        min=${forcedStar || 1}
-        max=${skin.maxStar}
-        disabled=${!state.owned || skin.default}
-        onChange=${setStar}
-      /><span class="note">${` /${skin.maxStar}`}</span>
-    </td>
-    <td>${slotCell}</td>
-  </tr>`;
+  return html`
+    <tr>
+      <td class="name">${label(skin)}${requiresNote(skin, skins)}</td>
+      <td>${colorTag(skin.color)}${slotLabel}</td>
+      <td><${Checkbox} checked=${state.owned} disabled=${forcedStar !== undefined} onChange=${setOwned} /></td>
+      <td>
+        <${NumberInput}
+          value=${state.star}
+          min=${forcedStar || 1}
+          max=${skin.maxStar}
+          disabled=${!state.owned || skin.default}
+          onChange=${setStar}
+        /><span class="note">${` /${skin.maxStar}`}</span>
+      </td>
+      <td>${slotCell}</td>
+    </tr>
+  `;
 }

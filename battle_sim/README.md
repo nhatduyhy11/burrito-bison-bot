@@ -295,7 +295,9 @@ So sánh:
   được trong Node), `profile-io.js` (state ↔ profile JSON), `ui.js` (`html`, component nhỏ:
   Section "Ghi đè", Select, NumberInput, Checkbox), `sections/` (mỗi khung form một file: `map`,
   `heroes`, `lists` cho trap/pet/spell, `buildings`, `golden`, `shared`), `side.js` (khung bên
-  phải). Quy ước: handler đặt tên ở trên, template `html\`\`` không chứa hàm inline.
+  phải). Quy ước: handler đặt tên ở trên, template `html\`\`` không chứa hàm inline; `return html\``
+  xuống dòng rồi mới viết nội dung, dấu backtick đóng nằm riêng một dòng (htm bỏ khoảng trắng có
+  xuống dòng ở hai đầu nên DOM không đổi).
 - `web/vendor/` — thư viện bên thứ ba vendor sẵn (sandbox chặn CDN): Preact 10.29.8 + hooks, htm
   3.1.1 (bản ES module). Nguồn, version, license: [web/vendor/README.md](web/vendor/README.md).
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.

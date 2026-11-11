@@ -75,10 +75,12 @@ function App({ dict, battles, initial, initialStatus }) {
   }, [profile, state.battle, state.seed]);
 
   const ctx = { state, dict, update, toggleWithPrefill };
-  return html`<div class="layout">
-    <main id="form"><${FormSections} ctx=${ctx} /></main>
-    <aside class="side"><${Side} ctx=${ctx} battles=${battles} profile=${profile} initialStatus=${initialStatus} /></aside>
-  </div>`;
+  return html`
+    <div class="layout">
+      <main id="form"><${FormSections} ctx=${ctx} /></main>
+      <aside class="side"><${Side} ctx=${ctx} battles=${battles} profile=${profile} initialStatus=${initialStatus} /></aside>
+    </div>
+  `;
 }
 
 // ---------- boot ----------

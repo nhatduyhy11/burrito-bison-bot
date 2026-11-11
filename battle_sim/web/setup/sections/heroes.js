@@ -8,14 +8,16 @@ const HEADERS = ["Skin", "Màu", "Sở hữu", "Sao", "Slot"];
 
 export function HeroesSection({ ctx }) {
   const onToggle = (on) => ctx.toggleWithPrefill("heroes", on);
-  return html`<${Section}
-    title="Hero"
-    hint="tối đa 5; tắt = đội hình capture"
-    enabled=${!!ctx.state.heroes}
-    onToggle=${onToggle}
-  >
-    <${HeroesBody} ctx=${ctx} />
-  <//>`;
+  return html`
+    <${Section}
+      title="Hero"
+      hint="tối đa 5; tắt = đội hình capture"
+      enabled=${!!ctx.state.heroes}
+      onToggle=${onToggle}
+    >
+      <${HeroesBody} ctx=${ctx} />
+    <//>
+  `;
 }
 
 function HeroesBody({ ctx }) {
@@ -44,15 +46,17 @@ function HeroCard({ ctx, hero, index }) {
     ? html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh skin</label>`
     : html`<span class="note">không có skin</span>`;
   const table = hero.custom && hasSkins ? html`<${HeroSkinTable} hero=${hero} skins=${skins} edit=${edit} />` : null;
-  return html`<div class="card">
-    <div class="row">
-      <strong>${`#${index + 1}`}</strong>
-      <${Select} options=${options} value=${hero.name} onChange=${setName} />
-      ${custom}
-      <${RemoveButton} ctx=${ctx} group="heroes" index=${index} />
+  return html`
+    <div class="card">
+      <div class="row">
+        <strong>${`#${index + 1}`}</strong>
+        <${Select} options=${options} value=${hero.name} onChange=${setName} />
+        ${custom}
+        <${RemoveButton} ctx=${ctx} group="heroes" index=${index} />
+      </div>
+      ${table}
     </div>
-    ${table}
-  </div>`;
+  `;
 }
 
 function HeroSkinTable({ hero, skins, edit }) {
@@ -65,35 +69,39 @@ function HeroSkinTable({ hero, skins, edit }) {
   const rows = Object.entries(skins).map(([key, skin]) => {
     const kind = heroSlotKind(skin);
     const slotted = hero.slots.includes(key);
-    return html`<${HeroSkinRow}
-      key=${key}
-      skinKey=${key}
-      skin=${skin}
-      skins=${skins}
-      state=${hero.skins[key]}
-      forcedStar=${forced[key]}
-      slotted=${slotted}
-      slotLocked=${slotForced.has(key)}
-      slotFull=${!slotted && count(kind) >= HERO_SLOTS[kind]}
-      edit=${edit}
-    />`;
+    return html`
+      <${HeroSkinRow}
+        key=${key}
+        skinKey=${key}
+        skin=${skin}
+        skins=${skins}
+        state=${hero.skins[key]}
+        forcedStar=${forced[key]}
+        slotted=${slotted}
+        slotLocked=${slotForced.has(key)}
+        slotFull=${!slotted && count(kind) >= HERO_SLOTS[kind]}
+        edit=${edit}
+      />
+    `;
   });
-  return html`<div>
-    <div class="row">
-      <label>Đang mặc <${Select} options=${wornOptions} value=${hero.worn || ""} onChange=${setWorn} /></label>
-      <span class="note">${slotNote}</span>
+  return html`
+    <div>
+      <div class="row">
+        <label>Đang mặc <${Select} options=${wornOptions} value=${hero.worn || ""} onChange=${setWorn} /></label>
+        <span class="note">${slotNote}</span>
+      </div>
+      <table>
+        <tbody>
+          ${headerRow(HEADERS)}
+          ${rows}
+        </tbody>
+      </table>
+      <div class="note">
+        Sở hữu: account có skin (cộng chỉ số). Slot: skill của skin vào trận. Skin 7 màu cần 3 skin thường ở sao ≥ sao
+        của nó (trang tự nâng); gắn slot 7 màu thì 3 skin đó cũng vào slot và bị khoá đến khi bỏ slot 7 màu.
+      </div>
     </div>
-    <table>
-      <tbody>
-        ${headerRow(HEADERS)}
-        ${rows}
-      </tbody>
-    </table>
-    <div class="note">
-      Sở hữu: account có skin (cộng chỉ số). Slot: skill của skin vào trận. Skin 7 màu cần 3 skin thường ở sao ≥ sao
-      của nó (trang tự nâng); gắn slot 7 màu thì 3 skin đó cũng vào slot và bị khoá đến khi bỏ slot 7 màu.
-    </div>
-  </div>`;
+  `;
 }
 
 function HeroSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted, slotLocked, slotFull, edit }) {
@@ -111,26 +119,28 @@ function HeroSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted, sl
     });
   const ownedTitle = isForced ? "Bắt buộc (đang mặc hoặc skin 7 màu yêu cầu)" : null;
   const slotTitle = slotLocked ? "Bắt buộc: skin 7 màu trong slot cần skin này" : null;
-  return html`<tr>
-    <td class="name">${label(skin)}${requiresNote(skin, skins)}</td>
-    <td>${colorTag(skin.color)}</td>
-    <td><${Checkbox} checked=${state.owned} disabled=${isForced} title=${ownedTitle} onChange=${setOwned} /></td>
-    <td>
-      <${NumberInput}
-        value=${state.star}
-        min=${forcedStar || 1}
-        max=${skin.maxStar}
-        disabled=${!state.owned}
-        onChange=${setStar}
-      /><span class="note">${` /${skin.maxStar}`}</span>
-    </td>
-    <td>
-      <${Checkbox}
-        checked=${slotted}
-        disabled=${slotLocked || slotFull}
-        title=${slotTitle}
-        onChange=${setSlotted}
-      />
-    </td>
-  </tr>`;
+  return html`
+    <tr>
+      <td class="name">${label(skin)}${requiresNote(skin, skins)}</td>
+      <td>${colorTag(skin.color)}</td>
+      <td><${Checkbox} checked=${state.owned} disabled=${isForced} title=${ownedTitle} onChange=${setOwned} /></td>
+      <td>
+        <${NumberInput}
+          value=${state.star}
+          min=${forcedStar || 1}
+          max=${skin.maxStar}
+          disabled=${!state.owned}
+          onChange=${setStar}
+        /><span class="note">${` /${skin.maxStar}`}</span>
+      </td>
+      <td>
+        <${Checkbox}
+          checked=${slotted}
+          disabled=${slotLocked || slotFull}
+          title=${slotTitle}
+          onChange=${setSlotted}
+        />
+      </td>
+    </tr>
+  `;
 }

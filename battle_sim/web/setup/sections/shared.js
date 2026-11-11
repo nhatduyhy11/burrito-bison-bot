@@ -33,21 +33,29 @@ export function AddButton({ ctx, group, make }) {
   const unused = Object.keys(ctx.dict[group]).find((key) => !list.some((item) => item.name === key));
   const disabled = list.length >= LIMITS[group] || !unused;
   const add = () => ctx.update((s) => void s[group].push(make(unused)));
-  return html`<button disabled=${disabled} onClick=${add}>${`+ Thêm (${list.length}/${LIMITS[group]})`}</button>`;
+  return html`
+    <button disabled=${disabled} onClick=${add}>${`+ Thêm (${list.length}/${LIMITS[group]})`}</button>
+  `;
 }
 
 export function RemoveButton({ ctx, group, index }) {
   const remove = () => ctx.update((s) => void s[group].splice(index, 1));
-  return html`<button class="x" title="Bỏ" onClick=${remove}>×</button>`;
+  return html`
+    <button class="x" title="Bỏ" onClick=${remove}>×</button>
+  `;
 }
 
 export function headerRow(titles) {
   const cells = titles.map((t) => html`<th>${t}</th>`);
-  return html`<tr>${cells}</tr>`;
+  return html`
+    <tr>${cells}</tr>
+  `;
 }
 
 export function requiresNote(skin, skins) {
   if (!skin.requires) return null;
   const names = skin.requires.map((r) => skins[r].name_vn || skins[r].name).join(", ");
-  return html`<div class="note">${`cần: ${names}`}</div>`;
+  return html`
+    <div class="note">${`cần: ${names}`}</div>
+  `;
 }
