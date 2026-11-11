@@ -90,10 +90,10 @@ và 2 script boot (jquery, clipboard).
 ## Boot cách ly (mốc B, bước 2)
 
 ```bash
-uv run python battle_sim/sandbox.py --headless
+uv run python battle_sim/sandbox --headless
 ```
 
-- `sandbox.py` tự chạy `serve.js` và mở Chromium với profile trống tạm thời (không cookie,
+- `sandbox` tự chạy `serve.js` và mở Chromium với profile trống tạm thời (không cookie,
   không account, chặn service worker). Mọi request không phải `http://127.0.0.1:8090/` bị
   **chặn và ghi log**, WebSocket bị đóng.
 - Trang được mở là `/sim.html` (`web/boot.html` + `web/boot.js`). Kết thúc, script in các
@@ -118,11 +118,11 @@ Kết quả đúng: `ready` sau ~2s (engine 2.4.15), 0 request bị chặn, 0 fi
 ## Trận có hình trong trang cách ly (mốc B, bước 3)
 
 ```bash
-uv run python battle_sim/sandbox.py --headless --battle 6af2ab8a2f05ea3f58336962 --page "/sim.html?speed=6" --timeout 900
+uv run python battle_sim/sandbox --headless --battle 6af2ab8a2f05ea3f58336962 --page "/sim.html?speed=6" --timeout 900
 ```
 
 ```bash
-uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --page "/sim.html?speed=6" --keep --timeout 900
+uv run python battle_sim/sandbox --battle 6af2ab8a2f05ea3f58336962 --page "/sim.html?speed=6" --keep --timeout 900
 ```
 
 - `--battle <uuid>` mở `/sim.html?battle=<uuid>`. `boot.js` lấy capture (`/__sim/battle/<uuid>.json`,
@@ -165,15 +165,15 @@ lệnh lobby bị stub.
 ## Tự chơi trận với đội hình account (mốc B, bước 4)
 
 ```bash
-uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play
+uv run python battle_sim/sandbox --battle 6af2ab8a2f05ea3f58336962 --play
 ```
 
 ```bash
-uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --seed random
+uv run python battle_sim/sandbox --battle 6af2ab8a2f05ea3f58336962 --play --seed random
 ```
 
 ```bash
-uv run python battle_sim/sandbox.py --setup
+uv run python battle_sim/sandbox --setup
 ```
 
 - `--setup` mở trang setup (`/__sim/setup.html`, [web/setup.html](web/setup.html)) trong cửa
@@ -183,7 +183,7 @@ uv run python battle_sim/sandbox.py --setup
   sau), rồi mở trận như `--play --profile`. Trang cũng tải, sao chép và nhập được file JSON.
   Có thể mở trang qua `serve.js` trong browser thường để soạn profile. Trang chỉ đọc
   `profile-dict.json` và capture, không nạp code game.
-- `sandbox.py` chạy `serve.js` bằng `node` trên PATH. Shell không thấy node (ví dụ node cài
+- `sandbox` chạy `serve.js` bằng `node` trên PATH. Shell không thấy node (ví dụ node cài
   qua nvm nhưng terminal mở trước đó) thì đặt `$env:BATTLE_SIM_NODE = '<đường dẫn node.exe>'`.
 
 - `--play` mở `/sim.html?battle=<uuid>&play=1` trong cửa sổ thật (ngầm bật `--keep`, timeout
@@ -243,7 +243,7 @@ uv run python battle_sim/sandbox.py --setup
   → màn kết quả.
 - Đóng màn kết quả (nút "返回", tap nền hoặc tự đóng) sẽ đưa về lobby, mà trang cách ly không có
   lobby, nên `leaveOnResultClose` đặt `window.__simLeave` thay vào đó. Với `--setup`,
-  `sandbox.py` mở lại trang setup để chơi trận khác; với `--play` thì kết thúc. Trận nào kết thúc
+  `sandbox` mở lại trang setup để chơi trận khác; với `--play` thì kết thúc. Trận nào kết thúc
   (thắng, thua, bỏ) cũng được lưu `played-*.jsonl` trước.
 - `--headless --play` là smoke test, không có ai bấm. Bảng vòng quay ở frame 1200 sẽ pause
   trận vô thời hạn.
@@ -281,8 +281,8 @@ So sánh:
   live), `mirror.js` (mirror asset battle), `gen_profile_dict.js` (sinh `profile-dict.json`).
 - `serve.js` — serve mirror local offline (`/sim.html`,
   `/__sim/*` = `web/`, `/__sim_config/*` = config cache, `/__sim/last-setup.json`).
-- `sandbox.py` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.
-- `web/setup.html` + `web/setup/` — trang setup profile (`sandbox.py --setup`), UI bằng Preact +
+- `sandbox/` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.
+- `web/setup.html` + `web/setup/` — trang setup profile (`sandbox --setup`), UI bằng Preact +
   htm, ES module gốc của browser (không build; import map trong `setup.html` trỏ `preact`,
   `preact/hooks`, `htm` về `web/vendor/`): `index.js` (entry: state một nguồn qua `update()` →
   `normalize`, prefill từ capture, boot), `skin-rules.js` (rule skin của input, không DOM, import

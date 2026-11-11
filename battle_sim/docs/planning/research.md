@@ -20,7 +20,7 @@ Trạng thái và bước tiếp theo: [NEXT_STEP.md](NEXT_STEP.md).
   - Lý do: chặn được socket nhưng còn HTTP/SDK/telemetry, logic reconnect và kiểm tra trận
     dở dang (`UnfinishedRoom`). Client có thể rơi vào trạng thái lệch với server, và chuyện
     đó có thể bị ghi nhận.
-- **Simulator chạy cách ly hoàn toàn** (`sandbox.py`): trang local, không đăng nhập, không mở
+- **Simulator chạy cách ly hoàn toàn** (`sandbox`): trang local, không đăng nhập, không mở
   kết nối nào tới server game, chỉ dùng asset công khai đã mirror. Giả socket hay stub mạng
   **chỉ** làm trong bản cách ly này, khi không có server nào ở đầu bên kia.
 - **Mốc đầu tiên dùng đúng dữ liệu account**: `StartGameP` capture nguyên bản, không chỉnh

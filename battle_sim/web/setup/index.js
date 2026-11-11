@@ -1,12 +1,12 @@
 // Setup page for local playtest profiles (served at /__sim/setup.html). Entry module.
 //
-// Builds the JSON that web/battle/profile.js reads (`sandbox.py --play --profile <file>`) from the
+// Builds the JSON that web/battle/profile.js reads (`sandbox --play --profile <file>`) from the
 // catalog in profile-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
 // (import map in setup.html, no build step): skin-rules.js (skin input rules), profile-io.js
 // (state <-> profile), ui.js (html`` + small components), sections/ (form sections), side.js (right
 // column), and this file (single state, capture prefill, boot).
 //
-// Opened through `sandbox.py --setup`, the page gets window.simPlay({battle, seed, profile}): sandbox
+// Opened through `sandbox --setup`, the page gets window.simPlay({battle, seed, profile}): sandbox
 // saves the profile under .tmp/battle_sim/profiles/ and opens the battle with it.
 import { render } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
@@ -99,7 +99,7 @@ async function savedSetup() {
     // storage off
   }
   try {
-    return await getJson("/__sim/last-setup.json"); // written by sandbox.py --setup
+    return await getJson("/__sim/last-setup.json"); // written by sandbox --setup
   } catch {
     return null;
   }

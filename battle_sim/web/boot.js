@@ -1,7 +1,7 @@
 // Isolated boot of the game's own engine + code bundle from the local mirror.
 // Mirrors window.boot() (main.<h>.js) up to cc.game.run, but runs an empty scene
 // instead of the launch scene, so Main / LoginMgr (login, SDK, servers) never start.
-// Progress and results land in window.__sim (read by sandbox.py).
+// Progress and results land in window.__sim (read by sandbox).
 // ?battle=<uuid> additionally loads web/battle/ (entry: index.js), which opens that captured battle after boot.
 (function () {
   "use strict";

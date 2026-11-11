@@ -134,7 +134,7 @@
   };
 
   // Play mode: closing the result view would leave the battle for the lobby, which this page does
-  // not have (it hangs). Flag it instead; sandbox.py goes back to the setup page (or ends the run).
+  // not have (it hangs). Flag it instead; sandbox goes back to the setup page (or ends the run).
   SimBattle.leaveOnResultClose = function ({ M, step }) {
     const View = M("BattleBaseResultView").prototype;
     const onClose = View.onClose;

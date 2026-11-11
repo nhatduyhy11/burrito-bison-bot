@@ -29,7 +29,7 @@
     const s2c = rb.build("StartGameP_BuildRoom_S2C", start);
     const ops = play ? [] : rb.listItems(quit.operations).slice().sort((a, b) => a.operFrame - b.operFrame || a.index - b.index);
     const myPid = rb.listItems(start.playerInfos)[0].playerId;
-    if (play) window.__simPlayedStart = start; // sandbox.py saves it with the QuitRoom (not polled: ~24KB)
+    if (play) window.__simPlayedStart = start; // sandbox saves it with the QuitRoom (not polled: ~24KB)
     const report = (sim.battle = {
       mode: play ? "play" : "replay", uuid: start.uuid, capturedUuid: sim.capture.start.uuid, myPid,
       ops: ops.length, applied: 0, failed: [], dropped: [], foreignOps: 0, netCalls: [], tick: 0, quit: null,

@@ -49,7 +49,7 @@ const missLog = path.join(root, "misses.log");
 //   /__sim/battles.json     captured battles: [{uuid, level, battleType, result, ops}]
 //   /__sim/battle/<uuid>.json  one captured battle: {start: StartGameP, quit: QuitRoom}
 //   /__sim/setup.html       battle_sim/web/setup.html (profile setup page)
-//   /__sim/last-setup.json  last setup saved by `sandbox.py --setup` (.tmp/battle_sim/profiles/), null if none
+//   /__sim/last-setup.json  last setup saved by `sandbox --setup` (.tmp/battle_sim/profiles/), null if none
 const WEB = path.join(__dirname, "web");
 const CONFIG = path.join(versions.CACHE, "config");
 const LIB = path.join(__dirname, "lib");

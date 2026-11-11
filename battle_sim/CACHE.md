@@ -8,7 +8,7 @@ repo, phải giữ nguyên.
 
 | Đường dẫn | Cỡ | Đọc bởi | Vì sao |
 |---|---|---|---|
-| `.tmp/battle_research/events-*.jsonl` | vài MB | `lib/capture.js` (`replay.js`, `serve.js`, `sandbox.py --battle/--play`) | Capture trận (`StartGameP` + `QuitRoom`). Mất thì phải chơi lại trên game thật. |
+| `.tmp/battle_research/events-*.jsonl` | vài MB | `lib/capture.js` (`replay.js`, `serve.js`, `sandbox --battle/--play`) | Capture trận (`StartGameP` + `QuitRoom`). Mất thì phải chơi lại trên game thật. |
 | `.tmp/battle_sim/bundles/index.<hash>.js` | 24MB | `lib/versions.js` | Code bundle đúng `battleVersion` của capture. Host chỉ giữ bản đang live. |
 | `.tmp/battle_sim/maps/<mapVersion>/` | 2MB | `lib/versions.js` | Map Tiled đúng `mapVersion`. Cùng lý do như bundle. |
 | `.tmp/battle_sim/played/*.jsonl` | nhỏ | `replay.js <file>` | Trận tự chơi bằng `--play` (nếu có). |
@@ -17,7 +17,7 @@ repo, phải giữ nguyên.
 
 | Đường dẫn | Cỡ | Ghi chú |
 |---|---|---|
-| `.tmp/battle_sim/mirror/<ClientVer>/` | ~680MB, ~14.1k file | Asset cho `serve.js` / `sandbox.py` (mốc B). `mirror.js fetch` tải lại được **chỉ khi** host vẫn ở cùng ClientVer. Game đã cập nhật thì mirror mới lệch với capture cũ. |
+| `.tmp/battle_sim/mirror/<ClientVer>/` | ~680MB, ~14.1k file | Asset cho `serve.js` / `sandbox` (mốc B). `mirror.js fetch` tải lại được **chỉ khi** host vẫn ở cùng ClientVer. Game đã cập nhật thì mirror mới lệch với capture cũ. |
 | `.tmp/battle_sim/config/<configVersion>/` | 4MB | Thiếu thì `lib/versions.js` tự tải từ CDN (CDN giữ bản cũ). |
 
 ## Không cần
@@ -62,7 +62,7 @@ node battle_sim/replay.js
 Phải khớp mọi trận (hiện 3/3), không có lỗi thiếu bundle hoặc map.
 
 ```bash
-uv run python battle_sim/sandbox.py --headless
+uv run python battle_sim/sandbox --headless
 ```
 
 Phải ra `ready`, 0 request bị chặn, 0 file 404 (mirror đủ).

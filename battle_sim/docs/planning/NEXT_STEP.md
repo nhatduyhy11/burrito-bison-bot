@@ -4,7 +4,7 @@ Status 2026-11-11. Đọc file này đầu tiên khi bắt đầu session mới.
 toàn và kiến thức nền: [research.md](research.md). Cách chạy: [battle_sim/README.md](../../README.md).
 
 **An toàn (bắt buộc):** không gửi gói giả/đã sửa lên server thật, không chặn/giả socket hay
-gọi hàm game trên trang live đang đăng nhập. Mọi thử nghiệm chạy trong `battle_sim/sandbox.py`.
+gọi hàm game trên trang live đang đăng nhập. Mọi thử nghiệm chạy trong `battle_sim/sandbox`.
 Chi tiết: [research.md §Nguyên tắc an toàn](research.md#nguyên-tắc-an-toàn-vùng-xám-tránh-dính-ban).
 
 ## Đã có
@@ -13,9 +13,9 @@ Chi tiết: [research.md §Nguyên tắc an toàn](research.md#nguyên-tắc-an-
 |---|---|---|
 | A — logic sim headless | xong, replay khớp tuyệt đối mọi capture | `replay.js`, `lib/` |
 | B1 — mirror asset | xong, 690MB | `scripts/mirror.js`, `serve.js` |
-| B2 — boot cách ly | xong | `sandbox.py`, `web/boot.{html,js}` |
+| B2 — boot cách ly | xong | `sandbox`, `web/boot.{html,js}` |
 | B3 — trận có hình, replay op log | xong, `QuitRoom` khớp tuyệt đối | `web/battle/` |
-| B4 — tự chơi trong simulator | `--play` + trang setup `--setup`, x2 và auto mở sẵn; trận chơi (auto) replay khớp tuyệt đối, **chưa chơi tay đến thắng** | `sandbox.py`, `web/battle/`, `web/setup/` |
+| B4 — tự chơi trong simulator | `--play` + trang setup `--setup`, x2 và auto mở sẵn; trận chơi (auto) replay khớp tuyệt đối, **chưa chơi tay đến thắng** | `sandbox`, `web/battle/`, `web/setup/` |
 | B5 — mở khoá, chỉnh số | chưa làm, chỉ trong bản cách ly | |
 
 ## Việc tiếp theo: chạy thử B4
@@ -23,7 +23,7 @@ Chi tiết: [research.md §Nguyên tắc an toàn](research.md#nguyên-tắc-an-
 Checkout mới thiếu mirror hoặc capture thì chép cache theo [CACHE.md](../../CACHE.md).
 
 ```bash
-uv run python battle_sim/sandbox.py --setup
+uv run python battle_sim/sandbox --setup
 ```
 
 Dựng một profile trên trang setup (có pet, spell, skin building, skin 7 màu), thả pet, cast
@@ -47,7 +47,7 @@ Playwright kết nối cửa sổ simulator qua CDP `127.0.0.1:9334`.
 
 ## Gợi ý cách làm
 
-Đi từng bước nhỏ, mỗi bước chạy `sandbox.py` để xem lỗi đầu tiên, sửa đúng chỗ đó rồi chạy
+Đi từng bước nhỏ, mỗi bước chạy `sandbox` để xem lỗi đầu tiên, sửa đúng chỗ đó rồi chạy
 lại. Trước khi thêm init hay stub nào, đọc module tương ứng trong
 `.tmp/bundle/main.1377a/modules/`. Lỗi bị game nuốt (`console.error` chỉ có message) thì dùng
 `?trace=Module.method` để lấy stack.
