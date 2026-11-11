@@ -54,13 +54,15 @@
   <h1>Battle Sim Setup</h1>
   <p class="sub">Tạo profile cho <code>sandbox.py --play --profile</code>. Phần nào không bật "Ghi đè" thì giữ nguyên từ capture.</p>
   <div id="app">đang tải…</div>
-  <script src="/__sim/vendor/preact.umd.js"></script>
-  <script src="/__sim/vendor/preact-hooks.umd.js"></script>
-  <script src="/__sim/vendor/htm.umd.js"></script>
-  <script src="/__sim/setup/skin-rules.js"></script>
-  <script src="/__sim/setup/profile-io.js"></script>
-  <script src="/__sim/setup/ui.js"></script>
-  <script src="/__sim/setup/sections.js"></script>
-  <script src="/__sim/setup/index.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "preact": "/__sim/vendor/preact.module.js",
+        "preact/hooks": "/__sim/vendor/preact-hooks.module.js",
+        "htm": "/__sim/vendor/htm.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="/__sim/setup/index.js"></script>
 </body>
 </html>
