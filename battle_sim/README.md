@@ -2,7 +2,7 @@
 
 Chạy trận campaign offline trong Node bằng chính code logic của bundle game
 (`TDServer` + `BattleEngineDelegate` + engine `battleground`), không render, không mạng.
-Nghiên cứu nền: [docs/planning/battle_sim/](../docs/planning/battle_sim/README.md).
+Nghiên cứu nền: [docs/planning/](docs/planning/README.md).
 
 ## Version / cache
 

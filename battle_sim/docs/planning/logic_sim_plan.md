@@ -1,6 +1,6 @@
 # Mốc A — Logic sim headless
 
-Status 2026-11-10: **xong** — code ở [`battle_sim/`](../../../battle_sim/README.md).
+Status 2026-11-10: **xong** — code ở [`battle_sim/`](../../README.md).
 Main doc: [README.md](README.md).
 
 ## Kết quả kiểm chứng

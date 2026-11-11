@@ -29,7 +29,7 @@ Chi tiết trong [README.md §Nguyên tắc an toàn](README.md). Tóm tắt:
 | B4 — tự chơi trong simulator | `--play` + trang setup `--setup`, x2 và auto mở sẵn; trận chơi (auto) replay khớp tuyệt đối, chưa chơi tay đến thắng | `sandbox.py`, `web/battle/`, `web/setup.html`, `web/setup/` |
 
 Cách chạy và cơ chế của B3 (stub, bỏ qua pause của director, đóng bảng vòng quay):
-[battle_sim/README.md §Trận có hình](../../../battle_sim/README.md).
+[battle_sim/README.md §Trận có hình](../../README.md).
 
 ```bash
 uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --page "/sim.html?speed=6" --keep --timeout 900
@@ -41,7 +41,7 @@ Kết quả B3: cả 3 trận đã capture (Stage 51 thắng/thua, Stage 97) đ�
 ## Chạy thử B4
 
 Nếu checkout mới thiếu mirror hoặc capture, chép và giải nén cache theo
-[battle_sim/CACHE.md](../../../battle_sim/CACHE.md). Chỉ clone repo thì chưa có dữ liệu trận.
+[battle_sim/CACHE.md](../../CACHE.md). Chỉ clone repo thì chưa có dữ liệu trận.
 
 ```bash
 uv run python battle_sim/sandbox.py --setup
@@ -61,7 +61,7 @@ kết nối cửa sổ simulator qua CDP `127.0.0.1:9334`.
 Lần chạy thử tiếp theo: dựng một profile trên trang setup (có pet, spell, skin building,
 skin 7 màu), thả pet, cast spell, bấm các bảng chọn trong trận, chơi đến màn kết quả,
 rồi kiểm tra file `played-*.jsonl` và log sandbox. Màn kết quả dùng phản hồi local
-với `clientReward: null`. Xem [hướng dẫn tự chơi](../../../battle_sim/README.md#tự-chơi-trận-với-đội-hình-account-mốc-b-bước-4)
+với `clientReward: null`. Xem [hướng dẫn tự chơi](../../README.md#tự-chơi-trận-với-đội-hình-account-mốc-b-bước-4)
 để biết cách replay lại trận vừa chơi.
 
 ## Skin hero: rule đã xác nhận (capture pmain 2026-11-11)
@@ -82,7 +82,7 @@ Nguồn: `HeroDermaModule` trong bundle và trận `6af3d7da1d68f99b52631ef9` tr
   `PF2/PF3/PF4` (`ToggleConditionBtNodeParser`), nên hiệu ứng hình phụ thuộc vào bộ skill
   skin. Không skill skin nào dùng `exclusionGroup`, nên phần logic không bị thay thế.
 - `skin-profile.js` đã theo rule này (`slots`), xem
-  [PROFILE_SKINS.md](../../../battle_sim/PROFILE_SKINS.md). Còn chưa xác nhận: skill 7 màu
+  [PROFILE_SKINS.md](../../PROFILE_SKINS.md). Còn chưa xác nhận: skill 7 màu
   đứng sau 3 skill thường (chưa có account 7 màu).
 
 ## Trap, pet, spell (capture pmain `6af3dacb1d68f99b52632087`, replay khớp tuyệt đối)
