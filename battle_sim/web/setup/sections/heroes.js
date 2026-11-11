@@ -1,21 +1,15 @@
 // Hero list; each hero card can open its skin table (owned, star, slots).
-import { html, label, optionText, colorTag, NumberInput, Checkbox, Select, Section } from "../ui.js";
+import { html, label, optionText, colorTag, NumberInput, Checkbox, Select, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, newHero } from "../profile-io.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
-import { AddButton, RemoveButton, headerRow, nameOptions, requiresNote, without } from "./shared.js";
+import { headerRow, nameOptions, requiresNote, without } from "./shared.js";
 
 const HEADERS = ["Skin", "Màu", "Sở hữu", "Sao", "Slot"];
 
 export function HeroesSection({ ctx }) {
-  const onToggle = (on) => ctx.toggleWithPrefill("heroes", on);
   return html`
-    <${Section}
-      title="Hero"
-      hint="tối đa 5; tắt = đội hình capture"
-      enabled=${!!ctx.state.heroes}
-      onToggle=${onToggle}
-    >
+    <${Accordion} title="Hero" hint="5 slot bắt buộc · Joker hỗ trợ chỉ hiện khi skin Loli kích hoạt">
       <${HeroesBody} ctx=${ctx} />
     <//>
   `;
@@ -31,7 +25,6 @@ function HeroesBody({ ctx }) {
   return html`
     ${cards}
     ${showJoker && html`<${HeroCard} ctx=${ctx} hero=${state.summonedJoker} index=${5} summoned=${true} />`}
-    <div class="row"><${AddButton} ctx=${ctx} group="heroes" make=${newHero} /></div>
     <div class="note">
       Hero có trong capture giữ chỉ số và skill gốc; hero khác mượn chỉ số trung bình, level và level skill của các
       hero cùng độ hiếm trong capture (gần đúng, ±10%). Không tick "Tùy chỉnh skin" thì giữ skin từ capture.
@@ -43,7 +36,7 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
   const { state, dict, update } = ctx;
   const skins = heroSkins(dict, hero.name);
   const hasSkins = Object.keys(skins).length > 0;
-  const options = nameOptions(dict, "heroes", state.heroes.map((h) => h.name), hero.name);
+  const options = [["", "— Chọn hero —"], ...nameOptions(dict, "heroes", state.heroes.map((h) => h.name), hero.name)];
   const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s.heroes[index]));
   const setName = (v) => update((s) => void (s.heroes[index] = newHero(v)));
   const setCustom = (on) => edit((h) => (h.custom = on));
@@ -57,9 +50,8 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
         <strong>${`#${index + 1}`}</strong>
         ${summoned
           ? html`<span>${label(dict.heroes[hero.name])}</span><span class="note">Hỗ trợ · Ra sân cùng Pháo Loli</span>`
-          : html`<${Select} options=${options} value=${hero.name} onChange=${setName} />`}
+          : html`<${Select} aria-label=${`Hero slot ${index + 1}`} options=${options} value=${hero.name} onChange=${setName} />`}
         ${custom}
-        ${!summoned && html`<${RemoveButton} ctx=${ctx} group="heroes" index=${index} />`}
       </div>
       ${table}
     </div>

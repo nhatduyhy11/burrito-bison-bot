@@ -125,6 +125,7 @@ async function main(root) {
     }
   }
   if (!battles.some((b) => b.uuid === state.battle)) state.battle = battles[0]?.uuid || "";
+  if (!saved?.profile?.heroes) state.heroes = await prefill(dict, state.battle, "heroes");
   normalize(state, dict);
   root.replaceChildren();
   render(html`<${App} dict=${dict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);

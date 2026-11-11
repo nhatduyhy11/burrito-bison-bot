@@ -1,5 +1,5 @@
 // Setup page state <-> profile JSON (the format web/battle/profile.js reads).
-// A state section left null is omitted from the profile, so the battle keeps that part of the capture.
+// Optional sections left null keep that part of the capture; heroes always have five editable slots.
 import * as R from "./skin-rules.js";
 import { JOKER_SUMMON } from "../hero-lineup.js";
 import { SUMMONER_SLOTS, summonerSkillsConflict } from "../summoner-skills.js";
@@ -12,7 +12,8 @@ const buildSkins = (dict, building) => dict.buildings[building].skins;
 
 function emptyState() {
   return {
-    battle: "", seed: "", map: null, heroes: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
+    battle: "", seed: "", map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
+    summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null, summonerSkins: null,
   };
 }
@@ -26,6 +27,7 @@ function newBuilding(dict, building) {
 }
 
 function normalize(state, dict) {
+  state.heroes = Array.from({ length: LIMITS.heroes }, (_, i) => state.heroes?.[i] || newHero(""));
   if (state.heroes) for (const hero of state.heroes) R.normalizeHero(hero, heroSkins(dict, hero.name));
   state.summonedJoker ||= newHero(JOKER_SUMMON.summonedHero);
   R.normalizeHero(state.summonedJoker, heroSkins(dict, JOKER_SUMMON.summonedHero));
@@ -52,7 +54,7 @@ function toProfile(state, dict) {
       ];
       return out;
     };
-    profile.heroes = state.heroes.map(heroProfile);
+    profile.heroes = state.heroes.filter((hero) => hero.name).map(heroProfile);
     if (state.summonedJoker?.custom) profile.summonedJoker = heroProfile(state.summonedJoker);
   }
   if (state.traps) profile.traps = state.traps.map(({ name, level, star }) => ({ name, level, star }));
@@ -156,6 +158,7 @@ function fromProfile(profile, base, dict) {
     next.buildings[building] = entry;
   }
   if (Number.isSafeInteger(profile.goldenSkinsCount)) next.goldenSkinsCount = profile.goldenSkinsCount;
+  normalize(next, dict);
   return next;
 }
 

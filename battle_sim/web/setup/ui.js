@@ -82,3 +82,13 @@ export function Section({ title, hint, enabled, onToggle, children }) {
     </section>
   `;
 }
+
+// Collapse only presentation; profile overrides keep their own independent toggle.
+export function Accordion({ title, hint, children }) {
+  return html`
+    <details class="accordion" open>
+      <summary><strong>${title}</strong>${hint && html`<span class="hint">${hint}</span>`}</summary>
+      <div class="accordion-body">${children}</div>
+    </details>
+  `;
+}

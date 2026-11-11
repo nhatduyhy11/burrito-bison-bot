@@ -20,6 +20,11 @@
     section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
     section > header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     section > header .hint { color: var(--muted); font-size: 12px; }
+    .accordion { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+    .accordion > summary { cursor: pointer; font-size: 14px; }
+    .accordion > summary .hint { color: var(--muted); font-size: 12px; margin-left: 12px; }
+    .accordion-body { margin-top: 8px; }
+    .accordion-body > section { margin: 0; padding: 0; border: 0; }
     .body { margin-top: 8px; }
     .off .body { display: none; }
     .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
@@ -52,7 +57,7 @@
 </head>
 <body>
   <h1>Battle Sim Setup</h1>
-  <p class="sub">Tạo profile cho <code>sandbox --play --profile</code>. Phần nào không bật "Ghi đè" thì giữ nguyên từ capture.</p>
+  <p class="sub">Tạo profile cho <code>sandbox --play --profile</code>. Hero cần đủ 5 slot. Các phần có nút "Ghi đè" giữ dữ liệu capture khi tắt.</p>
   <div id="app">đang tải…</div>
   <script type="importmap">
     {

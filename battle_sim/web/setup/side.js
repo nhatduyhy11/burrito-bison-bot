@@ -12,7 +12,8 @@ const NO_STATUS = { text: "", kind: "note" };
 
 function warnings(state, profile) {
   const out = [];
-  if (profile.heroes && !profile.heroes.length) out.push("Cần ít nhất 1 hero (hoặc tắt Ghi đè).");
+  if (profile.heroes?.length !== 5) out.push("Cần chọn đủ 5 hero.");
+  if (new Set(profile.heroes?.map((hero) => typeof hero === "string" ? hero : hero.name)).size !== profile.heroes?.length) out.push("5 hero phải khác nhau.");
   if (!state.battle) out.push("Chưa có capture nào để làm trận gốc.");
   return out;
 }

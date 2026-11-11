@@ -223,7 +223,8 @@ uv run python battle_sim/sandbox --setup
   `{ "mode": "campaign", "stage": 66 }`. Hiện chỉ có `campaign`, và config `sea_65380` có
   stage 1–400. Bỏ `map` thì chơi stage gốc của capture. Đội hình chọn theo tên trong
   [profile-dict.json](web/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
-  trong capture. Hero khác mượn tiến độ của các hero cùng độ hiếm trong capture (không có thì
+  trong capture. Khi có `heroes`, phải chọn đúng 5 hero khác nhau; setup luôn hiện 5 slot,
+  không phụ thuộc chế độ màn chơi. Hero khác mượn tiến độ của các hero cùng độ hiếm trong capture (không có thì
   mọi hero): `attr` trung bình (đã trừ `selfAttr` của skin), level và `breakThrough` của hero
   trung vị, level skill riêng theo đa số từng slot. Relic/artifact không mượn. Kiểm tra bỏ-một-ra
   trên 2 capture: chỉ số lệch trong ±10% (Lu Bu lv100 duy nhất thì −20%). Hero cam/tím mượn
@@ -233,6 +234,7 @@ uv run python battle_sim/sandbox --setup
   trang setup mở Joker ở slot 6 với đầy đủ tùy chỉnh skin, sở hữu, sao và slot skill.
   JSON lưu riêng ở `summonedJoker`, cùng định dạng một hero, ví dụ
   `{ "name": "joker", "skin": "nocturnal_burglar", "star": 5 }`; chỉ áp dụng khi Joker được triệu hồi.
+  Hero và Skill Summoner là accordion; thu gọn chỉ thay đổi hiển thị.
   `traps` thay danh sách trap (tối đa 3): tên (level 1, 1 sao) hoặc
   `{ "name", "level", "star" }`, skill tra từ sao trong config game.
   `pets` thay danh sách pet (tối đa 3) theo cùng dạng. `skillCodes` lấy theo sao: mỗi loại
@@ -303,8 +305,8 @@ So sánh:
   `preact/hooks`, `htm` về `web/vendor/`): `index.js` (entry: state một nguồn qua `update()` →
   `normalize`, prefill từ capture, boot), `skin-rules.js` (rule skin của input, không DOM, import
   được trong Node), `profile-io.js` (state ↔ profile JSON), `ui.js` (`html`, component nhỏ:
-  Section "Ghi đè", Select, NumberInput, Checkbox), `sections/` (mỗi khung form một file: `map`,
-  `heroes`, `lists` cho trap/pet/spell, `buildings`, `golden`, `shared`), `side.js` (khung bên
+  Accordion, Section "Ghi đè", Select, NumberInput, Checkbox), `sections/` (mỗi khung form một file: `map`,
+  `heroes`, `summoner`, `lists` cho trap/pet/spell, `buildings`, `golden`, `shared`), `side.js` (khung bên
   phải). Quy ước: handler đặt tên ở trên, template `html\`\`` không chứa hàm inline; `return html\``
   xuống dòng rồi mới viết nội dung, dấu backtick đóng nằm riêng một dòng (htm bỏ khoảng trắng có
   xuống dòng ở hai đầu nên DOM không đổi).

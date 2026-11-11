@@ -45,6 +45,7 @@
       const { hasSummonedJoker, JOKER_SUMMON } = await import("../hero-lineup.js");
       const captured = rb.listItems(player.heros);
       const selected = choices("heroes", 5);
+      if (selected.length !== 5) throw new Error("Profile needs exactly 5 heroes");
       let jokerSkillSlotted = false;
       const buildHero = ({ option, selection }, existing) => {
         const { code, baseSkills, skins } = option;
@@ -74,7 +75,6 @@
         // The engine deploys support with Loli and mirrors her in-battle upgrades.
         player.support = buildHero({ option, selection }, existing);
       }
-      if (!heroes.length) throw new Error("Profile needs at least one hero");
       player.heros = asList(heroes);
     }
     if (Object.hasOwn(profile, "traps")) {
