@@ -15,6 +15,7 @@
     { "name": "storm_griffin", "star": 5, "level": 39 },
     "alien_critter"
   ],
+  "spells": [{ "name": "hellish_flame", "star": 5 }, "sword_radiance"],
   "buildings": {
     "door": { "skin": "grand_circus", "ownedSkins": { "ironfist_door": 5, "aureate_domain": 1 } },
     "bed": { "skin": "fortune_bed", "star": 5 }

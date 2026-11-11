@@ -86,10 +86,10 @@ Việc cần làm:
    và slot. Chọn 7 màu thì khoá 3 skin yêu cầu ở mức sao tối thiểu.
    Thêm panel skin cho cửa, giường, chuột và mèo: skin đang mặc, skin sở hữu kèm sao,
    1 slot đỏ + 2 slot vàng (+ slot loại 3). Skin 7 màu nằm ở slot vàng và **khoá** 3 skin
-   yêu cầu. Backend đã đọc `pets`, `buildings` và `goldenSkinsCount`, khớp tuyệt đối với
-   capture. Định dạng xem [BUILD_SKINS.md](../../../battle_sim/BUILD_SKINS.md#trong-profile-playtest).
-2. Backend còn thiếu spell (`daoists`: `code`, `star`, `skillCode`). Dict đã có danh sách
-   spell, profile chưa áp dụng.
+   yêu cầu. Thêm chọn tối đa 2 spell kèm sao. Backend đã đọc đủ `map`, `heroes`, `traps`,
+   `pets`, `spells`, `buildings` và `goldenSkinsCount`, khớp tuyệt đối với capture. Định
+   dạng xem [README.md](../../../battle_sim/README.md) (mục `--profile`) và
+   [BUILD_SKINS.md](../../../battle_sim/BUILD_SKINS.md#trong-profile-playtest).
 
 ## Trap, pet, spell (capture pmain `6af3dacb1d68f99b52632087`, replay khớp tuyệt đối)
 

@@ -207,8 +207,9 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   `buildings` chọn skin cửa, giường, chuột, mèo (`door`, `bed`, `generator`, `cat`). Xem
   [skin building](BUILD_SKINS.md#trong-profile-playtest). `goldenSkinsCount` (ảnh hưởng
   sát thương pet) đặt bằng tay vì chưa rõ server tính thế nào.
-  Bỏ một trường để giữ giá trị từ capture. Spell và hero support hiện vẫn lấy từ capture
-  (dict đã có danh sách spell, profile chưa áp dụng).
+  `spells` thay spell (thần, `daoists`, tối đa 2 theo `DaoistFormationLO`): tên (1 sao)
+  hoặc `{ "name", "star" }`, `skillCode` tra từ `DaoistStarLO`.
+  Bỏ một trường để giữ giá trị từ capture. Hero support hiện vẫn lấy từ capture.
 - `profile-dict.json` được sinh từ config game bằng `node battle_sim/scripts/gen_profile_dict.js
   [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
   lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Gồm `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`

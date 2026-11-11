@@ -1,4 +1,4 @@
-// Local playtest profile (?play&profile): map, heroes, traps, pets and building skins from
+// Local playtest profile (?play&profile): map, heroes, traps, pets, spells and building skins from
 // /__sim/active-profile.json, resolved by name through profile-dict.json (scripts/gen_profile_dict.js).
 // Hero skins: skin-profile.js. Building skins: build-skin-profile.js.
 (function () {
@@ -81,6 +81,16 @@
         return { code, star, level, skillCodes: asList(petSkillCodes(config, star, M)) };
       });
       player.summonCreatures = asList(pets);
+    }
+    if (Object.hasOwn(profile, "spells")) {
+      // A spell (daoist) is a name (1 star) or { name, star }; 2 formation slots (DaoistFormationLO).
+      const spells = choices("spells", 2).map(({ option: { code }, selection: { star = 1 } }) => {
+        const mec = M("DaoistLO").get(code)?.mecType;
+        const rank = mec && M("DaoistStarLO").get(mec * 10000000 + star * 1000);
+        if (!rank) throw new Error(`Invalid spell ${code} star ${star}`);
+        return { code, star, skillCode: rank.skillCode };
+      });
+      player.daoists = asList(spells);
     }
     if (Object.hasOwn(profile, "buildings")) {
       Object.assign(player, window.applySimBuildSkinProfile(player, profile.buildings, catalog.buildings, rb, M, (resolved) => {
