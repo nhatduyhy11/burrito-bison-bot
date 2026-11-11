@@ -138,16 +138,24 @@ def find_node() -> str:
 
 
 def start_server() -> subprocess.Popen:
+    # A debug terminal (VS Code auto-attach, NODE_OPTIONS=--inspect) would attach to serve.js and
+    # print "Debugger listening/attached" first; the server needs no debugger.
+    env = {k: v for k, v in os.environ.items() if k not in ("NODE_OPTIONS", "VSCODE_INSPECTOR_OPTIONS")}
     proc = subprocess.Popen(
         [find_node(), str(ROOT / "battle_sim" / "serve.js"), "--port", "8090"],
-        cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8",
+        cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8",
     )
-    line = proc.stdout.readline()
-    if "serving mirror" not in line:
-        proc.kill()
-        raise SystemExit(f"serve.js did not start: {line.strip()}")
-    print(line.strip(), flush=True)
-    return proc
+    seen = []
+    while len(seen) < 20:  # skip stray startup lines (debugger notices etc.) until the ready line
+        line = proc.stdout.readline()
+        if not line:
+            break
+        if "serving mirror" in line:
+            print(line.strip(), flush=True)
+            return proc
+        seen.append(line.strip())
+    proc.kill()
+    raise SystemExit("serve.js did not start:\n  " + "\n  ".join(seen or ["(no output)"]))
 
 
 async def run(args) -> int:
