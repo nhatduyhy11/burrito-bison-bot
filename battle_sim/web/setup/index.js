@@ -16,6 +16,10 @@
   const { useState, useEffect, useMemo, useRef } = window.preactHooks;
 
   const STORE_KEY = "battleSimSetup";
+  const SEED_OPTIONS = [
+    ["", "giống capture"],
+    ["random", "ngẫu nhiên"],
+  ];
 
   // ---------- capture prefill ----------
 
@@ -140,37 +144,55 @@
       }
     };
 
+    const setBattle = (v) => update((s) => void (s.battle = v));
+    const setSeed = (v) => update((s) => void (s.seed = v));
+    const openImport = () => fileInput.current.click();
+    const reset = () => update((s) => ({ ...S.emptyState(), battle: s.battle, seed: s.seed }));
+
     const battleOptions = battles.length
       ? battles.map((b) => [b.uuid, `${b.uuid.slice(0, 8)}… · capture ở Stage ${b.level} · ${b.ops} op`])
       : [["", "(không có capture)"]];
+    const playDisabled = playing || !canPlay || problems.length > 0;
     const seedArg = state.seed ? ` --seed ${state.seed}` : "";
+    const playCommand = `uv run python battle_sim/sandbox.py --battle ${state.battle || "<uuid>"} --play${seedArg} --profile <file>.json`;
+    const playHint = canPlay
+      ? null
+      : html`Nút Chơi chỉ chạy khi mở qua <code>uv run python battle_sim/sandbox.py --setup</code>. Hoặc tải JSON rồi
+          chạy: <code>${playCommand}</code>`;
     return html`
       <section>
         <header><h2>Account gốc</h2></header>
         <div class="body">
-          <div class="row"><label>Capture <${Select} id="battle" options=${battleOptions} value=${state.battle}
-            onChange=${(v) => update((s) => { s.battle = v; })} /></label></div>
-          <div class="note">Trận đã capture chỉ dùng làm nguồn dữ liệu account: chỉ số và level hero, attr
-            building, hero support, đồng đội robot, và mọi phần không bật Ghi đè. Stage ghi ở đây là
-            màn của trận capture; màn sẽ chơi do mục "Màn chơi" quyết định (tắt thì dùng màn này).</div>
-          <div class="row"><label>Seed <${Select} id="seed" options=${[["", "giống capture"], ["random", "ngẫu nhiên"]]}
-            value=${state.seed} onChange=${(v) => update((s) => { s.seed = v; })} /></label></div>
           <div class="row">
-            <button id="play" class="primary" disabled=${playing || !canPlay || problems.length > 0} onClick=${play}>Chơi</button>
+            <label>Capture <${Select} id="battle" options=${battleOptions} value=${state.battle} onChange=${setBattle} /></label>
+          </div>
+          <div class="note">
+            Trận đã capture chỉ dùng làm nguồn dữ liệu account: chỉ số và level hero, attr building, hero support, đồng
+            đội robot, và mọi phần không bật Ghi đè. Stage ghi ở đây là màn của trận capture; màn sẽ chơi do mục "Màn
+            chơi" quyết định (tắt thì dùng màn này).
+          </div>
+          <div class="row">
+            <label>Seed <${Select} id="seed" options=${SEED_OPTIONS} value=${state.seed} onChange=${setSeed} /></label>
+          </div>
+          <div class="row">
+            <button id="play" class="primary" disabled=${playDisabled} onClick=${play}>Chơi</button>
             <button id="download" onClick=${download}>Tải JSON</button>
             <button id="copy" onClick=${copy}>Sao chép</button>
-            <label><button id="importBtn" onClick=${() => fileInput.current.click()}>Nhập JSON</button><input id="importFile"
-              ref=${fileInput} type="file" accept=".json,application/json" hidden onChange=${importFile} /></label>
-            <button id="reset" onClick=${() => update((s) => ({ ...S.emptyState(), battle: s.battle, seed: s.seed }))}>Xoá hết</button>
+            <label>
+              <button id="importBtn" onClick=${openImport}>Nhập JSON</button>
+              <input id="importFile" ref=${fileInput} type="file" accept=".json,application/json" hidden onChange=${importFile} />
+            </label>
+            <button id="reset" onClick=${reset}>Xoá hết</button>
           </div>
-          <div id="playHint" class="note">${canPlay ? null : html`Nút Chơi chỉ chạy khi mở qua <code>uv run python battle_sim/sandbox.py --setup</code>. Hoặc tải JSON rồi chạy: <code>${`uv run python battle_sim/sandbox.py --battle ${state.battle || "<uuid>"} --play${seedArg} --profile <file>.json`}</code>`}</div>
+          <div id="playHint" class="note">${playHint}</div>
           <div id="status" class=${`status ${status.kind}`}>${status.text}</div>
         </div>
       </section>
       <section>
         <header><h2>Profile JSON</h2></header>
         <pre id="output">${JSON.stringify(profile, null, 2)}</pre>
-      </section>`;
+      </section>
+    `;
   }
 
   // ---------- boot ----------
