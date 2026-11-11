@@ -1,6 +1,7 @@
 // Setup page state <-> profile JSON (the format web/battle/profile.js reads).
 // A state section left null is omitted from the profile, so the battle keeps that part of the capture.
 import * as R from "./skin-rules.js";
+import { JOKER_SUMMON } from "../hero-lineup.js";
 
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2 };
 const BUILDINGS = [["door", "Cửa"], ["bed", "Giường"], ["generator", "Chuột (máy phát điện)"], ["cat", "Mèo (chiêu tài)"]];
@@ -10,7 +11,7 @@ const buildSkins = (dict, building) => dict.buildings[building].skins;
 
 function emptyState() {
   return {
-    battle: "", seed: "", map: null, heroes: null, traps: null, pets: null, spells: null,
+    battle: "", seed: "", map: null, heroes: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null,
   };
 }
@@ -25,6 +26,8 @@ function newBuilding(dict, building) {
 
 function normalize(state, dict) {
   if (state.heroes) for (const hero of state.heroes) R.normalizeHero(hero, heroSkins(dict, hero.name));
+  state.summonedJoker ||= newHero(JOKER_SUMMON.summonedHero);
+  R.normalizeHero(state.summonedJoker, heroSkins(dict, JOKER_SUMMON.summonedHero));
   for (const [building] of BUILDINGS) {
     if (state.buildings[building]) R.normalizeBuilding(state.buildings[building], buildSkins(dict, building));
   }
@@ -34,7 +37,7 @@ function toProfile(state, dict) {
   const profile = {};
   if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
   if (state.heroes) {
-    profile.heroes = state.heroes.map((hero) => {
+    const heroProfile = (hero) => {
       if (!hero.custom) return hero.name;
       const skins = heroSkins(dict, hero.name);
       const out = { name: hero.name };
@@ -47,7 +50,9 @@ function toProfile(state, dict) {
         ...hero.slots.filter((key) => !R.isNormalHeroSkin(skins[key])),
       ];
       return out;
-    });
+    };
+    profile.heroes = state.heroes.map(heroProfile);
+    if (state.summonedJoker?.custom) profile.summonedJoker = heroProfile(state.summonedJoker);
   }
   if (state.traps) profile.traps = state.traps.map(({ name, level, star }) => ({ name, level, star }));
   if (state.pets) profile.pets = state.pets.map(({ name, level, star }) => ({ name, level, star }));
@@ -79,26 +84,31 @@ function fromProfile(profile, base, dict) {
   };
   const entryOf = (item) => (typeof item === "string" ? { name: item } : item || {});
   if (profile.map) next.map = { stage: Number(profile.map.stage) || dict.maps.campaign.minStage };
+  const readHero = (item) => {
+    const sel = entryOf(item);
+    const hero = newHero(need("heroes", sel.name));
+    const skins = heroSkins(dict, hero.name);
+    hero.custom = ["skin", "star", "ownedSkins", "slots"].some((key) => sel[key] !== undefined);
+    if (!hero.custom) return hero;
+    const skinName = (key) => {
+      if (!skins[key]) throw new Error(`Hero ${hero.name} không có skin "${key}"`);
+      return key;
+    };
+    for (const [key, star] of Object.entries(sel.ownedSkins || {})) Object.assign(R.skinState(hero, skinName(key)), { owned: true, star });
+    if (sel.skin !== undefined) {
+      hero.worn = skinName(sel.skin);
+      Object.assign(R.skinState(hero, hero.worn), { owned: true, star: sel.star ?? 1 });
+    }
+    R.normalizeHero(hero, skins); // raises required skins before default slots are picked
+    hero.slots = sel.slots !== undefined ? sel.slots.map(skinName) : Object.keys(skins).filter((key) => hero.skins[key].owned);
+    return hero;
+  };
   if (Array.isArray(profile.heroes)) {
-    next.heroes = profile.heroes.slice(0, LIMITS.heroes).map((item) => {
-      const sel = entryOf(item);
-      const hero = newHero(need("heroes", sel.name));
-      const skins = heroSkins(dict, hero.name);
-      hero.custom = ["skin", "star", "ownedSkins", "slots"].some((key) => sel[key] !== undefined);
-      if (!hero.custom) return hero;
-      const skinName = (key) => {
-        if (!skins[key]) throw new Error(`Hero ${hero.name} không có skin "${key}"`);
-        return key;
-      };
-      for (const [key, star] of Object.entries(sel.ownedSkins || {})) Object.assign(R.skinState(hero, skinName(key)), { owned: true, star });
-      if (sel.skin !== undefined) {
-        hero.worn = skinName(sel.skin);
-        Object.assign(R.skinState(hero, hero.worn), { owned: true, star: sel.star ?? 1 });
-      }
-      R.normalizeHero(hero, skins); // raises required skins before default slots are picked
-      hero.slots = sel.slots !== undefined ? sel.slots.map(skinName) : Object.keys(skins).filter((key) => hero.skins[key].owned);
-      return hero;
-    });
+    next.heroes = profile.heroes.slice(0, LIMITS.heroes).map(readHero);
+  }
+  if (profile.summonedJoker !== undefined) {
+    if (entryOf(profile.summonedJoker).name !== JOKER_SUMMON.summonedHero) throw new Error("Slot 6 chỉ dành cho Joker triệu hồi");
+    next.summonedJoker = readHero(profile.summonedJoker);
   }
   for (const group of ["traps", "pets"]) {
     if (Array.isArray(profile[group])) {

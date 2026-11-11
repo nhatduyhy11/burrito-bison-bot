@@ -229,6 +229,10 @@ uv run python battle_sim/sandbox --setup
   trên 2 capture: chỉ số lệch trong ±10% (Lu Bu lv100 duy nhất thì −20%). Hero cam/tím mượn
   từ hero đỏ khi capture không có hero cùng độ hiếm, chưa đối chiếu được.
   Xem [cấu hình skin](PROFILE_SKINS.md) để chọn skin, số sao và các skin yêu cầu.
+  Khi Pháo Loli gắn skill skin `guns_n_roses` và Joker chưa nằm trong đội hình chính,
+  trang setup mở Joker ở slot 6 với đầy đủ tùy chỉnh skin, sở hữu, sao và slot skill.
+  JSON lưu riêng ở `summonedJoker`, cùng định dạng một hero, ví dụ
+  `{ "name": "joker", "skin": "nocturnal_burglar", "star": 5 }`; chỉ áp dụng khi Joker được triệu hồi.
   `traps` thay danh sách trap (tối đa 3): tên (level 1, 1 sao) hoặc
   `{ "name", "level", "star" }`, skill tra từ sao trong config game.
   `pets` thay danh sách pet (tối đa 3) theo cùng dạng. `skillCodes` lấy theo sao: mỗi loại

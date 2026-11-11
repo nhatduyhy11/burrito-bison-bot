@@ -2,6 +2,7 @@
 import { html, label, optionText, colorTag, NumberInput, Checkbox, Select, Section } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, newHero } from "../profile-io.js";
+import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { AddButton, RemoveButton, headerRow, nameOptions, requiresNote, without } from "./shared.js";
 
 const HEADERS = ["Skin", "Màu", "Sở hữu", "Sao", "Slot"];
@@ -21,11 +22,15 @@ export function HeroesSection({ ctx }) {
 }
 
 function HeroesBody({ ctx }) {
-  const cards = ctx.state.heroes.map(
+  const { state } = ctx;
+  const cards = state.heroes.map(
     (hero, index) => html`<${HeroCard} key=${index} ctx=${ctx} hero=${hero} index=${index} />`,
   );
+  const loli = state.heroes.find(({ name }) => name === JOKER_SUMMON.hero);
+  const showJoker = hasSummonedJoker(state.heroes, loli?.custom && loli.slots.includes(JOKER_SUMMON.skin));
   return html`
     ${cards}
+    ${showJoker && html`<${HeroCard} ctx=${ctx} hero=${state.summonedJoker} index=${5} summoned=${true} />`}
     <div class="row"><${AddButton} ctx=${ctx} group="heroes" make=${newHero} /></div>
     <div class="note">
       Hero có trong capture giữ chỉ số và skill gốc; hero khác mượn chỉ số trung bình, level và level skill của các
@@ -34,12 +39,12 @@ function HeroesBody({ ctx }) {
   `;
 }
 
-function HeroCard({ ctx, hero, index }) {
+function HeroCard({ ctx, hero, index, summoned = false }) {
   const { state, dict, update } = ctx;
   const skins = heroSkins(dict, hero.name);
   const hasSkins = Object.keys(skins).length > 0;
   const options = nameOptions(dict, "heroes", state.heroes.map((h) => h.name), hero.name);
-  const edit = (fn) => update((s) => void fn(s.heroes[index]));
+  const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s.heroes[index]));
   const setName = (v) => update((s) => void (s.heroes[index] = newHero(v)));
   const setCustom = (on) => edit((h) => (h.custom = on));
   const custom = hasSkins
@@ -50,9 +55,11 @@ function HeroCard({ ctx, hero, index }) {
     <div class="card">
       <div class="row">
         <strong>${`#${index + 1}`}</strong>
-        <${Select} options=${options} value=${hero.name} onChange=${setName} />
+        ${summoned
+          ? html`<span>${label(dict.heroes[hero.name])}</span><span class="note">Pháo Loli triệu hồi</span>`
+          : html`<${Select} options=${options} value=${hero.name} onChange=${setName} />`}
         ${custom}
-        <${RemoveButton} ctx=${ctx} group="heroes" index=${index} />
+        ${!summoned && html`<${RemoveButton} ctx=${ctx} group="heroes" index=${index} />`}
       </div>
       ${table}
     </div>
@@ -121,7 +128,10 @@ function HeroSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted, sl
   const slotTitle = slotLocked ? "Bắt buộc: skin 7 màu trong slot cần skin này" : null;
   return html`
     <tr>
-      <td class="name">${label(skin)}${requiresNote(skin, skins)}</td>
+      <td class="name">
+        ${label(skin)}${requiresNote(skin, skins)}
+        ${key === JOKER_SUMMON.skin && html`<div class="note">${JOKER_SUMMON.skillName} · Triệu hồi Joker</div>`}
+      </td>
       <td>${colorTag(skin.color)}</td>
       <td><${Checkbox} checked=${state.owned} disabled=${isForced} title=${ownedTitle} onChange=${setOwned} /></td>
       <td>

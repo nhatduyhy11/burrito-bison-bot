@@ -42,8 +42,11 @@
       });
     };
     if (Object.hasOwn(profile, "heroes")) {
+      const { hasSummonedJoker, JOKER_SUMMON } = await import("../hero-lineup.js");
       const captured = rb.listItems(player.heros);
-      const heroes = choices("heroes", 5).map(({ option, selection }) => {
+      const selected = choices("heroes", 5);
+      let jokerSkillSlotted = false;
+      const buildHero = ({ option, selection }) => {
         const { code, baseSkills, skins } = option;
         const config = M("HeroLO").get(code);
         if (!config) throw new Error(`Unknown hero code: ${code}`);
@@ -51,11 +54,23 @@
           || borrowStats(makeBaseHero(code, config, baseSkills, M), config, captured, rb, M, step);
         if (["skin", "star", "ownedSkins", "slots"].some((key) => selection[key] !== undefined)) {
           return window.applySimSkinProfile(hero, selection, skins, rb, M, (resolved) => {
+            if (selection.name === JOKER_SUMMON.hero) {
+              const summonSkin = skins[JOKER_SUMMON.skin];
+              jokerSkillSlotted = resolved.slots.some(({ code }) => code === summonSkin?.code);
+            }
             step("profile skin ranks", resolved);
           });
         }
         return hero;
-      });
+      };
+      const heroes = selected.map(buildHero);
+      if (hasSummonedJoker(selected.map(({ selection }) => selection), jokerSkillSlotted)) {
+        const name = JOKER_SUMMON.summonedHero;
+        const entry = profile.summonedJoker ?? { name };
+        const selection = typeof entry === "string" ? { name: entry } : entry;
+        if (selection.name !== name) throw new Error("Summoned hero must be Joker");
+        heroes.push(buildHero({ option: catalog.heroes[name], selection }));
+      }
       if (!heroes.length) throw new Error("Profile needs at least one hero");
       player.heros = asList(heroes);
     }
