@@ -56,7 +56,7 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
       <div class="row">
         <strong>${`#${index + 1}`}</strong>
         ${summoned
-          ? html`<span>${label(dict.heroes[hero.name])}</span><span class="note">Pháo Loli triệu hồi</span>`
+          ? html`<span>${label(dict.heroes[hero.name])}</span><span class="note">Hỗ trợ · Ra sân cùng Pháo Loli</span>`
           : html`<${Select} options=${options} value=${hero.name} onChange=${setName} />`}
         ${custom}
         ${!summoned && html`<${RemoveButton} ctx=${ctx} group="heroes" index=${index} />`}

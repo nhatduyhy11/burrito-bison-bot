@@ -46,11 +46,11 @@
       const captured = rb.listItems(player.heros);
       const selected = choices("heroes", 5);
       let jokerSkillSlotted = false;
-      const buildHero = ({ option, selection }) => {
+      const buildHero = ({ option, selection }, existing) => {
         const { code, baseSkills, skins } = option;
         const config = M("HeroLO").get(code);
         if (!config) throw new Error(`Unknown hero code: ${code}`);
-        const hero = captured.find((entry) => entry.code === code)
+        const hero = existing || captured.find((entry) => entry.code === code)
           || borrowStats(makeBaseHero(code, config, baseSkills, M), config, captured, rb, M, step);
         if (["skin", "star", "ownedSkins", "slots"].some((key) => selection[key] !== undefined)) {
           return window.applySimSkinProfile(hero, selection, skins, rb, M, (resolved) => {
@@ -63,13 +63,16 @@
         }
         return hero;
       };
-      const heroes = selected.map(buildHero);
+      const heroes = selected.map((entry) => buildHero(entry));
       if (hasSummonedJoker(selected.map(({ selection }) => selection), jokerSkillSlotted)) {
         const name = JOKER_SUMMON.summonedHero;
         const entry = profile.summonedJoker ?? { name };
         const selection = typeof entry === "string" ? { name: entry } : entry;
         if (selection.name !== name) throw new Error("Summoned hero must be Joker");
-        heroes.push(buildHero({ option: catalog.heroes[name], selection }));
+        const option = catalog.heroes[name];
+        const existing = player.support?.code === option.code ? player.support : undefined;
+        // The engine deploys support with Loli and mirrors her in-battle upgrades.
+        player.support = buildHero({ option, selection }, existing);
       }
       if (!heroes.length) throw new Error("Profile needs at least one hero");
       player.heros = asList(heroes);
