@@ -20,13 +20,10 @@ export function BuildingsSection({ ctx }) {
       `
     : null;
   return html`
-    <section>
-      <header><h2>Skin building</h2><span class="hint">mỗi building bật riêng; tắt = giữ từ capture</span></header>
-      <div class="body">
-        ${cards}
-        ${note}
-      </div>
-    </section>
+    <${Accordion} title="Skin building" hint="mỗi building bật riêng; tắt = giữ từ capture">
+      ${cards}
+      ${note}
+    <//>
   `;
 }
 

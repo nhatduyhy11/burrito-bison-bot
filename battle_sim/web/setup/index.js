@@ -114,6 +114,23 @@ async function savedSetup() {
   }
 }
 
+function bindAccordionToggle(root) {
+  const button = document.getElementById("toggle-accordions");
+  const accordions = () => [...root.querySelectorAll("details.accordion")];
+  const updateLabel = () => {
+    button.textContent = accordions().every((panel) => panel.open) ? "Thu gọn tất cả" : "Mở tất cả";
+  };
+  button.addEventListener("click", () => {
+    const panels = accordions();
+    const open = panels.some((panel) => !panel.open);
+    panels.forEach((panel) => { panel.open = open; });
+    updateLabel();
+  });
+  root.addEventListener("toggle", updateLabel, true);
+  updateLabel();
+  button.disabled = false;
+}
+
 async function main(root) {
   const [dict, battles] = await Promise.all([
     getJson("/__sim/profile-dict.json"),
@@ -134,6 +151,7 @@ async function main(root) {
   normalize(state, dict);
   root.replaceChildren();
   render(html`<${App} dict=${dict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  bindAccordionToggle(root);
 }
 
 const root = document.getElementById("app");

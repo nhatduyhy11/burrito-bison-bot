@@ -12,7 +12,8 @@
     * { box-sizing: border-box; }
     html, body { margin: 0; background: var(--bg); color: var(--text); font: 12px/1.45 "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
     body { padding: 12px 16px 40px; }
-    h1 { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
     h2 { font-size: 13px; font-weight: 600; margin: 0; }
     .sub { color: var(--muted); margin: 0 0 12px; }
     .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: 12px; align-items: start; }
@@ -96,7 +97,10 @@
   </style>
 </head>
 <body>
-  <h1>Battle Sim Setup</h1>
+  <header class="page-header">
+    <h1>Battle Sim Setup</h1>
+    <button id="toggle-accordions" type="button" aria-controls="app" disabled>Thu gọn tất cả</button>
+  </header>
   <p class="sub">Tạo profile cho <code>sandbox --play --profile</code>. Hero cần đủ 5 slot. Các phần có nút "Ghi đè" giữ dữ liệu capture khi tắt.</p>
   <div id="app">đang tải…</div>
   <script type="importmap">
