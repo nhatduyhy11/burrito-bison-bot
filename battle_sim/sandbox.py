@@ -11,6 +11,9 @@
 - --battle <uuid> --play [--seed random|<uuid>]: play that battle's StartGameP yourself in a
   real window (implies --keep). The played battle is saved to .tmp/battle_sim/played/*.jsonl
   (capture format) for `node battle_sim/replay.js <file>`.
+- --setup: open the profile setup page (web/setup.html) first. Its "Chơi" button saves the profile
+  to .tmp/battle_sim/profiles/last.json (+ last-setup.json with the chosen battle and seed) and
+  starts --play on the chosen captured battle with it.
 - Waits for window.__sim.state ("ready" / "done" / "error"), prints the boot steps, checks, blocked
   requests, mirror 404s and console errors. Full log -> .tmp/battle_sim/sandbox-<ts>.log.
 - --keep leaves the window open (CDP on 127.0.0.1:9334 for poking around) until closed.
@@ -19,7 +22,9 @@
 import argparse
 import asyncio
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -33,6 +38,9 @@ CACHE = ROOT / ".tmp" / "battle_sim"
 ORIGIN = "http://127.0.0.1:8090"
 CDP_PORT = 9334
 PLAYED = CACHE / "played"
+PROFILES = CACHE / "profiles"
+SETUP_PAGE = "/__sim/setup.html"
+UUID_RE = re.compile(r"^[0-9a-f]{24}$")
 TERMINAL = ("ready", "done", "error")
 
 
@@ -88,9 +96,50 @@ async def save_played(page, battle):
     print(f"  check: node battle_sim/replay.js {rel}")
 
 
+async def run_setup(page):
+    """Show the setup page until its "Chơi" button calls window.simPlay({battle, seed, profile}).
+    Returns that choice (profile saved under PROFILES), or None if the window was closed first."""
+    chosen = asyncio.get_running_loop().create_future()
+
+    async def sim_play(choice):
+        battle, seed, profile = choice.get("battle"), choice.get("seed") or None, choice.get("profile")
+        if not isinstance(battle, str) or not UUID_RE.match(battle):
+            raise ValueError(f"invalid battle uuid: {battle!r}")
+        if seed is not None and seed != "random" and not UUID_RE.match(str(seed)):
+            raise ValueError(f"invalid seed: {seed!r}")
+        if not isinstance(profile, dict):
+            raise ValueError("profile must be an object")
+        PROFILES.mkdir(parents=True, exist_ok=True)
+        setup = {"battle": battle, "seed": seed, "profile": profile}
+        for name, data in (("last.json", profile), ("last-setup.json", setup)):
+            (PROFILES / name).write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        rel = (PROFILES / "last.json").relative_to(ROOT).as_posix()
+        print(f"setup: battle {battle}, seed {seed or 'captured'}, profile saved to {rel}", flush=True)
+        if not chosen.done():
+            chosen.set_result(setup)
+        return rel
+
+    await page.expose_function("simPlay", sim_play)
+    await page.goto(ORIGIN + SETUP_PAGE, wait_until="domcontentloaded")
+    print(f"setup page open: {ORIGIN + SETUP_PAGE}", flush=True)
+    while not chosen.done():
+        if page.is_closed():
+            return None
+        await asyncio.sleep(0.3)
+    return chosen.result()
+
+
+def find_node() -> str:
+    """node for serve.js: $BATTLE_SIM_NODE, else node on PATH."""
+    node = os.environ.get("BATTLE_SIM_NODE") or shutil.which("node")
+    if not node:
+        raise SystemExit("node not found on PATH; set BATTLE_SIM_NODE to the full path of node(.exe)")
+    return node
+
+
 def start_server() -> subprocess.Popen:
     proc = subprocess.Popen(
-        ["node", str(ROOT / "battle_sim" / "serve.js"), "--port", "8090"],
+        [find_node(), str(ROOT / "battle_sim" / "serve.js"), "--port", "8090"],
         cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8",
     )
     line = proc.stdout.readline()
@@ -145,7 +194,7 @@ async def run(args) -> int:
 
                 async def guard(route):
                     url = route.request.url
-                    if args.profile and url == ORIGIN + "/__sim/active-profile.json":
+                    if profile_data is not None and url == ORIGIN + "/__sim/active-profile.json":
                         await route.fulfill(json=profile_data)
                     elif url.startswith(ORIGIN + "/"):
                         await route.continue_()
@@ -175,12 +224,20 @@ async def run(args) -> int:
                 page.on("console", on_console)
                 page.on("pageerror", on_pageerror)
 
+                if args.setup:
+                    chosen = await run_setup(page)
+                    if chosen is None:
+                        print("setup page closed without starting a battle")
+                        await ctx.close()
+                        return 0
+                    profile_data, args.battle, args.seed = chosen["profile"], chosen["battle"], chosen["seed"]
+
                 url = ORIGIN + args.page
                 if args.battle:
                     url += ("&" if "?" in url else "?") + "battle=" + args.battle
                 if args.play:
                     url += "&play=1" + (f"&seed={args.seed}" if args.seed else "")
-                    if args.profile:
+                    if profile_data is not None:
                         url += "&profile=1"
                 await page.goto(url, wait_until="domcontentloaded")
                 sim = None
@@ -248,6 +305,8 @@ def main() -> int:
                     help="with --battle: play that battle's StartGameP yourself instead of replaying (implies --keep)")
     ap.add_argument("--seed", help="with --play: battle uuid / RNG seed ('random' = new battle; default = captured)")
     ap.add_argument("--profile", type=Path, help="with --play: JSON file with local formation overrides")
+    ap.add_argument("--setup", action="store_true",
+                    help="open the profile setup page first; its Play button starts --play with the chosen battle and profile")
     ap.add_argument("--keep", action="store_true", help="keep the window open after the run")
     ap.add_argument("--headless", action="store_true")
     ap.add_argument("--browser", choices=("chrome", "chromium"), default="chrome")
@@ -255,12 +314,18 @@ def main() -> int:
     ap.add_argument("--record", help="record the page as .webm into this directory (saved when the window closes)")
     ap.add_argument("--size", help="viewport WxH (default 720x1280 headless, 640x720 headed like the runner)")
     args = ap.parse_args()
+    if args.setup:
+        if args.headless:
+            ap.error("--setup needs a window (no --headless)")
+        if args.profile or args.battle:
+            ap.error("--setup picks the battle and profile on the page (no --battle / --profile)")
+        args.play = True
     if args.profile and not args.play:
         ap.error("--profile requires --play")
     if not args.size:
         args.size = "720x1280" if args.headless else "640x720"
     if args.play:
-        if not args.battle:
+        if not args.battle and not args.setup:
             ap.error("--play needs --battle <uuid> (whose StartGameP to use)")
         args.keep = args.keep or not args.headless  # headless play = smoke test, nobody to close it
         if args.timeout == ap.get_default("timeout"):

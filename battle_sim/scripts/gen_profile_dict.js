@@ -1,6 +1,6 @@
 "use strict";
 // Generate web/profile-dict.json (playtest profile catalog) from the game's own config tables:
-// heroes with their skins, traps, pets, spells (daoists) and building skins, keyed by a slug
+// campaign stage range, heroes with their skins, traps, pets, spells (daoists) and building skins, keyed by a slug
 // of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
 // lang_vi.<ver>.bin, public CDN next to config.bin; downloaded once into
 // .tmp/battle_sim/config/<configVersion>/).
@@ -31,11 +31,12 @@ function download(url, file) {
   });
 }
 
-const slug = (s) => String(s).toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "x";
+const slug = (s) => String(s).toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
 function keyed(entries) { // [[name, value]] -> {slug: value}, codes appended on collisions
   const out = {};
   for (const [name, value] of entries) {
-    let key = slug(name);
+    // No English name in lang_en (e.g. unreleased skins keep the Chinese name): key by code.
+    let key = slug(name) || `id_${value.skinId ?? value.code}`;
     if (Object.hasOwn(out, key)) key += "_" + (value.code ?? value.skinId);
     out[key] = value;
   }
@@ -124,13 +125,19 @@ async function main() {
     buildings[id] = { buildType, skins };
   }
 
+  // Campaign stages: AdventuretdLevelLO id = stage * 10, with a BattleGround (same check as profile.js).
+  const stages = rows(M("AdventuretdLevelLO")).map((r) => r.id / 10)
+    .filter((stage) => Number.isInteger(stage) && M("BattleGroundLO").get(M("AdventuretdLevelLO").get(stage * 10).battleGroundCode))
+    .sort((a, b) => a - b);
+  const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length } };
+
   const dict = {
     _generated: `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, name_vn: lang_vi)`,
-    heroes, traps, pets, spells, buildings,
+    maps, heroes, traps, pets, spells, buildings,
   };
   fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
   const count = (o) => Object.keys(o).length;
-  console.log(`wrote ${path.relative(process.cwd(), OUT)}: ${count(heroes)} heroes, ${count(traps)} traps, ` +
+  console.log(`wrote ${path.relative(process.cwd(), OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ${count(heroes)} heroes, ${count(traps)} traps, ` +
     `${count(pets)} pets, ${count(spells)} spells, ` +
     Object.entries(buildings).map(([k, b]) => `${k} ${count(b.skins)} skins`).join(", "));
 }

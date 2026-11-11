@@ -22,8 +22,10 @@ skill trong `BuildSkinLO` (发电机 / 招财猫) mới biết type 3 là chuộ
 - `skillType`: loại slot, 1 = đỏ, 2 = vàng, 3 = slot riêng. Skin 7 màu dùng
   `skillType` 2. Skin `skillType` 3 hiện chỉ có bộ 龙血骑士 (10007, 20006).
 - `skill`: mảng skill ở số sao đó (`SkillBaseLO`).
-- `requirement`: chỉ có ở skin 7 màu, liệt kê 3 skin yêu cầu. Cửa 10013 cần
-  10001/10009/10012; giường 20012 cần 20005/20009/20011. Chuột và mèo chưa có skin 7 màu.
+- `requirement`: chỉ có ở skin 7 màu, liệt kê 3 skin yêu cầu ở cùng số sao. Cửa có 2 skin
+  7 màu: 10011 cần 10005/10008/10009, 10013 cần 10001/10009/10012. Giường: 20010 cần
+  20002/20007/20008, 20012 cần 20005/20009/20011. Chuột và mèo chưa có skin 7 màu. 10013 và
+  20012 chưa có tên tiếng Anh, dict dùng key `id_10013` / `id_20012`.
 - `attr` / `addAttr`: chỉ số của skin. Chưa đối chiếu được với `builds[].attr`.
 
 ## Quy tắc slot (`BuildSkinModule`, `BuildSkinEquipSkillPanel`)

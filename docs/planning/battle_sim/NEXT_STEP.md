@@ -26,7 +26,7 @@ Chi tiết trong [README.md §Nguyên tắc an toàn](README.md). Tóm tắt:
 | B1 — mirror asset | xong, 662MB | `scripts/mirror.js`, `serve.js` |
 | B2 — boot cách ly | xong | `sandbox.py`, `web/boot.{html,js}` |
 | B3 — trận có hình, replay op log | xong, `QuitRoom` khớp tuyệt đối (xem dưới) | `web/battle/`, `lib/capture.js` |
-| B4 — tự chơi trong simulator | đã có `--play`; cần chạy thử UI trên checkout này | `sandbox.py`, `web/battle/` |
+| B4 — tự chơi trong simulator | đã có `--play` và trang setup `--setup`; cần chơi thử bằng tay | `sandbox.py`, `web/battle/`, `web/setup.{html,js}` |
 
 Cách chạy và cơ chế của B3 (stub, bỏ qua pause của director, đóng bảng vòng quay):
 [battle_sim/README.md §Trận có hình](../../../battle_sim/README.md).
@@ -44,15 +44,22 @@ Nếu checkout mới thiếu mirror hoặc capture, chép và giải nén cache 
 [battle_sim/CACHE.md](../../../battle_sim/CACHE.md). Chỉ clone repo thì chưa có dữ liệu trận.
 
 ```bash
-uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --seed random
+uv run python battle_sim/sandbox.py --setup
 ```
+
+`--setup` mở trang setup: chọn capture gốc, seed, stage, hero (skin/sao/slot), trap, pet,
+spell, skin building, rồi bấm "Chơi". Profile được lưu vào `.tmp/battle_sim/profiles/` và
+trận mở với profile đó. Backend đọc đủ mọi phần (trừ hero support), khớp tuyệt đối với
+capture. Chạy thẳng không qua trang:
+`sandbox.py --battle <uuid> --play --seed random [--profile <file>]`.
 
 `--play` mở cửa sổ Chromium cách ly, dùng đội hình từ `StartGameP` và để UI gửi op
 qua `TDServerProxy` chế độ Local. Director tự điều khiển robot đồng đội và dừng trận
 khi mở bảng chặn. `--seed random` tạo seed mới; có thể chơi tùy ý. Playwright có thể
 kết nối cửa sổ simulator qua CDP `127.0.0.1:9334`.
 
-Lần chạy thử tiếp theo: bấm map và các bảng chọn trong trận, chơi đến màn kết quả,
+Lần chạy thử tiếp theo: dựng một profile trên trang setup (có pet, spell, skin building,
+skin 7 màu), thả pet, cast spell, bấm các bảng chọn trong trận, chơi đến màn kết quả,
 rồi kiểm tra file `played-*.jsonl` và log sandbox. Màn kết quả dùng phản hồi local
 với `clientReward: null`. Xem [hướng dẫn tự chơi](../../../battle_sim/README.md#tự-chơi-trận-với-đội-hình-account-mốc-b-bước-4)
 để biết cách replay lại trận vừa chơi.
@@ -77,19 +84,6 @@ Nguồn: `HeroDermaModule` trong bundle và trận `6af3d7da1d68f99b52631ef9` tr
 - `skin-profile.js` đã theo rule này (`slots`), xem
   [PROFILE_SKINS.md](../../../battle_sim/PROFILE_SKINS.md). Còn chưa xác nhận: skill 7 màu
   đứng sau 3 skill thường (chưa có account 7 màu).
-
-Việc cần làm:
-1. Trang setup trong sandbox (HTML thuần, đọc thẳng các bảng config game). Trang sinh
-   **một profile JSON đủ mọi tham số** để đưa vào backend (`--profile`), thay cho các
-   arg dòng lệnh dài. Map đã chuyển vào JSON (`map: { mode, stage }`), `--map` đã bỏ.
-   Chọn mode (hiện chỉ Campaign) rồi stage, 3 trap, 3 pet, 5 hero; panel hero để chọn skin, sao
-   và slot. Chọn 7 màu thì khoá 3 skin yêu cầu ở mức sao tối thiểu.
-   Thêm panel skin cho cửa, giường, chuột và mèo: skin đang mặc, skin sở hữu kèm sao,
-   1 slot đỏ + 2 slot vàng (+ slot loại 3). Skin 7 màu nằm ở slot vàng và **khoá** 3 skin
-   yêu cầu. Thêm chọn tối đa 2 spell kèm sao. Backend đã đọc đủ `map`, `heroes`, `traps`,
-   `pets`, `spells`, `buildings` và `goldenSkinsCount`, khớp tuyệt đối với capture. Định
-   dạng xem [README.md](../../../battle_sim/README.md) (mục `--profile`) và
-   [BUILD_SKINS.md](../../../battle_sim/BUILD_SKINS.md#trong-profile-playtest).
 
 ## Trap, pet, spell (capture pmain `6af3dacb1d68f99b52632087`, replay khớp tuyệt đối)
 

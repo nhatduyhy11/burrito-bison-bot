@@ -183,6 +183,20 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play
 uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --seed random
 ```
 
+```bash
+uv run python battle_sim/sandbox.py --setup
+```
+
+- `--setup` mở trang setup (`/__sim/setup.html`, [web/setup.html](web/setup.html)) trong cửa
+  sổ sandbox. Trên trang chọn capture gốc, seed và từng phần của profile. Phần nào không bật
+  "Ghi đè" thì giữ từ capture. Nút "Chơi" lưu profile vào `.tmp/battle_sim/profiles/last.json`
+  (dùng lại được với `--profile`) và `last-setup.json` (kèm capture và seed, trang nạp lại lần
+  sau), rồi mở trận như `--play --profile`. Trang cũng tải, sao chép và nhập được file JSON.
+  Có thể mở trang qua `serve.js` trong browser thường để soạn profile. Trang chỉ đọc
+  `profile-dict.json` và capture, không nạp code game.
+- `sandbox.py` chạy `serve.js` bằng `node` trên PATH. Shell không thấy node (ví dụ node cài
+  qua nvm nhưng terminal mở trước đó) thì đặt `$env:BATTLE_SIM_NODE = '<đường dẫn node.exe>'`.
+
 - `--play` mở `/sim.html?battle=<uuid>&play=1` trong cửa sổ thật (ngầm bật `--keep`, timeout
   3600s). Người chơi tự bấm UI battle gốc. Lấy `StartGameP` của trận đã capture (hero, build,
   organ… của account), không dùng op log.
@@ -194,7 +208,7 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   giống bản capture cho tới op đầu tiên khác đi. `random` sinh 24 hex mới, ra trận mới.
   Chuỗi khác thì dùng nguyên chuỗi đó.
 - `--profile battle_sim/profile.example.json`: mọi tuỳ chỉnh trận nằm trong file JSON này
-  (sau này trang setup sẽ sinh ra file đó). `map` chọn màn chơi, ví dụ
+  (trang setup `--setup` sinh ra file này). `map` chọn màn chơi, ví dụ
   `{ "mode": "campaign", "stage": 66 }`. Hiện chỉ có `campaign`, và config `sea_65380` có
   stage 1–400. Bỏ `map` thì chơi stage gốc của capture. Đội hình chọn theo tên trong
   [profile-dict.json](web/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
@@ -212,7 +226,8 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   Bỏ một trường để giữ giá trị từ capture. Hero support hiện vẫn lấy từ capture.
 - `profile-dict.json` được sinh từ config game bằng `node battle_sim/scripts/gen_profile_dict.js
   [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
-  lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Gồm `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
+  lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Mục không có tên tiếng Anh dùng
+  key `id_<mã>` (ví dụ skin 7 màu `id_10013`). Gồm `maps.campaign` (khoảng stage), `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
   (`daoists`), `buildings` (door, bed, generator, cat, kèm skin), mỗi mục có `maxLevel` /
   `maxStar`. Không sửa tay; chạy lại script khi đổi config.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
@@ -254,8 +269,9 @@ So sánh:
 - `scripts/` — công cụ chạy riêng: `snapshot.js` (cache code bundle + map của deploy đang
   live), `mirror.js` (mirror asset battle), `gen_profile_dict.js` (sinh `profile-dict.json`).
 - `serve.js` — serve mirror local offline (`/sim.html`,
-  `/__sim/*` = `web/`, `/__sim_config/*` = config cache).
+  `/__sim/*` = `web/`, `/__sim_config/*` = config cache, `/__sim/last-setup.json`).
 - `sandbox.py` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.
+- `web/setup.{html,js}` — trang setup profile (`sandbox.py --setup`).
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
   `index.js` (entry, `window.__simBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
   stub mạng, `QuitRoom`), `replay.js` (op log, tick, pause, so kết quả), `profile.js` +

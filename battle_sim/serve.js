@@ -48,10 +48,13 @@ const missLog = path.join(root, "misses.log");
 //   /__sim_lib/<file>       battle_sim/lib/ (only browser-safe files, e.g. proto_rebuild.js)
 //   /__sim/battles.json     captured battles: [{uuid, level, battleType, result, ops}]
 //   /__sim/battle/<uuid>.json  one captured battle: {start: StartGameP, quit: QuitRoom}
+//   /__sim/setup.html       battle_sim/web/setup.html (profile setup page)
+//   /__sim/last-setup.json  last setup saved by `sandbox.py --setup` (.tmp/battle_sim/profiles/), null if none
 const WEB = path.join(__dirname, "web");
 const CONFIG = path.join(versions.CACHE, "config");
 const LIB = path.join(__dirname, "lib");
 const BROWSER_LIB = new Set(["proto_rebuild.js"]);
+const PROFILES = path.join(versions.CACHE, "profiles");
 
 function sendJson(res, obj) {
   res.writeHead(200, { "Content-Type": TYPES[".json"], "Cache-Control": "no-cache" }).end(JSON.stringify(obj));
@@ -96,6 +99,11 @@ const server = http.createServer(async (req, res) => {
     const list = fs.existsSync(CONFIG) ? fs.readdirSync(CONFIG).filter((v) => fs.existsSync(path.join(CONFIG, v, "config.bin"))) : [];
     list.sort((a, b) => Number(b.split("_").pop()) - Number(a.split("_").pop()));
     sendJson(res, list);
+    return;
+  }
+  if (req.url.split("?")[0] === "/__sim/last-setup.json") {
+    const file = path.join(PROFILES, "last-setup.json");
+    sendJson(res, fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null);
     return;
   }
   const battle = battleRoute(req.url.split("?")[0]);
