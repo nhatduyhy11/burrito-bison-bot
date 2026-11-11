@@ -4,15 +4,16 @@ Level của hero và sao của skin là hai thông số riêng. Ví dụ, Venom 
 chỉ số hero level 1. Có thể mặc Colorful 5 sao mà level của Venom vẫn là 1.
 
 Trong `heroes`, dùng tên hero để giữ skin từ capture hoặc dùng object để chọn skin.
-Tên skin tra trong `skins` của hero tương ứng trong [profile-dict.json](web/profile-dict.json).
+Tên skin tra trong `skins` của hero tương ứng trong [profile-dict.json](web/profile-dict.json)
+(mỗi skin có `code`, `name`, `color`, `maxStar`, và `requires` với skin 7 màu).
 
 ```json
 {
-  "name": "venom",
-  "skin": "colorful",
+  "name": "spiker",
+  "skin": "sanguine_landing",
   "star": 3,
-  "ownedSkins": { "pf1": 1, "pf2": 4 },
-  "slots": ["pf1", "pf2", "pf3", "colorful"]
+  "ownedSkins": { "beach_party": 1, "undead_king": 4 },
+  "slots": ["beach_party", "undead_king", "machine_rampage", "sanguine_landing"]
 }
 ```
 
@@ -25,8 +26,9 @@ Tên skin tra trong `skins` của hero tương ứng trong [profile-dict.json](w
   đến skin 7 màu.
 
 Skin 7 màu yêu cầu cả 3 skin thường ở số sao ít nhất bằng sao của nó. Simulator tự nâng
-các skin yêu cầu lên mức đó. Trong ví dụ trên, Colorful 3 sao, `pf1` được nâng từ 1 lên
-3, `pf2` giữ 4 và `pf3` được bổ sung ở 3 sao. Sao vượt quá rank có trong config sẽ báo
+các skin yêu cầu lên mức đó. Trong ví dụ trên, Sanguine Landing (7 màu) 3 sao,
+`beach_party` được nâng từ 1 lên 3, `undead_king` giữ 4 và `machine_rampage` được bổ
+sung ở 3 sao. Sao vượt quá rank có trong config sẽ báo
 lỗi. Dòng `profile skin ranks` trong log sandbox ghi từng skin, rank cuối và các slot.
 
 ## Rule của game

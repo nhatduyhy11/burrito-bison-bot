@@ -70,5 +70,5 @@ Phải ra `ready`, 0 request bị chặn, 0 file 404 (mirror đủ).
 ## Khi game cập nhật
 
 Bundle và map mới chỉ lấy được lúc deploy đó còn live. Trước khi capture trận mới, chạy
-`node battle_sim/snapshot.js`, rồi `node battle_sim/mirror.js fetch` nếu cần bản có hình.
+`node battle_sim/scripts/snapshot.js`, rồi `node battle_sim/scripts/mirror.js fetch` nếu cần bản có hình.
 Bộ cũ trong cache vẫn giữ để replay các capture cũ, nên cũng phải copy khi chuyển máy.

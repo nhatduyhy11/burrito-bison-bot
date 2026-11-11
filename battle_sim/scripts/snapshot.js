@@ -1,15 +1,15 @@
 "use strict";
 // Cache the currently live deploy (code bundle + battle maps) for battle_sim.
-//   node battle_sim/snapshot.js
+//   node battle_sim/scripts/snapshot.js
 // Plain HTTP, no browser: index.html (ClientVer) -> manifest.<ver>.js -> src/settings.<h>.js
 // (bundleVers: main, battle, resources). Old deploys disappear from the host, so run this
 // whenever the game updates, before capturing battles you want to replay.
 const fs = require("fs");
 const path = require("path");
-const { getJson, download } = require("./lib/http");
-const cocos = require("./lib/cocos_bundle");
-const versions = require("./lib/versions");
-const { liveDeploy } = require("./lib/deploy");
+const { getJson, download } = require("../lib/http");
+const cocos = require("../lib/cocos_bundle");
+const versions = require("../lib/versions");
+const { liveDeploy } = require("../lib/deploy");
 
 async function fetchMainBundle(hash) {
   const dest = path.join(versions.CACHE, "bundles", `index.${hash}.js`);

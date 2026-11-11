@@ -1,5 +1,5 @@
 "use strict";
-// Serve a mirror (mirror.js) on localhost with the game host's URL layout.
+// Serve a mirror (scripts/mirror.js) on localhost with the game host's URL layout.
 //   node battle_sim/serve.js [--port 8090] [--ver <ClientVer>] [--fill]
 // Offline by default: a missing file is a 404, printed and appended to misses.log, so the
 // gaps show up when the battle page runs. --fill instead downloads the missing file from
@@ -29,7 +29,7 @@ function arg(name, def) {
 function latestMirror() {
   const dir = path.join(versions.CACHE, "mirror");
   const vers = fs.existsSync(dir) ? fs.readdirSync(dir).filter((v) => /^\d+$/.test(v)).sort((a, b) => b - a) : [];
-  if (!vers.length) throw new Error("no mirror found; run `node battle_sim/mirror.js fetch` first");
+  if (!vers.length) throw new Error("no mirror found; run `node battle_sim/scripts/mirror.js fetch` first");
   return vers[0];
 }
 

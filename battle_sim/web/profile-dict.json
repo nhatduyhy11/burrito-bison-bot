@@ -1,28 +1,1377 @@
 {
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65380 (names: lang_en, name_vn: lang_vi)",
   "heroes": {
     "hanuman": {
       "code": 50000001,
-      "skins": { "pf1": 5000101, "pf2": 5000102, "pf3": 5000103, "colorful": 5000104 }
+      "name": "Hanuman",
+      "name_vn": "Hanuman",
+      "baseSkills": [
+        10010101000,
+        10010201000,
+        10010301000
+      ],
+      "skins": {
+        "wayward_fist": {
+          "code": 5000101,
+          "name": "Wayward Fist",
+          "name_vn": "Boxer Lãng Tử",
+          "color": "red",
+          "maxStar": 5
+        },
+        "tech_titan": {
+          "code": 5000102,
+          "name": "Tech Titan",
+          "name_vn": "Vua Công Nghệ",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "heroic_legend": {
+          "code": 5000103,
+          "name": "Heroic Legend",
+          "name_vn": "Dũng Sĩ Huyền Thoại",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "supreme_thunderlord": {
+          "code": 5000104,
+          "name": "Supreme Thunderlord",
+          "name_vn": "Tôn Lôi Thần",
+          "color": "colorful",
+          "maxStar": 5,
+          "requires": [
+            "wayward_fist",
+            "tech_titan",
+            "heroic_legend"
+          ]
+        }
+      }
     },
-    "archangel": { "code": 50000026 },
+    "spiker": {
+      "code": 50000002,
+      "name": "Spiker",
+      "name_vn": "Gai Độc",
+      "baseSkills": [
+        10020101000,
+        10020201000,
+        10020301000
+      ],
+      "skins": {
+        "beach_party": {
+          "code": 5000201,
+          "name": "Beach Party",
+          "name_vn": "Tiệc Bãi Biển",
+          "color": "red",
+          "maxStar": 5
+        },
+        "undead_king": {
+          "code": 5000202,
+          "name": "Undead King",
+          "name_vn": "Vua Vong Linh",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "machine_rampage": {
+          "code": 5000203,
+          "name": "Machine Rampage",
+          "name_vn": "Cơ Thần Nổi Loạn",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "sanguine_landing": {
+          "code": 5000204,
+          "name": "Sanguine Landing",
+          "name_vn": "Huyết Ngục Thống Trị",
+          "color": "colorful",
+          "maxStar": 5,
+          "requires": [
+            "beach_party",
+            "undead_king",
+            "machine_rampage"
+          ]
+        }
+      }
+    },
     "frosthealer": {
       "code": 50000003,
-      "skins": { "pf1": 5000301, "pf2": 5000302, "pf3": 5000303 }
+      "name": "Frosthealer",
+      "name_vn": "Pháp Sư Sương",
+      "baseSkills": [
+        10030101000,
+        10030201000,
+        10030301000
+      ],
+      "skins": {
+        "azure_shore": {
+          "code": 5000301,
+          "name": "Azure Shore",
+          "name_vn": "Bờ Biển Xanh Thẳm",
+          "color": "red",
+          "maxStar": 5
+        },
+        "dream_bubble": {
+          "code": 5000302,
+          "name": "Dream Bubble",
+          "name_vn": "Bong Bóng Mộng Ảo",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "fairytale_land": {
+          "code": 5000303,
+          "name": "Fairytale Land",
+          "name_vn": "Xứ Sở Cổ Tích",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
     },
-    "mage_king": { "code": 50000004 },
-    "dark_lubu": {
+    "archmage": {
+      "code": 50000004,
+      "name": "Archmage",
+      "name_vn": "Vua Pháp Sư",
+      "baseSkills": [
+        10040101000,
+        10040201000,
+        10040301000
+      ],
+      "skins": {
+        "elf_prince": {
+          "code": 5000401,
+          "name": "Elf Prince",
+          "name_vn": "Hoàng Tử Tinh Linh",
+          "color": "red",
+          "maxStar": 5
+        },
+        "lamp_sultan": {
+          "code": 5000402,
+          "name": "Lamp Sultan",
+          "name_vn": "Đèn Thần Sudan",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "genius_hacker": {
+          "code": 5000403,
+          "name": "Genius Hacker",
+          "name_vn": "Hacker Tối Thượng",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "cannon_girl": {
+      "code": 50000005,
+      "name": "Cannon Girl",
+      "name_vn": "Pháo Loli",
+      "baseSkills": [
+        10050101000,
+        10050201000,
+        10050301000
+      ],
+      "skins": {
+        "trainee_nurse": {
+          "code": 5000501,
+          "name": "Trainee Nurse",
+          "name_vn": "Y Tá Thực Tập",
+          "color": "red",
+          "maxStar": 5
+        },
+        "genius_doctor": {
+          "code": 5000502,
+          "name": "Genius Doctor",
+          "name_vn": "Bác Sĩ Thiên Tài",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "guns_n_roses": {
+          "code": 5000503,
+          "name": "Guns 'n' Roses",
+          "name_vn": "Súng & Hoa Hồng",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "malevolent_bloom": {
+          "code": 5000504,
+          "name": "Malevolent Bloom",
+          "name_vn": "Cuồng Hoa Nghiệp Hải",
+          "color": "colorful",
+          "maxStar": 5,
+          "requires": [
+            "trainee_nurse",
+            "genius_doctor",
+            "guns_n_roses"
+          ]
+        }
+      }
+    },
+    "redhood": {
+      "code": 50000006,
+      "name": "Redhood",
+      "name_vn": "Cô Bé Khăn Đỏ",
+      "baseSkills": [
+        10060101000,
+        10060201000,
+        10060301000
+      ]
+    },
+    "sherlock": {
+      "code": 50000007,
+      "name": "Sherlock",
+      "name_vn": "Sherlock",
+      "baseSkills": [
+        10070101000,
+        10070201000,
+        10070301000
+      ]
+    },
+    "metaman": {
+      "code": 50000008,
+      "name": "Metaman",
+      "name_vn": "Tôn Ngộ Không",
+      "baseSkills": [
+        10080101000,
+        10080201000,
+        10080301000
+      ],
+      "skins": {
+        "purgatory_lord": {
+          "code": 5000801,
+          "name": "Purgatory Lord",
+          "name_vn": "Ma Vương Ngục Tù",
+          "color": "red",
+          "maxStar": 5
+        },
+        "edgewalker": {
+          "code": 5000802,
+          "name": "Edgewalker",
+          "name_vn": "Kẻ Lãng Du",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "demon_detective": {
+          "code": 5000803,
+          "name": "Demon Detective",
+          "name_vn": "Thám Tử Ác Ma",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "laserman": {
+      "code": 50000009,
+      "name": "Laserman",
+      "name_vn": "Hiệp Sĩ Sấm Sét",
+      "baseSkills": [
+        10090101000,
+        10090201000,
+        10090301000
+      ],
+      "skins": {
+        "steam_warrior": {
+          "code": 5000901,
+          "name": "Steam Warrior",
+          "name_vn": "Chiến Thần Hơi Nước",
+          "color": "red",
+          "maxStar": 5
+        },
+        "future_cop": {
+          "code": 5000902,
+          "name": "Future Cop",
+          "name_vn": "Cảnh Sát Tương Lai",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "starship_master": {
+          "code": 5000903,
+          "name": "Starship Master",
+          "name_vn": "Thiên Vương Vũ Trụ",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "cosmic_commander": {
+          "code": 5000904,
+          "name": "Cosmic Commander",
+          "name_vn": "Thống Soái Thiên Không",
+          "color": "colorful",
+          "maxStar": 5,
+          "requires": [
+            "steam_warrior",
+            "future_cop",
+            "starship_master"
+          ]
+        }
+      }
+    },
+    "plague_doctor": {
+      "code": 50000010,
+      "name": "Plague Doctor",
+      "name_vn": "Bác Sĩ Dịch Bệnh",
+      "baseSkills": [
+        10100101000,
+        10100201000,
+        10100301000
+      ]
+    },
+    "evil_bane": {
+      "code": 50000011,
+      "name": "Evil Bane",
+      "name_vn": "Linh Đồng Tà Ác",
+      "baseSkills": [
+        10110101000,
+        10110201000,
+        10110301000
+      ]
+    },
+    "double_faces": {
+      "code": 50000012,
+      "name": "Double Faces",
+      "name_vn": "Kẻ Hai Mặt",
+      "baseSkills": [
+        10120101000,
+        10120201000,
+        10120301000
+      ]
+    },
+    "lu_bu": {
       "code": 50000013,
-      "skins": { "pf1": 5001301, "pf2": 5001302, "pf3": 5001303 }
+      "name": "Lu Bu",
+      "name_vn": "Hắc Lữ Bố",
+      "baseSkills": [
+        10130101000,
+        10130201000,
+        10130301000
+      ],
+      "skins": {
+        "ocean_master": {
+          "code": 5001301,
+          "name": "Ocean Master",
+          "name_vn": "Chúa Tể Biển Sâu",
+          "color": "red",
+          "maxStar": 5
+        },
+        "mech_dragon": {
+          "code": 5001302,
+          "name": "Mech Dragon",
+          "name_vn": "Long Vương Thiết Giáp",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "force_of_hell": {
+          "code": 5001303,
+          "name": "Force of Hell",
+          "name_vn": "Võ Thần Địa Ngục",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
     },
-    "venom": {
-      "code": 50000002,
-      "skins": { "pf1": 5000201, "pf2": 5000202, "pf3": 5000203, "colorful": 5000204 },
-      "baseSkills": [10020101000, 10020201000, 10020301000]
+    "pyrogon_mech": {
+      "code": 50000014,
+      "name": "Pyrogon Mech",
+      "name_vn": "Rồng Máy",
+      "baseSkills": [
+        10140101000,
+        10140201000,
+        10140301000
+      ],
+      "skins": {
+        "lotus_matix": {
+          "code": 5001401,
+          "name": "Lotus Matix",
+          "name_vn": "Máy Sen Đỏ",
+          "color": "red",
+          "maxStar": 5
+        },
+        "pyro_matix": {
+          "code": 5001402,
+          "name": "Pyro Matix",
+          "name_vn": "Viêm Thần",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "force_of_dawn": {
+          "code": 5001403,
+          "name": "Force of Dawn",
+          "name_vn": "Chiến Thần Ban Mai",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "armored_dragonarch": {
+          "code": 5001404,
+          "name": "Armored Dragonarch",
+          "name_vn": "Giáp Đế Hoàng Long",
+          "color": "colorful",
+          "maxStar": 5,
+          "requires": [
+            "lotus_matix",
+            "pyro_matix",
+            "force_of_dawn"
+          ]
+        }
+      }
+    },
+    "blue_giant": {
+      "code": 50000015,
+      "name": "Blue Giant",
+      "name_vn": "Khổng Lồ Xanh",
+      "baseSkills": [
+        10150101000,
+        10150201000,
+        10150301000
+      ],
+      "skins": {
+        "wrestling_champion": {
+          "code": 5001501,
+          "name": "Wrestling Champion",
+          "name_vn": "Quán Quân Đấu Vật",
+          "color": "red",
+          "maxStar": 5
+        },
+        "realm_traveler": {
+          "code": 5001502,
+          "name": "Realm Traveler",
+          "name_vn": "Ma Nhân Không Gian",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "wave_breaker": {
+          "code": 5001503,
+          "name": "Wave Breaker",
+          "name_vn": "Bá Chủ Sóng Biển",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "pinocchio": {
+      "code": 50000016,
+      "name": "Pinocchio",
+      "name_vn": "Pinocchio",
+      "baseSkills": [
+        10160101000,
+        10160201000,
+        10160301000
+      ]
+    },
+    "reaper": {
+      "code": 50000017,
+      "name": "Reaper",
+      "name_vn": "U Minh Thần",
+      "baseSkills": [
+        10170101000,
+        10170201000
+      ]
+    },
+    "jinx": {
+      "code": 50000018,
+      "name": "Jinx",
+      "name_vn": "Kẻ Xui Xẻo",
+      "baseSkills": [
+        10180101000,
+        10180201000
+      ]
+    },
+    "mad_alice": {
+      "code": 50000019,
+      "name": "Mad Alice",
+      "name_vn": "Alice",
+      "baseSkills": [
+        10190101000,
+        10190201000,
+        10190301000
+      ],
+      "skins": {
+        "idol_sweetheart": {
+          "code": 5001901,
+          "name": "Idol Sweetheart",
+          "name_vn": "Idol Ngọt Ngào",
+          "color": "red",
+          "maxStar": 5
+        },
+        "celestial_party": {
+          "code": 5001902,
+          "name": "Celestial Party",
+          "name_vn": "Tiệc Trà Xứ Tiên",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "undead_queen": {
+          "code": 5001903,
+          "name": "Undead Queen",
+          "name_vn": "Nữ Hoàng Bất Tử",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "drillmaster": {
+      "code": 50000020,
+      "name": "Drillmaster",
+      "name_vn": "Khoan Điện",
+      "baseSkills": [
+        10200101000,
+        10200201000
+      ]
+    },
+    "scarecrow": {
+      "code": 50000021,
+      "name": "Scarecrow",
+      "name_vn": "Bù Nhìn",
+      "baseSkills": [
+        10210101000,
+        10210201000,
+        10210301000
+      ]
+    },
+    "oni_samurai": {
+      "code": 50000022,
+      "name": "Oni Samurai",
+      "name_vn": "Hắc Võ Sĩ",
+      "baseSkills": [
+        10220101000,
+        10220201000,
+        10220301000
+      ]
+    },
+    "ghost_captain": {
+      "code": 50000023,
+      "name": "Ghost Captain",
+      "name_vn": "Thuyền Trưởng U Ám",
+      "baseSkills": [
+        10230101000,
+        10230201000,
+        10230301000
+      ],
+      "skins": {
+        "wild_vacation": {
+          "code": 5002301,
+          "name": "Wild Vacation",
+          "name_vn": "Ngày Nghỉ Thác Loạn",
+          "color": "red",
+          "maxStar": 5
+        },
+        "golden_cruise": {
+          "code": 5002302,
+          "name": "Golden Cruise",
+          "name_vn": "Đường Vàng",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "metallic_rave": {
+          "code": 5002303,
+          "name": "Metallic Rave",
+          "name_vn": "Cơn Sốt Kim Loại",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "count_dracula": {
+      "code": 50000024,
+      "name": "Count Dracula",
+      "name_vn": "Bá Tước Kì Bí",
+      "baseSkills": [
+        10240101000,
+        10240201000,
+        10240301000
+      ]
+    },
+    "young_mage": {
+      "code": 50000025,
+      "name": "Young Mage",
+      "name_vn": "Pháp Sư Nhí",
+      "baseSkills": [
+        10250101000,
+        10250201000
+      ]
+    },
+    "archangel": {
+      "code": 50000026,
+      "name": "Archangel",
+      "name_vn": "Thiên Sứ",
+      "baseSkills": [
+        10260101000,
+        10260201000,
+        10260301000
+      ],
+      "skins": {
+        "celestial_presence": {
+          "code": 5002601,
+          "name": "Celestial Presence",
+          "name_vn": "Thần Linh Tiên Cảnh",
+          "color": "red",
+          "maxStar": 5
+        },
+        "crescent_seer": {
+          "code": 5002602,
+          "name": "Crescent Seer",
+          "name_vn": "Tiên Tri Ám Nguyệt",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "dream_idol": {
+          "code": 5002603,
+          "name": "Dream Idol",
+          "name_vn": "Idol Mộng Ảo",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "medusa": {
+      "code": 50000027,
+      "name": "Medusa",
+      "name_vn": "Người Đá",
+      "baseSkills": [
+        10270101000,
+        10270201000,
+        10270301000
+      ]
+    },
+    "ruins_hunter": {
+      "code": 50000028,
+      "name": "Ruins Hunter",
+      "name_vn": "Thợ Săn Phế Tích",
+      "baseSkills": [
+        10280101000,
+        10280201000,
+        10280301000
+      ]
+    },
+    "hellord": {
+      "code": 50000029,
+      "name": "Hellord",
+      "name_vn": "Hades",
+      "baseSkills": [
+        10290101000,
+        10290201000,
+        10290301000
+      ]
+    },
+    "bride_wraith": {
+      "code": 50000030,
+      "name": "Bride Wraith",
+      "name_vn": "Cô Dâu Linh Dị",
+      "baseSkills": [
+        10300101000,
+        10300201000,
+        10300301000
+      ],
+      "skins": {
+        "modern_songstress": {
+          "code": 5003001,
+          "name": "Modern Songstress",
+          "name_vn": "Ca Sĩ Hiện Đại",
+          "color": "red",
+          "maxStar": 5
+        },
+        "cleopatra": {
+          "code": 5003002,
+          "name": "Cleopatra",
+          "name_vn": "Nữ Hoàng Ai Cập",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "dessert_princess": {
+          "code": 5003003,
+          "name": "Dessert Princess",
+          "name_vn": "Quà Kỳ Duyên",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "joker": {
+      "code": 50000031,
+      "name": "JOKER",
+      "name_vn": "JOKER",
+      "baseSkills": [
+        10310101000,
+        10310201000,
+        10310301000
+      ],
+      "skins": {
+        "master_magician": {
+          "code": 5003101,
+          "name": "Master Magician",
+          "name_vn": "Bậc Thầy Ma Thuật",
+          "color": "red",
+          "maxStar": 5
+        },
+        "cyber_star": {
+          "code": 5003102,
+          "name": "Cyber Star",
+          "name_vn": "Siêu Sao Cyber",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "magic_dean": {
+          "code": 5003103,
+          "name": "Magic Dean",
+          "name_vn": "Hiệu Trưởng Ma",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "nocturnal_burglar": {
+          "code": 5003104,
+          "name": "Nocturnal Burglar",
+          "name_vn": "Đạo Chích Đêm Đen",
+          "color": "colorful",
+          "maxStar": 5,
+          "requires": [
+            "master_magician",
+            "cyber_star",
+            "magic_dean"
+          ]
+        }
+      }
+    },
+    "thundermaster": {
+      "code": 50000032,
+      "name": "Thundermaster",
+      "name_vn": "Lôi Thần Kiếm Quang",
+      "baseSkills": [
+        10320101000,
+        10320201000,
+        10320301000
+      ],
+      "skins": {
+        "perfect_holiday": {
+          "code": 5003201,
+          "name": "Perfect Holiday",
+          "name_vn": "Kỳ Nghỉ Hoàn Hảo",
+          "color": "red",
+          "maxStar": 5
+        },
+        "all_time_best": {
+          "code": 5003202,
+          "name": "All Time Best",
+          "name_vn": "Lịch Sử Lẫy Lừng",
+          "color": "gold",
+          "maxStar": 5
+        },
+        "alien_conqueror": {
+          "code": 5003203,
+          "name": "Alien Conqueror",
+          "name_vn": "Chinh Phục UFO",
+          "color": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "strawhat": {
+      "code": 50000033,
+      "name": "Strawhat",
+      "name_vn": "Vua Mũ Rơm",
+      "baseSkills": [
+        10330101000,
+        10330201000
+      ]
+    },
+    "twin_gunner": {
+      "code": 50000034,
+      "name": "Twin Gunner",
+      "name_vn": "Nữ Cảnh Sát",
+      "baseSkills": [
+        10340101000,
+        10340201000
+      ]
+    },
+    "ghoul": {
+      "code": 50000035,
+      "name": "Ghoul",
+      "name_vn": "Yêu Dị",
+      "baseSkills": [
+        10350101000,
+        10350201000
+      ]
+    },
+    "stapler_girl": {
+      "code": 50000036,
+      "name": "Stapler Girl",
+      "name_vn": "Cô Gái Dập Ghim",
+      "baseSkills": [
+        10360101000,
+        10360201000
+      ]
     }
   },
   "traps": {
-    "demon_spikes": { "code": 1, "level": 1, "star": 3 },
-    "lucky_cannon": { "code": 7, "level": 10, "star": 10 },
-    "terminal_soldier": { "code": 9, "level": 10, "star": 10 }
+    "demon_spike": {
+      "code": 1,
+      "name": "Demon Spike",
+      "name_vn": "Gai Đất Ác Quỷ",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "molten_furnace": {
+      "code": 2,
+      "name": "Molten Furnace",
+      "name_vn": "Lò Lửa Thiêng",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "lethal_fence": {
+      "code": 3,
+      "name": "Lethal Fence",
+      "name_vn": "Lưới Điện Tử Thần",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "blood_hammer": {
+      "code": 4,
+      "name": "Blood Hammer",
+      "name_vn": "Búa Tạ Đẫm Huyết",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "iron_fist": {
+      "code": 5,
+      "name": "Iron Fist",
+      "name_vn": "Vua Boxing Bất Bại",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "penguin_rex": {
+      "code": 6,
+      "name": "Penguin Rex",
+      "name_vn": "Vua Cánh Cụt",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "lucky_firecracker": {
+      "code": 7,
+      "name": "Lucky Firecracker",
+      "name_vn": "Pháo May Mắn",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "haunted_claw": {
+      "code": 8,
+      "name": "Haunted Claw",
+      "name_vn": "Máy Gắp Búp Bê",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "doomsday_cyborg": {
+      "code": 9,
+      "name": "Doomsday Cyborg",
+      "name_vn": "Lính Máy Tận Thế",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "calamity_altar": {
+      "code": 10,
+      "name": "Calamity Altar",
+      "name_vn": "Tế Đàn Tai Ương",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "metarooster": {
+      "code": 11,
+      "name": "Metarooster",
+      "name_vn": "Anh Hai Gà",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "caduceus": {
+      "code": 12,
+      "name": "Caduceus",
+      "name_vn": "Trượng Thương Thần",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "mater_dolorosa": {
+      "code": 13,
+      "name": "Mater Dolorosa",
+      "name_vn": "Đức Mẹ Sám Hối",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "the_scream": {
+      "code": 14,
+      "name": "The Scream",
+      "name_vn": "The Scream",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "glutton_hotpot": {
+      "code": 15,
+      "name": "Glutton Hotpot",
+      "name_vn": "Lẩu Thực Thần",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "conjuring_banner": {
+      "code": 16,
+      "name": "Conjuring Banner",
+      "name_vn": "Phướn Gọi Hồn",
+      "maxLevel": 100,
+      "maxStar": 10
+    },
+    "phantom_mirror": {
+      "code": 17,
+      "name": "Phantom Mirror",
+      "name_vn": "Gương Ma U Ám",
+      "maxLevel": 100,
+      "maxStar": 10
+    }
+  },
+  "pets": {
+    "alien_critter": {
+      "code": 10001,
+      "name": "Alien Critter",
+      "name_vn": "Giun Cát Xa Lạ",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "colossal_ape": {
+      "code": 10002,
+      "name": "Colossal Ape",
+      "name_vn": "King Kong",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "titan_mammoth": {
+      "code": 10003,
+      "name": "Titan Mammoth",
+      "name_vn": "Ma Mút Titan",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "dreamweaver_spider": {
+      "code": 10004,
+      "name": "Dreamweaver Spider",
+      "name_vn": "Nhện Mẹ Dệt Mộng",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "scavenger_kraken": {
+      "code": 10005,
+      "name": "Scavenger Kraken",
+      "name_vn": "Mẫu Cá Côn",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "storm_griffin": {
+      "code": 10006,
+      "name": "Storm Griffin",
+      "name_vn": "Điểu Sư Bão Tố",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "wings_of_death": {
+      "code": 10007,
+      "name": "Wings of Death",
+      "name_vn": "Cánh Tử Thần",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "cyanic_tyrant": {
+      "code": 10008,
+      "name": "Cyanic Tyrant",
+      "name_vn": "Bạo Chúa Lửa Xanh",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "raging_wyvern": {
+      "code": 10009,
+      "name": "Raging Wyvern",
+      "name_vn": "Xích Lân Rực Lửa",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "celestial_genesis": {
+      "code": 10011,
+      "name": "Celestial Genesis",
+      "name_vn": "Khởi Nguyên Sáng Thế",
+      "maxLevel": 50,
+      "maxStar": 5
+    },
+    "sacred_blood_winged_wyrm": {
+      "code": 10012,
+      "name": "Sacred Blood Winged Wyrm",
+      "name_vn": "Giao Long Huyết Thánh",
+      "maxLevel": 50,
+      "maxStar": 5
+    }
+  },
+  "spells": {
+    "sword_radiance": {
+      "code": 1,
+      "name": "Sword Radiance",
+      "name_vn": "Kiếm Thánh Ánh Sáng",
+      "maxStar": 10
+    },
+    "hellish_flame": {
+      "code": 2,
+      "name": "Hellish Flame",
+      "name_vn": "Tên Lửa Địa Ngục",
+      "maxStar": 10
+    },
+    "machine_fixer": {
+      "code": 3,
+      "name": "Machine Fixer",
+      "name_vn": "Sửa Chữa Người Máy",
+      "maxStar": 10
+    },
+    "wilting_breath": {
+      "code": 4,
+      "name": "Wilting Breath",
+      "name_vn": "Hơi Thở Héo Tàn",
+      "maxStar": 10
+    },
+    "flash_bomb": {
+      "code": 5,
+      "name": "Flash Bomb",
+      "name_vn": "Lựu Đạn Ánh Sáng",
+      "maxStar": 10
+    },
+    "satellite_laser": {
+      "code": 6,
+      "name": "Satellite Laser",
+      "name_vn": "Laser Vệ Tinh",
+      "maxStar": 10
+    }
+  },
+  "buildings": {
+    "door": {
+      "buildType": 1,
+      "skins": {
+        "default_door": {
+          "skinId": 10000,
+          "name": "Default Door",
+          "name_vn": "Cửa Khởi Đầu",
+          "color": "default",
+          "slot": "none",
+          "maxStar": 1,
+          "default": true
+        },
+        "ironfist_door": {
+          "skinId": 10001,
+          "name": "Ironfist Door",
+          "name_vn": "Cửa Thiết Quyền",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "thunder_door": {
+          "skinId": 10002,
+          "name": "Thunder Door",
+          "name_vn": "Cửa Sấm Sét",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "infernal_door": {
+          "skinId": 10003,
+          "name": "Infernal Door",
+          "name_vn": "Cửa Lửa Trời",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "dagger_door": {
+          "skinId": 10004,
+          "name": "Dagger Door",
+          "name_vn": "Cửa Sát Thủ",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "pharaoh_door": {
+          "skinId": 10005,
+          "name": "Pharaoh Door",
+          "name_vn": "Cửa Pharaoh",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "electro_door": {
+          "skinId": 10006,
+          "name": "Electro Door",
+          "name_vn": "Cửa Nhạc Điện Tử",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "sanguine_empire": {
+          "skinId": 10007,
+          "name": "Sanguine Empire",
+          "name_vn": "Triều Đại huyết",
+          "color": "gold",
+          "slot": "special",
+          "maxStar": 1
+        },
+        "nightmare_shark": {
+          "skinId": 10008,
+          "name": "Nightmare Shark",
+          "name_vn": "Cá Mập Ác Mộng",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "aureate_domain": {
+          "skinId": 10009,
+          "name": "Aureate Domain",
+          "name_vn": "Thánh Địa Lá Vàng",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "grand_circus": {
+          "skinId": 10010,
+          "name": "Grand Circus",
+          "name_vn": "Xiếc Thú Hấp Dẫn",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "glorious_reverie": {
+          "skinId": 10011,
+          "name": "Glorious Reverie",
+          "name_vn": "Thánh Huy Thiên Mộng",
+          "color": "colorful",
+          "slot": "gold",
+          "maxStar": 5,
+          "requires": [
+            "pharaoh_door",
+            "nightmare_shark",
+            "aureate_domain"
+          ]
+        },
+        "steam_fort": {
+          "skinId": 10012,
+          "name": "Steam Fort",
+          "name_vn": "Pháo Đài Hơi Nước",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "x": {
+          "skinId": 10013,
+          "name": "新彩门",
+          "name_vn": "新彩门",
+          "color": "colorful",
+          "slot": "gold",
+          "maxStar": 5,
+          "requires": [
+            "ironfist_door",
+            "aureate_domain",
+            "steam_fort"
+          ]
+        }
+      }
+    },
+    "bed": {
+      "buildType": 2,
+      "skins": {
+        "simple_bed": {
+          "skinId": 20000,
+          "name": "Simple Bed",
+          "name_vn": "Giường Gỗ",
+          "color": "default",
+          "slot": "none",
+          "maxStar": 1,
+          "default": true
+        },
+        "fortune_bed": {
+          "skinId": 20001,
+          "name": "Fortune Bed",
+          "name_vn": "Giường Sinh Lời",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "greed_bed": {
+          "skinId": 20002,
+          "name": "Greed Bed",
+          "name_vn": "Giường Ma Tham Lam",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "malice_bed": {
+          "skinId": 20003,
+          "name": "Malice Bed",
+          "name_vn": "Giường Tà Thần",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "gilt_bed": {
+          "skinId": 20004,
+          "name": "Gilt Bed",
+          "name_vn": "Giường Kho Báu",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "aquatic_bed": {
+          "skinId": 20005,
+          "name": "Aquatic Bed",
+          "name_vn": "Giường Chiến",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "demon_coffin": {
+          "skinId": 20006,
+          "name": "Demon Coffin",
+          "name_vn": "Quan Tài Vua Quỷ",
+          "color": "gold",
+          "slot": "special",
+          "maxStar": 1
+        },
+        "snowfall_dream": {
+          "skinId": 20007,
+          "name": "Snowfall Dream",
+          "name_vn": "Giấc Mơ Tuyết",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "riot_race": {
+          "skinId": 20008,
+          "name": "Riot Race",
+          "name_vn": "Tay Lái Rực Cháy",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "abyssal_serpent": {
+          "skinId": 20009,
+          "name": "Abyssal Serpent",
+          "name_vn": "Giao Nhân Biển Động",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "gold_crowned_lion": {
+          "skinId": 20010,
+          "name": "Gold-Crowned Lion",
+          "name_vn": "Kim Miện Đế Sư",
+          "color": "colorful",
+          "slot": "gold",
+          "maxStar": 5,
+          "requires": [
+            "greed_bed",
+            "snowfall_dream",
+            "riot_race"
+          ]
+        },
+        "phantom_manor": {
+          "skinId": 20011,
+          "name": "Phantom Manor",
+          "name_vn": "Trang Viên U Ám",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "x": {
+          "skinId": 20012,
+          "name": "新彩床",
+          "name_vn": "新彩床",
+          "color": "colorful",
+          "slot": "gold",
+          "maxStar": 5,
+          "requires": [
+            "aquatic_bed",
+            "abyssal_serpent",
+            "phantom_manor"
+          ]
+        }
+      }
+    },
+    "generator": {
+      "buildType": 3,
+      "skins": {
+        "default_generator": {
+          "skinId": 30000,
+          "name": "Default Generator",
+          "name_vn": "Máy Phát Điện Mặc Định",
+          "color": "default",
+          "slot": "none",
+          "maxStar": 1,
+          "default": true
+        },
+        "sweet_home": {
+          "skinId": 30001,
+          "name": "Sweet Home",
+          "name_vn": "Công Viên Ngọt Ngào",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "endless_banquet": {
+          "skinId": 30002,
+          "name": "Endless Banquet",
+          "name_vn": "Yến Tiệc Bất Tận",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "rodent_speed": {
+          "skinId": 30003,
+          "name": "Rodent Speed",
+          "name_vn": "Thần Chuột Thời Gian",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "cyber_rat": {
+          "skinId": 30004,
+          "name": "Cyber Rat",
+          "name_vn": "Chuột Máy Cyber",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        }
+      }
+    },
+    "cat": {
+      "buildType": 4,
+      "skins": {
+        "default_fortune_cat": {
+          "skinId": 40000,
+          "name": "Default Fortune Cat",
+          "name_vn": "Mèo Chiêu Tài Mặc Định",
+          "color": "default",
+          "slot": "none",
+          "maxStar": 1,
+          "default": true
+        },
+        "almighty_kitten": {
+          "skinId": 40001,
+          "name": "Almighty Kitten",
+          "name_vn": "Miêu Thần Giá Đáo",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "feline_firework": {
+          "skinId": 40002,
+          "name": "Feline Firework",
+          "name_vn": "Mèo Lễ Hội",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "fishing_master": {
+          "skinId": 40003,
+          "name": "Fishing Master",
+          "name_vn": "Mèo Câu Cá",
+          "color": "red",
+          "slot": "red",
+          "maxStar": 5
+        },
+        "raving_kitten": {
+          "skinId": 40004,
+          "name": "Raving Kitten",
+          "name_vn": "Mèo DJ",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        }
+      }
+    }
   }
 }

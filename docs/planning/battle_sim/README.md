@@ -31,7 +31,7 @@ mục tiêu này, không phải đích đến.
 
 ## Lộ trình mốc B (simulator có hình, cách ly)
 
-1. ~~Mirror asset battle về local, serve tĩnh~~: **xong** 2026-11-10, gồm `battle_sim/mirror.js`
+1. ~~Mirror asset battle về local, serve tĩnh~~: **xong** 2026-11-10, gồm `battle_sim/scripts/mirror.js`
    và `serve.js`: 587MB, khớp từng byte với host (chi tiết trong `battle_sim/README.md`).
    Chưa biết file nào thật sự dùng; tới bước 2–3 thì đọc `misses.log` để biết thiếu gì, rồi
    tính chuyện cắt bớt.

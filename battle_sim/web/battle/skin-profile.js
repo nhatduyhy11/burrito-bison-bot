@@ -33,7 +33,7 @@
       if (typeof name !== "string" || !catalog || !Object.hasOwn(catalog, name)) {
         throw new Error(`Unknown skin ${name} for hero ${hero.code}`);
       }
-      return catalog[name];
+      return catalog[name].code;
     };
     if (!ownedSkins || typeof ownedSkins !== "object" || Array.isArray(ownedSkins)) {
       throw new Error("ownedSkins must map skin names to star counts");

@@ -1,11 +1,14 @@
 {
   "map": { "mode": "campaign", "stage": 66 },
   "heroes": [
-    { "name": "hanuman", "skin": "colorful", "star": 1 },
+    { "name": "hanuman", "skin": "supreme_thunderlord", "star": 1 },
     "archangel",
     "frosthealer",
-    "mage_king",
-    { "name": "venom", "skin": "colorful", "star": 1 }
+    "archmage",
+    { "name": "spiker", "skin": "sanguine_landing", "star": 1 }
   ],
-  "traps": ["demon_spikes", "lucky_cannon"]
+  "traps": [
+    { "name": "demon_spike", "level": 1, "star": 3 },
+    { "name": "lucky_firecracker", "level": 10, "star": 10 }
+  ]
 }

@@ -20,7 +20,7 @@ chạy `snapshot.js` trước khi capture trận muốn replay. Bundle hoặc ma
 thì replay báo lỗi, không chạy với bộ file sai.
 
 ```bash
-node battle_sim/snapshot.js
+node battle_sim/scripts/snapshot.js
 ```
 
 Chỉ dùng HTTP, không cần browser: đọc `index.html` (`ClientVer`) → `manifest.<ver>.js` →
@@ -36,11 +36,11 @@ Chuyển sang máy khác: các cache trên đều bị gitignore. Cần copy gì
 ## Mirror asset (mốc B, bước 1)
 
 ```bash
-node battle_sim/mirror.js plan
+node battle_sim/scripts/mirror.js plan
 ```
 
 ```bash
-node battle_sim/mirror.js fetch
+node battle_sim/scripts/mirror.js fetch
 ```
 
 ```bash
@@ -200,8 +200,15 @@ uv run python battle_sim/sandbox.py --battle 6af2ab8a2f05ea3f58336962 --play --s
   [profile-dict.json](web/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
   trong capture. Hero khác dùng chỉ số cơ bản level 1 và `baseSkills` từ dict.
   Xem [cấu hình skin](PROFILE_SKINS.md) để chọn skin, số sao và các skin yêu cầu.
-  `traps` thay danh sách trap (tối đa 3), với skill tra từ sao trong config game.
-  Bỏ một trường để giữ giá trị từ capture. Pet và hero support hiện lấy từ capture.
+  `traps` thay danh sách trap (tối đa 3): tên (level 1, 1 sao) hoặc
+  `{ "name", "level", "star" }`, skill tra từ sao trong config game.
+  Bỏ một trường để giữ giá trị từ capture. Pet, spell, skin building và hero support hiện
+  vẫn lấy từ capture (dict đã có danh sách, profile chưa áp dụng).
+- `profile-dict.json` được sinh từ config game bằng `node battle_sim/scripts/gen_profile_dict.js
+  [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
+  lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Gồm `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
+  (`daoists`), `buildings` (door, bed, generator, cat, kèm skin), mỗi mục có `maxLevel` /
+  `maxStar`. Không sửa tay; chạy lại script khi đổi config.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
   `BattleResultViewAdventure` vẫn hiện, chỉ không có reward. Script lưu trận vừa chơi vào
   `.tmp/battle_sim/played/played-<uuid>-<ts>.jsonl` (`StartGameP` + `QuitRoom` kèm op log, cùng
@@ -238,8 +245,9 @@ So sánh:
 ## Cấu trúc
 
 - `replay.js` — replay + so sánh, 1 hoặc nhiều trận.
-- `snapshot.js` — cache code bundle + map của deploy đang live.
-- `mirror.js` / `serve.js` — mirror asset battle, serve local offline (`/sim.html`,
+- `scripts/` — công cụ chạy riêng: `snapshot.js` (cache code bundle + map của deploy đang
+  live), `mirror.js` (mirror asset battle), `gen_profile_dict.js` (sinh `profile-dict.json`).
+- `serve.js` — serve mirror local offline (`/sim.html`,
   `/__sim/*` = `web/`, `/__sim_config/*` = config cache).
 - `sandbox.py` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.

@@ -1,7 +1,7 @@
 "use strict";
 // Mirror the live deploy's battle assets to disk, same URL layout as the game host.
-//   node battle_sim/mirror.js plan      # list what would be fetched (counts per group)
-//   node battle_sim/mirror.js fetch     # download into .tmp/battle_sim/mirror/<ClientVer>/
+//   node battle_sim/scripts/mirror.js plan      # list what would be fetched (counts per group)
+//   node battle_sim/scripts/mirror.js fetch     # download into .tmp/battle_sim/mirror/<ClientVer>/
 // Public static files only (game host /, /assets, /ext-res), anonymous GETs, no login,
 // nothing sent to game servers. Already-present files are skipped, so re-running resumes.
 //
@@ -10,10 +10,10 @@
 // Natives that resolve to nothing go to missing.json; serve.js logs any 404 at runtime.
 const fs = require("fs");
 const path = require("path");
-const http = require("./lib/http");
-const cocos = require("./lib/cocos_bundle");
-const { GAME, liveDeploy } = require("./lib/deploy");
-const versions = require("./lib/versions");
+const http = require("../lib/http");
+const cocos = require("../lib/cocos_bundle");
+const { GAME, liveDeploy } = require("../lib/deploy");
+const versions = require("../lib/versions");
 
 const BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ", "hangup", "summonCreature", "hero"];
 // ext-res: battle models + frames + data, plus the shuzhi/ image folders the battle UI loads

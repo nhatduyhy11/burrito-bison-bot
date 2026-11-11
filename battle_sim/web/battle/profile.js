@@ -1,5 +1,5 @@
 // Local playtest profile (?play&profile): map, heroes and traps from /__sim/active-profile.json,
-// resolved by name through profile-dict.json. Hero skins: skin-profile.js.
+// resolved by name through profile-dict.json (scripts/gen_profile_dict.js). Hero skins: skin-profile.js.
 (function () {
   "use strict";
   const SimBattle = (window.SimBattle = window.SimBattle || {});
@@ -30,7 +30,7 @@
       const seen = new Set();
       return names.map((entry) => {
         const selection = typeof entry === "string" ? { name: entry } : entry;
-        const name = key === "heroes" || typeof entry === "string" ? selection?.name : undefined;
+        const name = selection?.name;
         if (typeof name !== "string" || !Object.hasOwn(catalog[key], name)) {
           throw new Error(`Unknown ${key} option: ${name}`);
         }
@@ -59,7 +59,8 @@
       player.heros = asList(heroes);
     }
     if (Object.hasOwn(profile, "traps")) {
-      const traps = choices("traps", 3).map(({ option: { code, level, star } }) => {
+      // A trap is a name (level 1, 1 star) or { name, level, star }.
+      const traps = choices("traps", 3).map(({ option: { code }, selection: { level = 1, star = 1 } }) => {
         const rank = M("OrganStarLO").get(code * 10000000 + star * 1000);
         const upgrade = M("OrganUpGradeLO").get(code * 10000 + level);
         if (!rank || !upgrade) throw new Error(`Invalid trap ${code} level ${level} / star ${star}`);

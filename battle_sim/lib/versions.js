@@ -9,9 +9,9 @@
 // Cache (.tmp/battle_sim/):
 //   bundles/index.<hash>.js                    main code bundle (also scans .tmp/bundle/main.*/)
 //   config/<configVersion>/{config,preload_config}.bin   fetched on demand
-//   maps/<mapVersion>/*.json                   Tiled maps + tilesets (written by snapshot.js)
+//   maps/<mapVersion>/*.json                   Tiled maps + tilesets (written by scripts/snapshot.js)
 // The CDN keeps old config versions, so configs are always fetchable. Old code bundles and
-// maps are only reachable while live, hence `snapshot.js` to cache each deploy.
+// maps are only reachable while live, hence `scripts/snapshot.js` to cache each deploy.
 const fs = require("fs");
 const path = require("path");
 const { download } = require("./http");
@@ -61,7 +61,7 @@ function findBundle(battleVersion) {
   if (idx[battleVersion]) return idx[battleVersion][0];
   const have = Object.keys(idx).join(", ") || "none";
   throw new Error(`no cached code bundle for battleVersion ${battleVersion} (cached: ${have}). ` +
-    "Run `node battle_sim/snapshot.js` while that version is live.");
+    "Run `node battle_sim/scripts/snapshot.js` while that version is live.");
 }
 
 async function ensureConfig(configVersion) {
@@ -83,7 +83,7 @@ function findMaps(mapVersion) {
   if (fs.existsSync(path.join(dir, "common.json"))) return dir;
   const have = listDir(path.join(CACHE, "maps")).join(", ") || "none";
   throw new Error(`no cached maps for mapVersion ${mapVersion} (cached: ${have}). ` +
-    "Run `node battle_sim/snapshot.js` while that version is live.");
+    "Run `node battle_sim/scripts/snapshot.js` while that version is live.");
 }
 
 // Sim constructor paths for a StartGameP; fetches the config if missing.
