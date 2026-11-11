@@ -12,6 +12,7 @@
       "code": 50000001,
       "name": "Hanuman",
       "name_vn": "Hanuman",
+      "color": "red",
       "baseSkills": [
         10010101000,
         10010201000,
@@ -57,6 +58,7 @@
       "code": 50000002,
       "name": "Spiker",
       "name_vn": "Gai Độc",
+      "color": "red",
       "baseSkills": [
         10020101000,
         10020201000,
@@ -102,6 +104,7 @@
       "code": 50000003,
       "name": "Frosthealer",
       "name_vn": "Pháp Sư Sương",
+      "color": "red",
       "baseSkills": [
         10030101000,
         10030201000,
@@ -135,6 +138,7 @@
       "code": 50000004,
       "name": "Archmage",
       "name_vn": "Vua Pháp Sư",
+      "color": "red",
       "baseSkills": [
         10040101000,
         10040201000,
@@ -168,6 +172,7 @@
       "code": 50000005,
       "name": "Cannon Girl",
       "name_vn": "Pháo Loli",
+      "color": "red",
       "baseSkills": [
         10050101000,
         10050201000,
@@ -213,6 +218,7 @@
       "code": 50000006,
       "name": "Redhood",
       "name_vn": "Cô Bé Khăn Đỏ",
+      "color": "orange",
       "baseSkills": [
         10060101000,
         10060201000,
@@ -223,6 +229,7 @@
       "code": 50000007,
       "name": "Sherlock",
       "name_vn": "Sherlock",
+      "color": "orange",
       "baseSkills": [
         10070101000,
         10070201000,
@@ -233,6 +240,7 @@
       "code": 50000008,
       "name": "Metaman",
       "name_vn": "Tôn Ngộ Không",
+      "color": "red",
       "baseSkills": [
         10080101000,
         10080201000,
@@ -266,6 +274,7 @@
       "code": 50000009,
       "name": "Laserman",
       "name_vn": "Hiệp Sĩ Sấm Sét",
+      "color": "red",
       "baseSkills": [
         10090101000,
         10090201000,
@@ -311,6 +320,7 @@
       "code": 50000010,
       "name": "Plague Doctor",
       "name_vn": "Bác Sĩ Dịch Bệnh",
+      "color": "orange",
       "baseSkills": [
         10100101000,
         10100201000,
@@ -321,6 +331,7 @@
       "code": 50000011,
       "name": "Evil Bane",
       "name_vn": "Linh Đồng Tà Ác",
+      "color": "orange",
       "baseSkills": [
         10110101000,
         10110201000,
@@ -331,6 +342,7 @@
       "code": 50000012,
       "name": "Double Faces",
       "name_vn": "Kẻ Hai Mặt",
+      "color": "orange",
       "baseSkills": [
         10120101000,
         10120201000,
@@ -341,6 +353,7 @@
       "code": 50000013,
       "name": "Lu Bu",
       "name_vn": "Hắc Lữ Bố",
+      "color": "red",
       "baseSkills": [
         10130101000,
         10130201000,
@@ -374,6 +387,7 @@
       "code": 50000014,
       "name": "Pyrogon Mech",
       "name_vn": "Rồng Máy",
+      "color": "red",
       "baseSkills": [
         10140101000,
         10140201000,
@@ -419,6 +433,7 @@
       "code": 50000015,
       "name": "Blue Giant",
       "name_vn": "Khổng Lồ Xanh",
+      "color": "red",
       "baseSkills": [
         10150101000,
         10150201000,
@@ -452,6 +467,7 @@
       "code": 50000016,
       "name": "Pinocchio",
       "name_vn": "Pinocchio",
+      "color": "orange",
       "baseSkills": [
         10160101000,
         10160201000,
@@ -462,6 +478,7 @@
       "code": 50000017,
       "name": "Reaper",
       "name_vn": "U Minh Thần",
+      "color": "purple",
       "baseSkills": [
         10170101000,
         10170201000
@@ -471,6 +488,7 @@
       "code": 50000018,
       "name": "Jinx",
       "name_vn": "Kẻ Xui Xẻo",
+      "color": "purple",
       "baseSkills": [
         10180101000,
         10180201000
@@ -480,6 +498,7 @@
       "code": 50000019,
       "name": "Mad Alice",
       "name_vn": "Alice",
+      "color": "red",
       "baseSkills": [
         10190101000,
         10190201000,
@@ -513,6 +532,7 @@
       "code": 50000020,
       "name": "Drillmaster",
       "name_vn": "Khoan Điện",
+      "color": "purple",
       "baseSkills": [
         10200101000,
         10200201000
@@ -522,6 +542,7 @@
       "code": 50000021,
       "name": "Scarecrow",
       "name_vn": "Bù Nhìn",
+      "color": "orange",
       "baseSkills": [
         10210101000,
         10210201000,
@@ -532,6 +553,7 @@
       "code": 50000022,
       "name": "Oni Samurai",
       "name_vn": "Hắc Võ Sĩ",
+      "color": "orange",
       "baseSkills": [
         10220101000,
         10220201000,
@@ -542,6 +564,7 @@
       "code": 50000023,
       "name": "Ghost Captain",
       "name_vn": "Thuyền Trưởng U Ám",
+      "color": "red",
       "baseSkills": [
         10230101000,
         10230201000,
@@ -575,6 +598,7 @@
       "code": 50000024,
       "name": "Count Dracula",
       "name_vn": "Bá Tước Kì Bí",
+      "color": "orange",
       "baseSkills": [
         10240101000,
         10240201000,
@@ -585,6 +609,7 @@
       "code": 50000025,
       "name": "Young Mage",
       "name_vn": "Pháp Sư Nhí",
+      "color": "purple",
       "baseSkills": [
         10250101000,
         10250201000
@@ -594,6 +619,7 @@
       "code": 50000026,
       "name": "Archangel",
       "name_vn": "Thiên Sứ",
+      "color": "red",
       "baseSkills": [
         10260101000,
         10260201000,
@@ -627,6 +653,7 @@
       "code": 50000027,
       "name": "Medusa",
       "name_vn": "Người Đá",
+      "color": "orange",
       "baseSkills": [
         10270101000,
         10270201000,
@@ -637,6 +664,7 @@
       "code": 50000028,
       "name": "Ruins Hunter",
       "name_vn": "Thợ Săn Phế Tích",
+      "color": "orange",
       "baseSkills": [
         10280101000,
         10280201000,
@@ -647,6 +675,7 @@
       "code": 50000029,
       "name": "Hellord",
       "name_vn": "Hades",
+      "color": "orange",
       "baseSkills": [
         10290101000,
         10290201000,
@@ -657,6 +686,7 @@
       "code": 50000030,
       "name": "Bride Wraith",
       "name_vn": "Cô Dâu Linh Dị",
+      "color": "red",
       "baseSkills": [
         10300101000,
         10300201000,
@@ -690,6 +720,7 @@
       "code": 50000031,
       "name": "JOKER",
       "name_vn": "JOKER",
+      "color": "red",
       "baseSkills": [
         10310101000,
         10310201000,
@@ -735,6 +766,7 @@
       "code": 50000032,
       "name": "Thundermaster",
       "name_vn": "Lôi Thần Kiếm Quang",
+      "color": "red",
       "baseSkills": [
         10320101000,
         10320201000,
@@ -768,6 +800,7 @@
       "code": 50000033,
       "name": "Strawhat",
       "name_vn": "Vua Mũ Rơm",
+      "color": "purple",
       "baseSkills": [
         10330101000,
         10330201000
@@ -777,6 +810,7 @@
       "code": 50000034,
       "name": "Twin Gunner",
       "name_vn": "Nữ Cảnh Sát",
+      "color": "purple",
       "baseSkills": [
         10340101000,
         10340201000
@@ -786,6 +820,7 @@
       "code": 50000035,
       "name": "Ghoul",
       "name_vn": "Yêu Dị",
+      "color": "purple",
       "baseSkills": [
         10350101000,
         10350201000
@@ -795,6 +830,7 @@
       "code": 50000036,
       "name": "Stapler Girl",
       "name_vn": "Cô Gái Dập Ghim",
+      "color": "purple",
       "baseSkills": [
         10360101000,
         10360201000
@@ -806,6 +842,7 @@
       "code": 1,
       "name": "Demon Spike",
       "name_vn": "Gai Đất Ác Quỷ",
+      "color": "purple",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -813,6 +850,7 @@
       "code": 2,
       "name": "Molten Furnace",
       "name_vn": "Lò Lửa Thiêng",
+      "color": "purple",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -820,6 +858,7 @@
       "code": 3,
       "name": "Lethal Fence",
       "name_vn": "Lưới Điện Tử Thần",
+      "color": "purple",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -827,6 +866,7 @@
       "code": 4,
       "name": "Blood Hammer",
       "name_vn": "Búa Tạ Đẫm Huyết",
+      "color": "orange",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -834,6 +874,7 @@
       "code": 5,
       "name": "Iron Fist",
       "name_vn": "Vua Boxing Bất Bại",
+      "color": "orange",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -841,6 +882,7 @@
       "code": 6,
       "name": "Penguin Rex",
       "name_vn": "Vua Cánh Cụt",
+      "color": "red",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -848,6 +890,7 @@
       "code": 7,
       "name": "Lucky Firecracker",
       "name_vn": "Pháo May Mắn",
+      "color": "red",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -855,6 +898,7 @@
       "code": 8,
       "name": "Haunted Claw",
       "name_vn": "Máy Gắp Búp Bê",
+      "color": "red",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -862,6 +906,7 @@
       "code": 9,
       "name": "Doomsday Cyborg",
       "name_vn": "Lính Máy Tận Thế",
+      "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -869,6 +914,7 @@
       "code": 10,
       "name": "Calamity Altar",
       "name_vn": "Tế Đàn Tai Ương",
+      "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -876,6 +922,7 @@
       "code": 11,
       "name": "Metarooster",
       "name_vn": "Anh Hai Gà",
+      "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -883,6 +930,7 @@
       "code": 12,
       "name": "Caduceus",
       "name_vn": "Trượng Thương Thần",
+      "color": "red",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -890,6 +938,7 @@
       "code": 13,
       "name": "Mater Dolorosa",
       "name_vn": "Đức Mẹ Sám Hối",
+      "color": "red",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -897,6 +946,7 @@
       "code": 14,
       "name": "The Scream",
       "name_vn": "The Scream",
+      "color": "red",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -904,6 +954,7 @@
       "code": 15,
       "name": "Glutton Hotpot",
       "name_vn": "Lẩu Thực Thần",
+      "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -911,6 +962,7 @@
       "code": 16,
       "name": "Conjuring Banner",
       "name_vn": "Phướn Gọi Hồn",
+      "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
     },
@@ -918,6 +970,7 @@
       "code": 17,
       "name": "Phantom Mirror",
       "name_vn": "Gương Ma U Ám",
+      "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
     }
@@ -927,6 +980,7 @@
       "code": 10001,
       "name": "Alien Critter",
       "name_vn": "Giun Cát Xa Lạ",
+      "color": "purple",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -934,6 +988,7 @@
       "code": 10002,
       "name": "Colossal Ape",
       "name_vn": "King Kong",
+      "color": "purple",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -941,6 +996,7 @@
       "code": 10003,
       "name": "Titan Mammoth",
       "name_vn": "Ma Mút Titan",
+      "color": "orange",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -948,6 +1004,7 @@
       "code": 10004,
       "name": "Dreamweaver Spider",
       "name_vn": "Nhện Mẹ Dệt Mộng",
+      "color": "orange",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -955,6 +1012,7 @@
       "code": 10005,
       "name": "Scavenger Kraken",
       "name_vn": "Mẫu Cá Côn",
+      "color": "red",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -962,6 +1020,7 @@
       "code": 10006,
       "name": "Storm Griffin",
       "name_vn": "Điểu Sư Bão Tố",
+      "color": "red",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -969,6 +1028,7 @@
       "code": 10007,
       "name": "Wings of Death",
       "name_vn": "Cánh Tử Thần",
+      "color": "gold",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -976,6 +1036,7 @@
       "code": 10008,
       "name": "Cyanic Tyrant",
       "name_vn": "Bạo Chúa Lửa Xanh",
+      "color": "gold",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -983,6 +1044,7 @@
       "code": 10009,
       "name": "Raging Wyvern",
       "name_vn": "Xích Lân Rực Lửa",
+      "color": "gold",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -990,6 +1052,7 @@
       "code": 10011,
       "name": "Celestial Genesis",
       "name_vn": "Khởi Nguyên Sáng Thế",
+      "color": "gold",
       "maxLevel": 50,
       "maxStar": 5
     },
@@ -997,6 +1060,7 @@
       "code": 10012,
       "name": "Sacred Blood Winged Wyrm",
       "name_vn": "Giao Long Huyết Thánh",
+      "color": "gold",
       "maxLevel": 50,
       "maxStar": 5
     }

@@ -227,7 +227,8 @@ uv run python battle_sim/sandbox.py --setup
 - `profile-dict.json` được sinh từ config game bằng `node battle_sim/scripts/gen_profile_dict.js
   [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
   lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Mục không có tên tiếng Anh dùng
-  key `id_<mã>` (ví dụ skin 7 màu `id_10013`). Gồm `maps.campaign` (khoảng stage), `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
+  key `id_<mã>` (ví dụ skin 7 màu `id_10013`). Hero, trap và pet có `color` là độ hiếm (viền thẻ trong game: `purple` 4, `orange` 5,
+  `red` 6, `gold` 7; spell không có). Gồm `maps.campaign` (khoảng stage), `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
   (`daoists`), `buildings` (door, bed, generator, cat, kèm skin), mỗi mục có `maxLevel` /
   `maxStar`. Không sửa tay; chạy lại script khi đổi config.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả

@@ -18,6 +18,8 @@ const LANG_BASE = "https://mg-sea-cdnres.bighost.games/sea/remoteConfig/sea/";
 const OUT = path.join(__dirname, "..", "web", "profile-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
 const SKIN_COLOR = { 4: "default", 6: "red", 7: "gold", 8: "colorful" };
+// Rarity = card border in game (HeroLO / OrganLO / SummonCreatureLO .color). Spells have no rarity tiers.
+const RARITY = { 4: "purple", 5: "orange", 6: "red", 7: "gold" };
 const BUILD_SLOT = { 0: "none", 1: "red", 2: "gold", 3: "special" };
 
 function download(url, file) {
@@ -86,16 +88,16 @@ async function main() {
         ...(requires.length ? { requires } : {}),
       };
     }
-    return [h.name, { code: h.code, name: h.name, name_vn: vn("HeroLO", h.code), baseSkills, ...(own.length ? { skins } : {}) }];
+    return [h.name, { code: h.code, name: h.name, name_vn: vn("HeroLO", h.code), color: RARITY[h.color] || h.color, baseSkills, ...(own.length ? { skins } : {}) }];
   }));
 
   const organLevel = maxBy(M("OrganUpGradeLO"), "level"), organStar = maxBy(M("OrganStarLO"), "star");
   const traps = keyed(rows(M("OrganLO")).sort((a, b) => a.code - b.code).map((o) => [o.name,
-    { code: o.code, name: o.name, name_vn: vn("OrganLO", o.code), maxLevel: organLevel.get(o.mecType) || 1, maxStar: organStar.get(o.mecType) || 1 }]));
+    { code: o.code, name: o.name, name_vn: vn("OrganLO", o.code), color: RARITY[o.color] || o.color, maxLevel: organLevel.get(o.mecType) || 1, maxStar: organStar.get(o.mecType) || 1 }]));
 
   const petLevel = maxBy(M("SummonCreatureUpGradeLO"), "level"), petStar = maxBy(M("SummonCreatureStarLO"), "star");
   const pets = keyed(rows(M("SummonCreatureLO")).sort((a, b) => a.code - b.code).map((p) => [p.name,
-    { code: p.code, name: p.name, name_vn: vn("SummonCreatureLO", p.code), maxLevel: petLevel.get(p.mecType) || 1, maxStar: petStar.get(p.mecType) || 1 }]));
+    { code: p.code, name: p.name, name_vn: vn("SummonCreatureLO", p.code), color: RARITY[p.color] || p.color, maxLevel: petLevel.get(p.mecType) || 1, maxStar: petStar.get(p.mecType) || 1 }]));
 
   const spellStar = maxBy(M("DaoistStarLO"), "star");
   const spells = keyed(rows(M("DaoistLO")).sort((a, b) => a.code - b.code).map((d) => [d.name,

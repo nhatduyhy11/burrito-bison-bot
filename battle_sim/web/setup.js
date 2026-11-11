@@ -18,6 +18,8 @@
   const HERO_SLOTS = { normal: 3, colorful: 1 };
   const COLOR_LABEL = { red: "đỏ", gold: "vàng", colorful: "7 màu", default: "mặc định", special: "loại 3" };
   const STORE_KEY = "battleSimSetup";
+  // Rarity groups in the hero / trap / pet pickers (card border in game), highest first. Spells have none.
+  const RARITY_GROUPS = [["gold", "Vàng"], ["red", "Đỏ"], ["orange", "Cam"], ["purple", "Tím"]];
 
   let dict, battles = [], state;
   const captures = new Map(); // uuid -> StartGameP
@@ -311,9 +313,17 @@
   }
 
   // options: [value, text, disabled?]
+  // options: [value, text, disabled?, group?]; consecutive options with a group go in one <optgroup>.
   function selectOf(options, value, onChange, attrs = {}) {
-    return el("select", { ...attrs, onchange: (e) => onChange(e.target.value) },
-      options.map(([key, text, disabled]) => el("option", { value: key, selected: key === value, disabled }, text)));
+    const children = [];
+    for (const [key, text, disabled, group] of options) {
+      const option = el("option", { value: key, selected: key === value, disabled }, text);
+      if (!group) { children.push(option); continue; }
+      let last = children[children.length - 1];
+      if (!last || last.tagName !== "OPTGROUP" || last.label !== group) children.push(last = el("optgroup", { label: group }));
+      last.append(option);
+    }
+    return el("select", { ...attrs, onchange: (e) => onChange(e.target.value) }, children);
   }
 
   function section(title, hint, enabled, onToggle, body) {
@@ -354,7 +364,11 @@
   }
 
   function nameOptions(group, chosen, current) {
-    return Object.entries(dict[group]).map(([key, item]) => [key, optionText(item), key !== current && chosen.includes(key)]);
+    const entries = Object.entries(dict[group]).map(([key, item]) => [key, optionText(item), key !== current && chosen.includes(key)]);
+    if (!entries.some(([key]) => dict[group][key].color)) return entries;
+    return RARITY_GROUPS.flatMap(([color, title]) => entries
+      .filter(([key]) => dict[group][key].color === color)
+      .map((entry) => [...entry, group === "heroes" && color === "red" ? `${title} (có skin)` : title]));
   }
 
   function addButton(group, make) {
@@ -542,7 +556,7 @@
 
   function wireSide() {
     $("battle").replaceChildren(...battles.map((b) => el("option", { value: b.uuid },
-      `Stage ${b.level} · ${b.result ?? "?"} · ${b.ops} op · ${b.uuid.slice(0, 8)}…`)));
+      `${b.uuid.slice(0, 8)}… · capture ở Stage ${b.level} · ${b.ops} op`)));
     if (!battles.length) $("battle").append(el("option", { value: "" }, "(không có capture)"));
     $("battle").addEventListener("change", (e) => { state.battle = e.target.value; commit(); });
     $("seed").addEventListener("change", (e) => { state.seed = e.target.value; commit(); });
