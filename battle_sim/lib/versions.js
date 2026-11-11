@@ -74,6 +74,14 @@ async function ensureConfig(configVersion) {
   return files;
 }
 
+async function ensureLanguage(configVersion, language) {
+  const m = /^(.+)_(\d+)$/.exec(configVersion || "");
+  if (!m) throw new Error("bad configVersion: " + configVersion);
+  const file = path.join(CACHE, "config", configVersion, `lang_${language}.bin`);
+  await download(`${CONFIG_BASE}lang_${language}.${m[2]}.bin`, file);
+  return file;
+}
+
 function mapsDir(mapVersion) {
   return path.join(CACHE, "maps", mapVersion);
 }
@@ -109,5 +117,5 @@ function loadedVersions(sim) {
 
 module.exports = {
   CACHE, bundleVersion, bundleVersionOfSource, bundleIndex, findBundle,
-  ensureConfig, mapsDir, findMaps, resolveAssets, loadedVersions,
+  ensureConfig, ensureLanguage, mapsDir, findMaps, resolveAssets, loadedVersions,
 };

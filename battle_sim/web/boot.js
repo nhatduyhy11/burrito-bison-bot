@@ -55,15 +55,47 @@
     sim.checks.localConfig = { AgentCode: localConfig.AgentCode, SubAgentCode: localConfig.SubAgentCode, ClientVer: localConfig.ClientVer };
   }
 
-  function loadConfigBin(bytes, parserName) {
+  function configReader(bytes) {
     const QuickLZ = R("QuickLZ").QuickLZ;
     const BinaryReader = R("BinaryReader").BinaryReader;
-    const Parser = R(parserName)[parserName];
-    const data = QuickLZ.decompress(bytes);
     const reader = new BinaryReader();
+    const data = QuickLZ.decompress(bytes);
     reader.init(data);
+    return { reader, size: data.length };
+  }
+
+  function loadConfigBin(bytes, parserName) {
+    const Parser = R(parserName)[parserName];
+    const { reader, size } = configReader(bytes);
     new Parser().writeBinaryDataWhenRead(reader);
-    return data.length;
+    return size;
+  }
+
+  async function loadVietnamese(configVer) {
+    const url = `/__sim_config/${configVer}/lang_vi.bin`;
+    const response = await fetch(url);
+    if (response.status === 404) {
+      step("language pack missing", { configVersion: configVer, file: "lang_vi.bin" });
+      return;
+    }
+    if (!response.ok) throw new Error(`HTTP ${response.status} ${url}`);
+
+    const { reader } = configReader(new Uint8Array(await response.arrayBuffer()));
+    const { LangParser } = R("LangParser");
+    if (!new LangParser().writeBinaryDataImmediately(reader)) throw new Error(`Cannot parse ${url}`);
+
+    const { LanguageType } = R("LanguageType");
+    const { SettingModule } = R("SettingModule");
+    // The normal setter persists settings and calls the SDK. Only this page needs the locale.
+    Object.defineProperty(SettingModule.Ins, "language", { get: () => LanguageType.Vietnam });
+    R("ZoneUtils").ZoneUtils.Ins.setLabelShifter(LanguageType.Vietnam);
+    window.setGetCodeFun((key) =>
+      R("CusLangResLO").CusLangResLO.get(key)?.replacePath ??
+      R("ForceLangLO").ForceLangLO.get(key)?.value ??
+      LangParser.getCode(key));
+    document.documentElement.lang = "vi";
+    sim.checks.language = { locale: "vi", configVersion: configVer };
+    step("language", sim.checks.language);
   }
 
   async function main() {
@@ -124,6 +156,8 @@
     const configs = await getJson("/__sim/configs.json");
     const configVer = params.get("config") || (sim.capture && sim.capture.start.configVersion) || configs[0];
     if (!configVer) throw new Error("no cached config; replay a battle or run versions.ensureConfig first");
+    // The game translates names and descriptions as it reads rows and opens prefabs.
+    await loadVietnamese(configVer);
     const pre = loadConfigBin(await getBytes(`/__sim_config/${configVer}/preload_config.bin`), "PreloadConfigParser");
     const cfg = loadConfigBin(await getBytes(`/__sim_config/${configVer}/config.bin`), "ConfigParser");
     const CP = R("ConfigParser").ConfigParser;

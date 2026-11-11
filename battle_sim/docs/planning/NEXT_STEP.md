@@ -12,7 +12,7 @@ Chi tiết: [research.md §Nguyên tắc an toàn](research.md#nguyên-tắc-an-
 | Mốc | Trạng thái | Code |
 |---|---|---|
 | A — logic sim headless | xong, replay khớp tuyệt đối mọi capture | `replay.js`, `lib/` |
-| B1 — mirror asset | xong, 690MB | `scripts/mirror.js`, `serve.js` |
+| B1 — mirror asset | xong, 693,3MB; đã tải bù icon trap, half-body, công trình | `scripts/mirror.js`, `serve.js` |
 | B2 — boot cách ly | xong | `sandbox`, `web/boot.{html,js}` |
 | B3 — trận có hình, replay op log | xong, `QuitRoom` khớp tuyệt đối | `web/battle/` |
 | B4 — tự chơi trong simulator | `--play` + trang setup `--setup`, x2 và auto mở sẵn; trận chơi (auto) replay khớp tuyệt đối, **chưa chơi tay đến thắng** | `sandbox`, `web/battle/`, `web/setup/` |

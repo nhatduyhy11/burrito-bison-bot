@@ -8,30 +8,17 @@
 //   node battle_sim/scripts/gen_profile_dict.js [configVersion]   (default sea_65380)
 const fs = require("fs");
 const path = require("path");
-const https = require("https");
 const { Sim } = require("../lib/sim");
 const versions = require("../lib/versions");
 
 const CONFIG_VERSION = process.argv[2] || "sea_65380";
 const ASSETS = { battleVersion: "2.3.1-2_E63294_P63528_C63583", configVersion: CONFIG_VERSION, mapVersion: "trunk_61543" };
-const LANG_BASE = "https://mg-sea-cdnres.bighost.games/sea/remoteConfig/sea/";
 const OUT = path.join(__dirname, "..", "web", "profile-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
 const SKIN_COLOR = { 4: "default", 6: "red", 7: "gold", 8: "colorful" };
 // Rarity = card border in game (HeroLO / OrganLO / SummonCreatureLO .color). Spells have no rarity tiers.
 const RARITY = { 4: "purple", 5: "orange", 6: "red", 7: "gold" };
 const BUILD_SLOT = { 0: "none", 1: "red", 2: "gold", 3: "special" };
-
-function download(url, file) {
-  if (fs.existsSync(file)) return Promise.resolve();
-  return new Promise((ok, ko) => {
-    https.get(url, (res) => {
-      if (res.statusCode !== 200) { res.resume(); return ko(new Error(`${url}: HTTP ${res.statusCode}`)); }
-      const tmp = file + ".part";
-      res.pipe(fs.createWriteStream(tmp)).on("finish", () => { fs.renameSync(tmp, file); ok(); });
-    }).on("error", ko);
-  });
-}
 
 const slug = (s) => String(s).toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
 function keyed(entries) { // [[name, value]] -> {slug: value}, codes appended on collisions
@@ -52,21 +39,19 @@ function maxBy(lo, field) { // mecType -> max of field
 }
 
 async function main() {
-  const files = await versions.ensureConfig(CONFIG_VERSION);
   const assets = await versions.resolveAssets(ASSETS);
   // One loader per language: *LO names are translated while rows parse, so the language
   // pack is loaded before any table is read, and each loader keeps its own tables.
   async function tablesIn(lang) {
-    const langFile = path.join(path.dirname(files.config), `${lang}.bin`);
-    await download(`${LANG_BASE}${lang}.${CONFIG_VERSION.split("_").pop()}.bin`, langFile);
+    const langFile = await versions.ensureLanguage(CONFIG_VERSION, lang);
     const req = new Sim(assets).req;
     const reader = new (req("BinaryReader").BinaryReader)();
     reader.init(req("QuickLZ").QuickLZ.decompress(new Uint8Array(fs.readFileSync(langFile))));
     if (!new (req("LangParser").LangParser)().writeBinaryDataImmediately(reader)) throw new Error(`${lang} pack failed`);
     return (n) => req(n)[n];
   }
-  const M = await tablesIn("lang_en");
-  const V = await tablesIn("lang_vi");
+  const M = await tablesIn("en");
+  const V = await tablesIn("vi");
   const vn = (table, key) => V(table).get(key)?.name;
   const SkillBase = M("SkillBaseLO");
 

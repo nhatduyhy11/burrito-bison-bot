@@ -17,8 +17,8 @@ const versions = require("../lib/versions");
 
 const BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ", "hangup", "summonCreature", "hero"];
 // ext-res: battle models + frames + data, plus the shuzhi/ image folders the battle UI loads
-// (portraits, half-body portraits, item, skill, artifact and trap icons). Region variants other than base/_sea are skipped.
-const EXT_RES_KEEP = /^(model\/|model_frame\/|userProto\/|data\/|shuzhi\/(head|icon|skillicon|TDBattle|shenbing|machine|half)\/)/;
+// (portraits, half-body portraits, item, skill, artifact, trap and building icons). Region variants other than base/_sea are skipped.
+const EXT_RES_KEEP = /^(model\/|model_frame\/|userProto\/|data\/|shuzhi\/(head|icon|skillicon|TDBattle|shenbing|machine|half|build)\/)/;
 const EXT_RES_REGION = /^(model\/([^/]*_(jp|kr|tw|us)|(kr|tw|jp|us)_[^/]*)\/|shuzhi\/.*(^|[/_])(jp|kr|tw|us)(_|\.))/;
 const CONCURRENCY = 8;
 

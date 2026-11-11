@@ -58,8 +58,8 @@ node battle_sim/serve.js
     script, import, native). Ba bundle cuối là UI ngoài trận nhưng UI battle vẫn load
     (`hero`: UI màn hero, không chứa model), nên mirror để không 404;
   - ext-res `model/` (bỏ biến thể vùng jp/kr/tw/us), `model_frame/`, `userProto/`, `data/`,
-    và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing,machine,half}/`
-    (`machine` icon trap, `half` ảnh nửa người hero).
+    và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing,machine,half,build}/`
+    (`machine` icon trap, `half` ảnh nửa người hero, `build` icon công trình).
 - Chỉ là GET ẩn danh tới file tĩnh công khai, không đăng nhập. Chạy lại sẽ bỏ qua file đã có.
 - Config bundle không ghi đuôi file native, nên mirror thử đuôi theo loại asset (quy tắc
   engine: `native/<xx>/<uuid>.<ver><ext>`, font dạng `<uuid>.<ver>/<tên>.ttf`). Không tìm thấy
@@ -68,7 +68,10 @@ node battle_sim/serve.js
   404, in ra màn hình và ghi `misses.log`. Thêm `--fill` để tải bù file thiếu từ host công
   khai (chỉ bật khi cố ý).
 
-Mirror hiện tại (ClientVer 64467): 14 352 file, 690MB, file mẫu khớp từng byte với host.
+Mirror hiện tại (ClientVer 64467, kiểm tra 2026-11-11): 14 429 file, 693,3MB.
+Tải bù 357 file so với cache 14 072 file: 17 icon trap, 263 ảnh nửa người hero
+(bỏ biến thể vùng), 77 icon công trình. `shuzhi/build/` bổ sung cho các 404 runtime
+`fdcs1_8ac14.png` và `zcm1_0af53.png` mà bộ lọc trước chưa lấy.
 Các mục trong `missing.json` đều 404 ngay trên host: native `cc.Asset` thô (trận không load)
 và 2 script boot (jquery, clipboard).
 
@@ -109,11 +112,20 @@ uv run python battle_sim/sandbox --headless
   thay cho launch scene, nên `Main` và `LoginMgr` không bao giờ chạy. Tiếp theo:
   - nạp config `.bin` từ cache bằng `ConfigParser` của game (query `?config=<ver>`, mặc định
     bản mới nhất);
+  - nạp `lang_vi.bin` cùng phiên bản trước khi đọc config. Bản dịch của game áp dụng cho tên,
+    mô tả và nhãn trong trận. Nếu cache thiếu gói này, simulator báo `language pack missing`
+    và dùng chữ gốc của game.
   - nạp các bundle battle;
   - kiểm tra bảng config, tải prefab map qua engine, tải model ext-res qua
     `aswallow.extAssetMgr` (sau khi `await init()`).
 
 Kết quả đúng: `ready` sau ~2s (engine 2.4.15), 0 request bị chặn, 0 file 404, 0 lỗi.
+
+Tải gói tiếng Việt vào cache một lần cho mỗi phiên bản config cần chạy:
+
+```bash
+node -e 'require("./battle_sim/lib/versions").ensureLanguage(process.argv[1], "vi").catch(e => { console.error(e.message); process.exitCode = 1; })' sea_65380
+```
 
 ## Trận có hình trong trang cách ly (mốc B, bước 3)
 
