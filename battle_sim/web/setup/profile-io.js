@@ -3,6 +3,7 @@
 import * as R from "./skin-rules.js";
 import { JOKER_SUMMON } from "../hero-lineup.js";
 import { SUMMONER_SLOTS, summonerSkillsConflict } from "../summoner-skills.js";
+import { antiqueSelections, defaultAntiques } from "../antiques.js";
 
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2, summonerSkins: SUMMONER_SLOTS };
 const BUILDINGS = [["door", "Cửa"], ["bed", "Giường"], ["generator", "Chuột (máy phát điện)"], ["cat", "Mèo (chiêu tài)"]];
@@ -10,11 +11,12 @@ const BUILDINGS = [["door", "Cửa"], ["bed", "Giường"], ["generator", "Chu�
 const heroSkins = (dict, name) => dict.heroes[name]?.skins || {};
 const buildSkins = (dict, building) => dict.buildings[building].skins;
 
-function emptyState() {
+function emptyState(dict) {
   return {
     battle: "", seed: "", map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
     mounts: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null, summonerSkins: null,
+    antiques: dict ? defaultAntiques(dict.antiques) : {},
   };
 }
 
@@ -78,12 +80,13 @@ function toProfile(state, dict) {
   }
   if (Object.keys(buildings).length) profile.buildings = buildings;
   if (state.goldenSkinsCount !== null) profile.goldenSkinsCount = state.goldenSkinsCount;
+  profile.antiques = { ...state.antiques };
   return profile;
 }
 
 // Lenient import of a profile JSON (as written by toProfile or by hand). Unknown names throw.
 function fromProfile(profile, base, dict) {
-  const next = { ...emptyState(), battle: base.battle, seed: base.seed };
+  const next = { ...emptyState(dict), battle: base.battle, seed: base.seed };
   const need = (group, name) => {
     if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong profile-dict.json`);
     return name;
@@ -166,6 +169,9 @@ function fromProfile(profile, base, dict) {
     next.buildings[building] = entry;
   }
   if (Number.isSafeInteger(profile.goldenSkinsCount)) next.goldenSkinsCount = profile.goldenSkinsCount;
+  if (Object.hasOwn(profile, "antiques")) {
+    next.antiques = Object.fromEntries(antiqueSelections(profile.antiques, dict.antiques).map(({ name, star }) => [name, star]));
+  }
   normalize(next, dict);
   return next;
 }

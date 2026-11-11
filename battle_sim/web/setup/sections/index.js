@@ -9,6 +9,7 @@ import { SummonerSection } from "./summoner.js";
 import { ListSection } from "./lists.js";
 import { BuildingsSection } from "./buildings.js";
 import { GoldenSection } from "./golden.js";
+import { AntiquesSection } from "./antiques.js";
 
 const LIST_GROUPS = ["traps", "pets", "spells"];
 
@@ -22,5 +23,6 @@ export function FormSections({ ctx }) {
     ${lists}
     <${BuildingsSection} ctx=${ctx} />
     <${GoldenSection} ctx=${ctx} />
+    <${AntiquesSection} ctx=${ctx} />
   `;
 }

@@ -136,7 +136,7 @@ async function main(root) {
     getJson("/__sim/profile-dict.json"),
     getJson("/__sim/battles.json").catch(() => []),
   ]);
-  let state = emptyState();
+  let state = emptyState(dict);
   let initialStatus = null;
   const saved = await savedSetup();
   if (saved) {

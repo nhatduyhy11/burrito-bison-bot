@@ -155,6 +155,10 @@
       if (!Number.isSafeInteger(count) || count < 0) throw new Error("goldenSkinsCount must be a non-negative integer");
       player.goldenSkinsCount = count;
     }
+    if (Object.hasOwn(profile, "antiques")) {
+      const { battleAntiques } = await import("../antiques.js");
+      player.antiques = asList(battleAntiques(profile.antiques, catalog.antiques, M("AntiqueHaloLO")));
+    }
     start.playerInfos = { ...start.playerInfos, 0: player };
   };
 

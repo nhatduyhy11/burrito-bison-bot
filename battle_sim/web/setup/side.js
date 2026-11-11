@@ -63,7 +63,7 @@ export function Side({ ctx, battles, profile, initialStatus }) {
       setStatus({ text: `Không nhập được ${file.name}: ${err.message}`, kind: "err" });
     }
   };
-  const reset = () => update((s) => ({ ...emptyState(), battle: s.battle, seed: s.seed }));
+  const reset = () => update((s) => ({ ...emptyState(dict), battle: s.battle, seed: s.seed }));
   const play = async () => {
     setPlaying(true);
     setStatus({ text: "Đang lưu profile và mở trận…", kind: "note" });
