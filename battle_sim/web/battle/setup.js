@@ -63,6 +63,17 @@
 
   // Normally set by TDModule / HangUpModule.onEnterGame. Fallbacks (same values the game
   // uses) only if those modules failed, so the battle can still open.
+  const BATTLE_CONFIGS = {
+    3: { // EBattleTypeHangUpSystem
+      cfg: { frameClass: "BattleAdvFrame", customShellView: "BattleTDAdvView", isFullView: true, customResultView: "BattleResultViewAdventure" },
+      director: "BattleTDAdvDirector",
+    },
+    21: { // EBattleTypeGuildNavalWar (U Đô)
+      cfg: { frameClass: "TDGuildPVPBattleFram", customShellView: "BattleTDGuildPVPView", customResultView: "BattleResultViewGuildPVP" },
+      director: "BattleTDGuildPVPDirector",
+    },
+  };
+
   SimBattle.ensureBattleConfig = function ({ M, R, report, step, battleType }) {
     const TDModule = M("TDModule").Ins;
     if (!TDModule.RoBotWaitTimeAndMoveSpeed) {
@@ -72,19 +83,17 @@
     const BattleModule = M("BattleModule").Ins;
     const BattleMgr = M("BattleMgr").Ins;
     if (!BattleModule.getConfig(battleType)) {
-      // Campaign registration as HangUpModule.onEnterGame / _battleRecived do it.
+      // Registration as the owning module does it: HangUpModule (campaign), GuildPVPModule (capital).
+      const known = BATTLE_CONFIGS[battleType] || BATTLE_CONFIGS[3];
       const cfg = new (M("BattleModuleConfig"))();
       cfg.framePrefab = "battle_frame_td";
-      cfg.frameClass = "BattleAdvFrame";
-      cfg.customShellView = "BattleTDAdvView";
-      cfg.isFullView = true;
-      cfg.customResultView = "BattleResultViewAdventure";
+      Object.assign(cfg, known.cfg);
       cfg.onOpenResultView = () => R("BattleClientDef").AbortType.DEFAULT;
       BattleModule.setConfig(battleType, cfg);
       BattleMgr.addListener(battleType, (_e, args) => {
         const vo = BattleModule.getBattleByUUID(args[0]);
         if (!vo) return;
-        vo.inject(M("BattleTDAdvDirector"));
+        vo.inject(M(known.director));
         BattleMgr.startBattle(battleType);
       }, report); // Listener ignores handlers without a target
       step("fallback: battle config", { battleType });

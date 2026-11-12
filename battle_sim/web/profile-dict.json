@@ -5,6 +5,2395 @@
       "minStage": 1,
       "maxStage": 400,
       "stages": 400
+    },
+    "capital": {
+      "battleType": 21,
+      "roomTypes": {
+        "1": {
+          "name": "Basic Soulite Hall",
+          "name_vn": "Hồn Tinh Các Sơ",
+          "seats": 2
+        },
+        "2": {
+          "name": "Standard Soulite Hall",
+          "name_vn": "Hồn Tinh Các Trung",
+          "seats": 3
+        },
+        "3": {
+          "name": "Top Soulite Hall",
+          "name_vn": "Hồn Tinh Các Đỉnh",
+          "seats": 4
+        }
+      },
+      "bosses": {
+        "cursed_botchling": {
+          "code": 70070101,
+          "name": "Cursed Botchling",
+          "name_vn": "U Linh Nhi",
+          "avatar": "head/head_boss_001_sea",
+          "desc": "Weakness: None · Resistance: None · Trait: Enters Rage mode at low HP, massively increases ASPD",
+          "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Khi HP dưới mức nhất định sẽ vào trạng thái Cuồng Bạo, tăng mạnh Tốc Công",
+          "presets": [
+            {
+              "level": 20701,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080301,
+                  "name": "Twin Zombie",
+                  "name_vn": "Zombie Song Sinh"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 7,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 3,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 30901,
+              "creeps": [
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                },
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                },
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 9,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 7,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 61101,
+              "creeps": [
+                {
+                  "code": 70080301,
+                  "name": "Twin Zombie",
+                  "name_vn": "Zombie Song Sinh"
+                },
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 6,
+                  "pos": 11,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "masked_spirit": {
+          "code": 70070201,
+          "name": "Masked Spirit",
+          "name_vn": "Mặt Nạ Oán Linh",
+          "avatar": "head/head_boss_003",
+          "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: There is a chance to restore HP when taking Burn",
+          "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt có tỷ lệ hồi HP",
+          "presets": [
+            {
+              "level": 10101,
+              "creeps": [
+                {
+                  "code": 70080801,
+                  "name": "Flame Zombie",
+                  "name_vn": "Zombie Lửa"
+                },
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 1,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 1,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 10301,
+              "creeps": [
+                {
+                  "code": 70080301,
+                  "name": "Twin Zombie",
+                  "name_vn": "Zombie Song Sinh"
+                },
+                {
+                  "code": 70080701,
+                  "name": "Demon Hag",
+                  "name_vn": "Quỷ Bà Bà"
+                },
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 3,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 2,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 10701,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080301,
+                  "name": "Twin Zombie",
+                  "name_vn": "Zombie Song Sinh"
+                },
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 7,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 4,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 2,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 11701,
+              "creeps": [
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 17,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 4,
+                  "pos": 15,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 20101,
+              "creeps": [
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 1,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 20201,
+              "creeps": [
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 2,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 5,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 3,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 21201,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                },
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 12,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 11,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 30101,
+              "creeps": [
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 1,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 4,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 31001,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 10,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 8,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 31201,
+              "creeps": [
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                },
+                {
+                  "code": 70080701,
+                  "name": "Demon Hag",
+                  "name_vn": "Quỷ Bà Bà"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 12,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 10,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 12,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 40101,
+              "creeps": [
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 4,
+                  "pos": 1,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 6,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "voodoo_doll": {
+          "code": 70070301,
+          "name": "Voodoo Doll",
+          "name_vn": "Búp Bê Hắc Ám",
+          "avatar": "head/head_boss_004",
+          "desc": "Weakness: Paralysis · Resistance: Bleed, Frost, Frozen, Pull, Knockback · Trait: Increases All RES by 25% when taking Knockback, lasts 10s",
+          "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi, bản thân tăng 25% Kháng Kép, duy trì 10s",
+          "presets": [
+            {
+              "level": 10201,
+              "creeps": [
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 2,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 1,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 10401,
+              "creeps": [
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081301,
+                  "name": "Explosive Spider",
+                  "name_vn": "Nhện Nổ"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 4,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 2,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 10501,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080401,
+                  "name": "Zombie Wolf",
+                  "name_vn": "Sói Zombie"
+                },
+                {
+                  "code": 70081301,
+                  "name": "Explosive Spider",
+                  "name_vn": "Nhện Nổ"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 5,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 3,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 1,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 10801,
+              "creeps": [
+                {
+                  "code": 70080801,
+                  "name": "Flame Zombie",
+                  "name_vn": "Zombie Lửa"
+                },
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 8,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 10901,
+              "creeps": [
+                {
+                  "code": 70080401,
+                  "name": "Zombie Wolf",
+                  "name_vn": "Sói Zombie"
+                },
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 9,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 5,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 20401,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080301,
+                  "name": "Twin Zombie",
+                  "name_vn": "Zombie Song Sinh"
+                },
+                {
+                  "code": 70080801,
+                  "name": "Flame Zombie",
+                  "name_vn": "Zombie Lửa"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 4,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 2,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 20501,
+              "creeps": [
+                {
+                  "code": 70081301,
+                  "name": "Explosive Spider",
+                  "name_vn": "Nhện Nổ"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 5,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 7,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 30201,
+              "creeps": [
+                {
+                  "code": 70080401,
+                  "name": "Zombie Wolf",
+                  "name_vn": "Sói Zombie"
+                },
+                {
+                  "code": 70080701,
+                  "name": "Demon Hag",
+                  "name_vn": "Quỷ Bà Bà"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 2,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 5,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "hell_flytrap": {
+          "code": 70070401,
+          "name": "Hell Flytrap",
+          "name_vn": "Hắc Hoa U Vực",
+          "avatar": "head/head_boss_005",
+          "desc": "Weak: Burn · Resistance: Paralysis, Knockback, Stun · Trait: Deals more DMG the more the Door loses HP",
+          "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao",
+          "presets": [
+            {
+              "level": 10601,
+              "creeps": [
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 6,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 11001,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 10,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 6,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 11101,
+              "creeps": [
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 11,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 3,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 11501,
+              "creeps": [
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                },
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 15,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 4,
+                  "pos": 14,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 21801,
+              "creeps": [
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 18,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 6,
+                  "pos": 15,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 30501,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 5,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 30801,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080301,
+                  "name": "Twin Zombie",
+                  "name_vn": "Zombie Song Sinh"
+                },
+                {
+                  "code": 70081401,
+                  "name": "Clumsy Zombie",
+                  "name_vn": "Zombie Nặng Nề"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 8,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 10,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 31501,
+              "creeps": [
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 15,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 7,
+                  "pos": 17,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 70501,
+              "creeps": [
+                {
+                  "code": 70080701,
+                  "name": "Demon Hag",
+                  "name_vn": "Quỷ Bà Bà"
+                },
+                {
+                  "code": 70081301,
+                  "name": "Explosive Spider",
+                  "name_vn": "Nhện Nổ"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 7,
+                  "pos": 5,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 70901,
+              "creeps": [
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081301,
+                  "name": "Explosive Spider",
+                  "name_vn": "Nhện Nổ"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 7,
+                  "pos": 9,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "master_dread": {
+          "code": 70070501,
+          "name": "Master Dread",
+          "name_vn": "Tâm Khiếp Giả",
+          "avatar": "head/head_boss_006",
+          "desc": "Weakness: P.DMG · Resistance: Knockback, Frost, Stun, Pull · Trait: Gains 4s of DMG Immunity when taking M.DMG. Cooldown: 10s",
+          "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Đẩy Lùi Băng Sương Choáng Dẫn Dắt · Đặc điểm: Khi chịu ST Phép, bản thân nhận 4s Miễn ST, CD 10s",
+          "presets": [
+            {
+              "level": 11201,
+              "creeps": [
+                {
+                  "code": 70080401,
+                  "name": "Zombie Wolf",
+                  "name_vn": "Sói Zombie"
+                },
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                },
+                {
+                  "code": 70080801,
+                  "name": "Flame Zombie",
+                  "name_vn": "Zombie Lửa"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 12,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 4,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 21001,
+              "creeps": [
+                {
+                  "code": 70080601,
+                  "name": "Thief Zombie",
+                  "name_vn": "Zombie Trộm"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 10,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 9,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 8,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "lady_boggart": {
+          "code": 70070601,
+          "name": "Lady Boggart",
+          "name_vn": "Hắc Ám Phu Nhân",
+          "avatar": "head/head_boss_007",
+          "desc": "Weakness: M.DMG · Resistance: Physical, Frozen, Knockback · Trait: Every 15s, generates a Shield that blocks 10 instances of DMG",
+          "desc_vn": "Điểm yếu: ST Phép · Kháng: V.Lý Đóng Băng Đẩy Lùi · Đặc điểm: Cứ cách 15s sẽ tạo 1 khiên ngăn 10 lần ST cho bản thân",
+          "presets": [
+            {
+              "level": 11401,
+              "creeps": [
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 14,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 20301,
+              "creeps": [
+                {
+                  "code": 70080801,
+                  "name": "Flame Zombie",
+                  "name_vn": "Zombie Lửa"
+                },
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 3,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 6,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 20601,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70080801,
+                  "name": "Flame Zombie",
+                  "name_vn": "Zombie Lửa"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 6,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 8,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 20801,
+              "creeps": [
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 8,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 4,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 21301,
+              "creeps": [
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 13,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 4,
+                  "pos": 16,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 7,
+                  "pos": 14,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 30401,
+              "creeps": [
+                {
+                  "code": 70080401,
+                  "name": "Zombie Wolf",
+                  "name_vn": "Sói Zombie"
+                },
+                {
+                  "code": 70081301,
+                  "name": "Explosive Spider",
+                  "name_vn": "Nhện Nổ"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 4,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 7,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 10,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 31301,
+              "creeps": [
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 13,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 6,
+                  "pos": 16,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 7,
+                  "pos": 16,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 31701,
+              "creeps": [
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 17,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 7,
+                  "pos": 18,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 41101,
+              "creeps": [
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70081401,
+                  "name": "Clumsy Zombie",
+                  "name_vn": "Zombie Nặng Nề"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 4,
+                  "pos": 11,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "rotten_butcher": {
+          "code": 70070701,
+          "name": "Rotten Butcher",
+          "name_vn": "Tàn Đao Giả",
+          "avatar": "head/head_boss_011",
+          "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: Restores HP per second when taking Burn DMG",
+          "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt mỗi giây hồi HP",
+          "presets": [
+            {
+              "level": 11601,
+              "creeps": [
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 16,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 11901,
+              "creeps": [
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 19,
+                  "roomLevel": 3
+                }
+              ]
+            },
+            {
+              "level": 30301,
+              "creeps": [
+                {
+                  "code": 70080701,
+                  "name": "Demon Hag",
+                  "name_vn": "Quỷ Bà Bà"
+                },
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 3,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 6,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 30601,
+              "creeps": [
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 6,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 12,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 31101,
+              "creeps": [
+                {
+                  "code": 70080301,
+                  "name": "Twin Zombie",
+                  "name_vn": "Zombie Song Sinh"
+                },
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 11,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 6,
+                  "pos": 9,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 11,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "doom_doll": {
+          "code": 70070801,
+          "name": "Doom Doll",
+          "name_vn": "Búp Bê Diệt Phạt",
+          "avatar": "head/head_boss_012",
+          "desc": "Weakness: Paralysis · Resistance: Bleed, Frost, Frozen, Pull, Knockback · Trait: Increases DMG Immunity by 50% when taking Knockback, lasts 10s",
+          "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi khiến bản thân tăng 50% Giảm ST, duy trì 10s",
+          "presets": [
+            {
+              "level": 20901,
+              "creeps": [
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70080801,
+                  "name": "Flame Zombie",
+                  "name_vn": "Zombie Lửa"
+                },
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 9,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 7,
+                  "pos": 7,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 21401,
+              "creeps": [
+                {
+                  "code": 70080701,
+                  "name": "Demon Hag",
+                  "name_vn": "Quỷ Bà Bà"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 14,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 5,
+                  "pos": 14,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 7,
+                  "pos": 15,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 30701,
+              "creeps": [
+                {
+                  "code": 70081401,
+                  "name": "Clumsy Zombie",
+                  "name_vn": "Zombie Nặng Nề"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 7,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 4,
+                  "pos": 9,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 31401,
+              "creeps": [
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 14,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 6,
+                  "pos": 17,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 31601,
+              "creeps": [
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 16,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 6,
+                  "pos": 18,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 61901,
+              "creeps": [
+                {
+                  "code": 70081401,
+                  "name": "Clumsy Zombie",
+                  "name_vn": "Zombie Nặng Nề"
+                },
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                },
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 6,
+                  "pos": 19,
+                  "roomLevel": 3
+                }
+              ]
+            }
+          ]
+        },
+        "abyss_flytrap": {
+          "code": 70070901,
+          "name": "Abyss Flytrap",
+          "name_vn": "Liên Hoa Hắc Vực",
+          "avatar": "head/head_boss_013",
+          "desc": "Weak: Burn · Resistance: Paralysis, Knockback, Bleed, Stun · Trait: Deals more DMG the more the Door loses HP",
+          "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Mất HP Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao",
+          "presets": [
+            {
+              "level": 21101,
+              "creeps": [
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70081601,
+                  "name": "Shield Zombie",
+                  "name_vn": "Zombie Khiên"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 11,
+                  "roomLevel": 1
+                },
+                {
+                  "day": 5,
+                  "pos": 10,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 21601,
+              "creeps": [
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 16,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 5,
+                  "pos": 15,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 21901,
+              "creeps": [
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 19,
+                  "roomLevel": 3
+                }
+              ]
+            },
+            {
+              "level": 31801,
+              "creeps": [
+                {
+                  "code": 70082001,
+                  "name": "Armored Drake",
+                  "name_vn": "Thể Rồng Giáp"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 18,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 5,
+                  "pos": 16,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 40801,
+              "creeps": [
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 4,
+                  "pos": 8,
+                  "roomLevel": 1
+                }
+              ]
+            }
+          ]
+        },
+        "mummy_pharaoh": {
+          "code": 70071001,
+          "name": "Mummy Pharaoh",
+          "name_vn": "Cổ Thi",
+          "avatar": "head/head_boss_014",
+          "desc": "Weakness: P.DMG · Resistance: Burn, Pull, Frost · Trait: Gains 6s of DMG Immunity when taking M.DMG",
+          "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Thiêu Đốt Dẫn Dắt Băng Sương · Đặc điểm: Khi chịu ST Phép, bản thân nhận 6s Miễn ST",
+          "presets": [
+            {
+              "level": 41901,
+              "creeps": [
+                {
+                  "code": 70081101,
+                  "name": "Yeti Zombie",
+                  "name_vn": "Zombie Người Tuyết"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 4,
+                  "pos": 19,
+                  "roomLevel": 3
+                }
+              ]
+            }
+          ]
+        },
+        "nether_boggart": {
+          "code": 70071101,
+          "name": "Nether Boggart",
+          "name_vn": "U Ảnh Phu Nhân",
+          "avatar": "head/head_boss_015",
+          "desc": "Weakness: None · Resistance: Knockback, Pull, Frost, Stun · Trait: Generates a Shield that blocks 15 instances of DMG at intervals",
+          "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Dẫn Dắt Băng Sương Choáng · Đặc điểm: Cứ cách một khoảng thời gian sẽ tạo 1 khiên ngăn 15 lần ST cho bản thân",
+          "presets": [
+            {
+              "level": 11301,
+              "creeps": [
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 13,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 4,
+                  "pos": 13,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 6,
+                  "pos": 13,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 21501,
+              "creeps": [
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70082301,
+                  "name": "Hundred-Eyed Zombie",
+                  "name_vn": "Cuồng Thi Trăm Mắt"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 15,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 4,
+                  "pos": 17,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 6,
+                  "pos": 14,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 31901,
+              "creeps": [
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 3,
+                  "pos": 19,
+                  "roomLevel": 3
+                }
+              ]
+            },
+            {
+              "level": 41201,
+              "creeps": [
+                {
+                  "code": 70080401,
+                  "name": "Zombie Wolf",
+                  "name_vn": "Sói Zombie"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 4,
+                  "pos": 12,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 51701,
+              "creeps": [
+                {
+                  "code": 70081401,
+                  "name": "Clumsy Zombie",
+                  "name_vn": "Zombie Nặng Nề"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 5,
+                  "pos": 17,
+                  "roomLevel": 2
+                }
+              ]
+            }
+          ]
+        },
+        "xenoqueen": {
+          "code": 70071201,
+          "name": "Xenoqueen",
+          "name_vn": "Nữ Hoàng Alien",
+          "avatar": "head/head_boss_008",
+          "desc": "Weakness: Paralysis · Resistance: Bleed, Burn, Stun, Pull · Trait: Blocks projectiles; summons 5 small snakes behind at intervals",
+          "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Chặn đường đạn bắn, cứ cách một khoảng thời gian triệu hồi 5 rắn nhỏ phía sau",
+          "presets": [
+            {
+              "level": 61201,
+              "creeps": [
+                {
+                  "code": 70080201,
+                  "name": "Common Zombie",
+                  "name_vn": "Zombie Thường"
+                },
+                {
+                  "code": 70081401,
+                  "name": "Clumsy Zombie",
+                  "name_vn": "Zombie Nặng Nề"
+                },
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 6,
+                  "pos": 12,
+                  "roomLevel": 1
+                }
+              ]
+            },
+            {
+              "level": 71901,
+              "creeps": [
+                {
+                  "code": 70081801,
+                  "name": "Bell Zombie",
+                  "name_vn": "Zombie Chuông Lớn"
+                },
+                {
+                  "code": 70081901,
+                  "name": "Deathbringer",
+                  "name_vn": "Quỷ Sai"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 7,
+                  "pos": 19,
+                  "roomLevel": 3
+                }
+              ]
+            }
+          ]
+        },
+        "grudge_cauldron": {
+          "code": 70071301,
+          "name": "Grudge Cauldron",
+          "name_vn": "Oán Khí Chi Oa",
+          "avatar": "head/head_boss_009",
+          "desc": "Weakness: Bleed · Resistance: Burn, Paralysis, Knockback, Frost · Trait: Restores own HP when nearby monsters die",
+          "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Tê Liệt Đẩy Lùi Băng Sương · Đặc điểm: Dị Thú xung quanh tử trận sẽ hồi HP bản thân",
+          "presets": [
+            {
+              "level": 21701,
+              "creeps": [
+                {
+                  "code": 70080501,
+                  "name": "Ghost Bird",
+                  "name_vn": "Chim Mặt Quỷ"
+                },
+                {
+                  "code": 70080901,
+                  "name": "Gorilla Zombie",
+                  "name_vn": "Zombie Khỉ Đột"
+                },
+                {
+                  "code": 70081401,
+                  "name": "Clumsy Zombie",
+                  "name_vn": "Zombie Nặng Nề"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 2,
+                  "pos": 17,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 4,
+                  "pos": 18,
+                  "roomLevel": 2
+                }
+              ]
+            }
+          ]
+        },
+        "faceless_chomper": {
+          "code": 70071401,
+          "name": "Faceless Chomper",
+          "name_vn": "Vô Diện Giả",
+          "avatar": "head/head_boss_010",
+          "desc": "Weak: Burn · Resistance: Paralysis, Bleed, Frost, Frozen, Pull, Knockback · Trait: Charges an attack every 10s, and Stuns all Heroes",
+          "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Cứ cách 10s tích lực tấn công 1 lần, làm Choáng toàn bộ Anh Hùng",
+          "presets": [
+            {
+              "level": 11801,
+              "creeps": [
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 1,
+                  "pos": 18,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 5,
+                  "pos": 13,
+                  "roomLevel": 2
+                },
+                {
+                  "day": 7,
+                  "pos": 13,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 51801,
+              "creeps": [
+                {
+                  "code": 70081001,
+                  "name": "Xenom Zombie",
+                  "name_vn": "Zombie Biến Dị"
+                },
+                {
+                  "code": 70081501,
+                  "name": "Zombie Bloom",
+                  "name_vn": "Minh Hoa Hoán Thi"
+                },
+                {
+                  "code": 70082101,
+                  "name": "Ancient Ghoul",
+                  "name_vn": "Dị Quỷ Ngàn Năm"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 5,
+                  "pos": 18,
+                  "roomLevel": 2
+                }
+              ]
+            },
+            {
+              "level": 51901,
+              "creeps": [
+                {
+                  "code": 70081201,
+                  "name": "Antenna Zombie",
+                  "name_vn": "Zombie Ăng-ten"
+                },
+                {
+                  "code": 70081701,
+                  "name": "Coffin Zombie",
+                  "name_vn": "Zombie Quan Tài"
+                },
+                {
+                  "code": 70082201,
+                  "name": "Stone Lion",
+                  "name_vn": "Quỷ Sư Tử Đá"
+                }
+              ],
+              "rooms": [
+                {
+                  "day": 5,
+                  "pos": 19,
+                  "roomLevel": 3
+                }
+              ]
+            }
+          ]
+        }
+      }
     }
   },
   "heroes": {

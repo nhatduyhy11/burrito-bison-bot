@@ -145,7 +145,7 @@ async function main() {
   const stages = rows(M("AdventuretdLevelLO")).map((r) => r.id / 10)
     .filter((stage) => Number.isInteger(stage) && M("BattleGroundLO").get(M("AdventuretdLevelLO").get(stage * 10).battleGroundCode))
     .sort((a, b) => a - b);
-  const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length } };
+  const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length }, capital: capitalMaps(M, V) };
 
   const mountRanks = rows(M("MountStarLO"));
   const mounts = keyed(rows(M("MountLO")).map((mount) => [mount.name, {
@@ -205,6 +205,43 @@ async function main() {
   console.log(`wrote ${path.relative(process.cwd(), OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ${count(heroes)} heroes, ${count(traps)} traps, ` +
     `${count(pets)} pets, ${count(spells)} spells, ${count(summonerSkins)} Summoner skins, ` +
     Object.entries(buildings).map(([k, b]) => `${k} ${count(b.skins)} skins`).join(", "));
+}
+
+// Capital (U Đô, GuildNavalWar, battleType 21). Battle level = day*10000 + pos*100 + index and the
+// game reads GuildNavalWarLO.get(day*10000 + pos*100): index is ignored, and every row has the
+// same creep stat levels, so a room's size never changes the battle. A row only picks the boss and
+// its 3 creep types (showCreep = [boss, creepA, creepB, creepC]; the round list follows from it).
+// Rows with the same showCreep play the same battle, so each is one preset; `rooms` lists where
+// it shows up in the week. See battle_sim/docs/planning/capital.md.
+function capitalMaps(M, V) {
+  const strip = (s) => String(s || "").replace(/<br\s*\/?>/gi, " · ").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").replace(/\s*·\s*/g, " · ").trim();
+  const creep = (code) => {
+    const row = M("CreepLO").get(code);
+    return { code, name: row.name, name_vn: V("CreepLO").get(code)?.name };
+  };
+  const roomByPos = new Map(rows(M("GuildNavalWarMapLO")).map((r) => [r.position, r]));
+  const bosses = new Map();
+  for (const row of rows(M("GuildNavalWarLO")).sort((a, b) => a.id - b.id)) {
+    const [bossCode, ...creeps] = JSON.parse(row.showCreep);
+    const pos = Math.floor((row.id % 10000) / 100);
+    if (!bosses.has(bossCode)) bosses.set(bossCode, new Map());
+    const presets = bosses.get(bossCode);
+    if (!presets.has(row.showCreep)) presets.set(row.showCreep, { level: row.id + 1, creeps: creeps.map(creep), rooms: [] });
+    presets.get(row.showCreep).rooms.push({ day: row.day, pos, roomLevel: roomByPos.get(pos)?.level });
+  }
+  const roomTypes = {};
+  for (const r of roomByPos.values()) {
+    if (r.type === 1) roomTypes[r.level] = { name: r.name, name_vn: V("GuildNavalWarMapLO").get(r.id)?.name, seats: r.bedSpace };
+  }
+  const list = [...bosses].sort(([a], [b]) => a - b).map(([code, presets]) => {
+    const row = M("CreepLO").get(code);
+    const vi = V("CreepLO").get(code);
+    return [row.name, {
+      ...creep(code), avatar: row.avatar, desc: strip(row.simpleDesc), desc_vn: strip(vi?.simpleDesc),
+      presets: [...presets.values()],
+    }];
+  });
+  return { battleType: 21, roomTypes, bosses: keyed(list) };
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

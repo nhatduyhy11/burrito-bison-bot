@@ -15,8 +15,15 @@ function warnings(state, profile) {
   if (profile.heroes?.length !== 5) out.push("Cần chọn đủ 5 hero.");
   if (new Set(profile.heroes?.map((hero) => typeof hero === "string" ? hero : hero.name)).size !== profile.heroes?.length) out.push("5 hero phải khác nhau.");
   if (!state.battle) out.push("Chưa có capture nào để làm trận gốc.");
+  if (profile.map?.mode === "capital" && !profile.map.boss) out.push("U Đô: chưa chọn boss.");
+  else if (profile.map?.mode === "capital" && !profile.map.level) out.push("U Đô: chưa chọn bộ quái đi kèm.");
   return out;
 }
+
+// Capital (U Đô) level = day*10000 + room*100 + index.
+const captureWhere = (b) => b.battleType === 21
+  ? `capture U Đô ngày ${Math.floor(b.level / 10000)} phòng ${Math.floor((b.level % 10000) / 100)}`
+  : `capture ở Stage ${b.level}`;
 
 function saveFile(name, text) {
   const link = document.createElement("a");
@@ -79,7 +86,7 @@ export function Side({ ctx, battles, profile, initialStatus }) {
   const setSeed = (v) => update((s) => void (s.seed = v));
 
   const battleOptions = battles.length
-    ? battles.map((b) => [b.uuid, `${b.uuid.slice(0, 8)}… · capture ở Stage ${b.level} · ${b.ops} op`])
+    ? battles.map((b) => [b.uuid, `${b.uuid.slice(0, 8)}… · ${captureWhere(b)} · ${b.ops} op`])
     : [["", "(không có capture)"]];
   const playDisabled = playing || !canPlay || problems.length > 0;
   const seedArg = state.seed ? ` --seed ${state.seed}` : "";

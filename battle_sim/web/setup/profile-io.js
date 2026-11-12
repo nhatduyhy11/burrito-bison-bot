@@ -44,7 +44,8 @@ function normalize(state, dict) {
 
 function toProfile(state, dict) {
   const profile = {};
-  if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
+  if (state.map?.mode === "capital") profile.map = { mode: "capital", boss: state.map.boss, level: state.map.level };
+  else if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
   if (state.heroes) {
     const heroProfile = (hero) => {
       if (!hero.custom) return hero.name;
@@ -98,7 +99,7 @@ function fromProfile(profile, base, dict) {
     return name;
   };
   const entryOf = (item) => (typeof item === "string" ? { name: item } : item || {});
-  if (profile.map) next.map = { stage: Number(profile.map.stage) || dict.maps.campaign.minStage };
+  if (profile.map) next.map = readMap(profile.map, dict);
   const readHero = (item) => {
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
@@ -191,8 +192,30 @@ function fromProfile(profile, base, dict) {
   return next;
 }
 
+// Capital (U Đô) battle level -> { boss, level } of the preset that plays it. Levels of the same
+// preset differ only in day/room (same battle), so any of them maps back to the preset's level.
+function capitalPreset(dict, level) {
+  const day = Math.floor(level / 10000), pos = Math.floor((level % 10000) / 100);
+  for (const [boss, entry] of Object.entries(dict.maps.capital.bosses)) {
+    const preset = entry.presets.find((p) => p.rooms.some((r) => r.day === day && r.pos === pos));
+    if (preset) return { boss, level: preset.level };
+  }
+  return null;
+}
+
+function readMap(map, dict) {
+  const stage = Number(map.stage) || dict.maps.campaign.minStage;
+  if (map.mode !== "capital") return { mode: "campaign", stage, boss: null, level: null };
+  if (map.boss == null) return { mode: "capital", stage, boss: null, level: null };
+  const entry = dict.maps.capital.bosses[map.boss];
+  if (!entry) throw new Error(`Không có boss U Đô "${map.boss}" trong profile-dict.json`);
+  const level = entry.presets.some((p) => p.level === map.level) ? map.level : null;
+  return { mode: "capital", stage, boss: map.boss, level };
+}
+
 export {
   LIMITS,
+  capitalPreset,
   BUILDINGS,
   heroSkins,
   buildSkins,

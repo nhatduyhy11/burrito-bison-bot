@@ -33,6 +33,7 @@ Trạng thái và bước tiếp theo: [NEXT_STEP.md](NEXT_STEP.md).
 - [spin.md](spin.md) — vòng quay
 - [creep_waves.md](creep_waves.md) — lịch spawn quái
 - [boss.md](boss.md) — mini / final boss
+- [capital.md](capital.md) — capital battle (GuildNavalWar): level, phòng, 14 boss, cách mô phỏng
 - [assets.md](assets.md) — bundle, ext-res, map
 - Skin: [PROFILE_SKINS.md](../../PROFILE_SKINS.md) (hero), [BUILD_SKINS.md](../../BUILD_SKINS.md)
   (building)

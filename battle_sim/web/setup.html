@@ -29,6 +29,9 @@
       border-width: 4.5px 0 4.5px 7px; border-color: transparent transparent transparent currentColor; transition: transform .12s; }
     .accordion[open] > summary::before { transform: rotate(90deg); }
     .accordion > summary .hint { color: var(--muted); font-size: 11px; }
+    .row.wide label { display: flex; align-items: center; gap: 6px; flex: 1 1 auto; min-width: 0; white-space: nowrap; }
+    .row.wide select { flex: 1 1 auto; min-width: 0; }
+    .accordion-body p.hint { color: var(--muted); font-size: 11px; margin: 2px 0 6px; max-width: 640px; }
     .accordion > summary .override { font-size: 12px; }
     .accordion-body { margin-top: 8px; }
     .accordion-body:empty { display: none; }

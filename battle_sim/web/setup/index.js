@@ -11,7 +11,7 @@
 import { render } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { html } from "./ui.js";
-import { LIMITS, emptyState, fromProfile, newHero, normalize, toProfile } from "./profile-io.js";
+import { LIMITS, capitalPreset, emptyState, fromProfile, newHero, normalize, toProfile } from "./profile-io.js";
 import { FormSections } from "./sections/index.js";
 import { Side } from "./side.js";
 
@@ -41,7 +41,11 @@ async function prefill(dict, battle, group) {
     const selected = owned.find((key) => dict.mounts[key].code === player?.mountCode) || null;
     return { owned, selected };
   }
-  if (group === "map") return { stage: start?.level || dict.maps.campaign.minStage };
+  if (group === "map") {
+    const capital = start?.battleType === dict.maps.capital.battleType && capitalPreset(dict, start.level);
+    if (capital) return { mode: "capital", stage: dict.maps.campaign.minStage, ...capital };
+    return { mode: "campaign", stage: start?.level || dict.maps.campaign.minStage, boss: null, level: null };
+  }
   if (!player) return [];
   const name = (group, code) => Object.keys(dict[group]).find((key) => dict[group][key].code === code);
   const from = {
