@@ -88,6 +88,21 @@ async function main() {
     ...(d.exclusion ? { excludes: d.exclusion } : {}),
   }]));
 
+  // Dị Năng (异能) skill nodes per hero subType: AvatarUpGradeLO rows with a skillcode, one per
+  // chapter 1-5, in chapter order (level N = the first N). Each swaps `replaces` for `skill` in
+  // hero.skills (adds it when replaces is null); the server builds hero.skills exactly by this rule.
+  // Attribute nodes are left out (server-side attr, not modelled). See docs/planning/hero_gear.md.
+  const avatarRows = new Map();
+  for (const row of rows(M("AvatarUpGradeLO"))) {
+    if (!row.skillcode) continue;
+    const point = M("AvatarLO").get(row.pointCode);
+    const list = avatarRows.get(point.subType) || [];
+    list.push({ chapter: point.chapter, node: { replaces: row.oldSkillCode || null, skill: row.skillcode } });
+    avatarRows.set(point.subType, list);
+  }
+  const avatarNodes = new Map([...avatarRows].map(([subType, list]) =>
+    [subType, list.sort((a, b) => a.chapter - b.chapter).map(({ node }) => node)]));
+
   // Heroes: base skills 10<NN><slot><lv=01>000 for slots 1-3.
   const heroes = keyed(rows(M("HeroLO")).filter((h) => h.isShow).sort((a, b) => a.code - b.code).map((h) => {
     const nn = String(h.code % 1000).padStart(2, "0");
@@ -103,7 +118,8 @@ async function main() {
         ...(requires.length ? { requires } : {}),
       };
     }
-    return [h.name, { code: h.code, name: h.name, name_vn: vn("HeroLO", h.code), color: RARITY[h.color] || h.color, baseSkills, ...(own.length ? { skins } : {}) }];
+    return [h.name, { code: h.code, name: h.name, name_vn: vn("HeroLO", h.code), color: RARITY[h.color] || h.color, baseSkills,
+      ...(own.length ? { skins } : {}), ...(avatarNodes.has(h.subType) ? { avatarNodes: avatarNodes.get(h.subType) } : {}) }];
   }));
 
   const organLevel = maxBy(M("OrganUpGradeLO"), "level"), organStar = maxBy(M("OrganStarLO"), "star");

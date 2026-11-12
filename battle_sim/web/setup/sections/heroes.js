@@ -1,4 +1,5 @@
-// Hero list; each hero card can open its skin table (owned, star, slots).
+// Hero list; "Tùy chỉnh" on a hero card opens its Dị Năng skill nodes (red heroes) and skin table
+// (owned, star, slots).
 import { html, label, optionText, colorTag, NumberInput, Checkbox, Select, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, newHero } from "../profile-io.js";
@@ -27,7 +28,7 @@ function HeroesBody({ ctx }) {
     ${showJoker && html`<${HeroCard} ctx=${ctx} hero=${state.summonedJoker} index=${5} summoned=${true} />`}
     <div class="note">
       Hero có trong capture giữ chỉ số và skill gốc; hero khác mượn chỉ số trung bình, level và level skill của các
-      hero cùng độ hiếm trong capture (gần đúng, ±10%). Không tick "Tùy chỉnh skin" thì giữ skin từ capture.
+      hero cùng độ hiếm trong capture (gần đúng, ±10%). Không tick "Tùy chỉnh" thì giữ skin và Dị Năng từ capture; tick thì Dị Năng bắt đầu từ 0.
     </div>
   `;
 }
@@ -36,13 +37,15 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
   const { state, dict, update } = ctx;
   const skins = heroSkins(dict, hero.name);
   const hasSkins = Object.keys(skins).length > 0;
+  const nodes = dict.heroes[hero.name]?.avatarNodes || [];
   const options = [["", "— Chọn hero —"], ...nameOptions(dict, "heroes", state.heroes.map((h) => h.name), hero.name)];
   const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s.heroes[index]));
   const setName = (v) => update((s) => void (s.heroes[index] = newHero(v)));
   const setCustom = (on) => edit((h) => (h.custom = on));
-  const custom = hasSkins
-    ? html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh skin</label>`
+  const custom = hasSkins || nodes.length
+    ? html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh</label>`
     : html`<span class="note">không có skin</span>`;
+  const avatar = hero.custom && nodes.length ? html`<${AvatarPicker} hero=${hero} nodes=${nodes} edit=${edit} />` : null;
   const table = hero.custom && hasSkins ? html`<${HeroSkinTable} hero=${hero} skins=${skins} edit=${edit} />` : null;
   return html`
     <div class="card">
@@ -53,7 +56,21 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
           : html`<${Select} aria-label=${`Hero slot ${index + 1}`} options=${options} value=${hero.name} onChange=${setName} />`}
         ${custom}
       </div>
+      ${avatar}
       ${table}
+    </div>
+  `;
+}
+
+// Dị Năng level N = skill nodes 1..N open (opening a node opens every lower one); "Tùy chỉnh" starts
+// it at 0. Attribute nodes are not modelled.
+function AvatarPicker({ hero, nodes, edit }) {
+  const setLevel = (v) => edit((h) => (h.avatar = v));
+  return html`
+    <div class="row">
+      <label>Dị Năng (node skill)</label>
+      <${NumberInput} value=${hero.avatar ?? 0} min=${0} max=${nodes.length} onChange=${setLevel} />
+      <span class="note">${` /${nodes.length}`}</span>
     </div>
   `;
 }

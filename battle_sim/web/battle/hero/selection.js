@@ -3,6 +3,7 @@
 // capture has it, else gets borrowed stats (build.js); skins go through skin.js.
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { buildProfileHero } from "./build.js";
+import { applyAvatar } from "./avatar.js";
 import { applySkin } from "./skin.js";
 
 const LINEUP = 5;
@@ -14,11 +15,12 @@ export async function applyHeroSelection({ profile, player, catalog, choices, as
   if (selected.length !== LINEUP) throw new Error(`Profile needs exactly ${LINEUP} heroes`);
   let jokerSkillSlotted = false;
   const buildHero = ({ option, selection }, existing) => {
-    const { code, baseSkills, skins } = option;
+    const { code, baseSkills, skins, avatarNodes } = option;
     const config = M("HeroLO").get(code);
     if (!config) throw new Error(`Unknown hero code: ${code}`);
-    const hero = existing || captured.find((entry) => entry.code === code)
+    let hero = existing || captured.find((entry) => entry.code === code)
       || buildProfileHero(code, config, baseSkills, captured, rb, M, step);
+    if (selection.avatar !== undefined) hero = applyAvatar(hero, avatarNodes, selection.avatar, rb, step);
     if (["skin", "star", "ownedSkins", "slots"].some((key) => selection[key] !== undefined)) {
       return applySkin(hero, selection, skins, rb, M, (resolved) => {
         if (selection.name === JOKER_SUMMON.hero) {

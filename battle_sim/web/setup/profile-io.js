@@ -23,7 +23,8 @@ function emptyState(dict, antiqueDict) {
 }
 
 function newHero(name) {
-  return { name, custom: false, worn: null, skins: {}, slots: [] };
+  // avatar: number of open Dị Năng skill nodes (red heroes, set when custom), null = as captured / borrowed.
+  return { name, custom: false, worn: null, skins: {}, slots: [], avatar: null };
 }
 
 function newBuilding(dict, building) {
@@ -35,6 +36,11 @@ function normalize(state, dict) {
   if (state.mounts && !state.mounts.owned.includes(state.mounts.selected)) state.mounts.selected = null;
   // The worn Summoner skin is picked among the skins checked in the Summoner table.
   if (!state.summonerSkins?.some(({ name }) => name === state.summonerWorn)) state.summonerWorn = null;
+  for (const hero of [...state.heroes, state.summonedJoker].filter(Boolean)) {
+    // "Tùy chỉnh" customizes everything: a red hero's Dị Năng defaults to 0; untouched = as captured.
+    if (!hero.custom || !dict.heroes[hero.name]?.avatarNodes) hero.avatar = null;
+    else hero.avatar ??= 0;
+  }
   if (state.heroes) for (const hero of state.heroes) R.normalizeHero(hero, heroSkins(dict, hero.name));
   state.summonedJoker ||= newHero(JOKER_SUMMON.summonedHero);
   R.normalizeHero(state.summonedJoker, heroSkins(dict, JOKER_SUMMON.summonedHero));
@@ -52,6 +58,8 @@ function toProfile(state, dict) {
       if (!hero.custom) return hero.name;
       const skins = heroSkins(dict, hero.name);
       const out = { name: hero.name };
+      if (hero.avatar !== null && dict.heroes[hero.name].avatarNodes) out.avatar = hero.avatar;
+      if (!Object.keys(skins).length) return out;
       if (hero.worn) Object.assign(out, { skin: hero.worn, star: hero.skins[hero.worn].star });
       const owned = Object.keys(skins).filter((key) => key !== hero.worn && hero.skins[key]?.owned);
       if (owned.length) out.ownedSkins = Object.fromEntries(owned.map((key) => [key, hero.skins[key].star]));
@@ -107,8 +115,15 @@ function fromProfile(profile, base, dict, { maps, antiqueDict } = {}) {
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
     const skins = heroSkins(dict, hero.name);
-    hero.custom = ["skin", "star", "ownedSkins", "slots"].some((key) => sel[key] !== undefined);
+    hero.custom = ["skin", "star", "ownedSkins", "slots", "avatar"].some((key) => sel[key] !== undefined);
     if (!hero.custom) return hero;
+    if (sel.avatar !== undefined) {
+      const nodes = dict.heroes[hero.name].avatarNodes || [];
+      if (!Number.isInteger(sel.avatar) || sel.avatar < 0 || sel.avatar > nodes.length) {
+        throw new Error(`Hero ${hero.name}: Dị Năng phải là số node 0-${nodes.length}`);
+      }
+      hero.avatar = sel.avatar;
+    }
     const skinName = (key) => {
       if (!skins[key]) throw new Error(`Hero ${hero.name} không có skin "${key}"`);
       return key;

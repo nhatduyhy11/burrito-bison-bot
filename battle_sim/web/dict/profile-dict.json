@@ -45,7 +45,29 @@
             "heroic_legend"
           ]
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10010101000,
+          "skill": 10010601000
+        },
+        {
+          "replaces": 10010201000,
+          "skill": 10010602000
+        },
+        {
+          "replaces": 10010303000,
+          "skill": 10010603000
+        },
+        {
+          "replaces": 10010603000,
+          "skill": 10010604000
+        },
+        {
+          "replaces": 10010602000,
+          "skill": 10010605000
+        }
+      ]
     },
     "spiker": {
       "code": 50000002,
@@ -91,7 +113,29 @@
             "machine_rampage"
           ]
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10020101000,
+          "skill": 10020601000
+        },
+        {
+          "replaces": 10020201000,
+          "skill": 10020602000
+        },
+        {
+          "replaces": 10020303000,
+          "skill": 10020603000
+        },
+        {
+          "replaces": null,
+          "skill": 10020604000
+        },
+        {
+          "replaces": 10020601000,
+          "skill": 10020605000
+        }
+      ]
     },
     "frosthealer": {
       "code": 50000003,
@@ -125,7 +169,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10030201000,
+          "skill": 10030601000
+        },
+        {
+          "replaces": 10030601000,
+          "skill": 10030602000
+        },
+        {
+          "replaces": null,
+          "skill": 10030603000
+        },
+        {
+          "replaces": null,
+          "skill": 10030604000
+        },
+        {
+          "replaces": 10030303000,
+          "skill": 10030605000
+        }
+      ]
     },
     "archmage": {
       "code": 50000004,
@@ -159,7 +225,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10040101000,
+          "skill": 10040601000
+        },
+        {
+          "replaces": 10040303000,
+          "skill": 10040602000
+        },
+        {
+          "replaces": null,
+          "skill": 10040603000
+        },
+        {
+          "replaces": 10040201000,
+          "skill": 10040604000
+        },
+        {
+          "replaces": null,
+          "skill": 10040605000
+        }
+      ]
     },
     "cannon_girl": {
       "code": 50000005,
@@ -205,7 +293,29 @@
             "guns_n_roses"
           ]
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10050101000,
+          "skill": 10050601000
+        },
+        {
+          "replaces": 10050303000,
+          "skill": 10050602000
+        },
+        {
+          "replaces": 10050602000,
+          "skill": 10050603000
+        },
+        {
+          "replaces": 10050201000,
+          "skill": 10050604000
+        },
+        {
+          "replaces": null,
+          "skill": 10050605000
+        }
+      ]
     },
     "redhood": {
       "code": 50000006,
@@ -261,7 +371,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10080201000,
+          "skill": 10080601000
+        },
+        {
+          "replaces": 10080303000,
+          "skill": 10080602000
+        },
+        {
+          "replaces": 10080602000,
+          "skill": 10080603000
+        },
+        {
+          "replaces": null,
+          "skill": 10080604000
+        },
+        {
+          "replaces": 10080601000,
+          "skill": 10080605000
+        }
+      ]
     },
     "laserman": {
       "code": 50000009,
@@ -307,7 +439,29 @@
             "starship_master"
           ]
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10090201000,
+          "skill": 10090601000
+        },
+        {
+          "replaces": 10090303000,
+          "skill": 10090602000
+        },
+        {
+          "replaces": 10090601000,
+          "skill": 10090603000
+        },
+        {
+          "replaces": 10090602000,
+          "skill": 10090604000
+        },
+        {
+          "replaces": 10090603000,
+          "skill": 10090605000
+        }
+      ]
     },
     "plague_doctor": {
       "code": 50000010,
@@ -374,7 +528,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10130101000,
+          "skill": 10130601000
+        },
+        {
+          "replaces": 10130601000,
+          "skill": 10130602000
+        },
+        {
+          "replaces": 10130202000,
+          "skill": 10130603000
+        },
+        {
+          "replaces": 10130302000,
+          "skill": 10130604000
+        },
+        {
+          "replaces": 10130603000,
+          "skill": 10130605000
+        }
+      ]
     },
     "pyrogon_mech": {
       "code": 50000014,
@@ -420,7 +596,29 @@
             "force_of_dawn"
           ]
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10140201000,
+          "skill": 10140601000
+        },
+        {
+          "replaces": 10140303000,
+          "skill": 10140602000
+        },
+        {
+          "replaces": null,
+          "skill": 10140603000
+        },
+        {
+          "replaces": 10140602000,
+          "skill": 10140604000
+        },
+        {
+          "replaces": null,
+          "skill": 10140605000
+        }
+      ]
     },
     "blue_giant": {
       "code": 50000015,
@@ -454,7 +652,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10150303000,
+          "skill": 10150601000
+        },
+        {
+          "replaces": 10150201000,
+          "skill": 10150602000
+        },
+        {
+          "replaces": 10150601000,
+          "skill": 10150603000
+        },
+        {
+          "replaces": null,
+          "skill": 10150604000
+        },
+        {
+          "replaces": null,
+          "skill": 10150605000
+        }
+      ]
     },
     "pinocchio": {
       "code": 50000016,
@@ -519,7 +739,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": null,
+          "skill": 10190601000
+        },
+        {
+          "replaces": null,
+          "skill": 10190602000
+        },
+        {
+          "replaces": null,
+          "skill": 10190603000
+        },
+        {
+          "replaces": null,
+          "skill": 10190604000
+        },
+        {
+          "replaces": null,
+          "skill": 10190605000
+        }
+      ]
     },
     "drillmaster": {
       "code": 50000020,
@@ -585,7 +827,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10230201000,
+          "skill": 10230601000
+        },
+        {
+          "replaces": 10230101000,
+          "skill": 10230602000
+        },
+        {
+          "replaces": 10230303000,
+          "skill": 10230603000
+        },
+        {
+          "replaces": null,
+          "skill": 10230604000
+        },
+        {
+          "replaces": null,
+          "skill": 10230605000
+        }
+      ]
     },
     "count_dracula": {
       "code": 50000024,
@@ -640,7 +904,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10260303000,
+          "skill": 10260601000
+        },
+        {
+          "replaces": 10260601000,
+          "skill": 10260602000
+        },
+        {
+          "replaces": 10260602000,
+          "skill": 10260603000
+        },
+        {
+          "replaces": 10260201000,
+          "skill": 10260604000
+        },
+        {
+          "replaces": null,
+          "skill": 10260605000
+        }
+      ]
     },
     "medusa": {
       "code": 50000027,
@@ -707,7 +993,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10300101000,
+          "skill": 10300601000
+        },
+        {
+          "replaces": 10300303000,
+          "skill": 10300602000
+        },
+        {
+          "replaces": null,
+          "skill": 10300603000
+        },
+        {
+          "replaces": 10300201000,
+          "skill": 10300604000
+        },
+        {
+          "replaces": 10300602000,
+          "skill": 10300605000
+        }
+      ]
     },
     "joker": {
       "code": 50000031,
@@ -753,7 +1061,29 @@
             "magic_dean"
           ]
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10310101000,
+          "skill": 10310601000
+        },
+        {
+          "replaces": 10310201000,
+          "skill": 10310602000
+        },
+        {
+          "replaces": 10310303000,
+          "skill": 10310603000
+        },
+        {
+          "replaces": null,
+          "skill": 10310604000
+        },
+        {
+          "replaces": null,
+          "skill": 10310605000
+        }
+      ]
     },
     "thundermaster": {
       "code": 50000032,
@@ -787,7 +1117,29 @@
           "color": "gold",
           "maxStar": 5
         }
-      }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10320101000,
+          "skill": 10320601000
+        },
+        {
+          "replaces": 10320303000,
+          "skill": 10320602000
+        },
+        {
+          "replaces": 10320201000,
+          "skill": 10320603000
+        },
+        {
+          "replaces": 10320602000,
+          "skill": 10320604000
+        },
+        {
+          "replaces": null,
+          "skill": 10320605000
+        }
+      ]
     },
     "strawhat": {
       "code": 50000033,

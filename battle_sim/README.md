@@ -230,6 +230,11 @@ uv run python battle_sim/sandbox --setup
   trên 2 capture: chỉ số lệch trong ±10% (Lu Bu lv100 duy nhất thì −20%). Hero cam/tím mượn
   từ hero đỏ khi capture không có hero cùng độ hiếm, chưa đối chiếu được.
   Xem [cấu hình skin](PROFILE_SKINS.md) để chọn skin, số sao và các skin yêu cầu.
+  Hero đỏ có `avatar: N` (0–5) = số node skill Dị Năng đã mở theo thứ tự chapter, ví dụ
+  `{ "name": "lu_bu", "avatar": 2 }`. Mỗi node thay một skill của hero bằng skill mới, hoặc
+  thêm skill mới (`avatarNodes` trong profile-dict, [web/battle/hero/avatar.js](web/battle/hero/avatar.js)).
+  Chỉ mô phỏng skill; attr của node chỉ số do server tính nên không có. Bỏ `avatar` thì giữ như
+  capture. Xem [hero_gear.md](docs/planning/hero_gear.md).
   Khi Pháo Loli gắn skill skin `guns_n_roses` và Joker chưa nằm trong đội hình chính,
   trang setup mở Joker ở slot 6 với đầy đủ tùy chỉnh skin, sở hữu, sao và slot skill.
   JSON lưu riêng ở `summonedJoker`, cùng định dạng một hero, ví dụ
@@ -265,7 +270,7 @@ uv run python battle_sim/sandbox --setup
   [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
   lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Mục không có tên tiếng Anh dùng
   key `id_<mã>` (ví dụ skin 7 màu `id_10013`). Hero, trap và pet có `color` là độ hiếm (viền thẻ trong game: `purple` 4, `orange` 5,
-  `red` 6, `gold` 7; spell không có). `map-dict.json` gồm `campaign` (khoảng stage) và `capital` (boss U Đô kèm các bộ quái). `antique-dict.json` gồm `antiques`, `antiqueColors`, `antiqueSuits`, `antiqueUpgradeCosts`. `profile-dict.json` gồm `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
+  `red` 6, `gold` 7; spell không có). `map-dict.json` gồm `campaign` (khoảng stage) và `capital` (boss U Đô kèm các bộ quái). `antique-dict.json` gồm `antiques`, `antiqueColors`, `antiqueSuits`, `antiqueUpgradeCosts`. `profile-dict.json` gồm `heroes` (kèm `baseSkills`, `skins` và `avatarNodes` cho hero đỏ), `traps`, `pets`, `spells`
   (`daoists`), `buildings` (door, bed, generator, cat, kèm skin), mỗi mục có `maxLevel` /
   `maxStar`. Không sửa tay; chạy lại script khi đổi config.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
