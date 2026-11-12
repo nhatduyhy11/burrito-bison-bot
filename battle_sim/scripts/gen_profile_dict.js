@@ -255,7 +255,6 @@ async function main() {
     pool[row.code] = {
       quality: row.quality, skillCode: row.skillCode,
       minValue: row.minValue, maxValue: row.maxValue,
-      ...(row.skillTemplateParams ? { skillTemplateParams: jsonField(row.skillTemplateParams) } : {}),
     };
   }
   const artifactSkills = Object.fromEntries([...artifactSkillCodes].sort((a, b) => a - b).map((code) => {
