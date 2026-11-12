@@ -3,6 +3,7 @@
 // - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) bosses + creep presets;
 // - web/dict/antique-dict.json: antiques with ranks, suits, colors and upgrade costs (the bulk of the data);
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
+// - web/dict/artifact-dict.json: Thần Khí by hero, quality and stage, with their refine pools;
 // - web/dict/profile-dict.json: the rest of the account side: heroes with their skins, Summoner skins,
 //   traps, pets, spells (daoists), building skins and mounts.
 // Entries are keyed by a slug of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
@@ -21,6 +22,7 @@ const OUT = path.join(__dirname, "..", "web", "dict", "profile-dict.json");
 const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
 const ANTIQUE_OUT = path.join(__dirname, "..", "web", "dict", "antique-dict.json");
 const RELIC_OUT = path.join(__dirname, "..", "web", "dict", "relic-dict.json");
+const ARTIFACT_OUT = path.join(__dirname, "..", "web", "dict", "artifact-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
 const SKIN_COLOR = { 4: "default", 6: "red", 7: "gold", 8: "colorful" };
 // Rarity = card border in game (HeroLO / OrganLO / SummonCreatureLO .color). Spells have no rarity tiers.
@@ -256,6 +258,39 @@ async function main() {
     lines: relicLines,
   };
 
+  // Thần Khí (神器). ArtifactLO refers to pools shared across qualities/stages of a hero.
+  const artifactRows = rows(M("ArtifactLO")).sort((a, b) => a.code - b.code);
+  const artifactHeroes = {};
+  const entryPools = {};
+  const artifactSkillCodes = new Set();
+  for (const row of artifactRows) {
+    const hero = artifactHeroes[row.hero] ??= { variants: [] };
+    const skillCodes = jsonField(row.skillList);
+    skillCodes.forEach((code) => artifactSkillCodes.add(code));
+    hero.variants.push({
+      code: row.code, name: row.name, name_vn: vn("ArtifactLO", row.code),
+      quality: row.quality, stage: row.stage, attr: jsonField(row.attr),
+      skillCodes, holeNum: row.holeNum, maxHoleNum: row.maxHoleNum, entryPool: row.entryPool,
+    });
+    entryPools[row.entryPool] ??= {};
+  }
+  for (const row of rows(M("ArtifactEntryLO")).sort((a, b) => a.code - b.code)) {
+    const pool = entryPools[row.entryPool];
+    if (!pool) continue;
+    if (row.skillCode) artifactSkillCodes.add(row.skillCode);
+    pool[row.code] = {
+      quality: row.quality, entryType: row.entryType, showType: row.showType, isRare: !!row.isRare,
+      minValue: row.minValue, maxValue: row.maxValue, showWeight: row.showWeight,
+      ...(row.attrId ? { attrId: row.attrId } : {}),
+      ...(row.skillCode ? { skillCode: row.skillCode, percent: !!row.percent } : {}),
+      ...(row.skillTemplateParams ? { skillTemplateParams: jsonField(row.skillTemplateParams) } : {}),
+    };
+  }
+  const artifactSkills = Object.fromEntries([...artifactSkillCodes].sort((a, b) => a - b).map((code) => {
+    if (!SkillBase.get(code)) throw new Error(`artifact skill ${code} missing from SkillBaseLO`);
+    return [code, skillRef(code)];
+  }));
+
   const dict = {
     _generated: `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, name_vn: lang_vi)`,
     heroes, summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes,
@@ -265,7 +300,9 @@ async function main() {
   write(MAP_OUT, maps);
   write(ANTIQUE_OUT, { antiques, antiqueColors, antiqueSuits, antiqueUpgradeCosts });
   write(RELIC_OUT, relics);
+  write(ARTIFACT_OUT, { heroes: artifactHeroes, entryPools, skills: artifactSkills });
   const count = (o) => Object.keys(o).length;
+  console.log(`wrote ${path.relative(process.cwd(), ARTIFACT_OUT)}: ${artifactRows.length} variants, ${count(entryPools)} refine pools`);
   console.log(`wrote ${path.relative(process.cwd(), RELIC_OUT)}: ${count(relics.lines)} relic lines`);
   console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
     `${count(maps.capital.bosses)} capital bosses`);
