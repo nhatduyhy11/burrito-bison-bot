@@ -29,7 +29,10 @@ export function AntiquesSection({ ctx }) {
   });
   return html`
     <${Accordion} title="Đồ Cổ" hint=${`${Object.keys(owned).length} sở hữu`} defaultOpen=${false}>
-      <button type="button" class="antique-preset" onClick=${useStarter}>Cam, tím, xanh dương · 1 sao</button>
+      <div class="row">
+        <button type="button" onClick=${useStarter}>Cam, tím, xanh dương · 1 sao</button>
+        <span class="note">Max Lv15</span>
+      </div>
       ${groups}
     <//>
   `;

@@ -60,8 +60,8 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
           : html`<${Select} aria-label=${`Hero slot ${index + 1}`} options=${options} value=${hero.name} onChange=${setName} />`}
         ${custom}
       </div>
-      ${avatar}
       ${hero.name && html`<${RelicPicker} selection=${hero.relic} lines=${ctx.relicLines} edit=${edit} />`}
+      ${avatar}
       ${table}
     </div>
   `;
