@@ -47,6 +47,9 @@ Runner automap + research hook trên trang live (chỉ đọc):
 uv run python .tmp/battle_research/run_runner_hooked.py --dev-reload --profile .tmp/pspo
 ```
 
+pmain (chỉ `hook.js`, không `wrap_random.js`, không CDP; user tự chơi):
+`uv run python .tmp/battle_research/launch_pmain.py .tmp/pmain .tmp/battle_research/events-pmain-<date>.jsonl`
+
 Ra `.tmp/battle_research/events-*.jsonl` (`StartGameP` + `QuitRoom`). Dữ liệu thô và script
 probe (gitignored) cũng ở `.tmp/battle_research/`: `startgamep-<uuid>.json`, `hook.js`,
 `wrap_random.js`, `launch.py`, `cdp.py`, `driver.py`, `decode.py`, `q_*.js`.
