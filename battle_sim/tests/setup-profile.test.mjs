@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { capitalPreset, emptyState, normalize, fromProfile, toProfile } from '../web/setup/profile-io.js';
 import { hasSummonedJoker, JOKER_SUMMON } from '../web/hero-lineup.js';
+import { applyProfile } from '../web/battle/profile.js';
 
 const dict = JSON.parse(readFileSync(new URL('../web/dict/profile-dict.json', import.meta.url)));
 const maps = JSON.parse(readFileSync(new URL('../web/dict/map-dict.json', import.meta.url)));
@@ -51,28 +52,25 @@ test('Joker support requires Loli summon skin in a slot and no regular Joker', (
   assert.equal(hasSummonedJoker([{ name: JOKER_SUMMON.summonedHero }], true), false);
 });
 
-test('battle applies owned mount skills independently of the single equipped mount', async () => {
-  const { runInNewContext } = await import('node:vm');
+test('battle applies owned mount skills independently of the single equipped mount', async (t) => {
   const player = { mounts: { 0: { code: 1, skillCode: 12345 }, _length: 1 }, mountCode: 1 };
   let profile = { mounts: { owned: ['azure_drone', 'ironclad_crab'], selected: null } };
-  const window = {};
-  runInNewContext(readFileSync(new URL('../web/battle/profile.js', import.meta.url), 'utf8'), {
-    window,
-    fetch: async (url) => ({ ok: true, json: async () => url.includes('active-profile') ? profile : dict }),
-  });
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => ({ ok: true, json: async () => url.includes('active-profile') ? profile : dict });
+  t.after(() => { globalThis.fetch = realFetch; });
   const rb = { listItems: (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[i]) };
   const M = () => ({ get: () => ({}) });
   const start = { playerInfos: { 0: player, _length: 1 } };
-  await window.SimBattle.applyProfile(start, rb, M, () => {});
+  await applyProfile(start, rb, M, () => {});
   assert.equal(start.playerInfos[0].mountCode, 0);
   assert.equal(start.playerInfos[0].mounts._length, 2);
   assert.equal(start.playerInfos[0].mounts[0].skillCode, 12345);
   assert.equal(start.playerInfos[0].mounts[1].skillCode, dict.mounts.ironclad_crab.ranks[0].showSkill.code);
   profile.mounts.selected = 'ironclad_crab';
-  await window.SimBattle.applyProfile(start, rb, M, () => {});
+  await applyProfile(start, rb, M, () => {});
   assert.equal(start.playerInfos[0].mountCode, dict.mounts.ironclad_crab.code);
   profile.mounts.selected = 'missing';
-  await assert.rejects(window.SimBattle.applyProfile(start, rb, M, () => {}), /must be owned/);
+  await assert.rejects(applyProfile(start, rb, M, () => {}), /must be owned/);
 });
 
 test('map: campaign stays as before; capital (U Do) boss + preset round trip', () => {

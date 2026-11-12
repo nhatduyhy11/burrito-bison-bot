@@ -329,9 +329,12 @@ So sánh:
 - `web/vendor/` — thư viện bên thứ ba vendor sẵn (sandbox chặn CDN): Preact 10.29.8 + hooks, htm
   3.1.1 (bản ES module). Nguồn, version, license: [web/vendor/README.md](web/vendor/README.md).
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
-  `index.js` (entry, `window.__simBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
+  `index.js` (entry, `runBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
   stub mạng, `QuitRoom`), `replay.js` (op log, tick, pause, so kết quả), `profile.js` +
   `hero/` (`selection.js`, `build.js`, `skin.js`) + `map-profile.js` + `build-skin-profile.js` (chỉ load khi `--profile`).
+  Toàn bộ `web/` là ES module (`import`/`export`), kể cả `boot.js` (`boot.html` nạp bằng `type="module"`);
+  chỉ engine và code của game (manifest, cocos2d, `jsList`) cùng `lib/proto_rebuild.js` vẫn nạp bằng
+  `<script>` thường qua `loadScript` vì chúng sống bằng biến toàn cục (`cc`, `window.__require`, `makeRebuilder`).
 - `lib/capture.js` — đọc trận (`StartGameP` … `QuitRoom`) từ `events-*.jsonl`.
 - `lib/deploy.js` — đọc ClientVer / manifest / `bundleVers` của deploy live.
 - `lib/versions.js` — chọn bundle/config/map theo version, tải config.
