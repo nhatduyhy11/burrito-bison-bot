@@ -3,7 +3,7 @@
 // - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) bosses + creep presets;
 // - web/dict/antique-dict.json: antiques with ranks, suits, colors and upgrade costs (the bulk of the data);
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
-// - web/dict/artifact-dict.json: Thần Khí by hero, quality and stage, with their refine pools;
+// - web/dict/artifact-dict.json: Thần Khí by hero, quality and stage, with battle skill entries;
 // - web/dict/profile-dict.json: the rest of the account side: heroes with their skins, Summoner skins,
 //   traps, pets, spells (daoists), building skins and mounts.
 // Entries are keyed by a slug of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
@@ -258,7 +258,8 @@ async function main() {
     lines: relicLines,
   };
 
-  // Thần Khí (神器). ArtifactLO refers to pools shared across qualities/stages of a hero.
+  // Thần Khí (神器). Keep the refine entries consumed as skills from battleEntryInfos.
+  // The battle receives ordinary equipment and refine stats already in hero.attr.
   const artifactRows = rows(M("ArtifactLO")).sort((a, b) => a.code - b.code);
   const artifactHeroes = {};
   const entryPools = {};
@@ -269,20 +270,18 @@ async function main() {
     skillCodes.forEach((code) => artifactSkillCodes.add(code));
     hero.variants.push({
       code: row.code, name: row.name, name_vn: vn("ArtifactLO", row.code),
-      quality: row.quality, stage: row.stage, attr: jsonField(row.attr),
+      quality: row.quality, stage: row.stage,
       skillCodes, holeNum: row.holeNum, maxHoleNum: row.maxHoleNum, entryPool: row.entryPool,
     });
     entryPools[row.entryPool] ??= {};
   }
   for (const row of rows(M("ArtifactEntryLO")).sort((a, b) => a.code - b.code)) {
     const pool = entryPools[row.entryPool];
-    if (!pool) continue;
-    if (row.skillCode) artifactSkillCodes.add(row.skillCode);
+    if (!pool || row.entryType !== 2 || !row.skillCode) continue;
+    artifactSkillCodes.add(row.skillCode);
     pool[row.code] = {
-      quality: row.quality, entryType: row.entryType, showType: row.showType, isRare: !!row.isRare,
-      minValue: row.minValue, maxValue: row.maxValue, showWeight: row.showWeight,
-      ...(row.attrId ? { attrId: row.attrId } : {}),
-      ...(row.skillCode ? { skillCode: row.skillCode, percent: !!row.percent } : {}),
+      quality: row.quality, skillCode: row.skillCode,
+      minValue: row.minValue, maxValue: row.maxValue,
       ...(row.skillTemplateParams ? { skillTemplateParams: jsonField(row.skillTemplateParams) } : {}),
     };
   }
@@ -302,7 +301,8 @@ async function main() {
   write(RELIC_OUT, relics);
   write(ARTIFACT_OUT, { heroes: artifactHeroes, entryPools, skills: artifactSkills });
   const count = (o) => Object.keys(o).length;
-  console.log(`wrote ${path.relative(process.cwd(), ARTIFACT_OUT)}: ${artifactRows.length} variants, ${count(entryPools)} refine pools`);
+  const artifactEntryCount = Object.values(entryPools).reduce((sum, pool) => sum + count(pool), 0);
+  console.log(`wrote ${path.relative(process.cwd(), ARTIFACT_OUT)}: ${artifactRows.length} variants, ${artifactEntryCount} battle entries in ${count(entryPools)} pools`);
   console.log(`wrote ${path.relative(process.cwd(), RELIC_OUT)}: ${count(relics.lines)} relic lines`);
   console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
     `${count(maps.capital.bosses)} capital bosses`);

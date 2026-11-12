@@ -118,8 +118,10 @@ Mỗi Thánh Khí phẩm 6 trở lên có skill riêng, nằm trong `hero.skills
 
 Catalog [artifact-dict.json](../../web/dict/artifact-dict.json) trích từ config `sea_65380`.
 Tra `heroes[heroCode].variants` để lấy món theo phẩm và stage, rồi tra `entryPools[entryPool][entryCode]`
-và `skills[skillCode]`. Có 240 biến thể cho 16 hero đỏ, 2.416 entry trong 16 pool được
-`ArtifactLO` tham chiếu và 138 skill. `showWeight` là trọng số UI dùng để hiển thị tỷ lệ.
+và `skills[skillCode]`. Có 240 biến thể cho 16 hero đỏ, 688 entry kỹ năng trong 16 pool
+và 138 skill. Dict giữ 640 dòng buff có trị số và 48 dòng đặc kỹ rainbow.
+Chỉ số gốc `ArtifactLO.attr` và 1.728 dòng roll chỉ số thường (`entryType=1`) đã bỏ
+khỏi dict vì client nhận chỉ số trận trong `hero.attr`.
 
 ### Lên stage và mở kỹ năng
 
@@ -169,15 +171,28 @@ entry có đường xử lý khác nhau:
 |---|---|---|
 | Chỉ số thường | `entryType=1`, có `attrId`, phẩm 3–7 | UI hiển thị bằng `getAttrNormalDesc`. Capture chi tiết Hắc Lữ Bố cho thấy hai dòng thường xuất hiện với đúng trị số trong `hero.attr` và vắng trong `battleEntryInfos`. Công thức quy đổi chỉ số % vẫn cần kiểm riêng. |
 | Buff đội có trị số | `entryType=2`, phẩm 3–7, có `skillCode`, khoảng trị số dương | `TDPlayerEntity` gom entry của các hero, `ArtifactSkillHub` lấy **value lớn nhất theo entry code**, dựng passive rồi `BattleEngineDelegate` đưa vào hero. `Buff_Modifiers_Factor` đổi value theo `/10000` nếu là modifier phần trăm, `/100` nếu là modifier số tuyệt đối. |
-| Kỹ năng riêng của Thần Khí | `entryType=2`, phẩm 8, `isRare=1`, `minValue=maxValue=0` | Trong Campaign, skill code có mặt trong danh sách điều kiện của `TDBuildVO` và có thể mở lựa chọn tương ứng. Luồng tạo unit trực tiếp từ hero trong `BattleUnitData` còn có nhánh thêm skill của entry `value == 0` vào bản sao danh sách skill của unit. |
+| Kỹ năng riêng của Thần Khí | `entryType=2`, phẩm 8, `isRare=1`, `minValue=maxValue=0` | `BattleEngineDelegate` gọi `BattleUnitData.createAddUnitData(hero)` khi dựng hero trong Campaign. Hàm thêm skill của entry `value == 0` vào bản sao danh sách skill của hero đeo món. `TDBuildVO` cũng lấy mã skill để xét điều kiện thẻ. |
 
-Cả 16 pool đều có đúng 3 dòng phẩm 8. Pool Hắc Lữ Bố có `80000108 → 10130707000`
-(Chiến Ý Bất Khuất), `80000208 → 10130706000` (Ma Lâm Thiên Hạ) và
-`80000308 → 10130708000` (Võ Thần Bá Thể). Cờ `isRare` cũng có trên entry phẩm 7 gồm cả
-chỉ số và buff đội, nên dùng phẩm 8 và `skillCode` để nhận diện nhóm kỹ năng riêng này.
-`BuildSummonLO` xác nhận riêng Ma Lâm Thiên Hạ đổi biến thể thẻ `700004013 → 700005013`
-khi có mã `10130706000`. Hai mã phẩm 8 còn lại của Hắc Lữ Bố không xuất hiện trong
-`BuildSummonLO.SpecialCondition` của bản config này.
+### Dòng rainbow trong Tôi Luyện
+
+`ArtifactModule.getEntryInfoListBy` liệt kê cả pool của món. `ArtifactEntryInfoItem`
+và hai component hiển thị dòng hiện tại/preview đọc `showType=2` để gắn nhãn
+`神器特技` (đặc kỹ Thần Khí), và `quality=8` để dùng nền `sq_img_sxtiao_8`.
+Đây là phẩm của dòng roll. Cả 16 pool đều có đúng ba dòng rainbow, kể cả khi món đang
+ở phẩm đỏ. UI tính tỷ lệ hiển thị bằng `showWeight / tổng showWeight` của pool.
+Pool Hắc Lữ Bố hiển thị 0,020%, 0,040% và 0,040%; đây là tỷ lệ UI cho từng dòng,
+chưa xác minh thuật toán roll thực tế của server. Cờ `isRare` cũng có trên dòng phẩm 7.
+
+| Entry rainbow của Hắc Lữ Bố | Skill | Luồng Campaign trong config |
+|---|---|---|
+| `80000108` | `10130707000` Chiến Ý Bất Khuất | Passive có điều kiện `CommonWeaponLevel` đạt 3 trong trận, rồi tích ST Phép Trực Tiếp khi gây ST Xuyên Thấu. |
+| `80000208` | `10130706000` Ma Lâm Thiên Hạ | Đổi thẻ Thức Tỉnh `700004013 → 700005013` theo `BuildSummonLO.SpecialCondition`. |
+| `80000308` | `10130708000` Võ Thần Bá Thể | Passive tăng ST tất cả kỹ năng theo `CommonWeaponLevel` trong trận. |
+
+Trong 48 dòng rainbow có đúng 16 mã dùng làm điều kiện thẻ, mỗi hero một mã. Với
+Hắc Lữ Bố, đã kiểm offline bằng chính `createAddUnitData` của bundle: đưa từng mã entry
+vào snapshot thử với `value=0` thì cả ba mã passive xuất hiện trong skills của unit.
+Capture tài khoản hiện chưa có dòng rainbow đã roll để kiểm đầu cuối trên trận thật.
 
 ### Đối chiếu capture
 
