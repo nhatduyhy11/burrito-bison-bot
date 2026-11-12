@@ -1,7 +1,7 @@
 "use strict";
 // Generate the playtest catalogs from the game's own config tables:
 // - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) bosses + creep presets;
-// - web/dict/antique-dict.json: antiques with ranks, suits, colors and upgrade costs (the bulk of the data);
+// - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
 // - web/dict/artifact-dict.json: Thần Khí by hero, quality and stage, with battle skill entries;
 // - web/dict/profile-dict.json: the rest of the account side: heroes with their skins, Summoner skins,
@@ -42,12 +42,6 @@ function keyed(entries) { // [[name, value]] -> {slug: value}, codes appended on
 }
 const rows = (lo) => { const list = []; lo.store.foreach((_k, v) => list.push(v)); return list; };
 const jsonField = (value) => value ? JSON.parse(value) : [];
-function fields(row, jsonFields = []) {
-  return Object.fromEntries(Object.entries(row).map(([key, value]) => {
-    const field = key.slice(1);
-    return [field, jsonFields.includes(field) ? jsonField(value) : value];
-  }));
-}
 function maxBy(lo, field) { // mecType -> max of field
   const max = new Map();
   for (const r of rows(lo)) max.set(r.mecType, Math.max(max.get(r.mecType) || 0, r[field]));
@@ -186,38 +180,17 @@ async function main() {
   }]));
   const mountPrivilegeTypes = { 1: "MoveSpeed", 2: "PassWall", 3: "GVGEnergy", 4: "GVGShow" };
 
-  const starRows = rows(M("AntiqueStarLO"));
+  // The engine looks up effects and level limits in AntiqueHaloLO by rank code.
   const haloRows = rows(M("AntiqueHaloLO"));
-  const antiqueColors = Object.fromEntries(rows(M("AntiqueColorLO")).map((row) => [row.color, {
-    ...fields(row), name_vn: vn("AntiqueColorLO", row.color), color: RARITY[row.color] ?? row.color,
-  }]));
   const antiques = keyed(rows(M("AntiqueLO")).map((row) => {
-    const stars = starRows.filter((rank) => rank.type === row.type).sort((a, b) => a.star - b.star);
-    const ranks = haloRows.filter((halo) => halo.antiqueCode === row.code).sort((a, b) => a.star - b.star).map((halo) => {
-      const show = M("AntiqueHaloShowLO").get(halo.code);
-      const showVn = V("AntiqueHaloShowLO").get(halo.code);
-      const upgrade = stars.find((rank) => rank.star === halo.star);
-      return {
-        ...fields(halo, ["showAttr", "attr", "haloParameter", "upAttr", "privilege", "skillFactor", "limitSkillFactor",
-          "skillEffTypeParams", "skillTemplateParams", "perPower"]),
-        ...(upgrade ? { upgrade: fields(upgrade, ["costs"]) } : {}),
-        ...(show ? { display: { ...fields(show), text_vn: showVn?.text,
-          showAttrText1_vn: showVn?.showAttrText1, showAttrText2_vn: showVn?.showAttrText2 } } : {}),
-      };
-    });
-    const task = M("AntiqueHaloTaskLO").get(row.type);
+    const ranks = haloRows.filter((halo) => halo.antiqueCode === row.code)
+      .sort((a, b) => a.star - b.star)
+      .map(({ code, star }) => ({ code, star }));
     return [row.name, {
-      ...fields(row, ["costs", "dupeCosts", "upAttr"]), colorId: row.color, color: RARITY[row.color] ?? row.color,
-      name_vn: vn("AntiqueLO", row.code), desc_vn: V("AntiqueLO").get(row.code)?.desc,
-      maxStar: stars.at(-1)?.star, ...(task ? { task: fields(task) } : {}), ranks,
+      code: row.code, name: row.name, name_vn: vn("AntiqueLO", row.code),
+      color: RARITY[row.color] ?? row.color, maxStar: ranks.at(-1)?.star, ranks,
     }];
   }));
-  const suitRanks = rows(M("AntiqueSuitAttrLO"));
-  const antiqueSuits = keyed(rows(M("AntiqueSuitLO")).map((row) => [row.name, {
-    ...fields(row, ["types"]), name_vn: vn("AntiqueSuitLO", row.type),
-    ranks: suitRanks.filter((rank) => rank.type === row.type).map((rank) => fields(rank, ["showAttr", "attr"])),
-  }]));
-  const antiqueUpgradeCosts = Array.from(M("AntiqueUpGradeLO").store, (row) => fields(row, ["costs"]));
 
   // Thánh Khí (圣器, RelicLO type 2). Quality 6-8 relics come in 7 lines (code 82QQLL01, LL = line):
   // red (Q=06) -> gold (07) -> colorful (08), each step a purification (thanh tẩy, RelicQualityUpLO,
@@ -297,7 +270,7 @@ async function main() {
   const write = (file, data) => fs.writeFileSync(file, JSON.stringify({ _generated: dict._generated, ...data }, null, 2) + "\n");
   fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
   write(MAP_OUT, maps);
-  write(ANTIQUE_OUT, { antiques, antiqueColors, antiqueSuits, antiqueUpgradeCosts });
+  write(ANTIQUE_OUT, { antiques });
   write(RELIC_OUT, relics);
   write(ARTIFACT_OUT, { heroes: artifactHeroes, entryPools, skills: artifactSkills });
   const count = (o) => Object.keys(o).length;
@@ -306,7 +279,7 @@ async function main() {
   console.log(`wrote ${path.relative(process.cwd(), RELIC_OUT)}: ${count(relics.lines)} relic lines`);
   console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
     `${count(maps.capital.bosses)} capital bosses`);
-  console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques, ${count(antiqueSuits)} suits`);
+  console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques`);
   console.log(`wrote ${path.relative(process.cwd(), OUT)}: ${count(heroes)} heroes, ${count(traps)} traps, ` +
     `${count(pets)} pets, ${count(spells)} spells, ${count(summonerSkins)} Summoner skins, ` +
     Object.entries(buildings).map(([k, b]) => `${k} ${count(b.skins)} skins`).join(", "));

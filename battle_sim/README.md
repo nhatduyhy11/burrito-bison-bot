@@ -251,7 +251,8 @@ uv run python battle_sim/sandbox --setup
   game gửi nó ở `derma` của `SummonerInfoP` / base player info, không nằm trong `StartGameP`; sim
   đặt nó vào `PlayerModule.playerInfo.info.derma` để đổi model Summoner trong trận.
 
-  Catalog Đồ Cổ nằm ở `antiques` trong [antique-dict.json](web/dict/antique-dict.json), kèm bảng màu, bộ sưu tập và chi phí nâng cấp.
+  Catalog Đồ Cổ nằm ở `antiques` trong [antique-dict.json](web/dict/antique-dict.json), gồm tên, màu,
+  số sao tối đa và mã rank. Engine tra hiệu ứng trực tiếp từ config game.
   Mỗi `ranks[].code` là mã theo sao trong capture, ví dụ `300106` là `3001` ở 6 sao.
   `level` trong capture là giá trị tiến độ dùng để tính hiệu ứng, có giới hạn `haloLevelLimit`
   theo rank. Config `sea_65380` có tối đa 15 sao cho mỗi món và mốc bộ sưu tập cuối cũng là 15 sao.
@@ -270,7 +271,7 @@ uv run python battle_sim/sandbox --setup
   [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
   lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Mục không có tên tiếng Anh dùng
   key `id_<mã>` (ví dụ skin 7 màu `id_10013`). Hero, trap và pet có `color` là độ hiếm (viền thẻ trong game: `purple` 4, `orange` 5,
-  `red` 6, `gold` 7; spell không có). `map-dict.json` gồm `campaign` (khoảng stage) và `capital` (boss U Đô kèm các bộ quái). `antique-dict.json` gồm `antiques`, `antiqueColors`, `antiqueSuits`, `antiqueUpgradeCosts`. `relic-dict.json` (Thánh Khí, chưa dùng trong form) gồm `purification` (2 lần thanh tẩy, vật phẩm Nước Thần) và `lines` (7 dòng đỏ → vàng → 7 màu, skill theo sao và skill cố định) Không có Thánh Khí cam trở xuống (không có skill) và không có chỉ số vì server đã gộp sẵn vào `hero.attr`; xem [hero_gear.md](docs/planning/hero_gear.md). `profile-dict.json` gồm `heroes` (kèm `baseSkills`, `skins` và `avatarNodes` cho hero đỏ), `traps`, `pets`, `spells`
+  `red` 6, `gold` 7; spell không có). `map-dict.json` gồm `campaign` (khoảng stage) và `capital` (boss U Đô kèm các bộ quái). `antique-dict.json` gồm `antiques` với metadata setup và mã rank. `relic-dict.json` (Thánh Khí, chưa dùng trong form) gồm `purification` (2 lần thanh tẩy, vật phẩm Nước Thần) và `lines` (7 dòng đỏ → vàng → 7 màu, skill theo sao và skill cố định) Không có Thánh Khí cam trở xuống (không có skill) và không có chỉ số vì server đã gộp sẵn vào `hero.attr`; xem [hero_gear.md](docs/planning/hero_gear.md). `profile-dict.json` gồm `heroes` (kèm `baseSkills`, `skins` và `avatarNodes` cho hero đỏ), `traps`, `pets`, `spells`
   (`daoists`), `buildings` (door, bed, generator, cat, kèm skin), mỗi mục có `maxLevel` /
   `maxStar`. Không sửa tay; chạy lại script khi đổi config.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
