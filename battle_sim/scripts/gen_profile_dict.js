@@ -1,8 +1,10 @@
 "use strict";
-// Generate web/profile-dict.json (playtest profile catalog) from the game's own config tables:
-// campaign stage range, heroes with their skins, Summoner skins, traps, pets, spells (daoists)
-// building skins, mounts, and antiques, keyed by a slug
-// of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
+// Generate the playtest catalogs from the game's own config tables:
+// - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) bosses + creep presets;
+// - web/dict/antique-dict.json: antiques with ranks, suits, colors and upgrade costs (the bulk of the data);
+// - web/dict/profile-dict.json: the rest of the account side: heroes with their skins, Summoner skins,
+//   traps, pets, spells (daoists), building skins and mounts.
+// Entries are keyed by a slug of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
 // lang_vi.<ver>.bin, public CDN next to config.bin; downloaded once into
 // .tmp/battle_sim/config/<configVersion>/).
 //
@@ -14,7 +16,9 @@ const versions = require("../lib/versions");
 
 const CONFIG_VERSION = process.argv[2] || "sea_65380";
 const ASSETS = { battleVersion: "2.3.1-2_E63294_P63528_C63583", configVersion: CONFIG_VERSION, mapVersion: "trunk_61543" };
-const OUT = path.join(__dirname, "..", "web", "profile-dict.json");
+const OUT = path.join(__dirname, "..", "web", "dict", "profile-dict.json");
+const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
+const ANTIQUE_OUT = path.join(__dirname, "..", "web", "dict", "antique-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
 const SKIN_COLOR = { 4: "default", 6: "red", 7: "gold", 8: "colorful" };
 // Rarity = card border in game (HeroLO / OrganLO / SummonCreatureLO .color). Spells have no rarity tiers.
@@ -197,12 +201,17 @@ async function main() {
 
   const dict = {
     _generated: `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, name_vn: lang_vi)`,
-    maps, heroes, summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes,
-    antiques, antiqueColors, antiqueSuits, antiqueUpgradeCosts,
+    heroes, summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes,
   };
+  const write = (file, data) => fs.writeFileSync(file, JSON.stringify({ _generated: dict._generated, ...data }, null, 2) + "\n");
   fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
+  write(MAP_OUT, maps);
+  write(ANTIQUE_OUT, { antiques, antiqueColors, antiqueSuits, antiqueUpgradeCosts });
   const count = (o) => Object.keys(o).length;
-  console.log(`wrote ${path.relative(process.cwd(), OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ${count(heroes)} heroes, ${count(traps)} traps, ` +
+  console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
+    `${count(maps.capital.bosses)} capital bosses`);
+  console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques, ${count(antiqueSuits)} suits`);
+  console.log(`wrote ${path.relative(process.cwd(), OUT)}: ${count(heroes)} heroes, ${count(traps)} traps, ` +
     `${count(pets)} pets, ${count(spells)} spells, ${count(summonerSkins)} Summoner skins, ` +
     Object.entries(buildings).map(([k, b]) => `${k} ${count(b.skins)} skins`).join(", "));
 }

@@ -4,9 +4,9 @@ import { Accordion, Checkbox, html, label, NumberInput } from "../ui.js";
 const COLORS = [["gold", "Vàng"], ["red", "Đỏ"], ["orange", "Cam"], ["purple", "Tím"], ["blue", "Xanh dương"]];
 
 export function AntiquesSection({ ctx }) {
-  const { state, dict, update } = ctx;
+  const { state, antiqueDict, update } = ctx;
   const owned = state.antiques;
-  const catalog = dict.antiques;
+  const catalog = antiqueDict.antiques;
   const useStarter = () => update((s) => { s.antiques = starterAntiques(catalog); });
   const groups = COLORS.map(([color, title]) => {
     const items = Object.entries(catalog).filter(([, item]) => item.color === color);

@@ -1,6 +1,7 @@
-// Local playtest profile (?play&profile): map, heroes, traps, pets, spells and skins from
-// /__sim/active-profile.json, resolved by name through profile-dict.json (scripts/gen_profile_dict.js).
-// Hero skins: skin-profile.js. Building skins: build-skin-profile.js.
+// Local playtest profile (?play&profile): heroes, traps, pets, spells and skins from
+// /__sim/active-profile.json, resolved by name through profile-dict.json and antique-dict.json
+// (scripts/gen_profile_dict.js).
+// Map: map-profile.js. Hero skins: skin-profile.js. Building skins: build-skin-profile.js.
 (function () {
   "use strict";
   const SimBattle = (window.SimBattle = window.SimBattle || {});
@@ -11,8 +12,8 @@
       if (!response.ok) throw new Error(`Could not load ${name}: HTTP ${response.status}`);
       return response.json();
     };
-    const [profile, catalog] = await Promise.all([read("active-profile"), read("profile-dict")]);
-    if (Object.hasOwn(profile, "map")) applyMap(start, profile.map || {}, catalog, rb, M, step);
+    const [profile, catalog] = await Promise.all([read("active-profile"), read("dict/profile-dict")]);
+    if (Object.hasOwn(profile, "map")) await SimBattle.applyMapProfile(start, profile.map || {}, rb, M, step);
     const player = { ...rb.listItems(start.playerInfos)[0] };
     const asList = (items) => ({ ...items, _length: items.length });
     const choices = (key, max) => {
@@ -160,49 +161,14 @@
       player.goldenSkinsCount = count;
     }
     if (Object.hasOwn(profile, "antiques")) {
-      const { battleAntiques } = await import("../antiques.js");
-      player.antiques = asList(battleAntiques(profile.antiques, catalog.antiques, M("AntiqueHaloLO")));
+      const [{ battleAntiques }, antiqueDict] = await Promise.all([import("../antiques.js"), read("dict/antique-dict")]);
+      player.antiques = asList(battleAntiques(profile.antiques, antiqueDict.antiques, M("AntiqueHaloLO")));
     }
     start.playerInfos = { ...start.playerInfos, 0: player };
   };
 
   // SummonCreatureLO.skill lists skill types; each type contributes its highest level whose
   // starRequire the pet's star meets (SummonCreatureSkillLO code = type * 100 + level).
-  // profile.map -> StartGameP battleType / level.
-  // campaign: { stage }. capital (U Đô, GuildNavalWar): { boss, level } from profile-dict
-  // maps.capital; the game plays it solo (no robot teammates) and puts the 5 heroes on the
-  // field itself (GuildPVPBattleRoom.createInitHeroBuild).
-  function applyMap(start, map, catalog, rb, M, step) {
-    if (map.mode === "campaign") {
-      const { stage } = map;
-      const level = Number.isSafeInteger(stage) && stage > 0 && M("AdventuretdLevelLO").get(stage * 10);
-      if (!level || !M("BattleGroundLO").get(level.battleGroundCode)) {
-        throw new Error(`Unknown campaign stage: ${stage}`);
-      }
-      // Campaign StartGameP carries the robot teammates; a capital capture has none to borrow.
-      if (start.battleType !== 3) { // EBattleTypeHangUpSystem
-        throw new Error(`Campaign needs a campaign capture as base battle (this one is battleType ${start.battleType})`);
-      }
-      start.level = stage;
-      return;
-    }
-    if (map.mode !== "capital") throw new Error(`Unsupported map mode: ${map.mode}`);
-    const capital = catalog.maps.capital;
-    const boss = capital.bosses[map.boss];
-    if (!boss) throw new Error(`Unknown capital boss: ${map.boss}`);
-    if (!boss.presets.some((preset) => preset.level === map.level)) {
-      throw new Error(`Capital level ${map.level} is not a preset of ${map.boss}`);
-    }
-    const row = M("GuildNavalWarLO").get(map.level - (map.level % 100));
-    if (!row || JSON.parse(row.showCreep)[0] !== boss.code || !M("BattleGroundLO").get(row.battleGroundCode)) {
-      throw new Error(`Capital level ${map.level} does not match the game config`);
-    }
-    start.battleType = capital.battleType;
-    start.level = map.level;
-    start.playerInfos = { 0: rb.listItems(start.playerInfos)[0], _length: 1 };
-    step("capital map", { boss: boss.name, level: map.level, creeps: JSON.parse(row.showCreep).slice(1) });
-  }
-
   function petSkillCodes(config, star, M) {
     const table = M("SummonCreatureSkillLO");
     const codes = [];

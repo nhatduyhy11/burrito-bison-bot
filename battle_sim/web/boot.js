@@ -108,7 +108,7 @@
       await loadScript("/__sim_lib/proto_rebuild.js");
       // web/battle/: helpers first, index.js (window.__simBattle) last.
       const battleScripts = ["stubs", "setup", "replay"];
-      if (params.has("play") && params.has("profile")) battleScripts.push("skin-profile", "build-skin-profile", "profile");
+      if (params.has("play") && params.has("profile")) battleScripts.push("skin-profile", "build-skin-profile", "map-profile", "profile");
       for (const name of [...battleScripts, "index"]) await loadScript(`/__sim/battle/${name}.js`);
     }
     await defineIndexGlobals();

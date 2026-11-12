@@ -64,7 +64,7 @@ Cả 4 building đều theo đúng 1 đỏ + tối đa 2 vàng. Skin mặc đị
 ## Trong profile playtest
 
 `buildings` trong profile ánh xạ tên building tới skin chọn. Tên skin lấy trong
-`buildings.<tên>.skins` của [profile-dict.json](web/profile-dict.json). Code nằm trong
+`buildings.<tên>.skins` của [profile-dict.json](web/dict/profile-dict.json). Code nằm trong
 [build-skin-profile.js](web/battle/build-skin-profile.js).
 
 ```json

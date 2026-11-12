@@ -107,9 +107,9 @@ không đáng kể (sim: `totalHurt` 756,25e9, boss mất 756,03e9). Creep vẫn
 - `replay.js` đã chạy được trận này. Wave schedule 354 spawn và RNG 8/8 khớp (tier2 MATCH).
   Tier1 lệch vì người chơi bỏ cuộc ở frame 211 nhưng replay chạy tiếp tới khi Door chết. Cần
   dừng replay tại `QuitRoom.endFrame` khi `resultReason = Abandon` (lỗi này có cả ở campaign).
-- Trang setup: mục "Màn chơi" → Mode "U Đô" → Boss → Bộ quái. Data lấy từ `maps.capital`
-  trong `profile-dict.json` (`gen_profile_dict.js`). Profile ghi `map: {mode: "capital", boss, level}`.
-  `web/battle/profile.js` đổi `battleType` thành 21, đặt `level`, và chỉ giữ người chơi đầu tiên
+- Trang setup: mục "Màn chơi" → Mode "U Đô" → Boss → Bộ quái. Data lấy từ `capital`
+  trong `web/dict/map-dict.json` (`gen_profile_dict.js`, tách riêng khỏi `profile-dict.json`). Profile ghi `map: {mode: "capital", boss, level}`.
+  `web/battle/map-profile.js` đổi `battleType` thành 21, đặt `level`, và chỉ giữ người chơi đầu tiên
   (capital không có robot). Capture gốc là campaign hay capital đều dùng được. Campaign thì bắt
   buộc capture gốc là campaign.
 - View trận U Đô là prefab `guildPVP/prefabs/battleTDGuildPVPView`. Prefab này tham chiếu chéo

@@ -1,7 +1,7 @@
 // Setup page for local playtest profiles (served at /__sim/setup.html). Entry module.
 //
 // Builds the JSON that web/battle/profile.js reads (`sandbox --play --profile <file>`) from the
-// catalog in profile-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
+// catalogs in profile-dict.json, map-dict.json and antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
 // (import map in setup.html, no build step): skin-rules.js (skin input rules), profile-io.js
 // (state <-> profile), ui.js (html`` + small components), sections/ (form sections), side.js (right
 // column), and this file (single state, capture prefill, boot).
@@ -33,7 +33,7 @@ async function capturedStart(battle) {
 const listItems = (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[String(i)]);
 
 // Turning a section on fills it from the base capture.
-async function prefill(dict, battle, group) {
+async function prefill(dict, maps, battle, group) {
   const start = await capturedStart(battle);
   const player = start && listItems(start.playerInfos)[0];
   if (group === "mounts") {
@@ -42,9 +42,9 @@ async function prefill(dict, battle, group) {
     return { owned, selected };
   }
   if (group === "map") {
-    const capital = start?.battleType === dict.maps.capital.battleType && capitalPreset(dict, start.level);
-    if (capital) return { mode: "capital", stage: dict.maps.campaign.minStage, ...capital };
-    return { mode: "campaign", stage: start?.level || dict.maps.campaign.minStage, boss: null, level: null };
+    const capital = start?.battleType === maps.capital.battleType && capitalPreset(maps, start.level);
+    if (capital) return { mode: "capital", stage: maps.campaign.minStage, ...capital };
+    return { mode: "campaign", stage: start?.level || maps.campaign.minStage, boss: null, level: null };
   }
   if (!player) return [];
   const name = (group, code) => Object.keys(dict[group]).find((key) => dict[group][key].code === code);
@@ -63,7 +63,7 @@ async function prefill(dict, battle, group) {
 
 // ---------- app ----------
 
-function App({ dict, battles, initial, initialStatus }) {
+function App({ dict, maps, antiqueDict, battles, initial, initialStatus }) {
   const [state, setState] = useState(initial);
   // Every change goes through here: fn edits a copy (or returns a replacement), then skin rules normalize it.
   const update = (fn) =>
@@ -74,7 +74,7 @@ function App({ dict, battles, initial, initialStatus }) {
       return next;
     });
   const toggleWithPrefill = async (group, on) => {
-    const value = on ? await prefill(dict, state.battle, group) : null;
+    const value = on ? await prefill(dict, maps, state.battle, group) : null;
     update((s) => void (s[group] = value));
   };
   const profile = useMemo(() => toProfile(state, dict), [state]);
@@ -87,7 +87,7 @@ function App({ dict, battles, initial, initialStatus }) {
     }
   }, [profile, state.battle, state.seed]);
 
-  const ctx = { state, dict, update, toggleWithPrefill };
+  const ctx = { state, dict, maps, antiqueDict, update, toggleWithPrefill };
   return html`
     <div class="layout">
       <main id="form"><${FormSections} ctx=${ctx} /></main>
@@ -136,25 +136,27 @@ function bindAccordionToggle(root) {
 }
 
 async function main(root) {
-  const [dict, battles] = await Promise.all([
-    getJson("/__sim/profile-dict.json"),
+  const [dict, maps, antiqueDict, battles] = await Promise.all([
+    getJson("/__sim/dict/profile-dict.json"),
+    getJson("/__sim/dict/map-dict.json"),
+    getJson("/__sim/dict/antique-dict.json"),
     getJson("/__sim/battles.json").catch(() => []),
   ]);
-  let state = emptyState(dict);
+  let state = emptyState(dict, antiqueDict);
   let initialStatus = null;
   const saved = await savedSetup();
   if (saved) {
     try {
-      state = fromProfile(saved.profile || {}, { battle: saved.battle || "", seed: saved.seed || "" }, dict);
+      state = fromProfile(saved.profile || {}, { battle: saved.battle || "", seed: saved.seed || "" }, dict, { maps, antiqueDict });
     } catch (err) {
       initialStatus = { text: `Bỏ qua profile đã lưu: ${err.message}`, kind: "err" };
     }
   }
   if (!battles.some((b) => b.uuid === state.battle)) state.battle = battles[0]?.uuid || "";
-  if (!saved?.profile?.heroes) state.heroes = await prefill(dict, state.battle, "heroes");
+  if (!saved?.profile?.heroes) state.heroes = await prefill(dict, maps, state.battle, "heroes");
   normalize(state, dict);
   root.replaceChildren();
-  render(html`<${App} dict=${dict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  render(html`<${App} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   bindAccordionToggle(root);
 }
 

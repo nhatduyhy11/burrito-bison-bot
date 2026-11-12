@@ -4,7 +4,7 @@ Level của hero và sao của skin là hai thông số riêng. Ví dụ, Venom 
 chỉ số hero level 1. Có thể mặc Colorful 5 sao mà level của Venom vẫn là 1.
 
 Trong `heroes`, dùng tên hero để giữ skin từ capture hoặc dùng object để chọn skin.
-Tên skin tra trong `skins` của hero tương ứng trong [profile-dict.json](web/profile-dict.json)
+Tên skin tra trong `skins` của hero tương ứng trong [profile-dict.json](web/dict/profile-dict.json)
 (mỗi skin có `code`, `name`, `color`, `maxStar`, và `requires` với skin 7 màu).
 
 ```json

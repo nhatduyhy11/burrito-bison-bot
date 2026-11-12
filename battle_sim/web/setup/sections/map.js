@@ -28,8 +28,8 @@ function MapBody({ ctx }) {
 }
 
 function CampaignBody({ ctx }) {
-  const { state, dict, update } = ctx;
-  const { minStage, maxStage } = dict.maps.campaign;
+  const { state, maps, update } = ctx;
+  const { minStage, maxStage } = maps.campaign;
   const setStage = (v) => update((s) => void (s.map.stage = v));
   return html`
     <div class="row">
@@ -43,14 +43,14 @@ function CampaignBody({ ctx }) {
 
 const creepNames = (preset) => preset.creeps.map((c) => c.name_vn || c.name).join(" + ");
 
-function roomText(dict, preset) {
-  const { roomTypes } = dict.maps.capital;
+function roomText(maps, preset) {
+  const { roomTypes } = maps.capital;
   return preset.rooms.map((r) => `Ngày ${r.day} · phòng ${r.pos} (${roomTypes[r.roomLevel]?.name_vn || r.roomLevel})`).join("; ");
 }
 
 function CapitalBody({ ctx }) {
-  const { state, dict, update } = ctx;
-  const { bosses } = dict.maps.capital;
+  const { state, maps, update } = ctx;
+  const { bosses } = maps.capital;
   const boss = bosses[state.map.boss];
   const bossOptions = [["", "— chọn boss —"], ...Object.entries(bosses).map(([key, b]) => [key, `${optionText(b)} · ${b.presets.length} bộ quái`])];
   const presetOptions = [["", boss ? "— chọn bộ quái —" : "— chọn boss trước —"],
@@ -71,6 +71,6 @@ function CapitalBody({ ctx }) {
     <div class="row wide">
       <label>Bộ quái <${Select} options=${presetOptions} value=${preset ? String(preset.level) : ""} disabled=${!boss} onChange=${setPreset} /></label>
     </div>
-    ${preset && html`<p class="hint">${`${preset.creeps.map((c) => c.name).join(" + ")}. Gặp ở: ${roomText(dict, preset)}. Mini boss là bản elite của 3 loại quái này.`}</p>`}
+    ${preset && html`<p class="hint">${`${preset.creeps.map((c) => c.name).join(" + ")}. Gặp ở: ${roomText(maps, preset)}. Mini boss là bản elite của 3 loại quái này.`}</p>`}
   `;
 }

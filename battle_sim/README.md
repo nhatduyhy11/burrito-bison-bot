@@ -222,7 +222,7 @@ uv run python battle_sim/sandbox --setup
   (trang setup `--setup` sinh ra file này). `map` chọn màn chơi, ví dụ
   `{ "mode": "campaign", "stage": 66 }`. Hiện chỉ có `campaign`, và config `sea_65380` có
   stage 1–400. Bỏ `map` thì chơi stage gốc của capture. Đội hình chọn theo tên trong
-  [profile-dict.json](web/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
+  [profile-dict.json](web/dict/profile-dict.json). `heroes` giữ chỉ số và skill gốc cho hero có
   trong capture. Khi có `heroes`, phải chọn đúng 5 hero khác nhau; setup luôn hiện 5 slot,
   không phụ thuộc chế độ màn chơi. Hero khác mượn tiến độ của các hero cùng độ hiếm trong capture (không có thì
   mọi hero): `attr` trung bình (đã trừ `selfAttr` của skin), level và `breakThrough` của hero
@@ -237,7 +237,7 @@ uv run python battle_sim/sandbox --setup
   Hero, Mount và Skill Summoner là ba accordion liên tiếp; thu gọn chỉ thay đổi hiển thị.
   `mounts: { "owned": ["azure_drone"], "selected": "azure_drone" }` cấu hình danh sách sở hữu
   và mount đang cưỡi; `selected: null` là không cưỡi. Bỏ `mounts` giữ dữ liệu capture.
-  Catalog mount nằm ở `mounts` trong [profile-dict.json](web/profile-dict.json). Mount mới dùng skill rank đầu tiên;
+  Catalog mount nằm ở `mounts` trong [profile-dict.json](web/dict/profile-dict.json). Mount mới dùng skill rank đầu tiên;
   mount có trong capture giữ skill cũ. Các chỉ số account do server tính vẫn lấy từ capture.
   `summonerSkins` là các skin Summoner đã tick: `{ "name", "star" }`, tối đa 3 skin có skill
   (`summonerInfos`). Skin sự kiện không có skill (`sanguin_dragoon`, chỉ cộng chỉ số) không chiếm
@@ -246,7 +246,7 @@ uv run python battle_sim/sandbox --setup
   game gửi nó ở `derma` của `SummonerInfoP` / base player info, không nằm trong `StartGameP`; sim
   đặt nó vào `PlayerModule.playerInfo.info.derma` để đổi model Summoner trong trận.
 
-  Catalog Đồ Cổ nằm ở `antiques`, kèm bảng màu, bộ sưu tập và chi phí nâng cấp.
+  Catalog Đồ Cổ nằm ở `antiques` trong [antique-dict.json](web/dict/antique-dict.json), kèm bảng màu, bộ sưu tập và chi phí nâng cấp.
   Mỗi `ranks[].code` là mã theo sao trong capture, ví dụ `300106` là `3001` ở 6 sao.
   `level` trong capture là giá trị tiến độ dùng để tính hiệu ứng, có giới hạn `haloLevelLimit`
   theo rank. Config `sea_65380` có tối đa 15 sao cho mỗi món và mốc bộ sưu tập cuối cũng là 15 sao.
@@ -261,11 +261,11 @@ uv run python battle_sim/sandbox --setup
   `spells` thay spell (thần, `daoists`, tối đa 2 theo `DaoistFormationLO`): tên (1 sao)
   hoặc `{ "name", "star" }`, `skillCode` tra từ `DaoistStarLO`.
   Bỏ một trường để giữ giá trị từ capture. Hero support hiện vẫn lấy từ capture.
-- `profile-dict.json` được sinh từ config game bằng `node battle_sim/scripts/gen_profile_dict.js
+- `profile-dict.json`, `map-dict.json` và `antique-dict.json` được sinh từ config game bằng `node battle_sim/scripts/gen_profile_dict.js
   [configVersion]`. Key là slug tên tiếng Anh. `name` lấy từ `lang_en.<ver>.bin`, `name_vn`
   lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Mục không có tên tiếng Anh dùng
   key `id_<mã>` (ví dụ skin 7 màu `id_10013`). Hero, trap và pet có `color` là độ hiếm (viền thẻ trong game: `purple` 4, `orange` 5,
-  `red` 6, `gold` 7; spell không có). Gồm `maps.campaign` (khoảng stage), `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
+  `red` 6, `gold` 7; spell không có). `map-dict.json` gồm `campaign` (khoảng stage) và `capital` (boss U Đô kèm các bộ quái). `antique-dict.json` gồm `antiques`, `antiqueColors`, `antiqueSuits`, `antiqueUpgradeCosts`. `profile-dict.json` gồm `heroes` (kèm `baseSkills` và `skins`), `traps`, `pets`, `spells`
   (`daoists`), `buildings` (door, bed, generator, cat, kèm skin), mỗi mục có `maxLevel` /
   `maxStar`. Không sửa tay; chạy lại script khi đổi config.
 - Hết trận, `QuitRoom` được trả lời local (`clientReward: null`). Màn kết quả
@@ -331,7 +331,7 @@ So sánh:
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
   `index.js` (entry, `window.__simBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
   stub mạng, `QuitRoom`), `replay.js` (op log, tick, pause, so kết quả), `profile.js` +
-  `skin-profile.js` + `build-skin-profile.js` (chỉ load khi `--profile`).
+  `skin-profile.js` + `build-skin-profile.js` + `map-profile.js` (chỉ load khi `--profile`).
 - `lib/capture.js` — đọc trận (`StartGameP` … `QuitRoom`) từ `events-*.jsonl`.
 - `lib/deploy.js` — đọc ClientVer / manifest / `bundleVers` của deploy live.
 - `lib/versions.js` — chọn bundle/config/map theo version, tải config.

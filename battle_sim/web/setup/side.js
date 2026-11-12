@@ -63,14 +63,14 @@ export function Side({ ctx, battles, profile, initialStatus }) {
     e.currentTarget.value = "";
     if (!file) return;
     try {
-      const next = fromProfile(JSON.parse(await file.text()), state, dict);
+      const next = fromProfile(JSON.parse(await file.text()), state, dict, ctx);
       update(() => next);
       setStatus({ text: `Đã nhập ${file.name}.`, kind: "note" });
     } catch (err) {
       setStatus({ text: `Không nhập được ${file.name}: ${err.message}`, kind: "err" });
     }
   };
-  const reset = () => update((s) => ({ ...emptyState(dict), battle: s.battle, seed: s.seed }));
+  const reset = () => update((s) => ({ ...emptyState(dict, ctx.antiqueDict), battle: s.battle, seed: s.seed }));
   const play = async () => {
     setPlaying(true);
     setStatus({ text: "Đang lưu profile và mở trận…", kind: "note" });
