@@ -119,7 +119,7 @@ export function Side({ ctx, battles, profile, initialStatus }) {
         <div id="status" class=${`status ${status.kind}`}>${status.text}</div>
       </div>
     </section>
-    <${Accordion} title="Profile JSON">
+    <${Accordion} title="Profile JSON" defaultOpen=${false}>
       <pre id="output">${JSON.stringify(profile, null, 2)}</pre>
     <//>
   `;

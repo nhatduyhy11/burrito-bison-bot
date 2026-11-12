@@ -118,11 +118,11 @@ function bindAccordionToggle(root) {
   const button = document.getElementById("toggle-accordions");
   const accordions = () => [...root.querySelectorAll("details.accordion")];
   const updateLabel = () => {
-    button.textContent = accordions().every((panel) => panel.open) ? "Thu gọn tất cả" : "Mở tất cả";
+    button.textContent = accordions().some((panel) => panel.open) ? "Thu gọn tất cả" : "Mở tất cả";
   };
   button.addEventListener("click", () => {
     const panels = accordions();
-    const open = panels.some((panel) => !panel.open);
+    const open = panels.every((panel) => !panel.open);
     panels.forEach((panel) => { panel.open = open; });
     updateLabel();
   });

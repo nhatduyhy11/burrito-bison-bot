@@ -1,7 +1,7 @@
 import { starterAntiques } from "../../antiques.js";
 import { Accordion, Checkbox, html, label, NumberInput } from "../ui.js";
 
-const COLORS = [["blue", "Xanh dương"], ["purple", "Tím"], ["orange", "Cam"], ["red", "Đỏ"], ["gold", "Vàng"]];
+const COLORS = [["gold", "Vàng"], ["red", "Đỏ"], ["orange", "Cam"], ["purple", "Tím"], ["blue", "Xanh dương"]];
 
 export function AntiquesSection({ ctx }) {
   const { state, dict, update } = ctx;

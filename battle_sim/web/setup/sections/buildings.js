@@ -5,6 +5,7 @@ import { BUILDINGS, buildSkins, newBuilding } from "../profile-io.js";
 import { headerRow, requiresNote, without } from "./shared.js";
 
 const HEADERS = ["Skin", "Màu / slot", "Sở hữu", "Sao", "Slot"];
+const COLOR_ORDER = { red: 0, gold: 1 };
 
 export function BuildingsSection({ ctx }) {
   const any = BUILDINGS.some(([key]) => ctx.state.buildings[key]);
@@ -20,7 +21,7 @@ export function BuildingsSection({ ctx }) {
       `
     : null;
   return html`
-    <${Accordion} title="Skin building" hint="mỗi building bật riêng; tắt = giữ từ capture">
+    <${Accordion} title="Skin building">
       ${cards}
       ${note}
     <//>
@@ -32,14 +33,12 @@ function BuildingCard({ ctx, building, title }) {
   const entry = state.buildings[building];
   const edit = (fn) => update((s) => void fn(s.buildings[building]));
   const setEnabled = (on) => update((s) => void (s.buildings[building] = on ? newBuilding(dict, building) : null));
+  const action = html`<label class="building-override"><${Checkbox} checked=${!!entry} onChange=${setEnabled} />Ghi đè</label>`;
   const table = entry
     ? html`<${BuildingSkinTable} entry=${entry} skins=${buildSkins(dict, building)} edit=${edit} />`
     : null;
   return html`
-    <${Accordion} title=${title} hint=${entry ? "đang ghi đè" : "giữ từ capture"}>
-      <div class="row">
-        <label><${Checkbox} checked=${!!entry} onChange=${setEnabled} />Ghi đè</label>
-      </div>
+    <${Accordion} title=${title} action=${action}>
       <div class="building-skin-table">${table}</div>
     <//>
   `;
@@ -49,10 +48,12 @@ function BuildingSkinTable({ entry, skins, edit }) {
   const forced = buildingForced(entry, skins);
   const locked = buildingLocks(skins, entry.slots);
   const count = (slot) => entry.slots.filter((key) => skins[key].slot === slot).length;
-  const wornOptions = Object.entries(skins).map(([key, skin]) => [key, optionText(skin)]);
+  const orderedSkins = Object.entries(skins).sort(([, a], [, b]) =>
+    (COLOR_ORDER[a.color] ?? 2) - (COLOR_ORDER[b.color] ?? 2));
+  const wornOptions = orderedSkins.map(([key, skin]) => [key, optionText(skin)]);
   const setWorn = (v) => edit((e) => (e.worn = v));
   const slotNote = `Slot: ${count("red")}/1 đỏ, ${count("gold")}/2 vàng, ${count("special")}/1 loại 3`;
-  const rows = Object.entries(skins).map(([key, skin]) => {
+  const rows = orderedSkins.map(([key, skin]) => {
     const slotted = entry.slots.includes(key);
     return html`
       <${BuildingSkinRow}
