@@ -30,7 +30,7 @@ Trạng thái và bước tiếp theo: [NEXT_STEP.md](NEXT_STEP.md).
 ## Doc cơ chế
 
 - [hero_option.md](hero_option.md) — 3 option Summon
-- [hero_gear.md](hero_gear.md) — Dị Năng / Thánh Khí / Thần Khí trên hero
+- [hero_gear.md](hero_gear.md) — Dị Năng / Thánh Khí (relic, thanh tẩy) / Thần Khí (artifact) trên hero
 - [spin.md](spin.md) — vòng quay
 - [creep_waves.md](creep_waves.md) — lịch spawn quái
 - [boss.md](boss.md) — mini / final boss

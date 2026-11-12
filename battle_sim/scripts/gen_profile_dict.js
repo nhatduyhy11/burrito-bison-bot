@@ -2,6 +2,7 @@
 // Generate the playtest catalogs from the game's own config tables:
 // - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) bosses + creep presets;
 // - web/dict/antique-dict.json: antiques with ranks, suits, colors and upgrade costs (the bulk of the data);
+// - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
 // - web/dict/profile-dict.json: the rest of the account side: heroes with their skins, Summoner skins,
 //   traps, pets, spells (daoists), building skins and mounts.
 // Entries are keyed by a slug of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
@@ -19,6 +20,7 @@ const ASSETS = { battleVersion: "2.3.1-2_E63294_P63528_C63583", configVersion: C
 const OUT = path.join(__dirname, "..", "web", "dict", "profile-dict.json");
 const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
 const ANTIQUE_OUT = path.join(__dirname, "..", "web", "dict", "antique-dict.json");
+const RELIC_OUT = path.join(__dirname, "..", "web", "dict", "relic-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
 const SKIN_COLOR = { 4: "default", 6: "red", 7: "gold", 8: "colorful" };
 // Rarity = card border in game (HeroLO / OrganLO / SummonCreatureLO .color). Spells have no rarity tiers.
@@ -215,6 +217,45 @@ async function main() {
   }]));
   const antiqueUpgradeCosts = Array.from(M("AntiqueUpGradeLO").store, (row) => fields(row, ["costs"]));
 
+  // Thánh Khí (圣器, RelicLO type 2). Quality 6-8 relics come in 7 lines (code 82QQLL01, LL = line):
+  // red (Q=06) -> gold (07) -> colorful (08), each step a purification (thanh tẩy, RelicQualityUpLO,
+  // star kept). Per line: one star-tier skill (same codes at every purification) and, from gold
+  // on, one fixed skill. Quality 1-5 relics (no skill) are left out. Stats are left out: they reach battle
+  // already merged into hero.attr by the server, the client computes none; see docs/planning/hero_gear.md.
+  const RELIC_COLOR = { ...RARITY, 8: "colorful" };
+  const relicStars = rows(M("RelicStarLO"));
+  const skillRef = (code) => ({ code, name: SkillBase.get(code)?.name, name_vn: vn("SkillBaseLO", code),
+    desc_vn: V("SkillBaseLO").get(code)?.desc?.trim() });
+  const relicFields = (r) => ({ code: r.code, quality: r.quality, color: RELIC_COLOR[r.quality] ?? r.quality,
+    name: r.name, name_vn: vn("RelicLO", r.code) });
+  const thanhKhi = rows(M("RelicLO")).filter((r) => r.type === 2).sort((a, b) => a.code - b.code);
+  const relicLines = keyed(thanhKhi.filter((r) => r.quality === 6).map((red) => {
+    const line = Math.floor(red.code / 100) % 100;
+    const tiers = [6, 7, 8].map((q) => M("RelicLO").get(82000001 + q * 10000 + line * 100)).filter(Boolean);
+    const starRows = (r) => relicStars.filter((s) => s.code === r.code).sort((a, b) => a.star - b.star);
+    const tierSkill = (s) => jsonField(s.skill).find((c) => Math.floor(c / 1e7) === 5206);
+    const starSkills = [];
+    for (const s of starRows(red)) {
+      const last = starSkills.at(-1);
+      if (last?.code === tierSkill(s)) last.stars.push(s.star); else starSkills.push({ stars: [s.star], ...skillRef(tierSkill(s)) });
+    }
+    return [red.name, { line, name: red.name, name_vn: vn("RelicLO", red.code), starSkills, purifications: tiers.map((r, times) => {
+      const stars = starRows(r);
+      if (stars.some((s, i) => tierSkill(s) !== tierSkill(starRows(red)[i]))) throw new Error(`relic ${r.code}: star skills differ from red`);
+      const fixed = jsonField(stars[0].skill).find((c) => Math.floor(c / 1e7) !== 5206);
+      return { times, ...relicFields(r), ...(fixed ? { fixedSkill: skillRef(fixed) } : {}), maxStar: stars.at(-1)?.star };
+    }) }];
+  }));
+  const purifyItem = Number(jsonField(rows(M("RelicQualityUpLO"))[0].cost)[0][1]);
+  const relicConst = (name) => M("ConstLO").get(name)?.constValue;
+  const relics = {
+    purification: {
+      maxTimes: 2, steps: [{ from: "red", to: "gold" }, { from: "gold", to: "colorful", needsGoldRelics: Number(relicConst("relicAgainImproveColorRequite")) }],
+      item: { code: purifyItem, name: M("ItemLO").get(purifyItem)?.name, name_vn: vn("ItemLO", purifyItem), desc_vn: V("ItemLO").get(purifyItem)?.desc },
+    },
+    lines: relicLines,
+  };
+
   const dict = {
     _generated: `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, name_vn: lang_vi)`,
     heroes, summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes,
@@ -223,7 +264,9 @@ async function main() {
   fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
   write(MAP_OUT, maps);
   write(ANTIQUE_OUT, { antiques, antiqueColors, antiqueSuits, antiqueUpgradeCosts });
+  write(RELIC_OUT, relics);
   const count = (o) => Object.keys(o).length;
+  console.log(`wrote ${path.relative(process.cwd(), RELIC_OUT)}: ${count(relics.lines)} relic lines`);
   console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
     `${count(maps.capital.bosses)} capital bosses`);
   console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques, ${count(antiqueSuits)} suits`);

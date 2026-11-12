@@ -1,0 +1,774 @@
+{
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65380 (names: lang_en, name_vn: lang_vi)",
+  "purification": {
+    "maxTimes": 2,
+    "steps": [
+      {
+        "from": "red",
+        "to": "gold"
+      },
+      {
+        "from": "gold",
+        "to": "colorful",
+        "needsGoldRelics": 5
+      }
+    ],
+    "item": {
+      "code": 30000065,
+      "name": "Divine Dew",
+      "name_vn": "Nước Thần",
+      "desc_vn": "Nước thánh biến sắt vụn thành vũ khí diệt thần. Có thể chọn 1 Thánh Khí Đỏ đã có và thanh tẩy lên Thánh Khí Vàng."
+    }
+  },
+  "lines": {
+    "exorcist_s_flame": {
+      "line": 1,
+      "name": "Exorcist's Flame",
+      "name_vn": "Lửa Trừ Tà",
+      "starSkills": [
+        {
+          "stars": [
+            0,
+            1
+          ],
+          "code": 52060101100,
+          "name": "Armor Breaker",
+          "name_vn": "Đòn Phá Giáp",
+          "desc_vn": "Bản thân nhận Xuyên Giáp V.Lý+80, Công+5%"
+        },
+        {
+          "stars": [
+            2,
+            3
+          ],
+          "code": 52060101200,
+          "name": "Armor Breaker",
+          "name_vn": "Đòn Phá Giáp",
+          "desc_vn": "Bản thân nhận Xuyên Giáp V.Lý+150, Công+10%"
+        },
+        {
+          "stars": [
+            4,
+            5
+          ],
+          "code": 52060101300,
+          "name": "Armor Breaker",
+          "name_vn": "Đòn Phá Giáp",
+          "desc_vn": "Bản thân nhận Xuyên Giáp V.Lý+300, Công+15%"
+        },
+        {
+          "stars": [
+            6,
+            7
+          ],
+          "code": 52060101400,
+          "name": "Armor Breaker",
+          "name_vn": "Đòn Phá Giáp",
+          "desc_vn": "Bản thân nhận Xuyên Giáp V.Lý+500, Công+20%"
+        },
+        {
+          "stars": [
+            8,
+            9
+          ],
+          "code": 52060101500,
+          "name": "Armor Breaker",
+          "name_vn": "Đòn Phá Giáp",
+          "desc_vn": "Bản thân nhận Xuyên Giáp V.Lý+800, Công+25%"
+        },
+        {
+          "stars": [
+            10
+          ],
+          "code": 52060101600,
+          "name": "Armor Breaker",
+          "name_vn": "Đòn Phá Giáp",
+          "desc_vn": "Bản thân nhận Xuyên Giáp V.Lý+1200, Công+30%"
+        }
+      ],
+      "purifications": [
+        {
+          "times": 0,
+          "code": 82060101,
+          "quality": 6,
+          "color": "red",
+          "name": "Exorcist's Flame",
+          "name_vn": "Lửa Trừ Tà",
+          "maxStar": 10
+        },
+        {
+          "times": 1,
+          "code": 82070101,
+          "quality": 7,
+          "color": "gold",
+          "name": "Cleansing Fire",
+          "name_vn": "Lửa Tịnh Thế",
+          "fixedSkill": {
+            "code": 52070101000,
+            "name": "Worldburn Flame",
+            "name_vn": "Lửa Thanh Tẩy",
+            "desc_vn": "Thiêu rụi mọi Thủ vật chất! Khiến ST của bản thân bỏ qua 90% Thủ V.Lý"
+          },
+          "maxStar": 10
+        },
+        {
+          "times": 2,
+          "code": 82080101,
+          "quality": 8,
+          "color": "colorful",
+          "name": "Ashen Decree",
+          "name_vn": "Quy Luật Thiêu Rụi",
+          "fixedSkill": {
+            "code": 52080101000,
+            "name": "Total Erasure",
+            "name_vn": "Xóa Sổ Tồn Tại",
+            "desc_vn": "Khiến ST của bản thân bỏ qua 95% Thủ V.Lý, ST V.Lý+30%"
+          },
+          "maxStar": 10
+        }
+      ]
+    },
+    "ashen_cross": {
+      "line": 2,
+      "name": "Ashen Cross",
+      "name_vn": "Thánh Giá Trắng",
+      "starSkills": [
+        {
+          "stars": [
+            0,
+            1
+          ],
+          "code": 52060201100,
+          "name": "Holy Pierce",
+          "name_vn": "Xuyên Thấu Thánh Quang",
+          "desc_vn": "Bản thân nhận Xuyên Phép+80, Công+5%"
+        },
+        {
+          "stars": [
+            2,
+            3
+          ],
+          "code": 52060201200,
+          "name": "Holy Pierce",
+          "name_vn": "Xuyên Thấu Thánh Quang",
+          "desc_vn": "Bản thân nhận Xuyên Phép+150, Công+10%"
+        },
+        {
+          "stars": [
+            4,
+            5
+          ],
+          "code": 52060201300,
+          "name": "Holy Pierce",
+          "name_vn": "Xuyên Thấu Thánh Quang",
+          "desc_vn": "Bản thân nhận Xuyên Phép+300, Công+15%"
+        },
+        {
+          "stars": [
+            6,
+            7
+          ],
+          "code": 52060201400,
+          "name": "Holy Pierce",
+          "name_vn": "Xuyên Thấu Thánh Quang",
+          "desc_vn": "Bản thân nhận Xuyên Phép+500, Công+20%"
+        },
+        {
+          "stars": [
+            8,
+            9
+          ],
+          "code": 52060201500,
+          "name": "Holy Pierce",
+          "name_vn": "Xuyên Thấu Thánh Quang",
+          "desc_vn": "Bản thân nhận Xuyên Phép+800, Công+25%"
+        },
+        {
+          "stars": [
+            10
+          ],
+          "code": 52060201600,
+          "name": "Holy Pierce",
+          "name_vn": "Xuyên Thấu Thánh Quang",
+          "desc_vn": "Bản thân nhận Xuyên Phép+1200, Công+30%"
+        }
+      ],
+      "purifications": [
+        {
+          "times": 0,
+          "code": 82060201,
+          "quality": 6,
+          "color": "red",
+          "name": "Ashen Cross",
+          "name_vn": "Thánh Giá Trắng",
+          "maxStar": 10
+        },
+        {
+          "times": 1,
+          "code": 82070201,
+          "quality": 7,
+          "color": "gold",
+          "name": "Cross of Salvation",
+          "name_vn": "Thánh Giá Cứu Rỗi",
+          "fixedSkill": {
+            "code": 52070201000,
+            "name": "Sacred Sigil",
+            "name_vn": "Dấu Ấn Thần Thánh",
+            "desc_vn": "Ấn này lan tới đâu, khiên ma pháp như không tồn tại! Khiến sát thương của bản thân bỏ qua 90% phòng ngự phép"
+          },
+          "maxStar": 10
+        },
+        {
+          "times": 2,
+          "code": 82080201,
+          "quality": 8,
+          "color": "colorful",
+          "name": "Gate of Doom",
+          "name_vn": "Cổng Diệt Vong",
+          "fixedSkill": {
+            "code": 52080201000,
+            "name": "Epoch Restart",
+            "name_vn": "Khởi Đầu Kỷ Nguyên",
+            "desc_vn": "Khiến ST của bản thân bỏ qua 95% Thủ Phép, ST Phép+30%"
+          },
+          "maxStar": 10
+        }
+      ]
+    },
+    "thorn_crown": {
+      "line": 3,
+      "name": "Thorn Crown",
+      "name_vn": "Vương Miện Gai",
+      "starSkills": [
+        {
+          "stars": [
+            0,
+            1
+          ],
+          "code": 52060301100,
+          "name": "Twin Angels",
+          "name_vn": "Thiên Thần Song Sinh",
+          "desc_vn": "Tuyệt Kỹ có 10% thi triển thêm một lần, đồng thời ST Tuyệt Kỹ tăng 15%"
+        },
+        {
+          "stars": [
+            2,
+            3
+          ],
+          "code": 52060301200,
+          "name": "Twin Angels",
+          "name_vn": "Thiên Thần Song Sinh",
+          "desc_vn": "Tuyệt Kỹ có 20% thi triển thêm một lần, đồng thời ST Tuyệt Kỹ tăng 30%"
+        },
+        {
+          "stars": [
+            4,
+            5
+          ],
+          "code": 52060301300,
+          "name": "Twin Angels",
+          "name_vn": "Thiên Thần Song Sinh",
+          "desc_vn": "Tuyệt Kỹ có 30% thi triển thêm một lần, đồng thời ST Tuyệt Kỹ tăng 45%"
+        },
+        {
+          "stars": [
+            6,
+            7
+          ],
+          "code": 52060301400,
+          "name": "Twin Angels",
+          "name_vn": "Thiên Thần Song Sinh",
+          "desc_vn": "Tuyệt Kỹ có 40% thi triển thêm một lần, đồng thời ST Tuyệt Kỹ tăng 60%"
+        },
+        {
+          "stars": [
+            8,
+            9
+          ],
+          "code": 52060301500,
+          "name": "Twin Angels",
+          "name_vn": "Thiên Thần Song Sinh",
+          "desc_vn": "Tuyệt Kỹ có 50% thi triển thêm một lần, đồng thời ST Tuyệt Kỹ tăng 80%"
+        },
+        {
+          "stars": [
+            10
+          ],
+          "code": 52060301600,
+          "name": "Twin Angels",
+          "name_vn": "Thiên Thần Song Sinh",
+          "desc_vn": "Tuyệt Kỹ có 60% thi triển thêm một lần, đồng thời ST Tuyệt Kỹ tăng 100%"
+        }
+      ],
+      "purifications": [
+        {
+          "times": 0,
+          "code": 82060301,
+          "quality": 6,
+          "color": "red",
+          "name": "Thorn Crown",
+          "name_vn": "Vương Miện Gai",
+          "maxStar": 10
+        },
+        {
+          "times": 1,
+          "code": 82070301,
+          "quality": 7,
+          "color": "gold",
+          "name": "Holy Crown",
+          "name_vn": "Vương Miện Thần",
+          "fixedSkill": {
+            "code": 52070301000,
+            "name": "Eternal Edict",
+            "name_vn": "Chân Ngôn Vĩnh Hằng",
+            "desc_vn": "Mỗi khi thi triển Tuyệt Kỹ, tăng 4% ST bản thân, tối đa 100%"
+          },
+          "maxStar": 10
+        },
+        {
+          "times": 2,
+          "code": 82080301,
+          "quality": 8,
+          "color": "colorful",
+          "name": "Heritage Crown",
+          "name_vn": "Vương Miện Kế Thừa",
+          "fixedSkill": {
+            "code": 52080301000,
+            "name": "Banishing Bane",
+            "name_vn": "Nghiệp Quật Quấn Thân",
+            "desc_vn": "Mỗi khi thi triển Tuyệt Kỹ, tăng 6% ST bản thân, tối đa 150%"
+          },
+          "maxStar": 10
+        }
+      ]
+    },
+    "sanguine_chalice": {
+      "line": 4,
+      "name": "Sanguine Chalice",
+      "name_vn": "Chén Thánh Huyết",
+      "starSkills": [
+        {
+          "stars": [
+            0,
+            1
+          ],
+          "code": 52060401100,
+          "name": "Chain Assault",
+          "name_vn": "Liên Hoàn Đả Kích",
+          "desc_vn": "Công Thường có 10% nhân đôi số mục tiêu, đồng thời ST Công Thường tăng 15%"
+        },
+        {
+          "stars": [
+            2,
+            3
+          ],
+          "code": 52060401200,
+          "name": "Chain Assault",
+          "name_vn": "Liên Hoàn Đả Kích",
+          "desc_vn": "Công Thường có 20% nhân đôi số mục tiêu, đồng thời ST Công Thường tăng 30%"
+        },
+        {
+          "stars": [
+            4,
+            5
+          ],
+          "code": 52060401300,
+          "name": "Chain Assault",
+          "name_vn": "Liên Hoàn Đả Kích",
+          "desc_vn": "Công Thường có 30% nhân đôi số mục tiêu, đồng thời ST Công Thường tăng 45%"
+        },
+        {
+          "stars": [
+            6,
+            7
+          ],
+          "code": 52060401400,
+          "name": "Chain Assault",
+          "name_vn": "Liên Hoàn Đả Kích",
+          "desc_vn": "Công Thường có 40% nhân đôi số mục tiêu, đồng thời ST Công Thường tăng 60%"
+        },
+        {
+          "stars": [
+            8,
+            9
+          ],
+          "code": 52060401500,
+          "name": "Chain Assault",
+          "name_vn": "Liên Hoàn Đả Kích",
+          "desc_vn": "Công Thường có 50% nhân đôi số mục tiêu, đồng thời ST Công Thường tăng 80%"
+        },
+        {
+          "stars": [
+            10
+          ],
+          "code": 52060401600,
+          "name": "Chain Assault",
+          "name_vn": "Liên Hoàn Đả Kích",
+          "desc_vn": "Công Thường có 60% nhân đôi số mục tiêu, đồng thời ST Công Thường tăng 100%"
+        }
+      ],
+      "purifications": [
+        {
+          "times": 0,
+          "code": 82060401,
+          "quality": 6,
+          "color": "red",
+          "name": "Sanguine Chalice",
+          "name_vn": "Chén Thánh Huyết",
+          "maxStar": 10
+        },
+        {
+          "times": 1,
+          "code": 82070401,
+          "quality": 7,
+          "color": "gold",
+          "name": "Hero's Goblet",
+          "name_vn": "Chén Thánh Anh Linh",
+          "fixedSkill": {
+            "code": 52070401000,
+            "name": "Battle Anthem",
+            "name_vn": "Chiến Ca Hào Hùng",
+            "desc_vn": "Mỗi khi thi triển Công Thường, tăng 0.5% ST cho toàn đội, tối đa 30%, không thể cộng dồn"
+          },
+          "maxStar": 10
+        },
+        {
+          "times": 2,
+          "code": 82080401,
+          "quality": 8,
+          "color": "colorful",
+          "name": "Life Module",
+          "name_vn": "Hạt Giống Sự Sống",
+          "fixedSkill": {
+            "code": 52080401000,
+            "name": "Battle Frenzy",
+            "name_vn": "Quyết Tâm Sục Sôi",
+            "desc_vn": "Mỗi khi thi triển Công Thường, tăng 1% ST cho toàn đội, tối đa 50%, không thể cộng dồn"
+          },
+          "maxStar": 10
+        }
+      ]
+    },
+    "lance_of_longinus": {
+      "line": 5,
+      "name": "Lance of Longinus",
+      "name_vn": "Giáo Longinus",
+      "starSkills": [
+        {
+          "stars": [
+            0,
+            1
+          ],
+          "code": 52060501000,
+          "name": "Demon Cleaver",
+          "name_vn": "Chém Quỷ Như Bùn",
+          "desc_vn": "ST Xuyên Thấu có 15% gây thêm 1 lần ST phạm vi nhỏ bằng 10% Công"
+        },
+        {
+          "stars": [
+            2,
+            3
+          ],
+          "code": 52060502000,
+          "name": "Demon Cleaver",
+          "name_vn": "Chém Quỷ Như Bùn",
+          "desc_vn": "ST Xuyên Thấu có 15% gây thêm 1 lần ST phạm vi nhỏ bằng 20% Công"
+        },
+        {
+          "stars": [
+            4,
+            5
+          ],
+          "code": 52060503000,
+          "name": "Demon Cleaver",
+          "name_vn": "Chém Quỷ Như Bùn",
+          "desc_vn": "ST Xuyên Thấu có 15% gây thêm 1 lần ST phạm vi nhỏ bằng 30% Công"
+        },
+        {
+          "stars": [
+            6,
+            7
+          ],
+          "code": 52060504000,
+          "name": "Demon Cleaver",
+          "name_vn": "Chém Quỷ Như Bùn",
+          "desc_vn": "ST Xuyên Thấu có 15% gây thêm 1 lần ST phạm vi nhỏ bằng 40% Công"
+        },
+        {
+          "stars": [
+            8,
+            9
+          ],
+          "code": 52060505000,
+          "name": "Demon Cleaver",
+          "name_vn": "Chém Quỷ Như Bùn",
+          "desc_vn": "ST Xuyên Thấu có 15% gây thêm 1 lần ST phạm vi nhỏ bằng 50% Công"
+        },
+        {
+          "stars": [
+            10
+          ],
+          "code": 52060506000,
+          "name": "Demon Cleaver",
+          "name_vn": "Chém Quỷ Như Bùn",
+          "desc_vn": "ST Xuyên Thấu có 15% gây thêm 1 lần ST phạm vi nhỏ bằng 60% Công"
+        }
+      ],
+      "purifications": [
+        {
+          "times": 0,
+          "code": 82060501,
+          "quality": 6,
+          "color": "red",
+          "name": "Lance of Longinus",
+          "name_vn": "Giáo Longinus",
+          "maxStar": 10
+        },
+        {
+          "times": 1,
+          "code": 82070501,
+          "quality": 7,
+          "color": "gold",
+          "name": "Lance of Destiny",
+          "name_vn": "Giáo Định Đoạt",
+          "fixedSkill": {
+            "code": 52070501000,
+            "name": "Fate Piercer",
+            "name_vn": "Xuyên Thấu Định Mệnh",
+            "desc_vn": "Khiến ST của bản thân+40%, tấn công loại Xuyên Thấu sẽ bật ngược lại một lần theo hướng ngược lại (không bao gồm Xuyên Thấu Vô Hạn)"
+          },
+          "maxStar": 10
+        },
+        {
+          "times": 2,
+          "code": 82080501,
+          "quality": 8,
+          "color": "colorful",
+          "name": "Causality Point",
+          "name_vn": "Nút Thắt Nhân Quả",
+          "fixedSkill": {
+            "code": 52080501000,
+            "name": "Impaling Fate",
+            "name_vn": "Đòn Đánh Định Mệnh",
+            "desc_vn": "Khiến ST bản thân+60%, tấn công loại xuyên thấu sẽ bật ngược lại 2 lần (Không gồm Xuyên Thấu vô hạn)"
+          },
+          "maxStar": 10
+        }
+      ]
+    },
+    "gilded_incense": {
+      "line": 6,
+      "name": "Gilded Incense",
+      "name_vn": "Lư Hương Vàng",
+      "starSkills": [
+        {
+          "stars": [
+            0,
+            1
+          ],
+          "code": 52060601000,
+          "name": "Mind-Soothing Incense",
+          "name_vn": "Hương Thơm Tỉnh Thần",
+          "desc_vn": "Chữa Trị có 10% gấp đôi"
+        },
+        {
+          "stars": [
+            2,
+            3
+          ],
+          "code": 52060602000,
+          "name": "Mind-Soothing Incense",
+          "name_vn": "Hương Thơm Tỉnh Thần",
+          "desc_vn": "Chữa Trị có 20% gấp đôi"
+        },
+        {
+          "stars": [
+            4,
+            5
+          ],
+          "code": 52060603000,
+          "name": "Mind-Soothing Incense",
+          "name_vn": "Hương Thơm Tỉnh Thần",
+          "desc_vn": "Chữa Trị có 30% gấp đôi"
+        },
+        {
+          "stars": [
+            6,
+            7
+          ],
+          "code": 52060604000,
+          "name": "Mind-Soothing Incense",
+          "name_vn": "Hương Thơm Tỉnh Thần",
+          "desc_vn": "Chữa Trị có 40% gấp đôi"
+        },
+        {
+          "stars": [
+            8,
+            9
+          ],
+          "code": 52060605000,
+          "name": "Mind-Soothing Incense",
+          "name_vn": "Hương Thơm Tỉnh Thần",
+          "desc_vn": "Chữa Trị có 50% gấp đôi"
+        },
+        {
+          "stars": [
+            10
+          ],
+          "code": 52060606000,
+          "name": "Mind-Soothing Incense",
+          "name_vn": "Hương Thơm Tỉnh Thần",
+          "desc_vn": "Chữa Trị có 60% gấp đôi"
+        }
+      ],
+      "purifications": [
+        {
+          "times": 0,
+          "code": 82060601,
+          "quality": 6,
+          "color": "red",
+          "name": "Gilded Incense",
+          "name_vn": "Lư Hương Vàng",
+          "maxStar": 10
+        },
+        {
+          "times": 1,
+          "code": 82070601,
+          "quality": 7,
+          "color": "gold",
+          "name": "Healing Burner",
+          "name_vn": "Lò Thánh Dũ",
+          "fixedSkill": {
+            "code": 52070601000,
+            "name": "Holy Blaze",
+            "name_vn": "Thánh Hỏa Tẩy Luyện",
+            "desc_vn": "Trong tro tàn, ắt có sự tái sinh! HP mục tiêu càng thấp, lượng Chữa Trị dành cho mục tiêu đó càng cao, tối đa 100%"
+          },
+          "maxStar": 10
+        },
+        {
+          "times": 2,
+          "code": 82080601,
+          "quality": 8,
+          "color": "colorful",
+          "name": "Wishing Burner",
+          "name_vn": "Lò Luyện Ước Nguyện",
+          "fixedSkill": {
+            "code": 52080601000,
+            "name": "Restless Pray",
+            "name_vn": "Cầu Nguyện Vĩnh Hằng",
+            "desc_vn": "HP mục tiêu càng thấp, lượng Chữa Trị dành cho mục tiêu đó càng cao, tối đa 100%. Khi Chữa Trị có 5% tỷ lệ khiến mục tiêu thêm 1 tầng <color=#f57c00 click=\"onClicked\" param=\"15\"><u>[Miễn Nhiễm]</u></color>"
+          },
+          "maxStar": 10
+        }
+      ]
+    },
+    "cthulhu_s_scroll": {
+      "line": 7,
+      "name": "Cthulhu's Scroll",
+      "name_vn": "Cuộn Cthulhu",
+      "starSkills": [
+        {
+          "stars": [
+            0,
+            1
+          ],
+          "code": 52060701000,
+          "name": "Ancient Whisper",
+          "name_vn": "Lời Thì Thầm Của Cổ Thần",
+          "desc_vn": "ST của Vật Triệu Hồi của bản thân tăng 20%, thời gian duy trì kéo dài 20%"
+        },
+        {
+          "stars": [
+            2,
+            3
+          ],
+          "code": 52060702000,
+          "name": "Ancient Whisper",
+          "name_vn": "Lời Thì Thầm Của Cổ Thần",
+          "desc_vn": "ST của Vật Triệu Hồi của bản thân tăng 35%, thời gian duy trì kéo dài 35%"
+        },
+        {
+          "stars": [
+            4,
+            5
+          ],
+          "code": 52060703000,
+          "name": "Ancient Whisper",
+          "name_vn": "Lời Thì Thầm Của Cổ Thần",
+          "desc_vn": "ST của Vật Triệu Hồi của bản thân tăng 50%, thời gian duy trì kéo dài 50%"
+        },
+        {
+          "stars": [
+            6,
+            7
+          ],
+          "code": 52060704000,
+          "name": "Ancient Whisper",
+          "name_vn": "Lời Thì Thầm Của Cổ Thần",
+          "desc_vn": "ST của Vật Triệu Hồi của bản thân tăng 65%, thời gian duy trì kéo dài 65%"
+        },
+        {
+          "stars": [
+            8,
+            9
+          ],
+          "code": 52060705000,
+          "name": "Ancient Whisper",
+          "name_vn": "Lời Thì Thầm Của Cổ Thần",
+          "desc_vn": "ST của Vật Triệu Hồi của bản thân tăng 80%, thời gian duy trì kéo dài 80%"
+        },
+        {
+          "stars": [
+            10
+          ],
+          "code": 52060706000,
+          "name": "Ancient Whisper",
+          "name_vn": "Lời Thì Thầm Của Cổ Thần",
+          "desc_vn": "ST của Vật Triệu Hồi của bản thân tăng 100%, thời gian duy trì kéo dài 100%"
+        }
+      ],
+      "purifications": [
+        {
+          "times": 0,
+          "code": 82060701,
+          "quality": 6,
+          "color": "red",
+          "name": "Cthulhu's Scroll",
+          "name_vn": "Cuộn Cthulhu",
+          "maxStar": 10
+        },
+        {
+          "times": 1,
+          "code": 82070701,
+          "quality": 7,
+          "color": "gold",
+          "name": "Echo of the Void",
+          "name_vn": "Tiếng Vọng Hư Không",
+          "fixedSkill": {
+            "code": 52070701000,
+            "name": "Abyss Reveal",
+            "name_vn": "Vực Sâu Hiện Hình",
+            "desc_vn": "Vực Sâu sẽ đáp lại gấp đôi! ST của bản thân tăng 30%. Số lượng Vật Triệu Hồi nhân đôi"
+          },
+          "maxStar": 10
+        },
+        {
+          "times": 2,
+          "code": 82080701,
+          "quality": 8,
+          "color": "colorful",
+          "name": "Defiant Gaze",
+          "name_vn": "Lời Răn Nghịch Nhãn",
+          "fixedSkill": {
+            "code": 52080701000,
+            "name": "Shadow Warden",
+            "name_vn": "Gọi Bóng Bảo Vệ",
+            "desc_vn": "ST của bản thân tăng 60%. Số lượng Vật Triệu Hồi nhân đôi"
+          },
+          "maxStar": 10
+        }
+      ]
+    }
+  }
+}
