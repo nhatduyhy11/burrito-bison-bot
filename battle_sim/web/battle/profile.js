@@ -128,9 +128,21 @@
       player.daoists = asList(spells);
     }
     if (Object.hasOwn(profile, "summonerSkins")) {
-      const { SUMMONER_SLOTS, summonerSkillsConflict } = await import("../summoner-skills.js");
+      const { SUMMONER_SLOTS, isPassiveSummonerSkin, summonerSkillsConflict } = await import("../summoner-skills.js");
       const slotted = [];
-      player.summonerInfos = asList(choices("summonerSkins", SUMMONER_SLOTS).map(({ option: { code }, selection: { star = 1 } }) => {
+      const picked = choices("summonerSkins", Object.keys(catalog.summonerSkins).length);
+      // Skill-less event skins only add account stats (server side) and can be worn; they never go in
+      // summonerInfos, which carries the skill slots only.
+      const skills = picked.filter(({ option }) => !isPassiveSummonerSkin(option));
+      if (skills.length > SUMMONER_SLOTS) throw new Error(`Profile summonerSkins has more than ${SUMMONER_SLOTS} skill slots`);
+      const worn = profile.summonerWorn ?? null;
+      if (worn !== null) {
+        const entry = picked.find(({ selection }) => selection.name === worn);
+        if (!entry || M("DermaLO").get(entry.option.code)?.dermatype !== 2) throw new Error(`Invalid summonerWorn: ${worn}`);
+        // Worn skin = SummonerInfoP / base player info `derma` (model only); read by stubNetwork.
+        SimBattle.summonerDerma = entry.option.code;
+      }
+      player.summonerInfos = asList(skills.map(({ option: { code }, selection: { star = 1 } }) => {
         const skin = M("DermaLO").get(code);
         const rank = Number.isSafeInteger(star) && star > 0 && M("DermaStarLO").get(code * 100 + star);
         if (skin?.dermatype !== 2 || !skin.skills?.length || !JSON.parse(rank?.skill || "[]").length) {

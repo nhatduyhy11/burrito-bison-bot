@@ -2,6 +2,7 @@
 //   - console.error keeps stacks; ?trace=Module.method records the first throw with its stack
 //   - SocketMgr / GameRoomSocket.send   -> logged, never sent (there is no socket anyway)
 //   - PlayerModule.getMultiPlayerData   -> resolved at once (player data comes from StartGameP)
+//   - PlayerModule.playerInfo           -> playerId, plus derma (worn Summoner skin) from the profile
 //   - BuildProxy.QuitRoomRequest        -> recorded, answered locally with the client's own result
 //   - BuildProxy.SetPauseRequest        -> answered locally (pause button / pause panel)
 (function () {
@@ -57,8 +58,11 @@
     const PlayerModule = M("PlayerModule");
     PlayerModule.Ins.getMultiPlayerData = async () => { net("PlayerModule.getMultiPlayerData (resolved locally)"); };
     // Shape of PlayerModule.updatePlayerInfo's holder; only playerId is known (from StartGameP).
-    PlayerModule.Ins._playerInfo = { info: { playerId: myPid }, playerMoney: undefined, compressionFightCap: 0, speedCardEndDt: 0 };
-    step("player", { playerId: PlayerModule.Ins.playerId });
+    // derma: worn Summoner skin from the profile (summonerWorn); the battle reads it through
+    // getSiglePlayerData -> SummonerUtils.getSummonerModel. Unset = default Summoner model.
+    const info = { playerId: myPid, ...(SimBattle.summonerDerma ? { derma: SimBattle.summonerDerma } : {}) };
+    PlayerModule.Ins._playerInfo = { info, playerMoney: undefined, compressionFightCap: 0, speedCardEndDt: 0 };
+    step("player", { playerId: PlayerModule.Ins.playerId, derma: info.derma || 0 });
   };
 
   // Play mode, this page only: act as if both privilege month cards are bought, in every battle type.

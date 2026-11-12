@@ -239,6 +239,12 @@ uv run python battle_sim/sandbox --setup
   và mount đang cưỡi; `selected: null` là không cưỡi. Bỏ `mounts` giữ dữ liệu capture.
   Catalog mount nằm ở `mounts` trong [profile-dict.json](web/profile-dict.json). Mount mới dùng skill rank đầu tiên;
   mount có trong capture giữ skill cũ. Các chỉ số account do server tính vẫn lấy từ capture.
+  `summonerSkins` là các skin Summoner đã tick: `{ "name", "star" }`, tối đa 3 skin có skill
+  (`summonerInfos`). Skin sự kiện không có skill (`sanguin_dragoon`, chỉ cộng chỉ số) không chiếm
+  slot và không vào `summonerInfos`: server thật không gửi, còn client sẽ lỗi khi parse skill rỗng.
+  `summonerWorn` là skin đang mặc, chọn trong `summonerSkins` (`null` là model mặc định). Live
+  game gửi nó ở `derma` của `SummonerInfoP` / base player info, không nằm trong `StartGameP`; sim
+  đặt nó vào `PlayerModule.playerInfo.info.derma` để đổi model Summoner trong trận.
 
   Catalog Đồ Cổ nằm ở `antiques`, kèm bảng màu, bộ sưu tập và chi phí nâng cấp.
   Mỗi `ranks[].code` là mã theo sao trong capture, ví dụ `300106` là `3001` ở 6 sao.

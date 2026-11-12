@@ -2,7 +2,7 @@
 // Optional sections left null keep that part of the capture; heroes always have five editable slots.
 import * as R from "./skin-rules.js";
 import { JOKER_SUMMON } from "../hero-lineup.js";
-import { SUMMONER_SLOTS, summonerSkillsConflict } from "../summoner-skills.js";
+import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkillsConflict } from "../summoner-skills.js";
 import { antiqueSelections, defaultAntiques } from "../antiques.js";
 
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2, summonerSkins: SUMMONER_SLOTS };
@@ -16,6 +16,7 @@ function emptyState(dict) {
     battle: "", seed: "", map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
     mounts: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null, summonerSkins: null,
+    summonerWorn: null,
     antiques: dict ? defaultAntiques(dict.antiques) : {},
   };
 }
@@ -31,6 +32,8 @@ function newBuilding(dict, building) {
 function normalize(state, dict) {
   state.heroes = Array.from({ length: LIMITS.heroes }, (_, i) => state.heroes?.[i] || newHero(""));
   if (state.mounts && !state.mounts.owned.includes(state.mounts.selected)) state.mounts.selected = null;
+  // The worn Summoner skin is picked among the skins checked in the Summoner table.
+  if (!state.summonerSkins?.some(({ name }) => name === state.summonerWorn)) state.summonerWorn = null;
   if (state.heroes) for (const hero of state.heroes) R.normalizeHero(hero, heroSkins(dict, hero.name));
   state.summonedJoker ||= newHero(JOKER_SUMMON.summonedHero);
   R.normalizeHero(state.summonedJoker, heroSkins(dict, JOKER_SUMMON.summonedHero));
@@ -64,7 +67,10 @@ function toProfile(state, dict) {
   if (state.traps) profile.traps = state.traps.map(({ name, level, star }) => ({ name, level, star }));
   if (state.pets) profile.pets = state.pets.map(({ name, level, star }) => ({ name, level, star }));
   if (state.spells) profile.spells = state.spells.map(({ name, star }) => ({ name, star }));
-  if (state.summonerSkins) profile.summonerSkins = state.summonerSkins.map(({ name, star }) => ({ name, star }));
+  if (state.summonerSkins) {
+    profile.summonerSkins = state.summonerSkins.map(({ name, star }) => ({ name, star }));
+    profile.summonerWorn = state.summonerWorn;
+  }
   const buildings = {};
   for (const [building] of BUILDINGS) {
     const entry = state.buildings[building];
@@ -140,16 +146,25 @@ function fromProfile(profile, base, dict) {
     });
   }
   if (Array.isArray(profile.summonerSkins)) {
-    if (profile.summonerSkins.length > SUMMONER_SLOTS) throw new Error(`Skill Summoner có tối đa ${SUMMONER_SLOTS} slot`);
     next.summonerSkins = [];
     for (const item of profile.summonerSkins) {
       const { name, star = 1 } = entryOf(item);
       const skin = dict.summonerSkins[need("summonerSkins", name)];
-      if (!skin.skill || next.summonerSkins.some((entry) => summonerSkillsConflict(dict.summonerSkins[entry.name], skin))) {
-        throw new Error(`Không thể gắn skill Summoner "${name}"`);
-      }
+      const taken = next.summonerSkins.map((entry) => dict.summonerSkins[entry.name]);
+      const ok = isPassiveSummonerSkin(skin)
+        ? !taken.includes(skin)
+        : skin.skill && !taken.some((other) => other.skill && summonerSkillsConflict(other, skin));
+      if (!ok) throw new Error(`Không thể gắn skill Summoner "${name}"`);
       next.summonerSkins.push({ name, star: R.clamp(star, 1, skin.maxStar) });
     }
+    if (slottedSkillCount(next.summonerSkins, dict.summonerSkins) > SUMMONER_SLOTS) {
+      throw new Error(`Skill Summoner có tối đa ${SUMMONER_SLOTS} slot`);
+    }
+    const worn = profile.summonerWorn ?? null;
+    if (worn !== null && !next.summonerSkins.some(({ name }) => name === worn)) {
+      throw new Error("Skin Summoner đang mặc phải nằm trong các skin đã chọn");
+    }
+    next.summonerWorn = worn;
   }
   for (const [building, sel] of Object.entries(profile.buildings || {})) {
     if (!dict.buildings[building]) throw new Error(`Không có building "${building}"`);

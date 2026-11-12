@@ -27,6 +27,22 @@ test('mount ownership and optional selection round trip; unowning clears selecti
   assert.throws(() => fromProfile({ mounts: { owned: ['missing'] } }, base, dict));
 });
 
+test('Summoner: event skin takes no skill slot, worn skin round trips and must be ticked', () => {
+  const skins = [
+    { name: 'skeletian', star: 5 }, { name: 'night_wander', star: 4 }, { name: 'castle_count', star: 4 },
+    { name: 'sanguin_dragoon', star: 1 },
+  ];
+  const state = fromProfile({ summonerSkins: skins, summonerWorn: 'sanguin_dragoon' }, base, dict);
+  const profile = toProfile(state, dict);
+  assert.deepEqual(profile.summonerSkins, skins);
+  assert.equal(profile.summonerWorn, 'sanguin_dragoon');
+  state.summonerSkins = state.summonerSkins.filter(({ name }) => name !== 'sanguin_dragoon');
+  normalize(state, dict);
+  assert.equal(toProfile(state, dict).summonerWorn, null);
+  assert.throws(() => fromProfile({ summonerSkins: [...skins, { name: 'azure_valkyrie' }] }, base, dict));
+  assert.throws(() => fromProfile({ summonerSkins: ['skeletian'], summonerWorn: 'azure_valkyrie' }, base, dict));
+});
+
 test('Joker support requires Loli summon skin in a slot and no regular Joker', () => {
   assert.equal(hasSummonedJoker([{ name: JOKER_SUMMON.hero }], true), true);
   assert.equal(hasSummonedJoker([{ name: JOKER_SUMMON.hero }], false), false);
