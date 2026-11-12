@@ -57,19 +57,19 @@
     select, input[type=number] { background: #111318; color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; font: inherit; }
     input[type=number] { width: 58px; }
     select { max-width: 100%; }
-    /* Anchor the skin menu to its field, independent of the selected option's index. */
+    /* Use the same anchored menu for every dropdown in the setup form. */
     @supports (appearance: base-select) {
-      .skin-picker select, .skin-picker select::picker(select) { appearance: base-select; }
-      .skin-picker select { align-items: center; gap: 8px; }
-      .skin-picker select::picker(select) {
-        inset: auto;
-        top: anchor(bottom);
-        left: anchor(left);
-        width: anchor-size(width);
-        min-width: 0;
-        max-width: calc(100vw - 24px);
+      select, select::picker(select) { appearance: base-select; }
+      select { align-items: center; gap: 8px; }
+      select::picker(select) {
+        position-area: bottom span-right;
+        justify-self: start;
+        width: max-content;
+        min-width: anchor-size(width);
+        max-width: max(anchor-size(width), min(320px, 48vw));
         max-height: min(280px, 50vh);
-        position-try-fallbacks: flip-block, flip-inline;
+        position-try-order: normal;
+        position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
         margin: 4px 0;
         padding: 4px;
         background: #1e2128;
@@ -77,12 +77,12 @@
         border: 1px solid var(--line);
         border-radius: 6px;
         box-shadow: 0 8px 24px #0006;
-        font: 12px/1.45 "Helvetica Neue", Arial, sans-serif;
+        font: inherit;
       }
-      .skin-picker option { padding: 6px 8px; border-radius: 3px; white-space: normal; overflow-wrap: anywhere; }
-      .skin-picker option:checked { background: #283d55; }
-      .skin-picker option:hover { background: #323743; }
-      .skin-picker select::picker-icon { margin-left: auto; color: var(--muted); }
+      select option { padding: 6px 8px; border-radius: 3px; white-space: normal; overflow-wrap: anywhere; }
+      select option:checked { background: #283d55; }
+      select option:hover { background: #323743; }
+      select::picker-icon { margin-left: auto; color: var(--muted); }
     }
     button { background: #2a2f3a; color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 4px 10px; font: inherit; cursor: pointer; }
     button:hover:not(:disabled) { border-color: var(--accent); }
