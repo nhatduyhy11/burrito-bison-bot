@@ -52,4 +52,4 @@ Nguồn: `HeroDermaModule` trong bundle, đối chiếu với capture pmain `6af
   skill skin nào dùng `exclusionGroup`, nên phần logic không bị thay thế.
 
 Chưa xác nhận vì chưa có capture của account có 7 màu: skill 7 màu đứng sau 3 skill
-thường. Phần này nằm trong [skin-profile.js](web/battle/skin-profile.js).
+thường. Phần này nằm trong [hero/skin.js](web/battle/hero/skin.js).

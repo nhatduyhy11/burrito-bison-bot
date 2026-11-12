@@ -55,7 +55,7 @@ function toProfile(state, dict) {
       if (hero.worn) Object.assign(out, { skin: hero.worn, star: hero.skins[hero.worn].star });
       const owned = Object.keys(skins).filter((key) => key !== hero.worn && hero.skins[key]?.owned);
       if (owned.length) out.ownedSkins = Object.fromEntries(owned.map((key) => [key, hero.skins[key].star]));
-      // Slot order: normal skins in config order, then the colorful one (skin-profile.js default order).
+      // Slot order: normal skins in config order, then the colorful one (battle/hero/skin.js default order).
       out.slots = [
         ...hero.slots.filter((key) => R.isNormalHeroSkin(skins[key])),
         ...hero.slots.filter((key) => !R.isNormalHeroSkin(skins[key])),

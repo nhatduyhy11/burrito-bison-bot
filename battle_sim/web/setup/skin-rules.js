@@ -1,6 +1,6 @@
 // Setup page input rules for hero and building skins: normalize what the user picks and tell the
 // form which controls are forced. Pure (no DOM); each function takes the skin catalog of one hero /
-// building from profile-dict.json. The battle applies skins in web/battle/skin-profile.js and
+// building from profile-dict.json. The battle applies skins in web/battle/hero/skin.js and
 // build-skin-profile.js, which validate the profile again.
 //
 // Hero: 3 normal slots + 1 colorful slot. A colorful skin needs its 3 normal skins at >= its star;

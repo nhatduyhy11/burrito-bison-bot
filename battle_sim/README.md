@@ -331,7 +331,7 @@ So sánh:
 - `web/battle/` — mở trận đã capture trong trang cách ly, replay op log, so `QuitRoom`.
   `index.js` (entry, `window.__simBattle`), `setup.js` (giống `Main`), `stubs.js` (lỗi,
   stub mạng, `QuitRoom`), `replay.js` (op log, tick, pause, so kết quả), `profile.js` +
-  `skin-profile.js` + `build-skin-profile.js` + `map-profile.js` (chỉ load khi `--profile`).
+  `hero/` (`selection.js`, `build.js`, `skin.js`) + `map-profile.js` + `build-skin-profile.js` (chỉ load khi `--profile`).
 - `lib/capture.js` — đọc trận (`StartGameP` … `QuitRoom`) từ `events-*.jsonl`.
 - `lib/deploy.js` — đọc ClientVer / manifest / `bundleVers` của deploy live.
 - `lib/versions.js` — chọn bundle/config/map theo version, tải config.

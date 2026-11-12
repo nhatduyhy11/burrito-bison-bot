@@ -1,6 +1,6 @@
 // Entry of the battle view: open a captured battle in the isolated page and replay its op log
 // with the game's own battle view. boot.js loads the other files of this folder first
-// (stubs, setup, replay; profile + skin-profile with ?profile), then this one, and calls
+// (stubs, setup, replay; profile, map-profile, build-skin-profile and hero/ with ?profile), then this one, and calls
 // window.__simBattle after boot.
 //
 // Entry point is the same one the room socket uses: TDModule.onStartGamePPush(StartGameP).
