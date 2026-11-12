@@ -59,3 +59,11 @@ export function requiresNote(skin, skins) {
     <div class="note">${`cần: ${names}`}</div>
   `;
 }
+
+export function eventUnlockNote(skin) {
+  if (!skin.unlockCosts?.length) return null;
+  const itemCodes = skin.unlockCosts.map(([, code]) => code).join(", ");
+  return html`
+    <div class="note">Quà sự kiện · Item mở khóa ${itemCodes}</div>
+  `;
+}

@@ -68,10 +68,19 @@ async function main() {
   for (const r of rows(M("DermaStarLO"))) dermaMaxStar.set(r.dermaCode, Math.max(dermaMaxStar.get(r.dermaCode) || 0, r.star));
   const dermas = rows(M("DermaLO"));
   const heroSkins = dermas.filter((d) => d.dermatype === 1);
+  const isEventReward = (row) => ["活动获得", "Obtained from events."].includes(row.sourceName);
+  const eventUnlock = (row, costs) => ({
+    source: row.sourceName,
+    unlockCosts: jsonField(costs),
+  });
   const summonerSkins = keyed(dermas.filter((d) => d.dermatype === 2).sort((a, b) => a.code - b.code).map((d) => [d.name, {
     code: d.code, name: d.name, name_vn: vn("DermaLO", d.code), color: SKIN_COLOR[d.color] || d.color,
     maxStar: dermaMaxStar.get(d.code) || 1, model: d.deco,
     ...(d.skills?.length ? { skill: SkillBase.get(d.skills.get(0))?.name, skill_vn: vn("SkillBaseLO", d.skills.get(0)) } : {}),
+    ...(!d.skills?.length && isEventReward(d) && d.hideStar ? {
+      ...eventUnlock(d, d.costs),
+      passiveAttr: jsonField(M("DermaStarLO").get(d.code * 100 + 1)?.attr),
+    } : {}),
     ...(d.exclusion ? { excludes: d.exclusion } : {}),
   }]));
 
@@ -124,6 +133,9 @@ async function main() {
         skinId: row.skinId, name: row.name, name_vn: vn("BuildSkinLO", row.code), color: SKIN_COLOR[row.color] || row.color,
         slot: BUILD_SLOT[row.skillType] ?? row.skillType, maxStar,
         ...(row.isInit ? { default: true } : {}), ...(requires.length ? { requires } : {}),
+        ...(row.skillType === 3 && isEventReward(row) && row.hideStar ? {
+          ...eventUnlock(row, row.cost1), skillCodes: jsonField(row.skill),
+        } : {}),
       };
     }
     buildings[id] = { buildType, skins };

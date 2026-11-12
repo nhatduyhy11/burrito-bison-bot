@@ -884,7 +884,25 @@
       "name_vn": "Kỵ Sĩ Huyết Long",
       "color": "gold",
       "maxStar": 1,
-      "model": "role_huashen_009"
+      "model": "role_huashen_009",
+      "source": "Obtained from events.",
+      "unlockCosts": [
+        [
+          3,
+          30291004,
+          1
+        ]
+      ],
+      "passiveAttr": [
+        [
+          11153,
+          5000
+        ],
+        [
+          11154,
+          5000
+        ]
+      ]
     },
     "pyromancer": {
       "code": 20205,
@@ -1392,7 +1410,18 @@
           "name_vn": "Triều Đại huyết",
           "color": "gold",
           "slot": "special",
-          "maxStar": 1
+          "maxStar": 1,
+          "source": "Obtained from events.",
+          "unlockCosts": [
+            [
+              3,
+              30651007,
+              1
+            ]
+          ],
+          "skillCodes": [
+            80010701000
+          ]
         },
         "nightmare_shark": {
           "skinId": 10008,
@@ -1512,7 +1541,18 @@
           "name_vn": "Quan Tài Vua Quỷ",
           "color": "gold",
           "slot": "special",
-          "maxStar": 1
+          "maxStar": 1,
+          "source": "Obtained from events.",
+          "unlockCosts": [
+            [
+              3,
+              30652006,
+              1
+            ]
+          ],
+          "skillCodes": [
+            80020601000
+          ]
         },
         "snowfall_dream": {
           "skinId": 20007,

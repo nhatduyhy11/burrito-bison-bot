@@ -2,7 +2,7 @@
 import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, Accordion } from "../ui.js";
 import { BUILD_SLOTS, buildingForced, buildingLocks } from "../skin-rules.js";
 import { BUILDINGS, buildSkins, newBuilding } from "../profile-io.js";
-import { headerRow, requiresNote, without } from "./shared.js";
+import { eventUnlockNote, headerRow, requiresNote, without } from "./shared.js";
 
 const HEADERS = ["Skin", "Màu / slot", "Sở hữu", "Sao", "Slot"];
 const COLOR_ORDER = { red: 0, gold: 1 };
@@ -108,7 +108,7 @@ function BuildingSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted
   else if (locked) slotCell = html`<span class="warn">khoá</span>`;
   return html`
     <tr>
-      <td class="name">${label(skin)}${requiresNote(skin, skins)}</td>
+      <td class="name">${label(skin)}${requiresNote(skin, skins)}${eventUnlockNote(skin)}</td>
       <td>${colorTag(skin.color)}${slotLabel}</td>
       <td><${Checkbox} checked=${state.owned} disabled=${forcedStar !== undefined} onChange=${setOwned} /></td>
       <td>

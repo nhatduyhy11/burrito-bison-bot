@@ -1,5 +1,5 @@
 import { Checkbox, html, label, NumberInput, Section, Accordion } from "../ui.js";
-import { headerRow } from "./shared.js";
+import { eventUnlockNote, headerRow } from "./shared.js";
 import { SUMMONER_SLOTS, summonerSkillsConflict } from "../../summoner-skills.js";
 
 export function SummonerSection({ ctx }) {
@@ -8,11 +8,21 @@ export function SummonerSection({ ctx }) {
   const hint = selected
     ? `${selected.length}/${SUMMONER_SLOTS} slot`
     : "tắt = giữ từ capture";
+  const passiveCards = Object.entries(ctx.dict.summonerSkins)
+    .filter(([, skin]) => skin.passiveAttr?.length)
+    .map(([name, skin]) => html`
+      <div class="card" key=${name}>
+        <strong>${label(skin)}</strong>
+        <div class="note">Vàng · ${skin.maxStar} sao · Cộng chỉ số khi kích hoạt</div>
+        ${eventUnlockNote(skin)}
+      </div>
+    `);
   return html`
     <${Accordion} title="Skill Summoner" hint=${hint}>
       <${Section} title="Cấu hình skill" enabled=${!!selected} onToggle=${onToggle}>
         <${SummonerSkills} ctx=${ctx} />
       <//>
+      ${passiveCards}
     <//>
   `;
 }
