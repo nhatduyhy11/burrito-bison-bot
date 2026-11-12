@@ -90,8 +90,8 @@ function App({ dict, maps, antiqueDict, battles, initial, initialStatus }) {
   const ctx = { state, dict, maps, antiqueDict, update, toggleWithPrefill };
   return html`
     <div class="layout">
-      <main id="form"><${FormSections} ctx=${ctx} /></main>
-      <aside class="side"><${Side} ctx=${ctx} battles=${battles} profile=${profile} initialStatus=${initialStatus} /></aside>
+      <main id="form"><${FormSections} ctx=${ctx} battles=${battles} /></main>
+      <aside class="side"><${Side} ctx=${ctx} profile=${profile} initialStatus=${initialStatus} /></aside>
     </div>
   `;
 }

@@ -1,13 +1,9 @@
-// Right column of the setup page: base capture + seed, actions (play, download, copy, import, reset),
+// Right column of the setup page: actions (play, download, copy, import, reset),
 // status line and the profile JSON. ctx is the same object the form sections get.
 import { useEffect, useRef, useState } from "preact/hooks";
-import { html, Select, Accordion } from "./ui.js";
+import { html, Accordion } from "./ui.js";
 import { emptyState, fromProfile, toProfile } from "./profile-io.js";
 
-const SEED_OPTIONS = [
-  ["", "giống capture"],
-  ["random", "ngẫu nhiên"],
-];
 const NO_STATUS = { text: "", kind: "note" };
 
 function warnings(state, profile) {
@@ -20,11 +16,6 @@ function warnings(state, profile) {
   return out;
 }
 
-// Capital (U Đô) level = day*10000 + room*100 + index.
-const captureWhere = (b) => b.battleType === 21
-  ? `capture U Đô ngày ${Math.floor(b.level / 10000)} phòng ${Math.floor((b.level % 10000) / 100)}`
-  : `capture ở Stage ${b.level}`;
-
 function saveFile(name, text) {
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
@@ -33,7 +24,7 @@ function saveFile(name, text) {
   setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
-export function Side({ ctx, battles, profile, initialStatus }) {
+export function Side({ ctx, profile, initialStatus }) {
   const { state, dict, update } = ctx;
   const [status, setStatus] = useState(initialStatus || NO_STATUS);
   const [playing, setPlaying] = useState(false);
@@ -82,12 +73,6 @@ export function Side({ ctx, battles, profile, initialStatus }) {
       setPlaying(false);
     }
   };
-  const setBattle = (v) => update((s) => void (s.battle = v));
-  const setSeed = (v) => update((s) => void (s.seed = v));
-
-  const battleOptions = battles.length
-    ? battles.map((b) => [b.uuid, `${b.uuid.slice(0, 8)}… · ${captureWhere(b)} · ${b.ops} op`])
-    : [["", "(không có capture)"]];
   const playDisabled = playing || !canPlay || problems.length > 0;
   const seedArg = state.seed ? ` --seed ${state.seed}` : "";
   const playCommand = `uv run python battle_sim/sandbox --battle ${state.battle || "<uuid>"} --play${seedArg} --profile <file>.json`;
@@ -99,19 +84,8 @@ export function Side({ ctx, battles, profile, initialStatus }) {
       `;
   return html`
     <section>
-      <header><h2>Account gốc</h2></header>
+      <header><h2>Thao tác</h2></header>
       <div class="body">
-        <div class="row">
-          <label>Capture <${Select} id="battle" options=${battleOptions} value=${state.battle} onChange=${setBattle} /></label>
-        </div>
-        <div class="note">
-          Trận đã capture chỉ dùng làm nguồn dữ liệu account: chỉ số và level hero, attr building, hero support, đồng
-          đội robot, và mọi phần không bật Ghi đè. Stage ghi ở đây là màn của trận capture; màn sẽ chơi do mục "Màn
-          chơi" quyết định (tắt thì dùng màn này).
-        </div>
-        <div class="row">
-          <label>Seed <${Select} id="seed" options=${SEED_OPTIONS} value=${state.seed} onChange=${setSeed} /></label>
-        </div>
         <div class="row">
           <button id="play" class="primary" disabled=${playDisabled} onClick=${play}>Chơi</button>
           <button id="download" onClick=${download}>Tải JSON</button>
