@@ -63,7 +63,7 @@ async function prefill(dict, maps, battle, group) {
 
 // ---------- app ----------
 
-function App({ dict, maps, antiqueDict, battles, initial, initialStatus }) {
+function App({ dict, maps, antiqueDict, relicLines, battles, initial, initialStatus }) {
   const [state, setState] = useState(initial);
   // Every change goes through here: fn edits a copy (or returns a replacement), then skin rules normalize it.
   const update = (fn) =>
@@ -87,7 +87,7 @@ function App({ dict, maps, antiqueDict, battles, initial, initialStatus }) {
     }
   }, [profile, state.battle, state.seed]);
 
-  const ctx = { state, dict, maps, antiqueDict, update, toggleWithPrefill };
+  const ctx = { state, dict, maps, antiqueDict, relicLines, update, toggleWithPrefill };
   return html`
     <main id="form">
       <${Side} ctx=${ctx} profile=${profile} initialStatus=${initialStatus} />
@@ -136,10 +136,11 @@ function bindAccordionToggle(root) {
 }
 
 async function main(root) {
-  const [dict, maps, antiqueDict, battles] = await Promise.all([
+  const [dict, maps, antiqueDict, relicDict, battles] = await Promise.all([
     getJson("/__sim/dict/profile-dict.json"),
     getJson("/__sim/dict/map-dict.json"),
     getJson("/__sim/dict/antique-dict.json"),
+    getJson("/__sim/dict/relic-dict.json"),
     getJson("/__sim/battles.json").catch(() => []),
   ]);
   let state = emptyState(dict, antiqueDict);
@@ -147,7 +148,8 @@ async function main(root) {
   const saved = await savedSetup();
   if (saved) {
     try {
-      state = fromProfile(saved.profile || {}, { battle: saved.battle || "", seed: saved.seed || "" }, dict, { maps, antiqueDict });
+      state = fromProfile(saved.profile || {}, { battle: saved.battle || "", seed: saved.seed || "" }, dict,
+        { maps, antiqueDict, relicLines: relicDict.lines });
     } catch (err) {
       initialStatus = { text: `Bỏ qua profile đã lưu: ${err.message}`, kind: "err" };
     }
@@ -156,7 +158,7 @@ async function main(root) {
   if (!saved?.profile?.heroes) state.heroes = await prefill(dict, maps, state.battle, "heroes");
   normalize(state, dict);
   root.replaceChildren();
-  render(html`<${App} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  render(html`<${App} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   bindAccordionToggle(root);
 }
 

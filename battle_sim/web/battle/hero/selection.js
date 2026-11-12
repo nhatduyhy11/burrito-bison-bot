@@ -4,12 +4,13 @@
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { buildProfileHero } from "./build.js";
 import { applyAvatar } from "./avatar.js";
+import { applyRelic } from "./relic.js";
 import { applySkin } from "./skin.js";
 
 const LINEUP = 5;
 
 // choices(key, max) = profile.js's name -> catalog option check; returns [{ option, selection }].
-export async function applyHeroSelection({ profile, player, catalog, choices, asList, rb, M, step }) {
+export async function applyHeroSelection({ profile, player, catalog, relicLines, choices, asList, rb, M, step }) {
   const captured = rb.listItems(player.heros);
   const selected = choices("heroes", LINEUP);
   if (selected.length !== LINEUP) throw new Error(`Profile needs exactly ${LINEUP} heroes`);
@@ -22,7 +23,7 @@ export async function applyHeroSelection({ profile, player, catalog, choices, as
       || buildProfileHero(code, config, baseSkills, captured, rb, M, step);
     if (selection.avatar !== undefined) hero = applyAvatar(hero, avatarNodes, selection.avatar, rb, step);
     if (["skin", "star", "ownedSkins", "slots"].some((key) => selection[key] !== undefined)) {
-      return applySkin(hero, selection, skins, rb, M, (resolved) => {
+      hero = applySkin(hero, selection, skins, rb, M, (resolved) => {
         if (selection.name === JOKER_SUMMON.hero) {
           const summonSkin = skins[JOKER_SUMMON.skin];
           jokerSkillSlotted = resolved.slots.some(({ code }) => code === summonSkin?.code);
@@ -30,6 +31,7 @@ export async function applyHeroSelection({ profile, player, catalog, choices, as
         step("profile skin ranks", resolved);
       });
     }
+    if (selection.relic !== undefined) hero = applyRelic(hero, selection.relic, relicLines, rb, M, step);
     return hero;
   };
   const heroes = selected.map((entry) => buildHero(entry));

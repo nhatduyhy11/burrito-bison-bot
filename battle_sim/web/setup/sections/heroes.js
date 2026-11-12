@@ -4,6 +4,7 @@ import { html, label, optionText, colorTag, NumberInput, Checkbox, Select, Accor
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, newHero } from "../profile-io.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
+import { resolveRelic } from "../../relics.js";
 import { headerRow, nameOptions, requiresNote, without } from "./shared.js";
 
 const HEADERS = ["Skin", "Màu", "Sở hữu", "Sao", "Slot"];
@@ -41,7 +42,10 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
   const options = [["", "— Chọn hero —"], ...nameOptions(dict, "heroes", state.heroes.map((h) => h.name), hero.name)];
   const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s.heroes[index]));
   const setName = (v) => update((s) => void (s.heroes[index] = newHero(v)));
-  const setCustom = (on) => edit((h) => (h.custom = on));
+  const setCustom = (on) => edit((h) => {
+    h.custom = on;
+    if (on && h.relic === undefined) h.relic = null;
+  });
   const custom = hasSkins || nodes.length
     ? html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh</label>`
     : html`<span class="note">không có skin</span>`;
@@ -57,6 +61,7 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
         ${custom}
       </div>
       ${avatar}
+      ${hero.name && html`<${RelicPicker} selection=${hero.relic} lines=${ctx.relicLines} edit=${edit} />`}
       ${table}
     </div>
   `;
@@ -71,6 +76,38 @@ function AvatarPicker({ hero, nodes, edit }) {
       <label>Dị Năng (node skill)</label>
       <${NumberInput} value=${hero.avatar ?? 0} min=${0} max=${nodes.length} onChange=${setLevel} />
       <span class="note">${` /${nodes.length}`}</span>
+    </div>
+  `;
+}
+
+function RelicPicker({ selection, lines, edit }) {
+  const selected = selection ? resolveRelic(selection, lines) : null;
+  const options = [
+    ["", "Không có Thánh Khí"],
+    ["capture", "Theo capture"],
+    ...Object.entries(lines).map(([key, line]) => [key, optionText(line)]),
+  ];
+  const stars = selected ? Array.from({ length: selected.tier.maxStar + 1 }, (_, star) => [String(star), String(star)]) : [];
+  const levels = [["0", "0 · Đỏ"], ["1", "1 · Vàng"], ["2", "2 · 7 màu"]];
+  const choose = (name) => edit((h) => {
+    if (name === "capture") h.relic = undefined;
+    else h.relic = name ? { name, star: 0, purification: 0 } : null;
+  });
+  const setStar = (value) => edit((h) => (h.relic.star = Number(value)));
+  const setPurification = (value) => edit((h) => (h.relic.purification = Number(value)));
+  return html`
+    <div class="row">
+      <label>Thánh Khí
+        <${Select} aria-label="Thánh Khí" options=${options}
+          value=${selection === undefined ? "capture" : selection?.name ?? ""} onChange=${choose} />
+      </label>
+      ${selected && html`
+        <label>Sao <${Select} aria-label="Sao" options=${stars} value=${String(selected.star)} onChange=${setStar} /></label>
+        <label>Thanh tẩy
+          <${Select} aria-label="Thanh tẩy" options=${levels} value=${String(selected.purification)} onChange=${setPurification} />
+        </label>
+        <span class="note">${label(selected.starSkill)}${selected.tier.fixedSkill && html` + ${label(selected.tier.fixedSkill)}`}</span>
+      `}
     </div>
   `;
 }

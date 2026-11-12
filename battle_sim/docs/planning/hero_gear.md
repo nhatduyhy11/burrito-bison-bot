@@ -10,8 +10,8 @@ Equip (`PutOnEquip`, 6 ô) đi theo Summoner, ưu tiên thấp nhất nên doc n
 | Tên VN | Tên gốc | Là gì | Field trong `heros[]` | Bảng config |
 |---|---|---|---|---|
 | Dị Năng | 异能 (神通) | cây node riêng của hero đỏ | `avatarCodes[{pointCode, level}]`, `avatarChapterCodes`, `avatarLevel` | `AvatarLO`, `AvatarUpGradeLO` |
-| **Thánh Khí** | 圣器 | món đồ đeo vào ô Thánh Khí của hero, đổi qua lại giữa các hero được (vd Cuộn Cthulhu, Thánh Giá Cứu Rỗi) | `relic` (chỉ có code) | `RelicLO` (type 2), `RelicStarLO`, `RelicQualityUpLO` |
-| Thần Khí | 神器 / 神兵 | vũ khí riêng của **một** hero, gắn cố định qua `ArtifactLO._hero` (vd Giáo Chiến Phong Lôi) | `artifact {code, uuid, battleEntryInfos?}` | `ArtifactLO`, `ArtifactEntryLO` |
+| **Thánh Khí** | 圣器 | đồ dùng chung, có thể chuyển giữa các hero, kể cả hero tím theo luồng trang bị của client. Các món phẩm 6–8 có tối đa 10 sao và hệ thanh tẩy (vd Cuộn Cthulhu, Thánh Giá Cứu Rỗi) | `relic` (chỉ có code) | `RelicLO` (type 2), `RelicStarLO`, `RelicQualityUpLO` |
+| **Thần Khí** | 神器 / 神兵 | vũ khí dành riêng cho một mã hero qua `ArtifactLO._hero`. Trong config hiện tại chỉ hero đỏ có Thần Khí (vd Giáo Chiến Phong Lôi) | `artifact {code, uuid, battleEntryInfos?}` | `ArtifactLO`, `ArtifactEntryLO` |
 
 Dễ nhầm:
 - Trong code, `relic` là **Thánh Khí** và `artifact` là **Thần Khí**.
@@ -30,10 +30,21 @@ Dễ nhầm:
 - Còn mở: chưa kiểm bằng hình trong trận LB node 2 (đánh thường 3 tia ±10°) và Loli node 4
   (`10050201000 → 10050604000`), dùng skin mặc định.
 
-## Thánh Khí (đã kiểm chứng 2026-11-12)
+## Thánh Khí
 
 Catalog: [web/dict/relic-dict.json](../../web/dict/relic-dict.json), sinh bằng
 `gen_profile_dict.js`.
+
+### Hero nào đeo được
+
+- Trong bundle `1377a`, `HeroTrainMainPanel._udpateYwInfo` mở ô Thánh Khí khi tính năng
+  `Relic` đã mở, kể cả với hero tím. `RelicEquipView` lấy danh sách từ
+  `RelicModule.getAllRelicList(heroUuid)`. `RelicEquipListItem.onOperationBtnClick` dùng
+  `PutOnRelicRequest({heroUuid, uuid})` để đeo hoặc chuyển món từ hero khác. Luồng này
+  không lọc theo màu hay mã hero, kể cả với Thánh Khí phẩm 6–8.
+- Đối chiếu 4 trận `StartGameP` khác nhau trong `.tmp/battle_research/events-*.jsonl`:
+  các hero tím xuất hiện đều chưa đeo Thánh Khí. Khả năng đeo trên hero tím được xác nhận
+  ở client, chưa có capture cho thấy server đã nhận và trả món đó trong trận.
 
 ### Phân loại
 
@@ -41,7 +52,8 @@ Catalog: [web/dict/relic-dict.json](../../web/dict/relic-dict.json), sinh bằng
 - Phẩm 1–5 (đến cam, 16 món) chỉ có chỉ số: không có sao, không có skill, nên dict bỏ qua.
 - Dict không chứa chỉ số (`_base`, `_attrUp`, `_starAttrUp`, level), vì client không tính chỉ số
   Thánh Khí (xem mục Chỉ số bên dưới). Cần thì tra thẳng `RelicLO`/`RelicStarLO`.
-- Phẩm 6–8 gồm 7 dòng, mỗi dòng có 3 mức thanh tẩy (`lines` trong dict):
+- Phẩm 6–8 gồm 7 dòng, mỗi dòng có 3 mức thanh tẩy (`lines` trong dict). Mỗi mức có sao 0–10
+  trong `RelicStarLO`. `RelicStartUpView` cho nâng khi `star < 10`.
 
 | Dòng | Đỏ (06) | Vàng (07) | 7 màu (08) | Skill theo sao |
 |---|---|---|---|---|
@@ -69,7 +81,8 @@ Mỗi Thánh Khí phẩm 6 trở lên có skill riêng, nằm trong `hero.skills
 
 - Có 2 lần thanh tẩy: đỏ → vàng, rồi vàng → 7 màu (UI gọi lần 2 là 炫彩洗礼). Mỗi lần tốn 1
   Nước Thần (`30000065`), sao được giữ (`starCode` `206LLSS → 207LLSS → 208LLSS`).
-- Lần 2 chỉ mở khi account có ít nhất 5 Thánh Khí vàng (`relicAgainImproveColorRequite`).
+- Lần 2 yêu cầu ít nhất 5 Thánh Khí phẩm 7 trở lên
+  (`RelicQualityUpView` đếm `quality >= 7` theo ngưỡng `relicAgainImproveColorRequite`).
 - Thể hiện trong dữ liệu:
   - `hero.relic` đổi sang code khác (`8206LL01 → 8207LL01 → 8208LL01`).
   - `hero.skills` có thêm skill cố định của mức đó.
@@ -103,9 +116,17 @@ Mỗi Thánh Khí phẩm 6 trở lên có skill riêng, nằm trong `hero.skills
 
 ## Thần Khí (chưa làm)
 
-- `ArtifactLO` gắn với hero qua `_hero`. Mỗi hero có 5 stage, mỗi stage ứng với một code (vd
-  10806003 = stage 3). Cột `_skillList` là skill của Thần Khí, vd stage 3 có 3 skill
-  `10130701..703000`.
+- `HeroTrainMainPanel.updateArtifactInfo` chỉ mở ô Thần Khí cho hero có dòng
+  `ArtifactLO._hero` khớp mã hero, sau khi tính năng `Artifact` đã mở.
+  `ArtifactModule.getArtifactsByHeroCode` cũng lọc theo đúng mã đó. Đối chiếu 240 dòng
+  `ArtifactLO` với `HeroLO` trong `sea_65380` cho đúng 16 mã hero, tất cả đều là hero đỏ
+  (`color = 6`).
+- Thần Khí giống Dị Năng ở chỗ nội dung skill đi theo từng hero đỏ. Món Thần Khí vẫn có
+  UUID riêng và có thể tháo hoặc thay bằng món khác dành cho cùng mã hero.
+- Thần Khí lên stage theo phẩm: phẩm 4 và 5 tối đa stage 3, phẩm 6 tối đa stage 4,
+  phẩm 7 tối đa stage 5. Mỗi tổ hợp hero, phẩm và stage có code riêng. Ví dụ
+  `10806003` là Thần Khí phẩm 6, stage 3 của Hắc Lữ Bố, với `_skillList` gồm
+  `10130701000`, `10130702000` và `10130703000`.
 - **Các skill này không nằm trong `hero.skills`.** `TDBuildVO` tự thêm chúng vào
   `_atrifactSkillCodeList` từ `ArtifactLO`. Đây là phần client tự áp dụng, nên simulator phải tự
   mô phỏng.
@@ -123,12 +144,14 @@ Mỗi Thánh Khí phẩm 6 trở lên có skill riêng, nằm trong `hero.skills
 ## Ý nghĩa cho simulator
 
 - Hero có trong capture thì giữ nguyên `hero` là đã đúng cả 3 loại (replay khớp hiện tại xác nhận).
-- Hero mượn chỉ số (`web/battle/hero/build.js`) hiện bỏ relic/artifact. Feature có thể làm:
-  1. **Thánh Khí**: chọn dòng, mức thanh tẩy và sao từ `relic-dict.json`, rồi thay các skill
-     `5206…`/`5207…`/`5208…` ở `index 0` và đặt `hero.relic`. Không cần level. Chỉ số giữ như
-     capture (xem lưu ý ở trên).
-  2. **Thần Khí**: chọn stage (`ArtifactLO` theo `_hero`) và các dòng `battleEntryInfos` (code từ
-     `_entryPool`, value trong `[_minValue, _maxValue]`).
+- Setup hỗ trợ **Thánh Khí** cho cả hero trong capture và hero mượn chỉ số. Chọn dòng,
+  sao 0–10 và số lần thanh tẩy 0–2 ngay dưới Dị Năng. Profile dùng
+  `relic: {name, star, purification}`, `relic: null` để tháo hoặc bỏ field để dùng món
+  trong capture. Sim đặt `hero.relic` và thay các skill Thánh Khí ở `index 0`, giữ chỉ số
+  đang có trên hero.
+- **Thần Khí** của hero mượn chỉ số chưa có tùy chỉnh. Có thể chọn phẩm và stage từ các
+  dòng `ArtifactLO` khớp `_hero`, rồi chọn `battleEntryInfos` (code từ `_entryPool`,
+  value trong `[_minValue, _maxValue]`).
 
 ## Còn mở
 

@@ -1,9 +1,10 @@
 // Setup page state <-> profile JSON (the format web/battle/profile.js reads).
 // Optional sections left null keep that part of the capture; heroes always have five editable slots.
 import * as R from "./skin-rules.js";
-import { JOKER_SUMMON } from "../hero-lineup.js";
+import { hasSummonedJoker, JOKER_SUMMON } from "../hero-lineup.js";
 import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkillsConflict } from "../summoner-skills.js";
 import { antiqueSelections, defaultAntiques } from "../antiques.js";
+import { resolveRelic } from "../relics.js";
 
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2, summonerSkins: SUMMONER_SLOTS };
 const BUILDINGS = [["door", "Cửa"], ["bed", "Giường"], ["generator", "Chuột (máy phát điện)"], ["cat", "Mèo (chiêu tài)"]];
@@ -24,7 +25,7 @@ function emptyState(dict, antiqueDict) {
 
 function newHero(name) {
   // avatar: number of open Dị Năng skill nodes (red heroes, set when custom), null = as captured / borrowed.
-  return { name, custom: false, worn: null, skins: {}, slots: [], avatar: null };
+  return { name, custom: false, worn: null, skins: {}, slots: [], avatar: null, relic: null };
 }
 
 function newBuilding(dict, building) {
@@ -55,9 +56,11 @@ function toProfile(state, dict) {
   else if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
   if (state.heroes) {
     const heroProfile = (hero) => {
-      if (!hero.custom) return hero.name;
-      const skins = heroSkins(dict, hero.name);
+      if (!hero.custom && hero.relic === undefined) return hero.name;
       const out = { name: hero.name };
+      if (hero.relic !== undefined) out.relic = hero.relic;
+      if (!hero.custom) return out;
+      const skins = heroSkins(dict, hero.name);
       if (hero.avatar !== null && dict.heroes[hero.name].avatarNodes) out.avatar = hero.avatar;
       if (!Object.keys(skins).length) return out;
       if (hero.worn) Object.assign(out, { skin: hero.worn, star: hero.skins[hero.worn].star });
@@ -71,7 +74,11 @@ function toProfile(state, dict) {
       return out;
     };
     profile.heroes = state.heroes.filter((hero) => hero.name).map(heroProfile);
-    if (state.summonedJoker?.custom) profile.summonedJoker = heroProfile(state.summonedJoker);
+    const loli = state.heroes.find(({ name }) => name === JOKER_SUMMON.hero);
+    if (state.summonedJoker && (state.summonedJoker.custom || state.summonedJoker.relic
+      || hasSummonedJoker(state.heroes, loli?.custom && loli.slots.includes(JOKER_SUMMON.skin)))) {
+      profile.summonedJoker = heroProfile(state.summonedJoker);
+    }
   }
   if (state.mounts) profile.mounts = structuredClone(state.mounts);
   if (state.traps) profile.traps = state.traps.map(({ name, level, star }) => ({ name, level, star }));
@@ -103,7 +110,7 @@ function toProfile(state, dict) {
 // Lenient import of a profile JSON (as written by toProfile or by hand). Unknown names throw.
 // catalogs: { maps (map-dict.json), antiqueDict (antique-dict.json) }, each needed only when the
 // profile has that part.
-function fromProfile(profile, base, dict, { maps, antiqueDict } = {}) {
+function fromProfile(profile, base, dict, { maps, antiqueDict, relicLines } = {}) {
   const next = { ...emptyState(dict, antiqueDict), battle: base.battle, seed: base.seed };
   const need = (group, name) => {
     if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong profile-dict.json`);
@@ -114,6 +121,11 @@ function fromProfile(profile, base, dict, { maps, antiqueDict } = {}) {
   const readHero = (item) => {
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
+    hero.relic = sel.relic;
+    if (sel.relic != null) {
+      const { name, star, purification } = resolveRelic(sel.relic, relicLines);
+      hero.relic = { name, star, purification };
+    }
     const skins = heroSkins(dict, hero.name);
     hero.custom = ["skin", "star", "ownedSkins", "slots", "avatar"].some((key) => sel[key] !== undefined);
     if (!hero.custom) return hero;

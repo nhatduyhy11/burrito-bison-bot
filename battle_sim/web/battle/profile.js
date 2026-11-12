@@ -41,7 +41,10 @@ export async function applyProfile(start, rb, M, step) {
     });
   };
   if (Object.hasOwn(profile, "heroes")) {
-    await applyHeroSelection({ profile, player, catalog, choices, asList, rb, M, step });
+    const hasRelicOverride = [...(Array.isArray(profile.heroes) ? profile.heroes : []), profile.summonedJoker]
+      .some((hero) => hero?.relic !== undefined);
+    const relicLines = hasRelicOverride ? (await read("dict/relic-dict")).lines : undefined;
+    await applyHeroSelection({ profile, player, catalog, relicLines, choices, asList, rb, M, step });
   }
   if (Object.hasOwn(profile, "mounts")) {
     const mounts = catalog.mounts;
