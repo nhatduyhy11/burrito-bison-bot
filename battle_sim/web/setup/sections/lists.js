@@ -1,5 +1,5 @@
 // Trap / Pet / Spell lists: name, level (traps, pets), star.
-import { html, NumberInput, Select, Section } from "../ui.js";
+import { Accordion, html, NumberInput, Select } from "../ui.js";
 import { LIMITS } from "../profile-io.js";
 import { AddButton, RemoveButton, nameOptions } from "./shared.js";
 
@@ -8,15 +8,15 @@ const LIST_TITLES = { traps: "Trap", pets: "Pet", spells: "Spell (thần)" };
 const newListItem = (group) => (name) => (group === "spells" ? { name, star: 1 } : { name, level: 1, star: 1 });
 
 export function ListSection({ ctx, group }) {
+  const enabled = !!ctx.state[group];
   const onToggle = (on) => ctx.toggleWithPrefill(group, on);
   return html`
-    <${Section}
+    <${Accordion}
       title=${LIST_TITLES[group]}
       hint=${`tối đa ${LIMITS[group]}; tắt = giữ từ capture`}
-      enabled=${!!ctx.state[group]}
-      onToggle=${onToggle}
+      override=${{ enabled, onToggle }}
     >
-      <${ListBody} ctx=${ctx} group=${group} />
+      ${enabled && html`<${ListBody} ctx=${ctx} group=${group} />`}
     <//>
   `;
 }
@@ -43,7 +43,7 @@ function ListRow({ ctx, group, item, index }) {
     ? html`<label>Level <${NumberInput} value=${item.level} min=${1} max=${info.maxLevel} onChange=${setLevel} /></label>`
     : null;
   return html`
-    <div class="row">
+    <div class="row list-row">
       <${Select} options=${options} value=${item.name} onChange=${setName} />
       ${level}
       <label>Sao <${NumberInput} value=${item.star} min=${1} max=${info.maxStar} onChange=${setStar} /></label>

@@ -1,19 +1,15 @@
 // "Màn chơi": campaign stage to play (off = the capture's stage).
-import { html, NumberInput, Select, Section } from "../ui.js";
+import { Accordion, html, NumberInput, Select } from "../ui.js";
 
 const MODE_OPTIONS = [["campaign", "Campaign"]];
 const noop = () => {};
 
 export function MapSection({ ctx }) {
+  const enabled = !!ctx.state.map;
   const onToggle = (on) => ctx.toggleWithPrefill("map", on);
   return html`
-    <${Section}
-      title="Màn chơi"
-      hint="Campaign; tắt = stage của capture"
-      enabled=${!!ctx.state.map}
-      onToggle=${onToggle}
-    >
-      <${MapBody} ctx=${ctx} />
+    <${Accordion} title="Màn chơi" hint="Campaign; tắt = stage của capture" override=${{ enabled, onToggle }}>
+      ${enabled && html`<${MapBody} ctx=${ctx} />`}
     <//>
   `;
 }

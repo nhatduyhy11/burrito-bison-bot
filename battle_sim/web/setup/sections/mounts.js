@@ -1,4 +1,4 @@
-import { Accordion, Checkbox, html, label, optionText, Section, Select } from "../ui.js";
+import { Accordion, Checkbox, html, label, optionText, Select } from "../ui.js";
 
 export function MountSection({ ctx }) {
   const { state, dict, update } = ctx;
@@ -29,13 +29,13 @@ export function MountSection({ ctx }) {
   });
   const hint = mounts ? `${mounts.owned.length} sở hữu · ${mounts.selected ? optionText(dict.mounts[mounts.selected]) : "Không chọn"}` : "giữ từ capture";
   return html`
-    <${Accordion} title="Mount" hint=${hint}>
-      <${Section} title="Cấu hình mount" enabled=${!!mounts} onToggle=${onToggle}>
+    <${Accordion} title="Mount" hint=${hint} override=${{ enabled: !!mounts, onToggle }}>
+      ${mounts && html`
         <div class="mount-groups">${groups}</div>
         <div class="row"><label>Đang cưỡi
-          <${Select} options=${options} value=${mounts?.selected || ""} onChange=${setSelected} />
+          <${Select} options=${options} value=${mounts.selected || ""} onChange=${setSelected} />
         </label></div>
-      <//>
+      `}
     <//>
   `;
 }

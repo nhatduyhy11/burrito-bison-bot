@@ -33,13 +33,12 @@ function BuildingCard({ ctx, building, title }) {
   const entry = state.buildings[building];
   const edit = (fn) => update((s) => void fn(s.buildings[building]));
   const setEnabled = (on) => update((s) => void (s.buildings[building] = on ? newBuilding(dict, building) : null));
-  const action = html`<label class="building-override"><${Checkbox} checked=${!!entry} onChange=${setEnabled} />Ghi đè</label>`;
   const table = entry
     ? html`<${BuildingSkinTable} entry=${entry} skins=${buildSkins(dict, building)} edit=${edit} />`
     : null;
   return html`
-    <${Accordion} title=${title} action=${action}>
-      <div class="building-skin-table">${table}</div>
+    <${Accordion} title=${title} override=${{ enabled: !!entry, onToggle: setEnabled }}>
+      ${table && html`<div class="building-skin-table">${table}</div>`}
     <//>
   `;
 }

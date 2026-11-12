@@ -69,25 +69,15 @@ export function Select({ options, value, onChange, ...attrs }) {
   `;
 }
 
-// A form section with a "Ghi đè" toggle; children are rendered only when enabled.
-export function Section({ title, hint, enabled, onToggle, children }) {
+// Collapsible panel. `override` = { enabled, onToggle } puts a "Ghi đè" checkbox next to the title;
+// collapsing is presentation only, the override keeps its own state. An empty body is hidden (CSS).
+export function Accordion({ title, hint, override, children, defaultOpen = true }) {
+  const toggle = override
+    ? html`<label class="override"><${Checkbox} checked=${override.enabled} onChange=${override.onToggle} />Ghi đè</label>`
+    : null;
   return html`
-    <section class=${enabled ? "" : "off"}>
-      <header>
-        <h2>${title}</h2>
-        <label><${Checkbox} checked=${enabled} onChange=${onToggle} />Ghi đè</label>
-        ${hint ? html`<span class="hint">${hint}</span>` : null}
-      </header>
-      <div class="body">${enabled ? children : null}</div>
-    </section>
-  `;
-}
-
-// Collapse only presentation; profile overrides keep their own independent toggle.
-export function Accordion({ title, hint, action, children, defaultOpen = true }) {
-  return html`
-    <details class="accordion" open=${defaultOpen}>
-      <summary><strong>${title}</strong>${hint && html`<span class="hint">${hint}</span>`}${action}</summary>
+    <details class=${override && !override.enabled ? "accordion off" : "accordion"} open=${defaultOpen}>
+      <summary><strong>${title}</strong>${toggle}${hint && html`<span class="hint">${hint}</span>`}</summary>
       <div class="accordion-body">${children}</div>
     </details>
   `;

@@ -22,12 +22,17 @@
     section > header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     section > header .hint { color: var(--muted); font-size: 11px; }
     .accordion { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
-    .accordion > summary { cursor: pointer; font-size: 13px; }
-    .accordion > summary .hint { color: var(--muted); font-size: 11px; margin-left: 12px; }
+    /* Own triangle (rotates when open) so every panel shows its collapse state the same way. */
+    .accordion > summary { cursor: pointer; font-size: 13px; list-style: none; display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; }
+    .accordion > summary::-webkit-details-marker { display: none; }
+    .accordion > summary::before { content: ""; flex: none; width: 0; height: 0; margin-right: -2px; border-style: solid;
+      border-width: 4.5px 0 4.5px 7px; border-color: transparent transparent transparent currentColor; transition: transform .12s; }
+    .accordion[open] > summary::before { transform: rotate(90deg); }
+    .accordion > summary .hint { color: var(--muted); font-size: 11px; }
+    .accordion > summary .override { font-size: 12px; }
     .accordion-body { margin-top: 8px; }
-    .accordion-body > section { margin: 0; padding: 0; border: 0; }
+    .accordion-body:empty { display: none; }
     .body { margin-top: 8px; }
-    .off .body { display: none; }
     strong { font-weight: 600; }
     .mount-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 8px 0; }
     .mount-group-title { display: block; margin-bottom: 5px; }
@@ -46,7 +51,6 @@
     .skin-picker select { min-width: 0; width: 260px; }
     .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
     .building-skin-table { overflow-x: auto; }
-    .building-override { margin-left: 12px; vertical-align: middle; font-size: 12px; }
     .card { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; margin: 6px 0; overflow-x: auto; }
     label { display: inline-flex; align-items: center; gap: 4px; }
     select, input[type=number] { background: #111318; color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; font: inherit; }
@@ -84,6 +88,11 @@
     button:disabled { opacity: .45; cursor: default; }
     button.primary { background: var(--accent); color: #0b1220; border-color: var(--accent); font-weight: 600; }
     .x { padding: 2px 8px; }
+    /* Trap / pet / spell row: the name picker shrinks so level, star and × stay on one line at 640px. */
+    .list-row { flex-wrap: nowrap; gap: 6px; }
+    .list-row select { flex: 1 1 auto; min-width: 0; }
+    .list-row > label, .list-row .note, .list-row .x { flex: none; white-space: nowrap; }
+    .list-row input[type=number] { width: 52px; }
     table { border-collapse: collapse; width: 100%; margin-top: 4px; }
     th, td { text-align: left; padding: 3px 6px; border-top: 1px solid var(--line); white-space: nowrap; }
     th { color: var(--muted); font-weight: 500; font-size: 11px; }

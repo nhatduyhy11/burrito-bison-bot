@@ -1,4 +1,4 @@
-import { Checkbox, html, label, NumberInput, Section, Accordion } from "../ui.js";
+import { Accordion, Checkbox, html, label, NumberInput } from "../ui.js";
 import { eventUnlockNote, headerRow } from "./shared.js";
 import { SUMMONER_SLOTS, summonerSkillsConflict } from "../../summoner-skills.js";
 
@@ -18,10 +18,8 @@ export function SummonerSection({ ctx }) {
       </div>
     `);
   return html`
-    <${Accordion} title="Skill Summoner" hint=${hint}>
-      <${Section} title="Cấu hình skill" enabled=${!!selected} onToggle=${onToggle}>
-        <${SummonerSkills} ctx=${ctx} />
-      <//>
+    <${Accordion} title="Skill Summoner" hint=${hint} override=${{ enabled: !!selected, onToggle }}>
+      ${selected && html`<${SummonerSkills} ctx=${ctx} />`}
       ${passiveCards}
     <//>
   `;
