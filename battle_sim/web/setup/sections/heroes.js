@@ -112,10 +112,6 @@ function HeroSkinTable({ hero, skins, edit }) {
           ${rows}
         </tbody>
       </table>
-      <div class="note">
-        Sở hữu: account có skin (cộng chỉ số). Slot: skill của skin vào trận. Skin 7 màu cần 3 skin thường ở sao ≥ sao
-        của nó (trang tự nâng); gắn slot 7 màu thì 3 skin đó cũng vào slot và bị khoá đến khi bỏ slot 7 màu.
-      </div>
     </div>
   `;
 }

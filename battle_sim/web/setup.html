@@ -16,8 +16,6 @@
     h1 { font-size: 16px; font-weight: 600; margin: 0; }
     h2 { font-size: 13px; font-weight: 600; margin: 0; }
     .sub { color: var(--muted); margin: 0 0 12px; }
-    .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 380px); gap: 12px; align-items: start; }
-    @media (max-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr); } .side { position: static; } }
     section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
     section > header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     section > header .hint { color: var(--muted); font-size: 11px; }
@@ -108,7 +106,6 @@
     .err { color: var(--red); }
     pre { background: #0f1115; border: 1px solid var(--line); border-radius: 6px; padding: 8px; margin: 8px 0 0;
       max-height: 60vh; overflow: auto; font: 12px/1.4 Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
-    .side { position: sticky; top: 12px; }
     code { font: 12px Consolas, monospace; background: #0f1115; padding: 1px 4px; border-radius: 3px; word-break: break-all; }
     .status { min-height: 1.4em; margin-top: 6px; }
     .tabs { display: flex; gap: 4px; margin: 0 0 10px; border-bottom: 1px solid var(--line); }
