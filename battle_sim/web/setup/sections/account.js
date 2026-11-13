@@ -22,6 +22,7 @@ export function AccountSection({ ctx, battles }) {
     <div class="subsection">
       <h3>Account gốc</h3>
       <div class="row">
+        <label>Vùng <${Select} id="region" disabled=${ctx.switchingRegion} options=${[["vn", "VN"], ["gat", "GAT"]]} value=${ctx.region} onChange=${ctx.switchRegion} /></label>
         <label>Capture <${Select} id="battle" options=${battleOptions} value=${state.battle} onChange=${setBattle} /></label>
         <label>Seed <${Select} id="seed" options=${SEED_OPTIONS} value=${state.seed} onChange=${setSeed} /></label>
       </div>

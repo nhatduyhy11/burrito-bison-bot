@@ -27,7 +27,7 @@ function saveFile(name, text) {
 
 export function Side({ ctx, battles, profile, initialStatus }) {
   const { state, dict, update } = ctx;
-  const [status, setStatus] = useState(initialStatus || NO_STATUS);
+  const [status, setStatus] = useState(NO_STATUS);
   const [playing, setPlaying] = useState(false);
   const fileInput = useRef(null);
   const problems = warnings(state, profile);
@@ -67,22 +67,20 @@ export function Side({ ctx, battles, profile, initialStatus }) {
     setPlaying(true);
     setStatus({ text: "Đang lưu profile và mở trận…", kind: "note" });
     try {
-      const saved = await window.simPlay({ battle: state.battle, seed: state.seed || null, profile: toProfile(state, dict) });
+      const saved = await window.simPlay({ region: ctx.region, battle: state.battle, seed: state.seed || null, profile: toProfile(state, dict) });
       setStatus({ text: `Đã lưu ${saved}. Đang mở trận…`, kind: "note" });
     } catch (err) {
       setStatus({ text: `Không mở được trận: ${err.message}`, kind: "err" });
       setPlaying(false);
     }
   };
-  const playDisabled = playing || !canPlay || problems.length > 0;
+  const playDisabled = playing || ctx.switchingRegion || !canPlay || problems.length > 0;
   const seedArg = state.seed ? ` --seed ${state.seed}` : "";
   const playCommand = `uv run python battle_sim/sandbox --battle ${state.battle || "<uuid>"} --play${seedArg} --profile <file>.json`;
-  const playHint = canPlay
-    ? null
-    : html`
-        Nút Chơi chỉ chạy khi mở qua <code>uv run python battle_sim/sandbox --setup</code>. Hoặc tải JSON rồi
-        chạy: <code>${playCommand}</code>
-      `;
+  const playHint = canPlay ? null : html`
+    Mở <code>uv run python battle_sim/sandbox --setup</code> để chơi.
+    ${ctx.region === "vn" && html`Bạn cũng có thể tải JSON rồi chạy <code>${playCommand}</code>.`}
+  `;
   return html`
     <section>
       <header><h2>Thao tác</h2></header>
@@ -98,6 +96,7 @@ export function Side({ ctx, battles, profile, initialStatus }) {
           <button id="reset" onClick=${reset}>Xoá hết</button>
         </div>
         <div id="playHint" class="note">${playHint}</div>
+        ${initialStatus && html`<div class=${`status ${initialStatus.kind}`} role="status">${initialStatus.text}</div>`}
         <div id="status" class=${`status ${status.kind}`}>${status.text}</div>
         <${AccountSection} ctx=${ctx} battles=${battles} />
         <${Accordion} title="Profile JSON" defaultOpen=${false} skipExpandAll>

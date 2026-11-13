@@ -12,6 +12,7 @@ import { render } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { html } from "./ui.js";
 import { LIMITS, artifactState, capitalPreset, emptyState, fromProfile, newHero, normalize, toProfile } from "./profile-io.js";
+import { forRegion } from "./region.js";
 import { FormSections } from "./sections/index.js";
 import { Side } from "./side.js";
 
@@ -21,20 +22,21 @@ const STORE_KEY = "battleSimSetup";
 
 const captures = new Map(); // uuid -> StartGameP
 
-async function capturedStart(battle) {
+async function capturedStart(region, battle) {
   if (!battle) return null;
-  if (!captures.has(battle)) {
-    const response = await fetch(`/__sim/battle/${battle}.json`);
-    captures.set(battle, response.ok ? (await response.json()).start : null);
+  const key = `${region}:${battle}`;
+  if (!captures.has(key)) {
+    const response = await fetch(`/__sim/battle/${battle}.json?region=${region}`);
+    captures.set(key, response.ok ? (await response.json()).start : null);
   }
-  return captures.get(battle);
+  return captures.get(key);
 }
 
 const listItems = (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[String(i)]);
 
 // Turning a section on fills it from the base capture.
-async function prefill(dict, maps, battle, group) {
-  const start = await capturedStart(battle);
+async function prefill(dict, maps, region, battle, group) {
+  const start = await capturedStart(region, battle);
   const player = start && listItems(start.playerInfos)[0];
   if (group === "mounts") {
     const owned = listItems(player?.mounts).map(({ code }) => Object.keys(dict.mounts).find((key) => dict.mounts[key].code === code)).filter(Boolean);
@@ -62,8 +64,8 @@ async function prefill(dict, maps, battle, group) {
 }
 
 // Thần Khí of a hero in the base capture as setup state (tab Hero detail), null when it has none.
-async function capturedArtifact(battle, heroCode) {
-  const start = await capturedStart(battle);
+async function capturedArtifact(region, battle, heroCode) {
+  const start = await capturedStart(region, battle);
   const player = start && listItems(start.playerInfos)[0];
   const artifact = listItems(player?.heros).find((h) => h.code === heroCode)?.artifact;
   if (!artifact) return null;
@@ -73,8 +75,21 @@ async function capturedArtifact(battle, heroCode) {
 
 // ---------- app ----------
 
-function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus }) {
+function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, changeRegion }) {
   const [state, setState] = useState(initial);
+  const [switchingRegion, setSwitchingRegion] = useState(false);
+  const [regionError, setRegionError] = useState("");
+  const switchRegion = async (nextRegion) => {
+    if (switchingRegion || nextRegion === region) return;
+    setSwitchingRegion(true);
+    setRegionError("");
+    try {
+      await changeRegion(nextRegion, { ...state, profile: toProfile(state, dict) });
+    } catch (err) {
+      setRegionError(`Không đổi được vùng: ${err.message}`);
+      setSwitchingRegion(false);
+    }
+  };
   // Every change goes through here: fn edits a copy (or returns a replacement), then skin rules normalize it.
   const update = (fn) =>
     setState((prev) => {
@@ -84,23 +99,24 @@ function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initi
       return next;
     });
   const toggleWithPrefill = async (group, on) => {
-    const value = on ? await prefill(dict, maps, state.battle, group) : null;
+    const value = on ? await prefill(dict, maps, region, state.battle, group) : null;
     update((s) => void (s[group] = value));
   };
   const profile = useMemo(() => toProfile(state, dict), [state]);
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ battle: state.battle, seed: state.seed, profile }));
+      localStorage.setItem(STORE_KEY, JSON.stringify({ region, battle: state.battle, seed: state.seed, profile }));
     } catch {
       // storage off
     }
   }, [profile, state.battle, state.seed]);
 
-  const capturedHeroArtifact = (heroCode) => capturedArtifact(state.battle, heroCode);
-  const ctx = { state, dict, maps, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact };
+  const capturedHeroArtifact = (heroCode) => capturedArtifact(region, state.battle, heroCode);
+  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact };
   return html`
     <main id="form">
+      ${regionError && html`<p class="err" role="alert">${regionError}</p>`}
       <${Side} ctx=${ctx} battles=${battles} profile=${profile} initialStatus=${initialStatus} />
       <${FormSections} ctx=${ctx} />
     </main>
@@ -146,36 +162,42 @@ function bindAccordionToggle(root) {
   button.disabled = false;
 }
 
-async function main(root) {
+async function showRegion(root, region, saved, switching = false) {
+  const suffix = `?region=${region}`;
   const [dict, maps, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
-    getJson("/__sim/dict/profile-dict.json"),
-    getJson("/__sim/dict/map-dict.json"),
-    getJson("/__sim/dict/antique-dict.json"),
-    getJson("/__sim/dict/relic-dict.json"),
-    getJson("/__sim/dict/artifact-dict.json"),
-    getJson("/__sim/battles.json").catch(() => []),
+    ...["profile", "map", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
+    getJson(`/__sim/battles.json${suffix}`),
   ]);
-  let state = emptyState(dict, antiqueDict);
+  const battle = battles.some((b) => b.uuid === saved?.battle) ? saved.battle : battles[0]?.uuid || "";
+  let state = { ...emptyState(dict, antiqueDict), battle };
   let initialStatus = null;
-  const saved = await savedSetup();
-  if (saved) {
+  let profile = saved?.profile;
+  if (profile) {
     try {
-      state = fromProfile(saved.profile || {}, { battle: saved.battle || "", seed: saved.seed || "" }, dict,
-        { maps, antiqueDict, relicLines: relicDict.lines });
+      const catalogs = { maps, antiqueDict, relicLines: relicDict.lines };
+      if (switching) {
+        const adjusted = forRegion(profile, dict, catalogs);
+        profile = adjusted.profile;
+        if (adjusted.removed.length) {
+          initialStatus = { text: `Vùng ${region.toUpperCase()} không có: ${adjusted.removed.join(", ")}.`, kind: "warn" };
+        }
+      }
+      state = fromProfile(profile, { battle, seed: saved.seed || "" }, dict, catalogs);
     } catch (err) {
+      if (switching) throw err;
       initialStatus = { text: `Bỏ qua profile đã lưu: ${err.message}`, kind: "err" };
+      profile = null;
     }
   }
-  if (!battles.some((b) => b.uuid === state.battle)) state.battle = battles[0]?.uuid || "";
-  if (!saved?.profile?.heroes) state.heroes = await prefill(dict, maps, state.battle, "heroes");
+  if (!profile?.heroes) state.heroes = await prefill(dict, maps, region, battle, "heroes");
   normalize(state, dict);
-  root.replaceChildren();
-  render(html`<${App} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
-  bindAccordionToggle(root);
+  const changeRegion = (next, current) => showRegion(root, next, current, true);
+  render(html`<${App} key=${region} region=${region} changeRegion=${changeRegion} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  if (!switching) bindAccordionToggle(root);
+  else root.dispatchEvent(new Event("toggle"));
 }
 
 const root = document.getElementById("app");
-main(root).catch((err) => {
-  root.replaceChildren();
+savedSetup().then((saved) => showRegion(root, saved?.region === "gat" ? "gat" : "vn", saved)).catch((err) => {
   render(html`<p class="err">${`Lỗi tải trang: ${err.message}`}</p>`, root);
 });
