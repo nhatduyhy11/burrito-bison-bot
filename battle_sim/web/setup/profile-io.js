@@ -56,9 +56,11 @@ function toProfile(state, dict) {
   else if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
   if (state.heroes) {
     const heroProfile = (hero) => {
-      if (!hero.custom && hero.relic === undefined) return hero.name;
+      if (!hero.custom && hero.relic === undefined && hero.artifact === undefined) return hero.name;
       const out = { name: hero.name };
       if (hero.relic !== undefined) out.relic = hero.relic;
+      // Thần Khí: passed through as written (no setup UI yet), checked in battle/hero/artifact.js.
+      if (hero.artifact !== undefined) out.artifact = structuredClone(hero.artifact);
       if (!hero.custom) return out;
       const skins = heroSkins(dict, hero.name);
       if (hero.avatar !== null && dict.heroes[hero.name].avatarNodes) out.avatar = hero.avatar;
@@ -122,6 +124,7 @@ function fromProfile(profile, base, dict, { maps, antiqueDict, relicLines } = {}
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
     hero.relic = sel.relic;
+    if (sel.artifact !== undefined) hero.artifact = structuredClone(sel.artifact);
     if (sel.relic != null) {
       const { name, star, purification } = resolveRelic(sel.relic, relicLines);
       hero.relic = { name, star, purification };

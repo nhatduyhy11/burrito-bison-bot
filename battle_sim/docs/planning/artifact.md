@@ -130,29 +130,45 @@ của server chưa xác minh. Đã chạy offline `createAddUnitData` với từ
 | `80000208` | `10130706000` Ma Lâm Thiên Hạ | Đổi thẻ Thức Tỉnh `700004013 → 700005013` |
 | `80000308` | `10130708000` Võ Thần Bá Thể | Tăng ST mọi kỹ năng theo `CommonWeaponLevel` |
 
-## Hướng sim (đề xuất)
+## Hướng sim
 
 Profile, cùng cách với `relic`:
 ```js
 artifact: { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }, { code: 80000208, value: 0 }] }
 // null = tháo, bỏ field = giữ món trong capture
 ```
-- `quality + stage` + `heroes[code].pool` → `code` (`artifactCode`). `uuid` giữ của capture hoặc tự sinh.
+- Đã làm phần profile → trận: [web/battle/hero/artifact.js](../../web/battle/hero/artifact.js). Pool lấy
+  từ `ArtifactLO.hero`, `code = artifactCode(pool, quality, stage)`. `uuid` giữ của capture hoặc tự sinh.
 - `entries` đi thẳng vào `battleEntryInfos`. Không đổi `hero.attr`, cùng chính sách với Thánh Khí:
   chỉ số của món cũ vẫn nằm trong attr.
-- Kiểm: số dòng ≤ `holeNum` (dòng chỉ số thường cũng chiếm ô, nên đây là trần trên); value trong
-  range; rainbow ép value 0; mỗi family chỉ một dòng. Những ràng buộc chưa chắc server cho phép
-  (rainbow trên món phẩm thấp, phẩm dòng cao hơn phẩm món) thì **cảnh báo, không chặn**.
-- UI: đặt dưới Thánh Khí, chỉ hiện với hero đỏ, thu gọn thành một dòng tóm tắt và bấm vào mới mở.
-  Chi tiết gồm phẩm và stage, danh sách skill cố định đã mở, các ô dòng (family hoặc rainbow + phẩm
-  dòng + value, mặc định max) và nút "max hết". Thêm một dòng tổng buff đội ở cấp đội hình.
+- Kiểm tối thiểu: số dòng ≤ `holeNum`, value trong range, rainbow value 0. Không chặn hay cảnh báo
+  thêm (gacha, rainbow trên món phẩm thấp vẫn có). Nếu engine throw thì mới xem lại.
+
+### UI (đã chốt)
+
+- Tab **Hero detail** thay chỗ tab Summoner. Có 5 section ứng với 5 vị trí bên Teams. Tab này chỉ
+  dùng để tùy chỉnh Thần Khí.
+- Mặc định mỗi hero dùng món trong capture. Tick **Tùy chỉnh** thì section mở ra ngay. Chỉ sau khi
+  tick mới xuất hiện icon accordion.
+- **Không hiện tên món, tên skill hay mô tả**, kể cả với rainbow. Người dùng tự tra trong game,
+  app không thay thế game.
+- Dropdown **Phẩm món** (Tím/Cam/Đỏ/Vàng), rồi dropdown **Stage** (số stage theo phẩm, xem bảng
+  Quy tắc config).
+- Bên dưới có đúng `holeNum` ô. Mỗi ô có dropdown **loại** (Buff đội / Skill rainbow); ô chưa chọn
+  thì để trống (không đưa vào `battleEntryInfos`).
+  - Buff đội: chọn family, rồi **phẩm dòng** (chỉ liệt kê các phẩm family đó có), rồi slider.
+    Range slider đổi theo phẩm dòng đã chọn.
+  - Rainbow: chọn 1 trong 3, không có slider (value 0).
+- Đổi stage hoặc phẩm làm giảm số ô thì bỏ các ô cuối, không thông báo.
 
 Thứ tự làm:
-1. `applyArtifact` trong `web/battle/hero/`, chưa có UI. Kiểm bằng hai cách: dựng lại món trong
-   capture thì replay phải khớp từng bit; lắp `10806003` cho Hắc Lữ Bố ở Stage 51 thì
-   `rng.randomCode` phải ra các biến thể ở bảng trên.
-2. Làm UI.
-3. Kiểm dòng rainbow bằng hình trong trận.
+1. ~~Profile + `applyArtifact`~~ (xong). Đã kiểm trên trận thật:
+   - Stage 314 `6af6d367…`: dựng lại 5 món capture từ profile → replay TIER1/TIER2 MATCH.
+   - Stage 51 `6af2ab8a…`, lắp `10806003` + `80003005: 704` cho Hắc Lữ Bố → thẻ roll ra
+     `300002013`, `400012013`, `400022013`, không còn bản cơ bản. Thêm rainbow `80000208` →
+     thẻ Thức Tỉnh `700005013` thay `700004013`.
+2. Làm UI theo mục trên. Trang setup hiện chỉ giữ nguyên field `artifact` khi nhập/xuất JSON.
+3. Kiểm bằng hình các rainbow passive (`80000108`, `80000308`) trong trận.
 
 ## Còn mở
 

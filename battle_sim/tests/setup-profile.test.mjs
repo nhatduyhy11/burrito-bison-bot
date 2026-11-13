@@ -178,3 +178,56 @@ test('Dị Năng: a node below its breakthrough (skillUnlock) is skipped, adding
   assert.deepEqual(run(6).skipped, []);
   assert.ok(run(6).codes.includes(10190602000));
 });
+
+test('Thần Khí: battle builds hero.artifact from quality/stage/entries; null removes it', async () => {
+  const A = await import('../web/artifacts.js');
+  const { applyArtifact } = await import('../web/battle/hero/artifact.js');
+  const ad = JSON.parse(readFileSync(new URL('../web/dict/artifact-dict.json', import.meta.url)));
+  // Fake config rebuilt from artifact-dict.json rules (same formulas gen_profile_dict.js checks).
+  const items = {}, entries = {};
+  for (const [heroCode, { pool }] of Object.entries(ad.heroes)) {
+    for (const [q, max] of Object.entries(A.MAX_STAGE)) {
+      for (let s = 1; s <= max; s++) items[A.artifactCode(pool, +q, s)] = { hero: +heroCode };
+    }
+    for (const [family, { skillCode, ranges }] of Object.entries(ad.buffs)) {
+      for (const [q, [minValue, maxValue]] of Object.entries(ranges)) {
+        entries[A.entryCode(pool, +family, +q)] = { entryType: 2, skillCode, minValue, maxValue };
+      }
+    }
+    for (const family of [1, 2, 3]) {
+      entries[A.entryCode(pool, family, 8)] = { entryType: 2, skillCode: A.rareSkill(+heroCode, family), minValue: 0, maxValue: 0 };
+    }
+  }
+  entries[80001905] = { entryType: 1, minValue: 0, maxValue: 9999 };
+  const tables = { ArtifactLO: items, ArtifactEntryLO: entries };
+  const Mx = (name) => (tables[name] ? { store: tables[name], get: (k) => tables[name][k] } : { get: () => ({}) });
+  const lb = { code: 50000013, artifact: { code: 10806003, uuid: 'cap', battleEntryInfos: { 0: { value: 704, code: 80003005 }, _length: 1 } } };
+  const run = (sel) => applyArtifact(lb, sel, Mx, () => {});
+
+  // Rebuilding the captured item gives the same snapshot (uuid kept).
+  assert.deepEqual(run({ quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }] }).artifact, lb.artifact);
+  // Rainbow value defaults to 0; no entries -> no battleEntryInfos.
+  assert.deepEqual(run({ quality: 4, stage: 1, entries: [] }).artifact, { code: 10804001, uuid: 'cap' });
+  assert.equal(run({ quality: 7, stage: 5, entries: [{ code: 80000208 }] }).artifact.battleEntryInfos[0].value, 0);
+  assert.equal('artifact' in run(null), false);
+  // A hero without an artifact gets a generated uuid.
+  assert.equal(applyArtifact({ code: 50000013 }, { quality: 6, stage: 1 }, Mx, () => {}).artifact.uuid.length, 24);
+
+  for (const bad of [
+    { quality: 8, stage: 1 }, { quality: 4, stage: 4 }, { quality: 6, stage: 0 },
+    { quality: 4, stage: 1, entries: [{ code: 80003005, value: 200 }] }, // 0 slots at purple stage 1
+    { quality: 6, stage: 3, entries: [{ code: 80003005, value: 801 }] }, // out of range
+    { quality: 6, stage: 3, entries: [{ code: 10003005, value: 704 }] }, // other hero's pool
+    { quality: 6, stage: 3, entries: [{ code: 80001905, value: 586 }] }, // stat line (entryType 1)
+    { quality: 6, stage: 3, entries: [{ code: 80000208, value: 1 }] }, // rainbow must be 0
+  ]) assert.throws(() => run(bad), undefined, JSON.stringify(bad));
+  assert.throws(() => applyArtifact({ code: 50000099 }, { quality: 6, stage: 1 }, Mx, () => {}));
+});
+
+test('Thần Khí: setup import/export passes artifact through unchanged', () => {
+  const artifact = { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }] };
+  const state = fromProfile({ heroes: [{ name: 'lu_bu', artifact }, { name: 'hanuman', artifact: null }] }, base, dict);
+  const out = toProfile(state, dict).heroes;
+  assert.deepEqual(out[0], { name: 'lu_bu', artifact });
+  assert.deepEqual(out[1], { name: 'hanuman', artifact: null });
+});

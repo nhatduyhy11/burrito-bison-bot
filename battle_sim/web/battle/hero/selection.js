@@ -3,6 +3,7 @@
 // capture has it, else gets borrowed stats (build.js); skins go through skin.js.
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { buildProfileHero } from "./build.js";
+import { applyArtifact } from "./artifact.js";
 import { applyAvatar } from "./avatar.js";
 import { applyRelic } from "./relic.js";
 import { applySkin } from "./skin.js";
@@ -32,6 +33,7 @@ export async function applyHeroSelection({ profile, player, catalog, relicLines,
       });
     }
     if (selection.relic !== undefined) hero = applyRelic(hero, selection.relic, relicLines, rb, M, step);
+    if (selection.artifact !== undefined) hero = applyArtifact(hero, selection.artifact, M, step);
     return hero;
   };
   const heroes = selected.map((entry) => buildHero(entry));
