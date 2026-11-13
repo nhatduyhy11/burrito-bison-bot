@@ -231,3 +231,19 @@ test('Thần Khí: setup import/export passes artifact through unchanged', () =>
   assert.deepEqual(out[0], { name: 'lu_bu', artifact });
   assert.deepEqual(out[1], { name: 'hanuman', artifact: null });
 });
+
+test('Thần Khí: slots follow quality/stage; empty slots are left out of the profile', () => {
+  const artifact = { quality: 7, stage: 5, entries: [{ code: 80003007, value: 2500 }, { code: 80000208, value: 0 }] };
+  const state = fromProfile({ heroes: [{ name: 'lu_bu', artifact }] }, base, dict);
+  normalize(state, dict);
+  assert.equal(state.heroes[0].artifact.slots.length, 7);
+  state.heroes[0].artifact.slots[0] = null;
+  assert.deepEqual(toProfile(state, dict).heroes[0].artifact.entries, [{ code: 80000208, value: 0 }]);
+  // Gold stage 5 -> red keeps stage 4 at most; purple stage 1 has no slot left.
+  state.heroes[0].artifact.quality = 6;
+  normalize(state, dict);
+  assert.deepEqual([state.heroes[0].artifact.stage, state.heroes[0].artifact.slots.length], [4, 5]);
+  Object.assign(state.heroes[0].artifact, { quality: 4, stage: 1 });
+  normalize(state, dict);
+  assert.deepEqual(toProfile(state, dict).heroes[0].artifact, { quality: 4, stage: 1, entries: [] });
+});

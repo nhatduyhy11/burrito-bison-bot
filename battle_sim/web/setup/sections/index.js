@@ -1,4 +1,4 @@
-// Form sections of the setup page, in page order: Màn chơi, then tabs (Teams, Summoner).
+// Form sections of the setup page, in page order: Màn chơi, then tabs (Teams, Summoner, Hero detail).
 // (Account gốc lives inside the "Thao tác" section, see side.js.)
 // Each section takes ctx = { state, dict, update(fn), toggleWithPrefill(group, on) }; update(fn)
 // runs fn on a copy of the state (fn may also return a replacement), normalizes it with skin-rules
@@ -13,9 +13,10 @@ import { ListSection } from "./lists.js";
 import { BuildingsSection } from "./buildings.js";
 import { GoldenSection } from "./golden.js";
 import { AntiquesSection } from "./antiques.js";
+import { HeroDetailTab } from "./hero-detail.js";
 
 const TAB_KEY = "battleSimSetupTab";
-const TABS = [["teams", "Teams"], ["summoner", "Summoner"]];
+const TABS = [["teams", "Teams"], ["summoner", "Summoner"], ["heroDetail", "Hero detail"]];
 
 function savedTab() {
   try {
@@ -63,6 +64,9 @@ export function FormSections({ ctx }) {
       <${MountSection} ctx=${ctx} />
       <${AntiquesSection} ctx=${ctx} />
       <${GoldenSection} ctx=${ctx} />
+    </div>
+    <div role="tabpanel" hidden=${tab !== "heroDetail"}>
+      <${HeroDetailTab} ctx=${ctx} />
     </div>
   `;
 }

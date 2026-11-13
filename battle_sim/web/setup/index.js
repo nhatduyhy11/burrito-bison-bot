@@ -11,7 +11,7 @@
 import { render } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { html } from "./ui.js";
-import { LIMITS, capitalPreset, emptyState, fromProfile, newHero, normalize, toProfile } from "./profile-io.js";
+import { LIMITS, artifactState, capitalPreset, emptyState, fromProfile, newHero, normalize, toProfile } from "./profile-io.js";
 import { FormSections } from "./sections/index.js";
 import { Side } from "./side.js";
 
@@ -61,9 +61,19 @@ async function prefill(dict, maps, battle, group) {
   return from().filter((item) => item.name).slice(0, LIMITS[group]);
 }
 
+// Thần Khí of a hero in the base capture as setup state (tab Hero detail), null when it has none.
+async function capturedArtifact(battle, heroCode) {
+  const start = await capturedStart(battle);
+  const player = start && listItems(start.playerInfos)[0];
+  const artifact = listItems(player?.heros).find((h) => h.code === heroCode)?.artifact;
+  if (!artifact) return null;
+  const entries = listItems(artifact.battleEntryInfos).map(({ code, value }) => ({ code, value }));
+  return artifactState({ quality: Math.floor(artifact.code / 1000) % 100, stage: artifact.code % 1000, entries });
+}
+
 // ---------- app ----------
 
-function App({ dict, maps, antiqueDict, relicLines, battles, initial, initialStatus }) {
+function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus }) {
   const [state, setState] = useState(initial);
   // Every change goes through here: fn edits a copy (or returns a replacement), then skin rules normalize it.
   const update = (fn) =>
@@ -87,7 +97,8 @@ function App({ dict, maps, antiqueDict, relicLines, battles, initial, initialSta
     }
   }, [profile, state.battle, state.seed]);
 
-  const ctx = { state, dict, maps, antiqueDict, relicLines, update, toggleWithPrefill };
+  const capturedHeroArtifact = (heroCode) => capturedArtifact(state.battle, heroCode);
+  const ctx = { state, dict, maps, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact };
   return html`
     <main id="form">
       <${Side} ctx=${ctx} battles=${battles} profile=${profile} initialStatus=${initialStatus} />
@@ -136,11 +147,12 @@ function bindAccordionToggle(root) {
 }
 
 async function main(root) {
-  const [dict, maps, antiqueDict, relicDict, battles] = await Promise.all([
+  const [dict, maps, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
     getJson("/__sim/dict/profile-dict.json"),
     getJson("/__sim/dict/map-dict.json"),
     getJson("/__sim/dict/antique-dict.json"),
     getJson("/__sim/dict/relic-dict.json"),
+    getJson("/__sim/dict/artifact-dict.json"),
     getJson("/__sim/battles.json").catch(() => []),
   ]);
   let state = emptyState(dict, antiqueDict);
@@ -158,7 +170,7 @@ async function main(root) {
   if (!saved?.profile?.heroes) state.heroes = await prefill(dict, maps, state.battle, "heroes");
   normalize(state, dict);
   root.replaceChildren();
-  render(html`<${App} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  render(html`<${App} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   bindAccordionToggle(root);
 }
 

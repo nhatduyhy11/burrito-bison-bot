@@ -108,3 +108,8 @@ code { font: 12px Consolas, monospace; background: #0f1115; padding: 1px 4px; bo
   padding: 6px 14px; margin-bottom: -1px; font-size: 13px; color: var(--muted); }
 .tabs .tab:not(.active):hover:not(:disabled) { background: var(--panel); border-color: var(--line); border-bottom-color: transparent; color: var(--text); }
 .tabs .tab.active { background: #283d55; color: var(--text); border-color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: 600; }
+/* Hero detail (Thần Khí): a hero without an artifact is dimmed; one row per rolled slot. */
+section.off > header { opacity: .55; }
+section > header .override { font-size: 12px; }
+.artifact-slot input[type=range] { flex: 1 1 140px; min-width: 100px; max-width: 260px; accent-color: var(--accent); }
+.artifact-slot .value { min-width: 52px; font-variant-numeric: tabular-nums; }

@@ -5,6 +5,7 @@ import { hasSummonedJoker, JOKER_SUMMON } from "../hero-lineup.js";
 import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkillsConflict } from "../summoner-skills.js";
 import { antiqueSelections, defaultAntiques } from "../antiques.js";
 import { resolveRelic } from "../relics.js";
+import { MAX_STAGE, holeNum } from "../artifacts.js";
 
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2, summonerSkins: SUMMONER_SLOTS };
 const BUILDINGS = [["door", "Cửa"], ["bed", "Giường"], ["generator", "Chuột (máy phát điện)"], ["cat", "Mèo (chiêu tài)"]];
@@ -43,6 +44,7 @@ function normalize(state, dict) {
     else hero.avatar ??= 0;
   }
   if (state.heroes) for (const hero of state.heroes) R.normalizeHero(hero, heroSkins(dict, hero.name));
+  for (const hero of state.heroes) normalizeArtifact(hero.artifact);
   state.summonedJoker ||= newHero(JOKER_SUMMON.summonedHero);
   R.normalizeHero(state.summonedJoker, heroSkins(dict, JOKER_SUMMON.summonedHero));
   for (const [building] of BUILDINGS) {
@@ -59,8 +61,7 @@ function toProfile(state, dict) {
       if (!hero.custom && hero.relic === undefined && hero.artifact === undefined) return hero.name;
       const out = { name: hero.name };
       if (hero.relic !== undefined) out.relic = hero.relic;
-      // Thần Khí: passed through as written (no setup UI yet), checked in battle/hero/artifact.js.
-      if (hero.artifact !== undefined) out.artifact = structuredClone(hero.artifact);
+      if (hero.artifact !== undefined) out.artifact = artifactProfile(hero.artifact);
       if (!hero.custom) return out;
       const skins = heroSkins(dict, hero.name);
       if (hero.avatar !== null && dict.heroes[hero.name].avatarNodes) out.avatar = hero.avatar;
@@ -124,7 +125,7 @@ function fromProfile(profile, base, dict, { maps, antiqueDict, relicLines } = {}
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
     hero.relic = sel.relic;
-    if (sel.artifact !== undefined) hero.artifact = structuredClone(sel.artifact);
+    if (sel.artifact !== undefined) hero.artifact = artifactState(sel.artifact);
     if (sel.relic != null) {
       const { name, star, purification } = resolveRelic(sel.relic, relicLines);
       hero.relic = { name, star, purification };
@@ -261,3 +262,26 @@ export {
   toProfile,
   fromProfile,
 };
+
+// Thần Khí (tab Hero detail). State: undefined = as captured, null = none,
+// { quality, stage, slots } with one slot per rolled hole (holeNum), each null (empty) or { code, value }.
+// The profile keeps only the filled slots as `entries`; battle/hero/artifact.js checks them.
+export function artifactState(artifact) {
+  if (!artifact) return artifact;
+  const { quality, stage, entries = [] } = artifact;
+  return { quality, stage, slots: entries.map(({ code, value = 0 }) => ({ code, value })) };
+}
+
+function artifactProfile(artifact) {
+  if (artifact === null) return null;
+  const { quality, stage, slots } = artifact;
+  return { quality, stage, entries: slots.filter(Boolean).map(({ code, value }) => ({ code, value })) };
+}
+
+// Stage within the quality's range; slots cut or padded to the holes open at that quality + stage.
+function normalizeArtifact(artifact) {
+  if (!artifact || !MAX_STAGE[artifact.quality]) return;
+  artifact.stage = Math.min(Math.max(artifact.stage || 1, 1), MAX_STAGE[artifact.quality]);
+  const holes = holeNum(artifact.quality, artifact.stage);
+  artifact.slots = Array.from({ length: holes }, (_, i) => artifact.slots[i] || null);
+}

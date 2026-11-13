@@ -241,7 +241,7 @@ uv run python battle_sim/sandbox --setup
   capture. Xem [hero_gear.md](docs/planning/hero_gear.md).
   Hero đỏ có `artifact: { quality, stage, entries: [{ code, value }] }` = Thần Khí (phẩm 4–7,
   stage theo phẩm, `entries` = các dòng buff đội / rainbow đi thẳng vào `battleEntryInfos`).
-  `artifact: null` là tháo, bỏ field thì giữ như capture. Không đổi `hero.attr`
+  `artifact: null` là tháo, bỏ field thì giữ như capture. Trang setup chỉnh ở tab Hero detail. Không đổi `hero.attr`
   ([web/battle/hero/artifact.js](web/battle/hero/artifact.js), [artifact.md](docs/planning/artifact.md)).
   Khi Pháo Loli gắn skill skin `guns_n_roses` và Joker chưa nằm trong đội hình chính,
   trang setup mở Joker ở slot 6 với đầy đủ tùy chỉnh skin, sở hữu, sao và slot skill.
