@@ -16,7 +16,8 @@ export function AccountSection({ ctx, battles }) {
   const setBattle = (v) => update((s) => void (s.battle = v));
   const setSeed = (v) => update((s) => void (s.seed = v));
   const battleOptions = battles.length
-    ? battles.map((b) => [b.uuid, `${b.uuid.slice(0, 8)}… · ${captureWhere(b)} · ${b.ops} op`])
+    ? [...battles].sort((a, b) => b.level - a.level || b.uuid.slice(0, 8).localeCompare(a.uuid.slice(0, 8)))
+      .map((b) => [b.uuid, `${b.uuid.slice(0, 8)}… · ${captureWhere(b)} · ${b.ops} op`])
     : [["", "(không có capture)"]];
   return html`
     <div class="subsection">

@@ -18,10 +18,10 @@ export function SummonerSection({ ctx }) {
   return html`
     <${Accordion} title="Skill Summoner" hint=${hint} override=${{ enabled: !!selected, onToggle }}>
       ${selected && html`
-        <${SummonerSkills} ctx=${ctx} />
         <div class="row"><label>Đang mặc
           <${Select} options=${wornOptions} value=${state.summonerWorn || ""} onChange=${setWorn} />
         </label></div>
+        <${SummonerSkills} ctx=${ctx} />
         <div class="note">
           Đang mặc: model Summoner trong trận, chọn trong các skin đã tick. Skin sự kiện không có skill chỉ cộng chỉ
           số (server tính, sim giữ chỉ số capture), không chiếm slot.
