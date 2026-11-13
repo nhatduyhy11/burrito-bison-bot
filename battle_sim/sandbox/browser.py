@@ -17,7 +17,7 @@ class Capture:
             seen.clear()
 
 
-async def launch(pw, profile_dir, *, origin, cdp_port, channel, headless, size, record, emit, profile_json):
+async def launch(pw, profile_dir, *, origins, cdp_port, channel, headless, size, record, emit, profile_json):
     """Open the sandbox browser on `profile_dir`. `size` is "WxH"; `record` a video directory or None;
     `emit(kind, msg)` writes the run log; `profile_json()` returns the formation profile to serve as
     /__sim/active-profile.json (None = let the mirror answer). Returns (context, page, capture)."""
@@ -34,14 +34,14 @@ async def launch(pw, profile_dir, *, origin, cdp_port, channel, headless, size, 
         args=[f"--remote-debugging-port={cdp_port}", "--remote-debugging-address=127.0.0.1"],
     )
     cap = Capture()
-    active_profile = origin + "/__sim/active-profile.json"
+    active_profiles = {origin + "/__sim/active-profile.json" for origin in origins}
 
     async def guard(route):
         url = route.request.url
         profile = profile_json()
-        if profile is not None and url == active_profile:
+        if profile is not None and url in active_profiles:
             await route.fulfill(json=profile)
-        elif url.startswith(origin + "/"):
+        elif any(url.startswith(origin + "/") for origin in origins):
             await route.continue_()
         else:
             cap.blocked.append(url)

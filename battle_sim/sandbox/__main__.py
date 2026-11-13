@@ -4,7 +4,7 @@
 
 - Starts `node battle_sim/serve.js` (offline mirror) on 127.0.0.1:8090.
 - Fresh throwaway Chromium profile: no cookies, no account, service workers blocked.
-- Every request that is not http://127.0.0.1:8090/ is aborted and logged, WebSockets are
+- Requests outside the local mirror origins are aborted and logged, WebSockets are
   closed: the game code cannot reach any game server or third party even if it tries.
 - --battle <uuid> opens /sim.html?battle=<uuid>: replays that captured battle in the game's
   battle view (web/battle/) and compares the resulting QuitRoom with the captured one.
@@ -21,6 +21,7 @@
 
 import argparse
 import asyncio
+from contextlib import AsyncExitStack
 import json
 import sys
 import tempfile
@@ -35,17 +36,16 @@ from report import TERMINAL, print_summary, save_played
 from setup import SetupPage
 
 ROOT = Path(__file__).resolve().parents[2]
-CACHE = ROOT / ".tmp" / "battle_sim"
-PORT = 8090
-ORIGIN = f"http://127.0.0.1:{PORT}"
-CDP_PORT = 9334
-PLAYED = CACHE / "played"
-PROFILES = CACHE / "profiles"
 
 
 async def run(args) -> int:
+    cache = ROOT / ".tmp" / "battle_sim"
+    gat_cache = ROOT / ".tmp" / "skin-research-cn"
+    origins = {"vn": "http://127.0.0.1:8090", "gat": "http://127.0.0.1:8091"}
+    cdp_port = 9334
+    profiles = cache / "profiles"
     profile_data = json.loads(args.profile.read_text(encoding="utf-8")) if args.profile else None
-    log_path = CACHE / f"sandbox-{time.strftime('%Y%m%d-%H%M%S')}.log"
+    log_path = cache / f"sandbox-{time.strftime('%Y%m%d-%H%M%S')}.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log = log_path.open("w", encoding="utf-8")
 
@@ -54,27 +54,41 @@ async def run(args) -> int:
         log.flush()
 
     try:
-        async with server.mirror(ROOT, PORT, emit) as misses, async_playwright() as pw:
+        async with AsyncExitStack() as stack, async_playwright() as pw:
+            mirrors = {"vn": await stack.enter_async_context(server.mirror(ROOT, 8090, emit))}
             with tempfile.TemporaryDirectory(prefix="battle_sim_profile_") as profile:
                 ctx, page, cap = await browser.launch(
-                    pw, profile, origin=ORIGIN, cdp_port=CDP_PORT, channel=args.browser,
+                    pw, profile, origins=tuple(origins.values()) if args.setup else (origins["vn"],), cdp_port=cdp_port, channel=args.browser,
                     headless=args.headless, size=args.size, record=args.record, emit=emit,
                     profile_json=lambda: profile_data,  # read per request: --setup swaps it between runs
                 )
 
-                setup = await SetupPage.install(page, ORIGIN, PROFILES, ROOT) if args.setup else None
+                async def ensure_region(region):
+                    if region in mirrors:
+                        return
+                    try:
+                        mirrors[region] = await stack.enter_async_context(server.mirror(ROOT, 8091, emit))
+                    except SystemExit as err:
+                        raise RuntimeError(str(err)) from err
+
+                setup = await SetupPage.install(page, origins["vn"], profiles, ROOT, ensure_region) if args.setup else None
                 ok = True
                 while True:
+                    region = "vn"
                     if args.setup:
                         chosen = await setup.choose()
                         if chosen is None:
                             print("setup page closed without starting a battle")
                             break
                         profile_data, args.battle, args.seed = chosen["profile"], chosen["battle"], chosen["seed"]
+                        region = chosen["region"]
                         cap.clear()
-                        misses.clear()
+                        mirrors[region].clear()
 
-                    url = ORIGIN + args.page
+                    origin = origins[region]
+                    misses = mirrors[region]
+                    played = (gat_cache if region == "gat" else cache) / "played"
+                    url = origin + args.page
                     if args.battle:
                         url += ("&" if "?" in url else "?") + "battle=" + args.battle
                     if args.play:
@@ -99,16 +113,16 @@ async def run(args) -> int:
                             print(f"  ... tick {b.get('tick')}, ops {b.get('applied')}/{b.get('ops')}", flush=True)
                         await asyncio.sleep(0.5)
 
-                    print_summary(sim, cap, misses, ORIGIN, log_path.relative_to(ROOT))
+                    print_summary(sim, cap, misses, origin, log_path.relative_to(ROOT))
                     if args.play and sim and (sim.get("battle") or {}).get("quit"):
-                        await save_played(page, sim["battle"], PLAYED, ROOT)
+                        await save_played(page, sim["battle"], played, ROOT)
 
                     # Play mode: closing the result view sets window.__simLeave (web/battle/stubs.js),
                     # since leaving the battle would go to the lobby this page does not have.
                     leave = None
                     if args.keep:
                         then = "go back to the setup page" if args.setup else "end the run"
-                        print(f"\nwindow kept open (CDP 127.0.0.1:{CDP_PORT}); close the result view to {then}, "
+                        print(f"\nwindow kept open (CDP 127.0.0.1:{cdp_port}); close the result view to {then}, "
                               "or close the window to exit", flush=True)
                         while ctx.pages and not page.is_closed():
                             try:

@@ -10,19 +10,23 @@ UUID_RE = re.compile(r"^[0-9a-f]{24}$")
 
 
 class SetupPage:
-    def __init__(self, page, origin, profiles_dir, root):
+    def __init__(self, page, origin, profiles_dir, root, ensure_region):
         self.page, self.origin, self.profiles_dir, self.root = page, origin, profiles_dir, root
+        self.ensure_region = ensure_region
         self._chosen = None  # future for the choose() call in progress
 
     @classmethod
-    async def install(cls, page, origin, profiles_dir, root):
-        """Expose window.simPlay({battle, seed, profile}) for the "Chơi" button (once per page: it
+    async def install(cls, page, origin, profiles_dir, root, ensure_region):
+        """Expose window.simPlay({region, battle, seed, profile}) for the "Chơi" button (once per page: it
         stays across navigations, so the page can come back to setup)."""
-        self = cls(page, origin, profiles_dir, root)
+        self = cls(page, origin, profiles_dir, root, ensure_region)
         await page.expose_function("simPlay", self._sim_play)
         return self
 
     async def _sim_play(self, choice):
+        region = choice.get("region", "vn")
+        if region not in ("vn", "gat"):
+            raise ValueError(f"invalid region: {region!r}")
         battle, seed, profile = choice.get("battle"), choice.get("seed") or None, choice.get("profile")
         if not isinstance(battle, str) or not UUID_RE.match(battle):
             raise ValueError(f"invalid battle uuid: {battle!r}")
@@ -30,11 +34,15 @@ class SetupPage:
             raise ValueError(f"invalid seed: {seed!r}")
         if not isinstance(profile, dict):
             raise ValueError("profile must be an object")
+        await self.ensure_region(region)
+        profiles = self.profiles_dir if region == "vn" else self.root / ".tmp" / "skin-research-cn" / "profiles"
+        profiles.mkdir(parents=True, exist_ok=True)
+        setup = {"region": region, "battle": battle, "seed": seed, "profile": profile}
+        profile_path = profiles / "last.json"
+        profile_path.write_text(json.dumps(profile, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         self.profiles_dir.mkdir(parents=True, exist_ok=True)
-        setup = {"battle": battle, "seed": seed, "profile": profile}
-        for name, data in (("last.json", profile), ("last-setup.json", setup)):
-            (self.profiles_dir / name).write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        rel = (self.profiles_dir / "last.json").relative_to(self.root).as_posix()
+        (self.profiles_dir / "last-setup.json").write_text(json.dumps(setup, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        rel = profile_path.relative_to(self.root).as_posix()
         print(f"setup: battle {battle}, seed {seed or 'captured'}, profile saved to {rel}", flush=True)
         if self._chosen and not self._chosen.done():
             self._chosen.set_result(setup)

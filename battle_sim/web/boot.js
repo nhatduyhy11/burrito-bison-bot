@@ -71,11 +71,12 @@ function loadConfigBin(bytes, parserName) {
   return size;
 }
 
-async function loadVietnamese(configVer) {
-  const url = `/__sim_config/${configVer}/lang_vi.bin`;
+async function loadLanguage(configVer, locale) {
+  const file = `lang_${locale}.bin`;
+  const url = `/__sim_config/${configVer}/${file}`;
   const response = await fetch(url);
   if (response.status === 404) {
-    step("language pack missing", { configVersion: configVer, file: "lang_vi.bin" });
+    step("language pack missing", { configVersion: configVer, file });
     return;
   }
   if (!response.ok) throw new Error(`HTTP ${response.status} ${url}`);
@@ -87,14 +88,15 @@ async function loadVietnamese(configVer) {
   const { LanguageType } = R("LanguageType");
   const { SettingModule } = R("SettingModule");
   // The normal setter persists settings and calls the SDK. Only this page needs the locale.
-  Object.defineProperty(SettingModule.Ins, "language", { get: () => LanguageType.Vietnam });
-  R("ZoneUtils").ZoneUtils.Ins.setLabelShifter(LanguageType.Vietnam);
+  const language = locale === "tw" ? LanguageType.ChineseTraditional : LanguageType.Vietnam;
+  Object.defineProperty(SettingModule.Ins, "language", { get: () => language });
+  R("ZoneUtils").ZoneUtils.Ins.setLabelShifter(language);
   window.setGetCodeFun((key) =>
     R("CusLangResLO").CusLangResLO.get(key)?.replacePath ??
     R("ForceLangLO").ForceLangLO.get(key)?.value ??
     LangParser.getCode(key));
-  document.documentElement.lang = "vi";
-  sim.checks.language = { locale: "vi", configVersion: configVer };
+  document.documentElement.lang = locale === "tw" ? "zh-Hant" : locale;
+  sim.checks.language = { locale, configVersion: configVer };
   step("language", sim.checks.language);
 }
 
@@ -159,7 +161,7 @@ async function main() {
   const configVer = params.get("config") || (sim.capture && sim.capture.start.configVersion) || configs[0];
   if (!configVer) throw new Error("no cached config; replay a battle or run versions.ensureConfig first");
   // The game translates names and descriptions as it reads rows and opens prefabs.
-  await loadVietnamese(configVer);
+  await loadLanguage(configVer, deploy.locale || "vi");
   const pre = loadConfigBin(await getBytes(`/__sim_config/${configVer}/preload_config.bin`), "PreloadConfigParser");
   const cfg = loadConfigBin(await getBytes(`/__sim_config/${configVer}/config.bin`), "ConfigParser");
   const CP = R("ConfigParser").ConfigParser;
