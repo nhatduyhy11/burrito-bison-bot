@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65380 (names: lang_en, name_vn: lang_vi)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, name_vn: lang_vi)",
   "heroes": {
     "hanuman": {
       "code": 50000001,
@@ -1585,6 +1585,14 @@
       "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
+    },
+    "party_cake": {
+      "code": 18,
+      "name": "Party Cake",
+      "name_vn": "Bánh Kem Cuồng Hoan",
+      "color": "red",
+      "maxLevel": 100,
+      "maxStar": 10
     }
   },
   "pets": {
@@ -1840,16 +1848,16 @@
           "slot": "gold",
           "maxStar": 5
         },
-        "id_10013": {
+        "gate_of_myriad_spirits": {
           "skinId": 10013,
-          "name": "新彩门",
-          "name_vn": "新彩门",
+          "name": "Gate of Myriad Spirits",
+          "name_vn": "Cửa Vạn Ma Yêu Linh",
           "color": "colorful",
           "slot": "gold",
           "maxStar": 5,
           "requires": [
             "ironfist_door",
-            "aureate_domain",
+            "grand_circus",
             "steam_fort"
           ]
         }
@@ -1971,15 +1979,15 @@
           "slot": "gold",
           "maxStar": 5
         },
-        "id_20012": {
+        "tome_of_timeless_spirits": {
           "skinId": 20012,
-          "name": "新彩床",
-          "name_vn": "新彩床",
+          "name": "Tome of Timeless Spirits",
+          "name_vn": "Sách Yêu Linh Thời Không",
           "color": "colorful",
           "slot": "gold",
           "maxStar": 5,
           "requires": [
-            "aquatic_bed",
+            "gilt_bed",
             "abyssal_serpent",
             "phantom_manor"
           ]
@@ -2029,6 +2037,27 @@
           "color": "gold",
           "slot": "gold",
           "maxStar": 5
+        },
+        "star_chaser_glider": {
+          "skinId": 30005,
+          "name": "Star Chaser Glider",
+          "name_vn": "Sóc Bay Đuổi Sao",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "starship_captain": {
+          "skinId": 30006,
+          "name": "Starship Captain",
+          "name_vn": "Hạm Chủ Tinh Không",
+          "color": "colorful",
+          "slot": "gold",
+          "maxStar": 5,
+          "requires": [
+            "endless_banquet",
+            "cyber_rat",
+            "rodent_speed"
+          ]
         }
       }
     },
@@ -2075,6 +2104,27 @@
           "color": "gold",
           "slot": "gold",
           "maxStar": 5
+        },
+        "burger_glutton": {
+          "skinId": 40005,
+          "name": "Burger Glutton",
+          "name_vn": "Thực Thần Hamburger",
+          "color": "gold",
+          "slot": "gold",
+          "maxStar": 5
+        },
+        "creator_cat": {
+          "skinId": 40006,
+          "name": "Creator Cat",
+          "name_vn": "Thánh Miêu Tạo Vật",
+          "color": "colorful",
+          "slot": "gold",
+          "maxStar": 5,
+          "requires": [
+            "feline_firework",
+            "raving_kitten",
+            "fishing_master"
+          ]
         }
       }
     }
@@ -2275,13 +2325,13 @@
         }
       ]
     },
-    "race_dragon_boat": {
+    "white_phantom_of_night": {
       "code": 7,
-      "name": "Race Dragon Boat",
-      "name_vn": "Đua Thuyền Rồng",
+      "name": "White Phantom of Night",
+      "name_vn": "Bạch Ảnh Huyễn Dạ",
       "color": "red",
-      "frontModel": "zuoqi_08_A",
-      "backModel": "zuoqi_08_B",
+      "frontModel": "zuoqi_07_A",
+      "backModel": "zuoqi_07_B",
       "hiddenUntilOwned": true,
       "ranks": [
         {

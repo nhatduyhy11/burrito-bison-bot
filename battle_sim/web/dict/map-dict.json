@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65380 (names: lang_en, name_vn: lang_vi)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, name_vn: lang_vi)",
   "campaign": {
     "minStage": 1,
     "maxStage": 400,
