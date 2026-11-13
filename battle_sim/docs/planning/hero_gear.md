@@ -27,6 +27,11 @@ Dễ nhầm:
   không lệch chỗ nào). Engine trận chỉ nạp skill theo `code`.
 - Simulator đã có: profile `avatar: N`, ô "Dị Năng (node skill)" trong form setup (commit `3101ef9`).
 - Node chỉ số không mô phỏng, vì attr do server gộp sẵn vào `hero.attr`.
+- `AvatarUpGradeLO._skillUnlock` = `[mã, bậc đột phá]` có ở 27 node: bằng mốc trong `SkillReplaceLO`
+  của skill mà node thay (hoặc node nối tiếp nó). Client không đọc, server áp. Sim chặn bằng
+  `minBreakThrough` trong `avatarNodes`: hero có `breakThrough` thấp hơn thì bỏ qua node, kể cả
+  node thêm skill (Alice node 2, Sát Thương Choáng, cần đột phá 6). Account pmain đột phá ≥ 11 nên
+  không node nào bị chặn; chưa có capture hero đột phá thấp để kiểm server.
 - Còn mở: chưa kiểm bằng hình trong trận LB node 2 (đánh thường 3 tia ±10°) và Loli node 4
   (`10050201000 → 10050604000`), dùng skin mặc định.
 

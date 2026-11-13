@@ -57,11 +57,13 @@
         },
         {
           "replaces": 10010303000,
-          "skill": 10010603000
+          "skill": 10010603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10010603000,
-          "skill": 10010604000
+          "skill": 10010604000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10010602000,
@@ -125,7 +127,8 @@
         },
         {
           "replaces": 10020303000,
-          "skill": 10020603000
+          "skill": 10020603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -189,7 +192,8 @@
         },
         {
           "replaces": 10030303000,
-          "skill": 10030605000
+          "skill": 10030605000,
+          "minBreakThrough": 9
         }
       ]
     },
@@ -233,7 +237,8 @@
         },
         {
           "replaces": 10040303000,
-          "skill": 10040602000
+          "skill": 10040602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -301,11 +306,13 @@
         },
         {
           "replaces": 10050303000,
-          "skill": 10050602000
+          "skill": 10050602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10050602000,
-          "skill": 10050603000
+          "skill": 10050603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10050201000,
@@ -379,11 +386,13 @@
         },
         {
           "replaces": 10080303000,
-          "skill": 10080602000
+          "skill": 10080602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10080602000,
-          "skill": 10080603000
+          "skill": 10080603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -447,7 +456,8 @@
         },
         {
           "replaces": 10090303000,
-          "skill": 10090602000
+          "skill": 10090602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10090601000,
@@ -455,7 +465,8 @@
         },
         {
           "replaces": 10090602000,
-          "skill": 10090604000
+          "skill": 10090604000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10090603000,
@@ -540,11 +551,13 @@
         },
         {
           "replaces": 10130202000,
-          "skill": 10130603000
+          "skill": 10130603000,
+          "minBreakThrough": 6
         },
         {
           "replaces": 10130302000,
-          "skill": 10130604000
+          "skill": 10130604000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10130603000,
@@ -604,7 +617,8 @@
         },
         {
           "replaces": 10140303000,
-          "skill": 10140602000
+          "skill": 10140602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -612,7 +626,8 @@
         },
         {
           "replaces": 10140602000,
-          "skill": 10140604000
+          "skill": 10140604000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -656,7 +671,8 @@
       "avatarNodes": [
         {
           "replaces": 10150303000,
-          "skill": 10150601000
+          "skill": 10150601000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10150201000,
@@ -664,7 +680,8 @@
         },
         {
           "replaces": 10150601000,
-          "skill": 10150603000
+          "skill": 10150603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -747,7 +764,8 @@
         },
         {
           "replaces": null,
-          "skill": 10190602000
+          "skill": 10190602000,
+          "minBreakThrough": 6
         },
         {
           "replaces": null,
@@ -839,7 +857,8 @@
         },
         {
           "replaces": 10230303000,
-          "skill": 10230603000
+          "skill": 10230603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -908,15 +927,18 @@
       "avatarNodes": [
         {
           "replaces": 10260303000,
-          "skill": 10260601000
+          "skill": 10260601000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10260601000,
-          "skill": 10260602000
+          "skill": 10260602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10260602000,
-          "skill": 10260603000
+          "skill": 10260603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10260201000,
@@ -1001,7 +1023,8 @@
         },
         {
           "replaces": 10300303000,
-          "skill": 10300602000
+          "skill": 10300602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -1013,7 +1036,8 @@
         },
         {
           "replaces": 10300602000,
-          "skill": 10300605000
+          "skill": 10300605000,
+          "minBreakThrough": 9
         }
       ]
     },
@@ -1073,7 +1097,8 @@
         },
         {
           "replaces": 10310303000,
-          "skill": 10310603000
+          "skill": 10310603000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,
@@ -1125,7 +1150,8 @@
         },
         {
           "replaces": 10320303000,
-          "skill": 10320602000
+          "skill": 10320602000,
+          "minBreakThrough": 9
         },
         {
           "replaces": 10320201000,
@@ -1133,7 +1159,8 @@
         },
         {
           "replaces": 10320602000,
-          "skill": 10320604000
+          "skill": 10320604000,
+          "minBreakThrough": 9
         },
         {
           "replaces": null,

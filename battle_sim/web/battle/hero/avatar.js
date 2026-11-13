@@ -19,11 +19,16 @@ export function applyAvatar(hero, nodes, count, rb, step) {
     if (node.replaces && at(node.replaces) < 0) skills[i].code = node.replaces;
     else skills.splice(i, 1);
   }
-  // Open the first `count` nodes in chapter order. A replacing node whose skill the hero lacks (a
-  // breakthrough variant it has not reached, or an earlier node's skill that was skipped) is skipped
-  // on its own; the other nodes still apply. Adding nodes always apply.
+  // Open the first `count` nodes in chapter order. A node is skipped on its own (the other nodes
+  // still apply) when the hero is below its `minBreakThrough` (AvatarUpGradeLO.skillUnlock; a hero
+  // without breakThrough is not gated), or when it replaces a skill the hero lacks (a breakthrough
+  // variant it has not reached, or an earlier node's skill that was skipped).
   const skipped = [];
   nodes.slice(0, count).forEach((node, n) => {
+    if (node.minBreakThrough && (hero.breakThrough ?? Infinity) < node.minBreakThrough) {
+      skipped.push(n + 1);
+      return;
+    }
     if (!node.replaces) {
       if (at(node.skill) < 0) skills.push({ code: node.skill, index: 0, level: 1, isShow: false });
       return;

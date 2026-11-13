@@ -90,13 +90,17 @@ async function main() {
   // Dị Năng (异能) skill nodes per hero subType: AvatarUpGradeLO rows with a skillcode, one per
   // chapter 1-5, in chapter order (level N = the first N). Each swaps `replaces` for `skill` in
   // hero.skills (adds it when replaces is null); the server builds hero.skills exactly by this rule.
+  // `skillUnlock` = [heroId, breakthrough]: the node only applies from that breakthrough on (the
+  // SkillReplaceLO level of the skill it replaces); the client never reads it, the server does.
   // Attribute nodes are left out (server-side attr, not modelled). See docs/planning/hero_gear.md.
   const avatarRows = new Map();
   for (const row of rows(M("AvatarUpGradeLO"))) {
     if (!row.skillcode) continue;
     const point = M("AvatarLO").get(row.pointCode);
     const list = avatarRows.get(point.subType) || [];
-    list.push({ chapter: point.chapter, node: { replaces: row.oldSkillCode || null, skill: row.skillcode } });
+    const minBreakThrough = jsonField(row.skillUnlock)[1];
+    list.push({ chapter: point.chapter, node: { replaces: row.oldSkillCode || null, skill: row.skillcode,
+      ...(minBreakThrough ? { minBreakThrough } : {}) } });
     avatarRows.set(point.subType, list);
   }
   const avatarNodes = new Map([...avatarRows].map(([subType, list]) =>

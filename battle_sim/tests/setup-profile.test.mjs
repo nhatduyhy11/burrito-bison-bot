@@ -158,3 +158,23 @@ test('Dị Năng: a replacing node whose skill the hero lacks is skipped alone, 
   const am = { code: 50000004, skills: [skill(10040101000, 1), skill(10040201000, 2), skill(10040301000, 3)] };
   assert.deepEqual(run(am, 'archmage'), { codes: [10040601000, 10040604000, 10040301000, 10040603000, 10040605000], skipped: [2] });
 });
+
+test('Dị Năng: a node below its breakthrough (skillUnlock) is skipped, adding nodes included', async () => {
+  const { applyAvatar } = await import('../web/battle/hero/avatar.js');
+  const rb = { listItems: (o) => o };
+  const skill = (code, index) => ({ code, index, isShow: false });
+  const alice = Object.values(dict.heroes).find((h) => h.code === 50000019).avatarNodes;
+  assert.equal(alice[1].minBreakThrough, 6);
+  assert.equal(dict.heroes.lu_bu.avatarNodes[2].minBreakThrough, 6);
+  assert.equal(dict.heroes.lu_bu.avatarNodes[3].minBreakThrough, 9);
+  const run = (breakThrough) => {
+    let log;
+    const hero = { code: 50000019, breakThrough, skills: [skill(10190201000, 2), skill(10190301000, 3)] };
+    const out = applyAvatar(hero, alice, 5, rb, (_, data) => (log = data));
+    return { codes: out.skills.map((s) => s.code), skipped: log.skipped };
+  };
+  // Node 2 (adds Sát Thương Choáng) needs breakthrough 6; the other adding nodes are not gated.
+  assert.deepEqual(run(5), { codes: [10190201000, 10190301000, 10190601000, 10190603000, 10190604000, 10190605000], skipped: [2] });
+  assert.deepEqual(run(6).skipped, []);
+  assert.ok(run(6).codes.includes(10190602000));
+});
