@@ -3,7 +3,7 @@
 // - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) bosses + creep presets;
 // - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
-// - web/dict/artifact-dict.json: Thần Khí by hero, quality and stage, with battle skill entries;
+// - web/dict/artifact-dict.json: Thần Khí per hero (names, slot) + shared team buffs; rules in web/artifacts.js;
 // - web/dict/profile-dict.json: the rest of the account side: heroes with their skins, Summoner skins,
 //   traps, pets, spells (daoists), building skins and mounts.
 // Entries are keyed by a slug of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
@@ -13,6 +13,7 @@
 //   node battle_sim/scripts/gen_profile_dict.js [configVersion]   (default sea_65380)
 const fs = require("fs");
 const path = require("path");
+const { pathToFileURL } = require("url");
 const { Sim } = require("../lib/sim");
 const versions = require("../lib/versions");
 
@@ -231,32 +232,53 @@ async function main() {
     lines: relicLines,
   };
 
-  // Thần Khí (神器). Keep the refine entries consumed as skills from battleEntryInfos.
-  // The battle receives ordinary equipment and refine stats already in hero.attr.
+  // Thần Khí (神器). Item code, stage skills, holes and entry codes follow web/artifacts.js; every
+  // config row is checked against it, so the dict keeps one record per hero and one shared buff
+  // table. Stats (ArtifactLO.attr, entryType 1) are left out: the battle gets them in hero.attr.
+  const A = await import(pathToFileURL(path.join(__dirname, "..", "web", "artifacts.js")).href);
+  const expect = (ok, what) => { if (!ok) throw new Error(`artifact rule broken: ${what}`); };
   const artifactRows = rows(M("ArtifactLO")).sort((a, b) => a.code - b.code);
   const artifactHeroes = {};
-  const entryPools = {};
   const artifactSkillCodes = new Set();
+  const poolHero = new Map();
   for (const row of artifactRows) {
-    const hero = artifactHeroes[row.hero] ??= { variants: [] };
-    const skillCodes = jsonField(row.skillList);
-    skillCodes.forEach((code) => artifactSkillCodes.add(code));
-    hero.variants.push({
-      code: row.code, name: row.name, name_vn: vn("ArtifactLO", row.code),
-      quality: row.quality, stage: row.stage,
-      skillCodes, holeNum: row.holeNum, maxHoleNum: row.maxHoleNum, entryPool: row.entryPool,
-    });
-    entryPools[row.entryPool] ??= {};
+    const pool = row.entryPool / 100000;
+    const hero = artifactHeroes[row.hero] ??= { pool, variants: 0 };
+    poolHero.set(row.entryPool, row.hero);
+    const name = row.quality === 7 ? "name7" : "name";
+    const nameVn = vn("ArtifactLO", row.code);
+    expect((hero[name] ??= row.name) === row.name && (hero[`${name}_vn`] ??= nameVn) === nameVn, `${row.code} name`);
+    expect(hero.pool === pool && row.code === A.artifactCode(pool, row.quality, row.stage), `${row.code} code/pool`);
+    expect(row.stage >= 1 && row.stage <= A.MAX_STAGE[row.quality], `${row.code} stage`);
+    expect(JSON.stringify(jsonField(row.skillList)) === JSON.stringify(A.stageSkills(row.hero, row.stage)), `${row.code} skillList`);
+    expect(row.holeNum === A.holeNum(row.quality, row.stage) && row.maxHoleNum === A.maxHoleNum(row.quality), `${row.code} holes`);
+    hero.variants++;
   }
+  for (const [code, hero] of Object.entries(artifactHeroes)) {
+    const total = Object.values(A.MAX_STAGE).reduce((a, b) => a + b, 0);
+    expect(hero.variants === total && hero.name !== hero.name7, `${code} variants/names`);
+    delete hero.variants;
+    A.stageSkills(Number(code), 5).forEach((skill) => artifactSkillCodes.add(skill));
+  }
+  // Team buffs (quality 3-7) are identical in every pool apart from the pool prefix of the code.
+  const buffs = {};
   for (const row of rows(M("ArtifactEntryLO")).sort((a, b) => a.code - b.code)) {
-    const pool = entryPools[row.entryPool];
-    if (!pool || row.entryType !== 2 || !row.skillCode) continue;
+    const heroCode = poolHero.get(row.entryPool);
+    if (!heroCode || row.entryType !== 2 || !row.skillCode) continue;
+    const { pool, family, quality } = A.parseEntryCode(row.code);
+    expect(pool * 100000 === row.entryPool && quality === row.quality, `entry ${row.code} code`);
     artifactSkillCodes.add(row.skillCode);
-    pool[row.code] = {
-      quality: row.quality, skillCode: row.skillCode,
-      minValue: row.minValue, maxValue: row.maxValue,
-    };
+    if (quality === 8) {
+      expect(row.skillCode === A.rareSkill(heroCode, family) && !row.minValue && !row.maxValue, `entry ${row.code} rare`);
+      continue;
+    }
+    const buff = buffs[family] ??= { skillCode: row.skillCode, percent: row.percent, ranges: {} };
+    const range = [row.minValue, row.maxValue];
+    expect(buff.skillCode === row.skillCode && buff.percent === row.percent, `entry ${row.code} family`);
+    expect(JSON.stringify(buff.ranges[quality] ??= range) === JSON.stringify(range), `entry ${row.code} range`);
   }
+  const rareCount = rows(M("ArtifactEntryLO")).filter((r) => poolHero.has(r.entryPool) && r.entryType === 2 && r.quality === 8).length;
+  expect(rareCount === poolHero.size * Object.keys(A.RARE_SKILL).length, "rainbow entries per pool");
   const artifactSkills = Object.fromEntries([...artifactSkillCodes].sort((a, b) => a - b).map((code) => {
     if (!SkillBase.get(code)) throw new Error(`artifact skill ${code} missing from SkillBaseLO`);
     return [code, skillRef(code)];
@@ -271,10 +293,10 @@ async function main() {
   write(MAP_OUT, maps);
   write(ANTIQUE_OUT, { antiques });
   write(RELIC_OUT, relics);
-  write(ARTIFACT_OUT, { heroes: artifactHeroes, entryPools, skills: artifactSkills });
+  write(ARTIFACT_OUT, { heroes: artifactHeroes, buffs, skills: artifactSkills });
   const count = (o) => Object.keys(o).length;
-  const artifactEntryCount = Object.values(entryPools).reduce((sum, pool) => sum + count(pool), 0);
-  console.log(`wrote ${path.relative(process.cwd(), ARTIFACT_OUT)}: ${artifactRows.length} variants, ${artifactEntryCount} battle entries in ${count(entryPools)} pools`);
+  console.log(`wrote ${path.relative(process.cwd(), ARTIFACT_OUT)}: ${count(artifactHeroes)} heroes (${artifactRows.length} variants checked), ` +
+    `${count(buffs)} team buffs, ${rareCount} rainbow entries checked`);
   console.log(`wrote ${path.relative(process.cwd(), RELIC_OUT)}: ${count(relics.lines)} relic lines`);
   console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
     `${count(maps.capital.bosses)} capital bosses`);
