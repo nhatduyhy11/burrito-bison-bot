@@ -315,6 +315,20 @@ riêng dưới `.tmp/skin-research-cn/`. Catalog dùng chung các dict VN rồi 
 `web/dict/gat-overrides.json` cho skin, pet, đồ cổ và asset theo vùng. Lần đầu chạy GAT cần mạng để tải config, pack `tw` và asset tĩnh còn thiếu.
 Capture cần có sẵn trong cache GAT. Xem [hero_gear.md](docs/planning/hero_gear.md) cho đối chiếu dữ liệu hero gear.
 
+### Dùng đội hình pmain trong playtest GAT
+
+```bash
+node battle_sim/scripts/copy_pmain_to_gat.js
+```
+
+Script lấy capture hoàn chỉnh mới nhất theo tên file của pmain và GAT. Có thể
+chỉ định file bằng `--vn` và `--gat`, hoặc chọn trận bằng `--vn-uuid` và
+`--gat-uuid`. Script chép đội hình và hero hỗ trợ từ VN, gồm chỉ số, level,
+đột phá và skill đã capture. Map, người chơi, máy và công trình lấy từ mẫu GAT.
+
+Trong Setup, chọn vùng **GAT** rồi chọn trận theo **Capture ID** script in ra.
+Để dùng lại seed gốc của trận mẫu, nhập **GAT template seed** vào ô seed.
+Capture tạo ra dành cho chế độ **Chơi** offline và có danh sách thao tác rỗng.
 
 ## Replay headless (mốc A)
 
