@@ -114,6 +114,7 @@ async function main() {
   }
   await defineIndexGlobals();
   const deploy = await getJson("/__sim/deploy.json");
+  const locale = deploy.locale || "vi";
   step("deploy", { clientVer: deploy.clientVer, main: deploy.bundleVers.main });
 
   // Engine + settings, from the deploy's own manifest (main.<h>.js is replaced by this file).
@@ -123,6 +124,12 @@ async function main() {
   await loadScript("/" + deploy.settingsFile);
   const settings = window._CCSettings;
   step("engine", { engine, cc: cc.ENGINE_VERSION });
+
+  if (locale === "vi") {
+    // The VN mirror caches PNGs but may omit the compressed variants Cocos prefers.
+    const formats = cc.macro.SUPPORT_TEXTURE_FORMATS;
+    cc.macro.SUPPORT_TEXTURE_FORMATS = [".png", ...formats.filter((format) => format !== ".png")];
+  }
 
   patchJsonParse();
   cc.assetManager.init({ bundleVers: settings.bundleVers, remoteBundles: settings.remoteBundles, server: settings.server });
@@ -161,7 +168,7 @@ async function main() {
   const configVer = params.get("config") || (sim.capture && sim.capture.start.configVersion) || configs[0];
   if (!configVer) throw new Error("no cached config; replay a battle or run versions.ensureConfig first");
   // The game translates names and descriptions as it reads rows and opens prefabs.
-  await loadLanguage(configVer, deploy.locale || "vi");
+  await loadLanguage(configVer, locale);
   const pre = loadConfigBin(await getBytes(`/__sim_config/${configVer}/preload_config.bin`), "PreloadConfigParser");
   const cfg = loadConfigBin(await getBytes(`/__sim_config/${configVer}/config.bin`), "ConfigParser");
   const CP = R("ConfigParser").ConfigParser;
