@@ -8,7 +8,7 @@ export function forRegion(profile, dict, { antiqueDict }) {
     return false;
   };
 
-  for (const group of ["pets", "summonerSkins"]) {
+  for (const group of ["traps", "pets", "summonerSkins"]) {
     if (adjusted[group]) {
       adjusted[group] = adjusted[group].filter((entry) => exists(dict[group], entry.name ?? entry));
     }

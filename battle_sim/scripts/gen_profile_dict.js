@@ -127,7 +127,11 @@ async function main() {
   }));
 
   const organLevel = maxBy(M("OrganUpGradeLO"), "level"), organStar = maxBy(M("OrganStarLO"), "star");
-  const traps = keyed(rows(M("OrganLO")).sort((a, b) => a.code - b.code).map((o) => [o.name,
+  // A selectable trap needs its unlock items and the tags the battle UI renders.
+  const availableTrap = (organ) =>
+    jsonField(organ.cost).every(([type, item]) => type !== 3 || M("ItemLO").get(item)) &&
+    jsonField(organ.tag).every((tag) => M("HeroTagLO").get(tag));
+  const traps = keyed(rows(M("OrganLO")).filter(availableTrap).sort((a, b) => a.code - b.code).map((o) => [o.name,
     { code: o.code, name: o.name, name_vn: vn("OrganLO", o.code), color: RARITY[o.color] || o.color, maxLevel: organLevel.get(o.mecType) || 1, maxStar: organStar.get(o.mecType) || 1 }]));
 
   const petLevel = maxBy(M("SummonCreatureUpGradeLO"), "level"), petStar = maxBy(M("SummonCreatureStarLO"), "star");

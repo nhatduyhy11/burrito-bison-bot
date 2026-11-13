@@ -1585,14 +1585,6 @@
       "color": "gold",
       "maxLevel": 100,
       "maxStar": 10
-    },
-    "party_cake": {
-      "code": 18,
-      "name": "Party Cake",
-      "name_vn": "Bánh Kem Cuồng Hoan",
-      "color": "red",
-      "maxLevel": 100,
-      "maxStar": 10
     }
   },
   "pets": {
