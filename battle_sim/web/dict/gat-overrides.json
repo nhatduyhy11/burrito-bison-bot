@@ -1,0 +1,111 @@
+{
+  "profile": {
+    "heroes": {
+      "blue_giant": {
+        "skins": {
+          "scarlet_feast": {
+            "code": 5001504,
+            "name": "猩紅狂宴",
+            "color": "colorful",
+            "maxStar": 5,
+            "requires": [
+              "wrestling_champion",
+              "realm_traveler",
+              "wave_breaker"
+            ]
+          }
+        }
+      },
+      "bride_wraith": {
+        "skins": {
+          "crimson_oath": {
+            "code": 5003004,
+            "name": "殷红之誓",
+            "color": "colorful",
+            "maxStar": 5,
+            "requires": [
+              "modern_songstress",
+              "cleopatra",
+              "dessert_princess"
+            ]
+          }
+        }
+      }
+    },
+    "summonerSkins": {
+      "platinum_formalwear": {
+        "code": 20219,
+        "name": "白金禮裝",
+        "color": "gold",
+        "maxStar": 5,
+        "model": "role_huashen_026",
+        "skill": "派對開場"
+      },
+      "god_and_demon": {
+        "code": 20220,
+        "name": "一念神魔",
+        "color": "colorful",
+        "maxStar": 1,
+        "model": "role_huashen_024",
+        "skill": "神魔共佑"
+      },
+      "skeletian": {
+        "model": "role_huashen_001"
+      },
+      "high_school_girl": {
+        "model": "role_huashen_002"
+      }
+    },
+    "pets": {
+      "ice_queen": {
+        "code": 10014,
+        "name": "冰雪女皇",
+        "color": "gold",
+        "maxLevel": 50,
+        "maxStar": 5
+      }
+    },
+    "mounts": {
+      "white_phantom_of_night": {
+        "frontModel": "zuoqi_09_A",
+        "backModel": "zuoqi_09_B"
+      }
+    }
+  },
+  "antique": {
+    "antiques": {
+      "nightmare_pot": {
+        "code": 7049,
+        "name": "夢魘妖壺",
+        "color": "gold",
+        "maxStar": 15,
+        "ranks": [
+          704901,
+          704902,
+          704903,
+          704904,
+          704905,
+          704906,
+          704907,
+          704908,
+          704909,
+          704910,
+          704911,
+          704912,
+          704913,
+          704914,
+          704915
+        ]
+      }
+    }
+  },
+  "map": {
+    "capital": {
+      "bosses": {
+        "cursed_botchling": {
+          "avatar": "head/head_boss_001"
+        }
+      }
+    }
+  }
+}
