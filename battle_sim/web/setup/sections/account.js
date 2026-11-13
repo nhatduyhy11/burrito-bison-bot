@@ -1,4 +1,4 @@
-// "Account gốc": base capture (account data source) + seed. First section of the form.
+// "Account gốc": base capture (account data source) + seed. Sub-section of "Thao tác" (side.js).
 import { html, Select } from "../ui.js";
 
 const SEED_OPTIONS = [
@@ -19,19 +19,17 @@ export function AccountSection({ ctx, battles }) {
     ? battles.map((b) => [b.uuid, `${b.uuid.slice(0, 8)}… · ${captureWhere(b)} · ${b.ops} op`])
     : [["", "(không có capture)"]];
   return html`
-    <section>
-      <header><h2>Account gốc</h2></header>
-      <div class="body">
-        <div class="row">
-          <label>Capture <${Select} id="battle" options=${battleOptions} value=${state.battle} onChange=${setBattle} /></label>
-          <label>Seed <${Select} id="seed" options=${SEED_OPTIONS} value=${state.seed} onChange=${setSeed} /></label>
-        </div>
-        <div class="note">
-          Trận đã capture chỉ dùng làm nguồn dữ liệu account: chỉ số và level hero, attr building, hero support, đồng
-          đội robot, và mọi phần không bật Ghi đè. Stage ghi ở đây là màn của trận capture; màn sẽ chơi do mục "Màn
-          chơi" quyết định (tắt thì dùng màn này).
-        </div>
+    <div class="subsection">
+      <h3>Account gốc</h3>
+      <div class="row">
+        <label>Capture <${Select} id="battle" options=${battleOptions} value=${state.battle} onChange=${setBattle} /></label>
+        <label>Seed <${Select} id="seed" options=${SEED_OPTIONS} value=${state.seed} onChange=${setSeed} /></label>
       </div>
-    </section>
+      <div class="note">
+        Trận đã capture chỉ dùng làm nguồn dữ liệu account: chỉ số và level hero, attr building, hero support, đồng
+        đội robot, và mọi phần không bật Ghi đè. Stage ghi ở đây là màn của trận capture; màn sẽ chơi do mục "Màn
+        chơi" quyết định (tắt thì dùng màn này).
+      </div>
+    </div>
   `;
 }

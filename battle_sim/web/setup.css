@@ -25,6 +25,9 @@ section > header .hint { color: var(--muted); font-size: 11px; }
 .accordion-body p.hint { color: var(--muted); font-size: 11px; margin: 2px 0 6px; max-width: 640px; }
 .accordion > summary .override { font-size: 12px; }
 .accordion-body { margin-top: 8px; }
+/* Sub-section inside a section (e.g. Thao tác > Account gốc, Profile JSON accordion): divider instead of a nested panel. */
+section .accordion, .subsection { background: none; border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 8px 0 0; margin: 8px 0 0; }
+.subsection > h3 { font-size: 13px; font-weight: 600; margin: 0; }
 .accordion-body:empty { display: none; }
 .body { margin-top: 8px; }
 strong { font-weight: 600; }
@@ -101,7 +104,7 @@ pre { background: #0f1115; border: 1px solid var(--line); border-radius: 6px; pa
 code { font: 12px Consolas, monospace; background: #0f1115; padding: 1px 4px; border-radius: 3px; word-break: break-all; }
 .status { min-height: 1.4em; margin-top: 6px; }
 .tabs { display: flex; gap: 4px; margin: 0 0 10px; border-bottom: 1px solid var(--line); }
-.tabs .tab { background: none; border: 1px solid transparent; border-bottom: 2px solid transparent; border-radius: 6px 6px 0 0;
+.tabs .tab { background: #1a1d23; border: 1px solid var(--line); border-bottom: 2px solid transparent; border-radius: 6px 6px 0 0;
   padding: 6px 14px; margin-bottom: -1px; font-size: 13px; color: var(--muted); }
-.tabs .tab:hover:not(:disabled) { border-color: transparent; color: var(--text); }
-.tabs .tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+.tabs .tab:not(.active):hover:not(:disabled) { background: var(--panel); border-color: var(--line); border-bottom-color: transparent; color: var(--text); }
+.tabs .tab.active { background: #283d55; color: var(--text); border-color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: 600; }

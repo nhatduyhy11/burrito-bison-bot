@@ -71,12 +71,14 @@ export function Select({ options, value, onChange, ...attrs }) {
 
 // Collapsible panel. `override` = { enabled, onToggle } puts a "Ghi đè" checkbox next to the title;
 // collapsing is presentation only, the override keeps its own state. An empty body is hidden (CSS).
-export function Accordion({ title, hint, override, children, defaultOpen = true }) {
+// skipExpandAll: "Mở tất cả" leaves this panel closed ("Thu gọn tất cả" still closes it).
+export function Accordion({ title, hint, override, children, defaultOpen = true, skipExpandAll = false }) {
   const toggle = override
     ? html`<label class="override"><${Checkbox} checked=${override.enabled} onChange=${override.onToggle} />Ghi đè</label>`
     : null;
   return html`
-    <details class=${override && !override.enabled ? "accordion off" : "accordion"} open=${defaultOpen}>
+    <details class=${override && !override.enabled ? "accordion off" : "accordion"} open=${defaultOpen}
+      data-skip-expand-all=${skipExpandAll || undefined}>
       <summary><strong>${title}</strong>${toggle}${hint && html`<span class="hint">${hint}</span>`}</summary>
       <div class="accordion-body">${children}</div>
     </details>

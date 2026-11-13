@@ -1,10 +1,10 @@
-// Form sections of the setup page, in page order: Account gốc, Màn chơi, then tabs (Teams, Summoner).
+// Form sections of the setup page, in page order: Màn chơi, then tabs (Teams, Summoner).
+// (Account gốc lives inside the "Thao tác" section, see side.js.)
 // Each section takes ctx = { state, dict, update(fn), toggleWithPrefill(group, on) }; update(fn)
 // runs fn on a copy of the state (fn may also return a replacement), normalizes it with skin-rules
 // and re-renders. Inactive tabs stay rendered (hidden) so accordion open state survives switching.
 import { useState } from "preact/hooks";
 import { html } from "../ui.js";
-import { AccountSection } from "./account.js";
 import { MapSection } from "./map.js";
 import { HeroesSection } from "./heroes.js";
 import { MountSection } from "./mounts.js";
@@ -37,7 +37,7 @@ function TabBar({ active, onSelect }) {
   return html`<div class="tabs" role="tablist">${buttons}</div>`;
 }
 
-export function FormSections({ ctx, battles }) {
+export function FormSections({ ctx }) {
   const [tab, setTab] = useState(savedTab);
   const selectTab = (key) => {
     setTab(key);
@@ -49,7 +49,6 @@ export function FormSections({ ctx, battles }) {
   };
   const list = (group) => html`<${ListSection} ctx=${ctx} group=${group} />`;
   return html`
-    <${AccountSection} ctx=${ctx} battles=${battles} />
     <${MapSection} ctx=${ctx} />
     <${TabBar} active=${tab} onSelect=${selectTab} />
     <div role="tabpanel" hidden=${tab !== "teams"}>

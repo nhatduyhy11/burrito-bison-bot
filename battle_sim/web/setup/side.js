@@ -1,8 +1,9 @@
-// Right column of the setup page: actions (play, download, copy, import, reset),
-// status line and the profile JSON. ctx is the same object the form sections get.
+// "Thao tác" section of the setup page: actions (play, download, copy, import, reset), status
+// line, then sub-sections Account gốc and Profile JSON. ctx is the same object the form sections get.
 import { useEffect, useRef, useState } from "preact/hooks";
 import { html, Accordion } from "./ui.js";
 import { emptyState, fromProfile, toProfile } from "./profile-io.js";
+import { AccountSection } from "./sections/account.js";
 
 const NO_STATUS = { text: "", kind: "note" };
 
@@ -24,7 +25,7 @@ function saveFile(name, text) {
   setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
-export function Side({ ctx, profile, initialStatus }) {
+export function Side({ ctx, battles, profile, initialStatus }) {
   const { state, dict, update } = ctx;
   const [status, setStatus] = useState(initialStatus || NO_STATUS);
   const [playing, setPlaying] = useState(false);
@@ -98,10 +99,11 @@ export function Side({ ctx, profile, initialStatus }) {
         </div>
         <div id="playHint" class="note">${playHint}</div>
         <div id="status" class=${`status ${status.kind}`}>${status.text}</div>
+        <${AccountSection} ctx=${ctx} battles=${battles} />
+        <${Accordion} title="Profile JSON" defaultOpen=${false} skipExpandAll>
+          <pre id="output">${JSON.stringify(profile, null, 2)}</pre>
+        <//>
       </div>
     </section>
-    <${Accordion} title="Profile JSON" defaultOpen=${false}>
-      <pre id="output">${JSON.stringify(profile, null, 2)}</pre>
-    <//>
   `;
 }

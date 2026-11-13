@@ -90,8 +90,8 @@ function App({ dict, maps, antiqueDict, relicLines, battles, initial, initialSta
   const ctx = { state, dict, maps, antiqueDict, relicLines, update, toggleWithPrefill };
   return html`
     <main id="form">
-      <${Side} ctx=${ctx} profile=${profile} initialStatus=${initialStatus} />
-      <${FormSections} ctx=${ctx} battles=${battles} />
+      <${Side} ctx=${ctx} battles=${battles} profile=${profile} initialStatus=${initialStatus} />
+      <${FormSections} ctx=${ctx} />
     </main>
   `;
 }
@@ -127,7 +127,7 @@ function bindAccordionToggle(root) {
   button.addEventListener("click", () => {
     const panels = accordions();
     const open = panels.every((panel) => !panel.open);
-    panels.forEach((panel) => { panel.open = open; });
+    panels.forEach((panel) => { if (!(open && panel.dataset.skipExpandAll)) panel.open = open; });
     updateLabel();
   });
   root.addEventListener("toggle", updateLabel, true);
