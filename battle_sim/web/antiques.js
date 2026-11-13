@@ -25,9 +25,9 @@ export function antiqueSelections(owned, catalog) {
   return Object.entries(owned).map(([name, star]) => {
     const item = Object.hasOwn(catalog, name) && catalog[name];
     if (!item) throw new Error(`Không có Đồ Cổ "${name}"`);
-    const rank = Number.isSafeInteger(star) && item.ranks.find((entry) => entry.star === star);
-    if (!rank) throw new Error(`Số sao không hợp lệ cho Đồ Cổ "${name}": ${star}`);
-    return { name, star, code: rank.code };
+    const code = Number.isSafeInteger(star) ? item.ranks[star - 1] : undefined;
+    if (code === undefined) throw new Error(`Số sao không hợp lệ cho Đồ Cổ "${name}": ${star}`);
+    return { name, star, code };
   });
 }
 

@@ -261,7 +261,7 @@ uv run python battle_sim/sandbox --setup
 
   Catalog Đồ Cổ nằm ở `antiques` trong [antique-dict.json](web/dict/antique-dict.json), gồm tên, màu,
   số sao tối đa và mã rank. Engine tra hiệu ứng trực tiếp từ config game.
-  Mỗi `ranks[].code` là mã theo sao trong capture, ví dụ `300106` là `3001` ở 6 sao.
+  `ranks[star - 1]` là mã theo sao trong capture, ví dụ `ranks[5]` của `3001` là `300106`.
   `level` trong capture là giá trị tiến độ dùng để tính hiệu ứng, có giới hạn `haloLevelLimit`
   theo rank. Config `sea_65380` có tối đa 15 sao cho mỗi món và mốc bộ sưu tập cuối cũng là 15 sao.
 

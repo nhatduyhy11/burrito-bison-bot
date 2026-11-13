@@ -189,12 +189,15 @@ async function main() {
   // The engine looks up effects and level limits in AntiqueHaloLO by rank code.
   const haloRows = rows(M("AntiqueHaloLO"));
   const antiques = keyed(rows(M("AntiqueLO")).map((row) => {
-    const ranks = haloRows.filter((halo) => halo.antiqueCode === row.code)
-      .sort((a, b) => a.star - b.star)
-      .map(({ code, star }) => ({ code, star }));
+    const haloRanks = haloRows.filter((halo) => halo.antiqueCode === row.code)
+      .sort((a, b) => a.star - b.star);
+    const ranks = haloRanks.map(({ code, star }, index) => {
+      if (star !== index + 1) throw new Error(`Antique ${row.code}: expected star ${index + 1}, got ${star}`);
+      return code;
+    });
     return [row.name, {
       code: row.code, name: row.name, name_vn: vn("AntiqueLO", row.code),
-      color: RARITY[row.color] ?? row.color, maxStar: ranks.at(-1)?.star, ranks,
+      color: RARITY[row.color] ?? row.color, maxStar: ranks.length, ranks,
     }];
   }));
 
