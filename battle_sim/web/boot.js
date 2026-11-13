@@ -131,6 +131,9 @@ async function main() {
   await Promise.all(["internal", "login"].map((b) => cb2p((cb) => cc.assetManager.loadBundle(b, cb))));
   await cb2p((cb) => cc.assetManager.loadBundle("main", cb));
   step("main bundle", { modules: typeof window.__require === "function" });
+  const { ZoneType } = R("ZoneConst");
+  const zone = ZoneType[window.getLocalAgent().zone];
+  if (zone != null) R("ZoneUtils").ZoneUtils.Ins.init(zone);
 
   // Start the engine with an empty scene instead of settings.launchScene.
   await new Promise((ok) => cc.game.run({

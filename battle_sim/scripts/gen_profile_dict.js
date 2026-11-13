@@ -10,15 +10,16 @@
 // lang_vi.<ver>.bin, public CDN next to config.bin; downloaded once into
 // .tmp/battle_sim/config/<configVersion>/).
 //
-//   node battle_sim/scripts/gen_profile_dict.js [configVersion]   (default sea_65380)
+//   node battle_sim/scripts/gen_profile_dict.js [configVersion] [battleVersion]
 const fs = require("fs");
 const path = require("path");
 const { pathToFileURL } = require("url");
 const { Sim } = require("../lib/sim");
 const versions = require("../lib/versions");
 
-const CONFIG_VERSION = process.argv[2] || "sea_65380";
-const ASSETS = { battleVersion: "2.3.1-2_E63294_P63528_C63583", configVersion: CONFIG_VERSION, mapVersion: "trunk_61543" };
+const CONFIG_VERSION = process.argv[2] || "sea_65553";
+const BATTLE_VERSION = process.argv[3] || "2.3.1-2_E64067_P63528_C64067";
+const ASSETS = { battleVersion: BATTLE_VERSION, configVersion: CONFIG_VERSION, mapVersion: "trunk_61543" };
 const OUT = path.join(__dirname, "..", "web", "dict", "profile-dict.json");
 const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
 const ANTIQUE_OUT = path.join(__dirname, "..", "web", "dict", "antique-dict.json");
