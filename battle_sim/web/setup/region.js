@@ -1,4 +1,4 @@
-// A region switch preserves the rest of the profile when a catalog entry is unavailable.
+// Preserve compatible selections when loading a saved profile or switching regions.
 export function forRegion(profile, dict, { antiqueDict }) {
   const adjusted = structuredClone(profile);
   const removed = new Set();

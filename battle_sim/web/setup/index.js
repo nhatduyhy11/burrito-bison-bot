@@ -4,79 +4,26 @@
 // catalogs in profile-dict.json, map-dict.json and antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
 // (import map in setup.html, no build step): skin-rules.js (skin input rules), profile-io.js
 // (state <-> profile), ui.js (html`` + small components), sections/ (form sections), side.js (right
-// column), and this file (single state, capture prefill, boot).
+// column), capture.js (capture prefill), and this file (app state and boot).
 //
 // Opened through `sandbox --setup`, the page gets window.simPlay({battle, seed, profile}): sandbox
 // saves the profile under .tmp/battle_sim/profiles/ and opens the battle with it.
 import { render } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { html } from "./ui.js";
-import { LIMITS, artifactState, capitalPreset, emptyState, fromProfile, newHero, normalize, toProfile } from "./profile-io.js";
+import { capturedArtifact, prefill } from "./capture.js";
+import { emptyState, fromProfile, normalize, toProfile } from "./profile-io.js";
 import { forRegion } from "./region.js";
 import { FormSections } from "./sections/index.js";
 import { Side } from "./side.js";
 
 const STORE_KEY = "battleSimSetup";
 
-// ---------- capture prefill ----------
-
-const captures = new Map(); // uuid -> StartGameP
-
-async function capturedStart(region, battle) {
-  if (!battle) return null;
-  const key = `${region}:${battle}`;
-  if (!captures.has(key)) {
-    const response = await fetch(`/__sim/battle/${battle}.json?region=${region}`);
-    captures.set(key, response.ok ? (await response.json()).start : null);
-  }
-  return captures.get(key);
-}
-
-const listItems = (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[String(i)]);
-
-// Turning a section on fills it from the base capture.
-async function prefill(dict, maps, region, battle, group) {
-  const start = await capturedStart(region, battle);
-  const player = start && listItems(start.playerInfos)[0];
-  if (group === "mounts") {
-    const owned = listItems(player?.mounts).map(({ code }) => Object.keys(dict.mounts).find((key) => dict.mounts[key].code === code)).filter(Boolean);
-    const selected = owned.find((key) => dict.mounts[key].code === player?.mountCode) || null;
-    return { owned, selected };
-  }
-  if (group === "map") {
-    const capital = start?.battleType === maps.capital.battleType && capitalPreset(maps, start.level);
-    if (capital) return { mode: "capital", stage: maps.campaign.minStage, ...capital };
-    return { mode: "campaign", stage: start?.level || maps.campaign.minStage, boss: null, level: null };
-  }
-  if (!player) return [];
-  const name = (group, code) => Object.keys(dict[group]).find((key) => dict[group][key].code === code);
-  const from = {
-    heroes: () => listItems(player.heros).map((h) => name("heroes", h.code)).filter(Boolean).map(newHero),
-    traps: () => listItems(player.organs).map((o) => ({ name: name("traps", o.code), level: o.level, star: o.star })),
-    pets: () => listItems(player.summonCreatures).map((p) => ({ name: name("pets", p.code), level: p.level, star: p.star })),
-    spells: () => listItems(player.daoists).map((d) => ({ name: name("spells", d.code), star: d.star })),
-    summonerSkins: () => listItems(player.summonerInfos).flatMap(({ code, level }) => {
-      const key = name("summonerSkins", code);
-      return dict.summonerSkins[key]?.skill ? [{ name: key, star: level }] : [];
-    }),
-  }[group];
-  return from().filter((item) => item.name).slice(0, LIMITS[group]);
-}
-
-// Thần Khí of a hero in the base capture as setup state (tab Hero detail), null when it has none.
-async function capturedArtifact(region, battle, heroCode) {
-  const start = await capturedStart(region, battle);
-  const player = start && listItems(start.playerInfos)[0];
-  const artifact = listItems(player?.heros).find((h) => h.code === heroCode)?.artifact;
-  if (!artifact) return null;
-  const entries = listItems(artifact.battleEntryInfos).map(({ code, value }) => ({ code, value }));
-  return artifactState({ quality: Math.floor(artifact.code / 1000) % 100, stage: artifact.code % 1000, entries });
-}
-
 // ---------- app ----------
 
-function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, changeRegion }) {
+function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, captureByRegion, changeRegion }) {
   const [state, setState] = useState(initial);
+  const capturesForSetup = { ...captureByRegion, [region]: state.battle };
   const [switchingRegion, setSwitchingRegion] = useState(false);
   const [regionError, setRegionError] = useState("");
   const switchRegion = async (nextRegion) => {
@@ -84,7 +31,7 @@ function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initi
     setSwitchingRegion(true);
     setRegionError("");
     try {
-      await changeRegion(nextRegion, { ...state, profile: toProfile(state, dict) });
+      await changeRegion(nextRegion, { ...state, region, captureByRegion: capturesForSetup, profile: toProfile(state, dict) });
     } catch (err) {
       setRegionError(`Không đổi được vùng: ${err.message}`);
       setSwitchingRegion(false);
@@ -106,7 +53,7 @@ function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initi
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ region, battle: state.battle, seed: state.seed, profile }));
+      localStorage.setItem(STORE_KEY, JSON.stringify({ region, battle: state.battle, captureByRegion: capturesForSetup, seed: state.seed, profile }));
     } catch {
       // storage off
     }
@@ -168,19 +115,20 @@ async function showRegion(root, region, saved, switching = false) {
     ...["profile", "map", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
     getJson(`/__sim/battles.json${suffix}`),
   ]);
-  const battle = battles.some((b) => b.uuid === saved?.battle) ? saved.battle : battles[0]?.uuid || "";
+  const captureByRegion = { ...saved?.captureByRegion };
+  if (saved?.battle) captureByRegion[saved.region || "vn"] = saved.battle;
+  const preferredCapture = captureByRegion[region];
+  const battle = battles.some((b) => b.uuid === preferredCapture) ? preferredCapture : battles[0]?.uuid || "";
   let state = { ...emptyState(dict, antiqueDict), battle };
   let initialStatus = null;
   let profile = saved?.profile;
   if (profile) {
     try {
       const catalogs = { maps, antiqueDict, relicLines: relicDict.lines };
-      if (switching) {
-        const adjusted = forRegion(profile, dict, catalogs);
-        profile = adjusted.profile;
-        if (adjusted.removed.length) {
-          initialStatus = { text: `Vùng ${region.toUpperCase()} không có: ${adjusted.removed.join(", ")}.`, kind: "warn" };
-        }
+      const adjusted = forRegion(profile, dict, catalogs);
+      profile = adjusted.profile;
+      if (adjusted.removed.length) {
+        initialStatus = { text: `Vùng ${region.toUpperCase()} không có: ${adjusted.removed.join(", ")}.`, kind: "warn" };
       }
       state = fromProfile(profile, { battle, seed: saved.seed || "" }, dict, catalogs);
     } catch (err) {
@@ -192,7 +140,7 @@ async function showRegion(root, region, saved, switching = false) {
   if (!profile?.heroes) state.heroes = await prefill(dict, maps, region, battle, "heroes");
   normalize(state, dict);
   const changeRegion = (next, current) => showRegion(root, next, current, true);
-  render(html`<${App} key=${region} region=${region} changeRegion=${changeRegion} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   if (!switching) bindAccordionToggle(root);
   else root.dispatchEvent(new Event("toggle"));
 }
