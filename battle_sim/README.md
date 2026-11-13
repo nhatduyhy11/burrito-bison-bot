@@ -57,6 +57,10 @@ node battle_sim/serve.js
     `battleSkillRes`, `towerDefense`, `organ`, `hangup`, `summonCreature`, `hero` (config,
     script, import, native). Ba bundle cuối là UI ngoài trận nhưng UI battle vẫn load
     (`hero`: UI màn hero, không chứa model), nên mirror để không 404;
+  - bundle view trận theo mode: `guildPVP` (+ `worldBoss`, `climbTower` mà prefab tham chiếu chéo)
+    cho U Đô `battleType 21`, `worldBossMatch` cho Ác Mộng/World Boss tháng `battleType 43`
+    (`BattleTDWorldBossMatchView`). Thiếu bundle view thì trận đứng sau `StartGameP pushed`
+    (log 404 `assets/<bundle>/config.*.json`, "View加载失败"). Mode mới: thêm bundle vào `BUNDLES`;
   - ext-res `model/` (bỏ biến thể vùng jp/kr/tw/us), `model_frame/`, `userProto/`, `data/`,
     và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing,machine,half,build}/`
     (`machine` icon trap, `half` ảnh nửa người hero, `build` icon công trình).

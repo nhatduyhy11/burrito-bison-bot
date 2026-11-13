@@ -18,7 +18,7 @@ repo, phải giữ nguyên.
 | Đường dẫn | Cỡ | Ghi chú |
 |---|---|---|
 | `.tmp/battle_sim/mirror/<ClientVer>/` | ~680MB, ~14.1k file | Asset cho `serve.js` / `sandbox` (mốc B). `mirror.js fetch` tải lại được **chỉ khi** host vẫn ở cùng ClientVer. Game đã cập nhật thì mirror mới lệch với capture cũ. |
-| `.tmp/battle_sim/config/<configVersion>/` | 4MB | Thiếu thì `lib/versions.js` tự tải từ CDN (CDN giữ bản cũ). |
+| `.tmp/battle_sim/config/<configVersion>/` | 4MB | Thiếu thì tự tải từ CDN (CDN giữ bản cũ): `replay.js` qua `lib/versions.js`, sandbox/trang sim qua `serve.js` khi trang xin `/__sim_config/...`. Xoá bản cũ sau khi game update vẫn an toàn. |
 
 ## Không cần
 

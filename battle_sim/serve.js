@@ -94,6 +94,21 @@ function resolve(urlPath) {
   return { rel: rel.split(path.sep).join("/"), abs, local: rel.startsWith("__sim") || rel === "sim.html" };
 }
 
+// A capture made on an older config (e.g. before a game update) needs that config's .bin files.
+// The config CDN keeps old versions, so fetch them on first request, like replay.js does
+// (versions.resolveAssets). Public static files, no login; same in offline mode.
+async function fetchConfig(rel) {
+  const m = /^__sim_config\/([a-z]+_\d+)\/(config|preload_config|lang_([a-z]+))\.bin$/.exec(rel);
+  if (!m) return;
+  try {
+    if (m[3]) await versions.ensureLanguage(m[1], m[3]);
+    else await versions.ensureConfig(m[1]);
+    console.log("config fetched", rel);
+  } catch (e) {
+    console.log("config fetch failed", rel, e.message);
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.url.split("?")[0] === "/__sim/configs.json") {
     const list = fs.existsSync(CONFIG) ? fs.readdirSync(CONFIG).filter((v) => fs.existsSync(path.join(CONFIG, v, "config.bin"))) : [];
@@ -114,6 +129,7 @@ const server = http.createServer(async (req, res) => {
   }
   const r = resolve(req.url);
   if (!r || req.method !== "GET") { res.writeHead(400).end(); return; }
+  if (r.local && !fs.existsSync(r.abs)) await fetchConfig(r.rel);
   if (r.local && !fs.existsSync(r.abs)) { console.log("404", r.rel); res.writeHead(404).end(); return; }
   let body = null;
   if (fs.existsSync(r.abs) && fs.statSync(r.abs).isFile()) {

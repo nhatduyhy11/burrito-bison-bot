@@ -15,7 +15,7 @@ const cocos = require("../lib/cocos_bundle");
 const { GAME, liveDeploy } = require("../lib/deploy");
 const versions = require("../lib/versions");
 
-const BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ", "hangup", "summonCreature", "hero", "guildPVP", "climbTower", "worldBoss"];
+const BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ", "hangup", "summonCreature", "hero", "guildPVP", "climbTower", "worldBoss", "worldBossMatch"];
 // ext-res: battle models + frames + data, plus the shuzhi/ image folders the battle UI loads
 // (portraits, half-body portraits, item, skill, artifact, trap and building icons). Region variants other than base/_sea are skipped.
 const EXT_RES_KEEP = /^(model\/|model_frame\/|userProto\/|data\/|shuzhi\/(head|icon|skillicon|TDBattle|shenbing|machine|half|build)\/)/;
