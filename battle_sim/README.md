@@ -303,6 +303,19 @@ uv run python battle_sim/sandbox --setup
   (scene của editor luôn có Widget này). Thiếu Widget thì Canvas là 0×0: UI battle lệch nửa
   màn hình và click không trúng nút (bước 3 không lộ vì replay không cần click).
 
+### Setup GAT
+
+```bash
+uv run python battle_sim/sandbox --setup
+```
+
+Chọn **GAT** trong dropdown **Vùng** ở mục **Account gốc**. VN là mặc định cho
+setup mới. Khi bấm **Chơi** với GAT, sandbox dùng port 8091, capture `events-pcn-*.jsonl`, config `trunk_66196` và cache
+riêng dưới `.tmp/skin-research-cn/`. Catalog dùng chung các dict VN rồi ghép
+`web/dict/gat-overrides.json` cho skin, pet, đồ cổ và asset theo vùng. Lần đầu chạy GAT cần mạng để tải config, pack `tw` và asset tĩnh còn thiếu.
+Capture cần có sẵn trong cache GAT. Xem [hero_gear.md](docs/planning/hero_gear.md) cho đối chiếu dữ liệu hero gear.
+
+
 ## Replay headless (mốc A)
 
 ```bash

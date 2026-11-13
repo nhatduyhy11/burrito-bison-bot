@@ -142,3 +142,17 @@ phía client, đối chiếu capture và hướng sim.
 - Skill `8004…` ở `index 5–9` là skill skin (đã xử lý trong `hero/skin.js`).
 - Công thức server cộng attr của Thánh Khí/Dị Năng: cần so `hero.attr` giữa 2 capture khác nhau
   đúng một yếu tố (vd cùng hero, trước và sau khi lên sao hoặc thanh tẩy).
+
+
+## Đối chiếu GAT `trunk_66196` và VN `sea_65553`
+
+- Dị Năng có cùng 688 dòng `AvatarLO` và 6.160 dòng `AvatarUpGradeLO`.
+- Thánh Khí có cùng `RelicLO`, `RelicStarLO` và `RelicQualityUpLO`. Catalog có
+  cùng 7 dòng và các mã skill theo sao/tẩy.
+- Thần Khí có cùng 16 hero, 240 biến thể, 10 nhóm buff và 48 dòng Đa Sắc.
+  Generator kiểm tra mã, skill, lỗ và giá trị entry trên cả hai config.
+  `ArtifactEntryLO` giống nhau. Khác biệt trong `ArtifactLO` nằm ở tên, icon
+  và animation.
+- GAT có cùng 36 hero. Hulk và Cô Dâu có thêm skin Đa Sắc; Hulk còn có config
+  triệu hồi và hiệu ứng trong bundle GAT. Setup đọc dữ liệu từ
+  `web/dict/gat-overrides.json` cùng catalog chung. Logic trận đọc config GAT.
