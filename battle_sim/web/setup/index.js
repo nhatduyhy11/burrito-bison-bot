@@ -1,7 +1,8 @@
 // Setup page for local playtest profiles (served at /__sim/setup.html). Entry module.
 //
 // Builds the JSON that web/battle/profile.js reads (`sandbox --play --profile <file>`) from the
-// catalogs in profile-dict.json, map-dict.json and antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
+// catalogs in profile-dict.json, map-dict.json, boss-dict.json, creeps-dict.json and
+// antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
 // (import map in setup.html, no build step): skin-rules.js (skin input rules), profile-io.js
 // (state <-> profile), ui.js (html`` + small components), sections/ (form sections), side.js (right
 // column), capture.js (capture prefill), and this file (app state and boot).
@@ -21,7 +22,7 @@ const STORE_KEY = "battleSimSetup";
 
 // ---------- app ----------
 
-function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, captureByRegion, changeRegion }) {
+function App({ dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, captureByRegion, changeRegion }) {
   const [state, setState] = useState(initial);
   const capturesForSetup = { ...captureByRegion, [region]: state.battle };
   const [switchingRegion, setSwitchingRegion] = useState(false);
@@ -46,7 +47,7 @@ function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initi
       return next;
     });
   const toggleWithPrefill = async (group, on) => {
-    const value = on ? await prefill(dict, maps, region, state.battle, group) : null;
+    const value = on ? await prefill(dict, maps, bossDict, region, state.battle, group) : null;
     update((s) => void (s[group] = value));
   };
   const profile = useMemo(() => toProfile(state, dict), [state]);
@@ -60,7 +61,7 @@ function App({ dict, maps, antiqueDict, relicLines, artifactDict, battles, initi
   }, [profile, state.battle, state.seed]);
 
   const capturedHeroArtifact = (heroCode) => capturedArtifact(region, state.battle, heroCode);
-  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact };
+  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact };
   return html`
     <main id="form">
       ${regionError && html`<p class="err" role="alert">${regionError}</p>`}
@@ -111,8 +112,8 @@ function bindAccordionToggle(root) {
 
 async function showRegion(root, region, saved, switching = false) {
   const suffix = `?region=${region}`;
-  const [dict, maps, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
-    ...["profile", "map", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
+  const [dict, maps, bossDict, creepsDict, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
+    ...["profile", "map", "boss", "creeps", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
     getJson(`/__sim/battles.json${suffix}`),
   ]);
   const captureByRegion = { ...saved?.captureByRegion };
@@ -124,7 +125,7 @@ async function showRegion(root, region, saved, switching = false) {
   let profile = saved?.profile;
   if (profile) {
     try {
-      const catalogs = { maps, antiqueDict, relicLines: relicDict.lines };
+      const catalogs = { maps, bossDict, antiqueDict, relicLines: relicDict.lines };
       const adjusted = forRegion(profile, dict, catalogs);
       profile = adjusted.profile;
       if (adjusted.removed.length) {
@@ -137,10 +138,10 @@ async function showRegion(root, region, saved, switching = false) {
       profile = null;
     }
   }
-  if (!profile?.heroes) state.heroes = await prefill(dict, maps, region, battle, "heroes");
+  if (!profile?.heroes) state.heroes = await prefill(dict, maps, bossDict, region, battle, "heroes");
   normalize(state, dict);
   const changeRegion = (next, current) => showRegion(root, next, current, true);
-  render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   if (!switching) bindAccordionToggle(root);
   else root.dispatchEvent(new Event("toggle"));
 }

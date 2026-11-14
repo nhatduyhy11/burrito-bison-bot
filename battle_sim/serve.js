@@ -133,7 +133,7 @@ async function fetchConfig(rel) {
 const server = http.createServer(async (req, res) => {
   const [urlPath, query] = req.url.split("?", 2);
   const useGatCatalog = gat || new URLSearchParams(query).get("region") === "gat";
-  const dict = /^\/__sim\/dict\/(profile|map|antique|relic|artifact)-dict\.json$/.exec(urlPath);
+  const dict = /^\/__sim\/dict\/(profile|map|boss|creeps|antique|relic|artifact)-dict\.json$/.exec(urlPath);
   if (gat && req.method === "GET" && urlPath === "/__sim/deploy.json") {
     sendJson(res, { ...JSON.parse(fs.readFileSync(path.join(root, "deploy.json"), "utf8")), locale: "tw" });
     return;

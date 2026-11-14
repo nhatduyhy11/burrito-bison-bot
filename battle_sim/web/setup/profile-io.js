@@ -111,16 +111,16 @@ function toProfile(state, dict) {
 }
 
 // Lenient import of a profile JSON (as written by toProfile or by hand). Unknown names throw.
-// catalogs: { maps (map-dict.json), antiqueDict (antique-dict.json) }, each needed only when the
-// profile has that part.
-function fromProfile(profile, base, dict, { maps, antiqueDict, relicLines } = {}) {
+// catalogs: { maps (map-dict.json), bossDict (boss-dict.json), antiqueDict (antique-dict.json) },
+// each needed only when the profile has that part.
+function fromProfile(profile, base, dict, { maps, bossDict, antiqueDict, relicLines } = {}) {
   const next = { ...emptyState(dict, antiqueDict), battle: base.battle, seed: base.seed };
   const need = (group, name) => {
     if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong profile-dict.json`);
     return name;
   };
   const entryOf = (item) => (typeof item === "string" ? { name: item } : item || {});
-  if (profile.map) next.map = readMap(profile.map, maps);
+  if (profile.map) next.map = readMap(profile.map, { maps, bossDict });
   const readHero = (item) => {
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
@@ -229,22 +229,23 @@ function fromProfile(profile, base, dict, { maps, antiqueDict, relicLines } = {}
 
 // Capital (U Đô) battle level -> { boss, level } of the preset that plays it. Levels of the same
 // preset differ only in day/room (same battle), so any of them maps back to the preset's level.
-function capitalPreset(maps, level) {
+function capitalPreset(bossDict, level) {
   const day = Math.floor(level / 10000), pos = Math.floor((level % 10000) / 100);
-  for (const [boss, entry] of Object.entries(maps.capital.bosses)) {
+  for (const [boss, entry] of Object.entries(bossDict.bosses)) {
     const preset = entry.presets.find((p) => p.rooms.some((r) => r.day === day && r.pos === pos));
     if (preset) return { boss, level: preset.level };
   }
   return null;
 }
 
-function readMap(map, maps) {
+function readMap(map, { maps, bossDict }) {
   if (!maps) throw new Error("Thiếu map-dict.json");
   const stage = Number(map.stage) || maps.campaign.minStage;
   if (map.mode !== "capital") return { mode: "campaign", stage, boss: null, level: null };
   if (map.boss == null) return { mode: "capital", stage, boss: null, level: null };
-  const entry = maps.capital.bosses[map.boss];
-  if (!entry) throw new Error(`Không có boss U Đô "${map.boss}" trong map-dict.json`);
+  if (!bossDict) throw new Error("Thiếu boss-dict.json");
+  const entry = bossDict.bosses[map.boss];
+  if (!entry) throw new Error(`Không có boss U Đô "${map.boss}" trong boss-dict.json`);
   const level = entry.presets.some((p) => p.level === map.level) ? map.level : null;
   return { mode: "capital", stage, boss: map.boss, level };
 }

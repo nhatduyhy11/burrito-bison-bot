@@ -7,6 +7,8 @@ import { applyProfile } from '../web/battle/profile.js';
 
 const dict = JSON.parse(readFileSync(new URL('../web/dict/profile-dict.json', import.meta.url)));
 const maps = JSON.parse(readFileSync(new URL('../web/dict/map-dict.json', import.meta.url)));
+const bossDict = JSON.parse(readFileSync(new URL('../web/dict/boss-dict.json', import.meta.url)));
+const creepsDict = JSON.parse(readFileSync(new URL('../web/dict/creeps-dict.json', import.meta.url)));
 const antiqueDict = JSON.parse(readFileSync(new URL('../web/dict/antique-dict.json', import.meta.url)));
 const base = { battle: '', seed: '' };
 
@@ -74,22 +76,28 @@ test('battle applies owned mount skills independently of the single equipped mou
 });
 
 test('map: campaign stays as before; capital (U Do) boss + preset round trip', () => {
-  assert.deepEqual(toProfile(fromProfile({ map: { mode: 'campaign', stage: 300 } }, base, dict, { maps }), dict).map, { mode: 'campaign', stage: 300 });
+  const catalogs = { maps, bossDict };
+  assert.deepEqual(toProfile(fromProfile({ map: { mode: 'campaign', stage: 300 } }, base, dict, catalogs), dict).map, { mode: 'campaign', stage: 300 });
   // Old profiles have no mode: campaign.
-  assert.deepEqual(toProfile(fromProfile({ map: { stage: 12 } }, base, dict, { maps }), dict).map, { mode: 'campaign', stage: 12 });
+  assert.deepEqual(toProfile(fromProfile({ map: { stage: 12 } }, base, dict, catalogs), dict).map, { mode: 'campaign', stage: 12 });
   const capital = { mode: 'capital', boss: 'nether_boggart', level: 11301 };
-  assert.deepEqual(toProfile(fromProfile({ map: capital }, base, dict, { maps }), dict).map, capital);
+  assert.deepEqual(toProfile(fromProfile({ map: capital }, base, dict, catalogs), dict).map, capital);
   // A level that is not a preset of that boss drops the preset, an unknown boss is an error.
-  assert.equal(fromProfile({ map: { ...capital, level: 10101 } }, base, dict, { maps }).map.level, null);
-  assert.throws(() => fromProfile({ map: { ...capital, boss: 'missing' } }, base, dict, { maps }));
+  assert.equal(fromProfile({ map: { ...capital, level: 10101 } }, base, dict, catalogs).map.level, null);
+  assert.throws(() => fromProfile({ map: { ...capital, boss: 'missing' } }, base, dict, catalogs));
   assert.throws(() => fromProfile({ map: capital }, base, dict)); // map-dict required for a map
+  assert.throws(() => fromProfile({ map: capital }, base, dict, { maps })); // boss-dict required for capital
   // Any day/room of a preset (index ignored) maps back to that preset; the capture's 51701 is Nether Boggart.
-  assert.deepEqual(capitalPreset(maps, 51701), { boss: 'nether_boggart', level: 51701 });
-  assert.deepEqual(capitalPreset(maps, 41302), { boss: 'nether_boggart', level: 11301 });
-  // Every boss has presets, and each preset has 3 creep types.
-  for (const boss of Object.values(maps.capital.bosses)) {
+  assert.deepEqual(capitalPreset(bossDict, 51701), { boss: 'nether_boggart', level: 51701 });
+  assert.deepEqual(capitalPreset(bossDict, 41302), { boss: 'nether_boggart', level: 11301 });
+  // map-dict only lists the boss ids, boss-dict has the data; every preset has 3 creeps known to creeps-dict.
+  assert.deepEqual(maps.capital.bosses, Object.keys(bossDict.bosses));
+  for (const boss of Object.values(bossDict.bosses)) {
     assert.ok(boss.presets.length > 0);
-    for (const preset of boss.presets) assert.equal(preset.creeps.length, 3);
+    for (const preset of boss.presets) {
+      assert.equal(preset.creeps.length, 3);
+      for (const id of preset.creeps) assert.ok(creepsDict.creeps[id], id);
+    }
   }
 });
 

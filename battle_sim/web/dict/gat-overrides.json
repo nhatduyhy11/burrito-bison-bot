@@ -109,12 +109,10 @@
       }
     }
   },
-  "map": {
-    "capital": {
-      "bosses": {
-        "cursed_botchling": {
-          "avatar": "head/head_boss_001"
-        }
+  "boss": {
+    "bosses": {
+      "cursed_botchling": {
+        "avatar": "head/head_boss_001"
       }
     }
   }

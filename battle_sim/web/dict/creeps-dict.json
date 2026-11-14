@@ -1,0 +1,115 @@
+{
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, name_vn: lang_vi)",
+  "creeps": {
+    "common_zombie": {
+      "code": 70080201,
+      "name": "Common Zombie",
+      "name_vn": "Zombie Thường"
+    },
+    "twin_zombie": {
+      "code": 70080301,
+      "name": "Twin Zombie",
+      "name_vn": "Zombie Song Sinh"
+    },
+    "zombie_wolf": {
+      "code": 70080401,
+      "name": "Zombie Wolf",
+      "name_vn": "Sói Zombie"
+    },
+    "ghost_bird": {
+      "code": 70080501,
+      "name": "Ghost Bird",
+      "name_vn": "Chim Mặt Quỷ"
+    },
+    "thief_zombie": {
+      "code": 70080601,
+      "name": "Thief Zombie",
+      "name_vn": "Zombie Trộm"
+    },
+    "demon_hag": {
+      "code": 70080701,
+      "name": "Demon Hag",
+      "name_vn": "Quỷ Bà Bà"
+    },
+    "flame_zombie": {
+      "code": 70080801,
+      "name": "Flame Zombie",
+      "name_vn": "Zombie Lửa"
+    },
+    "gorilla_zombie": {
+      "code": 70080901,
+      "name": "Gorilla Zombie",
+      "name_vn": "Zombie Khỉ Đột"
+    },
+    "xenom_zombie": {
+      "code": 70081001,
+      "name": "Xenom Zombie",
+      "name_vn": "Zombie Biến Dị"
+    },
+    "yeti_zombie": {
+      "code": 70081101,
+      "name": "Yeti Zombie",
+      "name_vn": "Zombie Người Tuyết"
+    },
+    "antenna_zombie": {
+      "code": 70081201,
+      "name": "Antenna Zombie",
+      "name_vn": "Zombie Ăng-ten"
+    },
+    "explosive_spider": {
+      "code": 70081301,
+      "name": "Explosive Spider",
+      "name_vn": "Nhện Nổ"
+    },
+    "clumsy_zombie": {
+      "code": 70081401,
+      "name": "Clumsy Zombie",
+      "name_vn": "Zombie Nặng Nề"
+    },
+    "zombie_bloom": {
+      "code": 70081501,
+      "name": "Zombie Bloom",
+      "name_vn": "Minh Hoa Hoán Thi"
+    },
+    "shield_zombie": {
+      "code": 70081601,
+      "name": "Shield Zombie",
+      "name_vn": "Zombie Khiên"
+    },
+    "coffin_zombie": {
+      "code": 70081701,
+      "name": "Coffin Zombie",
+      "name_vn": "Zombie Quan Tài"
+    },
+    "bell_zombie": {
+      "code": 70081801,
+      "name": "Bell Zombie",
+      "name_vn": "Zombie Chuông Lớn"
+    },
+    "deathbringer": {
+      "code": 70081901,
+      "name": "Deathbringer",
+      "name_vn": "Quỷ Sai"
+    },
+    "armored_drake": {
+      "code": 70082001,
+      "name": "Armored Drake",
+      "name_vn": "Thể Rồng Giáp"
+    },
+    "ancient_ghoul": {
+      "code": 70082101,
+      "name": "Ancient Ghoul",
+      "name_vn": "Dị Quỷ Ngàn Năm"
+    },
+    "stone_lion": {
+      "code": 70082201,
+      "name": "Stone Lion",
+      "name_vn": "Quỷ Sư Tử Đá"
+    },
+    "hundred_eyed_zombie": {
+      "code": 70082301,
+      "name": "Hundred-Eyed Zombie",
+      "name_vn": "Cuồng Thi Trăm Mắt"
+    }
+  }
+}

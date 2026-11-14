@@ -41,7 +41,10 @@ function CampaignBody({ ctx }) {
   `;
 }
 
-const creepNames = (preset) => preset.creeps.map((c) => c.name_vn || c.name).join(" + ");
+const creepName = (creepsDict, id) => {
+  const c = creepsDict.creeps[id];
+  return c ? c.name_vn || c.name : id;
+};
 
 function roomText(maps, preset) {
   const { roomTypes } = maps.capital;
@@ -49,12 +52,12 @@ function roomText(maps, preset) {
 }
 
 function CapitalBody({ ctx }) {
-  const { state, maps, update } = ctx;
-  const { bosses } = maps.capital;
+  const { state, maps, bossDict, creepsDict, update } = ctx;
+  const { bosses } = bossDict;
   const boss = bosses[state.map.boss];
   const bossOptions = [["", "— chọn boss —"], ...Object.entries(bosses).map(([key, b]) => [key, `${optionText(b)} · ${b.presets.length} bộ quái`])];
   const presetOptions = [["", boss ? "— chọn bộ quái —" : "— chọn boss trước —"],
-    ...(boss?.presets || []).map((p) => [String(p.level), creepNames(p)])];
+    ...(boss?.presets || []).map((p) => [String(p.level), p.creeps.map((id) => creepName(creepsDict, id)).join(" + ")])];
   const preset = boss?.presets.find((p) => p.level === state.map.level);
   // A new boss resets the preset; a boss with a single preset gets it right away.
   const setBoss = (key) => update((s) => {
@@ -71,6 +74,6 @@ function CapitalBody({ ctx }) {
     <div class="row wide">
       <label>Bộ quái <${Select} options=${presetOptions} value=${preset ? String(preset.level) : ""} disabled=${!boss} onChange=${setPreset} /></label>
     </div>
-    ${preset && html`<p class="hint">${`${preset.creeps.map((c) => c.name).join(" + ")}. Gặp ở: ${roomText(maps, preset)}. Mini boss là bản elite của 3 loại quái này.`}</p>`}
+    ${preset && html`<p class="hint">${`${preset.creeps.map((id) => creepsDict.creeps[id]?.name || id).join(" + ")}. Gặp ở: ${roomText(maps, preset)}. Mini boss là bản elite của 3 loại quái này.`}</p>`}
   `;
 }

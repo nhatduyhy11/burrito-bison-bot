@@ -1,6 +1,8 @@
 "use strict";
 // Generate the playtest catalogs from the game's own config tables:
-// - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) bosses + creep presets;
+// - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) room types + boss ids;
+// - web/dict/boss-dict.json: capital bosses with their preset variants (rooms + the 3 companion creeps, by id);
+// - web/dict/creeps-dict.json: the companion creeps the boss presets reference, deduped;
 // - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
 // - web/dict/artifact-dict.json: Thần Khí per hero (names, slot) + shared team buffs; rules in web/artifacts.js;
@@ -22,6 +24,8 @@ const BATTLE_VERSION = process.argv[3] || "2.3.1-2_E64067_P63528_C64067";
 const ASSETS = { battleVersion: BATTLE_VERSION, configVersion: CONFIG_VERSION, mapVersion: "trunk_61543" };
 const OUT = path.join(__dirname, "..", "web", "dict", "profile-dict.json");
 const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
+const BOSS_OUT = path.join(__dirname, "..", "web", "dict", "boss-dict.json");
+const CREEPS_OUT = path.join(__dirname, "..", "web", "dict", "creeps-dict.json");
 const ANTIQUE_OUT = path.join(__dirname, "..", "web", "dict", "antique-dict.json");
 const RELIC_OUT = path.join(__dirname, "..", "web", "dict", "relic-dict.json");
 const ARTIFACT_OUT = path.join(__dirname, "..", "web", "dict", "artifact-dict.json");
@@ -173,7 +177,9 @@ async function main() {
   const stages = rows(M("AdventuretdLevelLO")).map((r) => r.id / 10)
     .filter((stage) => Number.isInteger(stage) && M("BattleGroundLO").get(M("AdventuretdLevelLO").get(stage * 10).battleGroundCode))
     .sort((a, b) => a - b);
-  const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length }, capital: capitalMaps(M, V) };
+  const capital = capitalCatalogs(M, V);
+  const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length },
+    capital: { battleType: capital.battleType, roomTypes: capital.roomTypes, bosses: Object.keys(capital.bosses) } };
 
   const mountRanks = rows(M("MountStarLO"));
   const mounts = keyed(rows(M("MountLO")).map((mount) => [mount.name, {
@@ -303,6 +309,8 @@ async function main() {
   const write = (file, data) => fs.writeFileSync(file, JSON.stringify({ _generated: dict._generated, ...data }, null, 2) + "\n");
   fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
   write(MAP_OUT, maps);
+  write(BOSS_OUT, { bosses: capital.bosses });
+  write(CREEPS_OUT, { creeps: capital.creeps });
   write(ANTIQUE_OUT, { antiques });
   write(RELIC_OUT, relics);
   write(ARTIFACT_OUT, { heroes: artifactHeroes, buffs, skills: artifactSkills });
@@ -311,7 +319,10 @@ async function main() {
     `${count(buffs)} team buffs, ${rareCount} rainbow entries checked`);
   console.log(`wrote ${path.relative(process.cwd(), RELIC_OUT)}: ${count(relics.lines)} relic lines`);
   console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
-    `${count(maps.capital.bosses)} capital bosses`);
+    `${maps.capital.bosses.length} capital boss ids`);
+  console.log(`wrote ${path.relative(process.cwd(), BOSS_OUT)}: ${count(capital.bosses)} capital bosses, ` +
+    `${Object.values(capital.bosses).reduce((n, b) => n + b.presets.length, 0)} presets`);
+  console.log(`wrote ${path.relative(process.cwd(), CREEPS_OUT)}: ${count(capital.creeps)} creeps`);
   console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques`);
   console.log(`wrote ${path.relative(process.cwd(), OUT)}: ${count(heroes)} heroes, ${count(traps)} traps, ` +
     `${count(pets)} pets, ${count(spells)} spells, ${count(summonerSkins)} Summoner skins, ` +
@@ -324,7 +335,9 @@ async function main() {
 // its 3 creep types (showCreep = [boss, creepA, creepB, creepC]; the round list follows from it).
 // Rows with the same showCreep play the same battle, so each is one preset; `rooms` lists where
 // it shows up in the week. See battle_sim/docs/planning/capital.md.
-function capitalMaps(M, V) {
+// Split into three catalogs: map-dict.json keeps the map and the boss ids, boss-dict.json the boss
+// records with their presets (creeps referenced by id), creeps-dict.json the deduped creeps.
+function capitalCatalogs(M, V) {
   const strip = (s) => String(s || "").replace(/<br\s*\/?>/gi, " · ").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").replace(/\s*·\s*/g, " · ").trim();
   const creep = (code) => {
     const row = M("CreepLO").get(code);
@@ -333,26 +346,30 @@ function capitalMaps(M, V) {
   const roomByPos = new Map(rows(M("GuildNavalWarMapLO")).map((r) => [r.position, r]));
   const bosses = new Map();
   for (const row of rows(M("GuildNavalWarLO")).sort((a, b) => a.id - b.id)) {
-    const [bossCode, ...creeps] = JSON.parse(row.showCreep);
+    const [bossCode, ...creepCodes] = JSON.parse(row.showCreep);
     const pos = Math.floor((row.id % 10000) / 100);
     if (!bosses.has(bossCode)) bosses.set(bossCode, new Map());
     const presets = bosses.get(bossCode);
-    if (!presets.has(row.showCreep)) presets.set(row.showCreep, { level: row.id + 1, creeps: creeps.map(creep), rooms: [] });
+    if (!presets.has(row.showCreep)) presets.set(row.showCreep, { level: row.id + 1, creeps: creepCodes, rooms: [] });
     presets.get(row.showCreep).rooms.push({ day: row.day, pos, roomLevel: roomByPos.get(pos)?.level });
   }
   const roomTypes = {};
   for (const r of roomByPos.values()) {
     if (r.type === 1) roomTypes[r.level] = { name: r.name, name_vn: V("GuildNavalWarMapLO").get(r.id)?.name, seats: r.bedSpace };
   }
+  // Companion creeps, deduped across every boss preset (bosses themselves live in boss-dict.json).
+  const creepCodes = [...new Set([...bosses.values()].flatMap((presets) => [...presets.values()].flatMap((p) => p.creeps)))].sort((a, b) => a - b);
+  const creeps = keyed(creepCodes.map((code) => [creep(code).name, creep(code)]));
+  const creepKey = new Map(Object.entries(creeps).map(([key, c]) => [c.code, key]));
   const list = [...bosses].sort(([a], [b]) => a - b).map(([code, presets]) => {
     const row = M("CreepLO").get(code);
     const vi = V("CreepLO").get(code);
     return [row.name, {
       ...creep(code), avatar: row.avatar, desc: strip(row.simpleDesc), desc_vn: strip(vi?.simpleDesc),
-      presets: [...presets.values()],
+      presets: [...presets.values()].map((p) => ({ ...p, creeps: p.creeps.map((c) => creepKey.get(c)) })),
     }];
   });
-  return { battleType: 21, roomTypes, bosses: keyed(list) };
+  return { battleType: 21, roomTypes, bosses: keyed(list), creeps };
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

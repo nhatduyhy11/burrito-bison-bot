@@ -15,7 +15,7 @@ async function capturedStart(region, battle) {
 const listItems = (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[String(i)]);
 
 // Turning a section on fills it from the base capture.
-export async function prefill(dict, maps, region, battle, group) {
+export async function prefill(dict, maps, bossDict, region, battle, group) {
   const start = await capturedStart(region, battle);
   const player = start && listItems(start.playerInfos)[0];
   if (group === "mounts") {
@@ -24,7 +24,7 @@ export async function prefill(dict, maps, region, battle, group) {
     return { owned, selected };
   }
   if (group === "map") {
-    const capital = start?.battleType === maps.capital.battleType && capitalPreset(maps, start.level);
+    const capital = start?.battleType === maps.capital.battleType && capitalPreset(bossDict, start.level);
     if (capital) return { mode: "capital", stage: maps.campaign.minStage, ...capital };
     return { mode: "campaign", stage: start?.level || maps.campaign.minStage, boss: null, level: null };
   }
