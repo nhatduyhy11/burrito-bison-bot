@@ -1,6 +1,7 @@
 import asyncio
 from pathlib import Path
 
+from playwright.async_api import Error as PlaywrightError
 from playwright.async_api import async_playwright
 
 from hauntedroom.control_events.new_tab_blocker import (
@@ -38,12 +39,17 @@ async def main() -> None:
 
         try:
             page = context.pages[0] if context.pages else await context.new_page()
-            page = await navigate_to_game(
-                context,
-                page,
-                args.url,
-                prepare_page=install_profile_popup_guard,
-            )
+            try:
+                page = await navigate_to_game(
+                    context,
+                    page,
+                    args.url,
+                    prepare_page=install_profile_popup_guard,
+                )
+            except PlaywrightError:
+                if args.ygkksy:
+                    raise SystemExit("Could not open the YGKKSY game entry.") from None
+                raise
             game_core_guard_task = asyncio.create_task(
                 install_game_core_frame_guard_after_delay(page)
             )

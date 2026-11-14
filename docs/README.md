@@ -115,7 +115,8 @@ Các macro tham khảo được track trong `tools/json_macro/`:
   blocker clearing.
 - `--profile`: browser profile, mặc định `.tmp/hauntedroom-profile`.
 - `--cn`: dùng server Trung Quốc (`https://hauntheroesweb.acenetgame.com/`). Mặc định runner dùng server Việt Nam (`https://hauntedroomvnh5.joynetgame.com/`).
-- `--url`: ghi đè trực tiếp URL game (mặc định được chọn tự động theo `--cn` / VN server).
+- `--ygkksy` mở game tại `http://sy.betainc.store/ygkksy/index.php` với profile riêng `.tmp/ygkksy-profile`. Đặt `YGKKSY_PASS`, `YGKKSY_ACCOUNT`, `YGKKSY_TOKEN` và `YGKKSY_TIMESTAMP` trong file local `env.ygkksy`, rồi chạy `uv run --env-file env.ygkksy python tools/hauntedroom_runner.py --ygkksy`. Điền giá trị gốc của các tham số, runner tự mã hóa URL và dùng đúng timestamp đã cấp.
+- `--url` ghi đè URL đã chọn theo `--cn`, `--ygkksy` hoặc VN mặc định.
 - `--browser {chrome,msedge,chromium}`: Chrome là mặc định; `chromium` cần
   browser binary do Playwright quản lý (`uv run playwright install chromium`).
 - `--width`, `--height`: viewport, mặc định `640x720`.
