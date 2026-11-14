@@ -46,13 +46,8 @@ const creepName = (creepsDict, id) => {
   return c ? c.name_vn || c.name : id;
 };
 
-function roomText(maps, preset) {
-  const { roomTypes } = maps.capital;
-  return preset.rooms.map((r) => `Ngày ${r.day} · phòng ${r.pos} (${roomTypes[r.roomLevel]?.name_vn || r.roomLevel})`).join("; ");
-}
-
 function CapitalBody({ ctx }) {
-  const { state, maps, bossDict, creepsDict, update } = ctx;
+  const { state, bossDict, creepsDict, update } = ctx;
   const { bosses } = bossDict;
   const boss = bosses[state.map.boss];
   const bossOptions = [["", "— chọn boss —"], ...Object.entries(bosses).map(([key, b]) => [key, `${optionText(b)} · ${b.presets.length} bộ quái`])];
@@ -74,6 +69,5 @@ function CapitalBody({ ctx }) {
     <div class="row wide">
       <label>Bộ quái <${Select} options=${presetOptions} value=${preset ? String(preset.level) : ""} disabled=${!boss} onChange=${setPreset} /></label>
     </div>
-    ${preset && html`<p class="hint">${`${preset.creeps.map((id) => creepsDict.creeps[id]?.name || id).join(" + ")}. Gặp ở: ${roomText(maps, preset)}. Mini boss là bản elite của 3 loại quái này.`}</p>`}
   `;
 }

@@ -1,7 +1,7 @@
 "use strict";
 // Generate the playtest catalogs from the game's own config tables:
-// - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) room types + boss ids;
-// - web/dict/boss-dict.json: capital bosses with their preset variants (rooms + the 3 companion creeps, by id);
+// - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) battleType + boss ids;
+// - web/dict/boss-dict.json: capital bosses with their preset variants (the 3 companion creeps, by id);
 // - web/dict/creeps-dict.json: the companion creeps the boss presets reference, deduped;
 // - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
@@ -179,7 +179,7 @@ async function main() {
     .sort((a, b) => a - b);
   const capital = capitalCatalogs(M, V);
   const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length },
-    capital: { battleType: capital.battleType, roomTypes: capital.roomTypes, bosses: Object.keys(capital.bosses) } };
+    capital: { battleType: capital.battleType, bosses: Object.keys(capital.bosses) } };
 
   const mountRanks = rows(M("MountStarLO"));
   const mounts = keyed(rows(M("MountLO")).map((mount) => [mount.name, {
@@ -333,8 +333,8 @@ async function main() {
 // game reads GuildNavalWarLO.get(day*10000 + pos*100): index is ignored, and every row has the
 // same creep stat levels, so a room's size never changes the battle. A row only picks the boss and
 // its 3 creep types (showCreep = [boss, creepA, creepB, creepC]; the round list follows from it).
-// Rows with the same showCreep play the same battle, so each is one preset; `rooms` lists where
-// it shows up in the week. See battle_sim/docs/planning/capital.md.
+// Rows with the same showCreep play the same battle, so each is one preset (level = the first row
+// it appears on, +1; the other rows differ only in day/room). See battle_sim/docs/planning/capital.md.
 // Split into three catalogs: map-dict.json keeps the map and the boss ids, boss-dict.json the boss
 // records with their presets (creeps referenced by id), creeps-dict.json the deduped creeps.
 function capitalCatalogs(M, V) {
@@ -343,19 +343,12 @@ function capitalCatalogs(M, V) {
     const row = M("CreepLO").get(code);
     return { code, name: row.name, name_vn: V("CreepLO").get(code)?.name };
   };
-  const roomByPos = new Map(rows(M("GuildNavalWarMapLO")).map((r) => [r.position, r]));
   const bosses = new Map();
   for (const row of rows(M("GuildNavalWarLO")).sort((a, b) => a.id - b.id)) {
     const [bossCode, ...creepCodes] = JSON.parse(row.showCreep);
-    const pos = Math.floor((row.id % 10000) / 100);
     if (!bosses.has(bossCode)) bosses.set(bossCode, new Map());
     const presets = bosses.get(bossCode);
-    if (!presets.has(row.showCreep)) presets.set(row.showCreep, { level: row.id + 1, creeps: creepCodes, rooms: [] });
-    presets.get(row.showCreep).rooms.push({ day: row.day, pos, roomLevel: roomByPos.get(pos)?.level });
-  }
-  const roomTypes = {};
-  for (const r of roomByPos.values()) {
-    if (r.type === 1) roomTypes[r.level] = { name: r.name, name_vn: V("GuildNavalWarMapLO").get(r.id)?.name, seats: r.bedSpace };
+    if (!presets.has(row.showCreep)) presets.set(row.showCreep, { level: row.id + 1, creeps: creepCodes });
   }
   // Companion creeps, deduped across every boss preset (bosses themselves live in boss-dict.json).
   const creepCodes = [...new Set([...bosses.values()].flatMap((presets) => [...presets.values()].flatMap((p) => p.creeps)))].sort((a, b) => a - b);
@@ -369,7 +362,7 @@ function capitalCatalogs(M, V) {
       presets: [...presets.values()].map((p) => ({ ...p, creeps: p.creeps.map((c) => creepKey.get(c)) })),
     }];
   });
-  return { battleType: 21, roomTypes, bosses: keyed(list), creeps };
+  return { battleType: 21, bosses: keyed(list), creeps };
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

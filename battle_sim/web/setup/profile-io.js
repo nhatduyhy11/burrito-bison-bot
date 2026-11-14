@@ -227,17 +227,6 @@ function fromProfile(profile, base, dict, { maps, bossDict, antiqueDict, relicLi
   return next;
 }
 
-// Capital (U Đô) battle level -> { boss, level } of the preset that plays it. Levels of the same
-// preset differ only in day/room (same battle), so any of them maps back to the preset's level.
-function capitalPreset(bossDict, level) {
-  const day = Math.floor(level / 10000), pos = Math.floor((level % 10000) / 100);
-  for (const [boss, entry] of Object.entries(bossDict.bosses)) {
-    const preset = entry.presets.find((p) => p.rooms.some((r) => r.day === day && r.pos === pos));
-    if (preset) return { boss, level: preset.level };
-  }
-  return null;
-}
-
 function readMap(map, { maps, bossDict }) {
   if (!maps) throw new Error("Thiếu map-dict.json");
   const stage = Number(map.stage) || maps.campaign.minStage;
@@ -252,7 +241,6 @@ function readMap(map, { maps, bossDict }) {
 
 export {
   LIMITS,
-  capitalPreset,
   BUILDINGS,
   heroSkins,
   buildSkins,

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { capitalPreset, emptyState, normalize, fromProfile, toProfile } from '../web/setup/profile-io.js';
+import { emptyState, normalize, fromProfile, toProfile } from '../web/setup/profile-io.js';
 import { hasSummonedJoker, JOKER_SUMMON } from '../web/hero-lineup.js';
 import { applyProfile } from '../web/battle/profile.js';
 
@@ -87,9 +87,6 @@ test('map: campaign stays as before; capital (U Do) boss + preset round trip', (
   assert.throws(() => fromProfile({ map: { ...capital, boss: 'missing' } }, base, dict, catalogs));
   assert.throws(() => fromProfile({ map: capital }, base, dict)); // map-dict required for a map
   assert.throws(() => fromProfile({ map: capital }, base, dict, { maps })); // boss-dict required for capital
-  // Any day/room of a preset (index ignored) maps back to that preset; the capture's 51701 is Nether Boggart.
-  assert.deepEqual(capitalPreset(bossDict, 51701), { boss: 'nether_boggart', level: 51701 });
-  assert.deepEqual(capitalPreset(bossDict, 41302), { boss: 'nether_boggart', level: 11301 });
   // map-dict only lists the boss ids, boss-dict has the data; every preset has 3 creeps known to creeps-dict.
   assert.deepEqual(maps.capital.bosses, Object.keys(bossDict.bosses));
   for (const boss of Object.values(bossDict.bosses)) {

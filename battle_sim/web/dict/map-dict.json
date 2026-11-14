@@ -7,23 +7,6 @@
   },
   "capital": {
     "battleType": 21,
-    "roomTypes": {
-      "1": {
-        "name": "Basic Soulite Hall",
-        "name_vn": "Hồn Tinh Các Sơ",
-        "seats": 2
-      },
-      "2": {
-        "name": "Standard Soulite Hall",
-        "name_vn": "Hồn Tinh Các Trung",
-        "seats": 3
-      },
-      "3": {
-        "name": "Top Soulite Hall",
-        "name_vn": "Hồn Tinh Các Đỉnh",
-        "seats": 4
-      }
-    },
     "bosses": [
       "cursed_botchling",
       "masked_spirit",

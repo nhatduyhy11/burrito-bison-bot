@@ -280,8 +280,8 @@ uv run python battle_sim/sandbox --setup
   lấy từ `lang_vi.<ver>.bin` (tải một lần cạnh `config.bin`). Mục không có tên tiếng Anh dùng
   key `id_<mã>` (ví dụ skin 7 màu `id_10013`). Hero, trap và pet có `color` là độ hiếm (viền thẻ trong game: `purple` 4, `orange` 5,
   `red` 6, `gold` 7; spell không có). `map-dict.json` gồm `campaign` (khoảng stage) và `capital`
-  (loại phòng U Đô + danh sách id boss). `boss-dict.json` gồm boss U Đô kèm các biến thể (preset:
-  phòng gặp + 3 loại quái theo id trong `creeps-dict.json`). `creeps-dict.json` gồm các loại quái
+  (battleType + danh sách id boss). `boss-dict.json` gồm boss U Đô kèm các biến thể (preset:
+  3 loại quái theo id trong `creeps-dict.json`). `creeps-dict.json` gồm các loại quái
   đi kèm (code, tên). `antique-dict.json` gồm `antiques` với metadata setup và mã rank. `relic-dict.json` (Thánh Khí, chưa dùng trong form) gồm `purification` (2 lần thanh tẩy, vật phẩm Nước Thần) và `lines` (7 dòng đỏ → vàng → 7 màu, skill theo sao và skill cố định) Không có Thánh Khí cam trở xuống (không có skill) và không có chỉ số vì server đã gộp sẵn vào `hero.attr`; xem [hero_gear.md](docs/planning/hero_gear.md). `profile-dict.json` gồm `heroes` (kèm `baseSkills`, `skins` và `avatarNodes` cho hero đỏ), `traps`, `pets`, `spells`
   (`daoists`), `buildings` (door, bed, generator, cat, kèm skin), mỗi mục có `maxLevel` /
   `maxStar`. Không sửa tay; chạy lại script khi đổi config.

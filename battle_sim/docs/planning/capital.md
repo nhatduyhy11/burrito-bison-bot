@@ -108,12 +108,14 @@ không đáng kể (sim: `totalHurt` 756,25e9, boss mất 756,03e9). Creep vẫn
   Tier1 lệch vì người chơi bỏ cuộc ở frame 211 nhưng replay chạy tiếp tới khi Door chết. Cần
   dừng replay tại `QuitRoom.endFrame` khi `resultReason = Abandon` (lỗi này có cả ở campaign).
 - Trang setup: mục "Màn chơi" → Mode "U Đô" → Boss → Bộ quái. Data sinh bởi `gen_profile_dict.js`,
-  tách ba file: `web/dict/map-dict.json` (`campaign`, loại phòng U Đô + danh sách id boss),
-  `web/dict/boss-dict.json` (boss kèm preset: phòng gặp + 3 id quái) và `web/dict/creeps-dict.json`
+  tách ba file: `web/dict/map-dict.json` (`campaign`, battleType U Đô + danh sách id boss),
+  `web/dict/boss-dict.json` (boss kèm preset: 3 id quái) và `web/dict/creeps-dict.json`
   (tên/code quái đi kèm, dedupe). Profile ghi `map: {mode: "capital", boss, level}`.
   `web/battle/map-profile.js` đổi `battleType` thành 21, đặt `level`, và chỉ giữ người chơi đầu tiên
   (capital không có robot). Capture gốc là campaign hay capital đều dùng được. Campaign thì bắt
-  buộc capture gốc là campaign.
+  buộc capture gốc là campaign. Bật Ghi đè "Màn chơi" chỉ prefill làm mồi an toàn: capture
+  campaign điền stage của chính nó; capture capital mở form capital trắng (engine cấm override
+  campaign trên gốc capital), boss + bộ quái luôn chọn tay.
 - View trận U Đô là prefab `guildPVP/prefabs/battleTDGuildPVPView`. Prefab này tham chiếu chéo
   vài hình/spine trong bundle `worldBoss` và `climbTower`, nên Cocos tự tải cả hai khi mở view.
   Vì vậy `scripts/mirror.js` có thêm 3 bundle này (~16 MB, file tĩnh công khai). Logic trận không

@@ -1,4 +1,4 @@
-import { LIMITS, artifactState, capitalPreset, newHero } from "./profile-io.js";
+import { LIMITS, artifactState, newHero } from "./profile-io.js";
 
 const captures = new Map(); // region:battle -> StartGameP
 
@@ -14,8 +14,10 @@ async function capturedStart(region, battle) {
 
 const listItems = (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[String(i)]);
 
-// Turning a section on fills it from the base capture.
-export async function prefill(dict, maps, bossDict, region, battle, group) {
+// Turning a section on fills it from the base capture. The map prefills as a safe fallback only:
+// a campaign capture fills its own stage, a capital capture opens the blank capital form (the
+// engine forbids a campaign override on a capital base — map-profile.js applyCampaign).
+export async function prefill(dict, maps, region, battle, group) {
   const start = await capturedStart(region, battle);
   const player = start && listItems(start.playerInfos)[0];
   if (group === "mounts") {
@@ -24,8 +26,7 @@ export async function prefill(dict, maps, bossDict, region, battle, group) {
     return { owned, selected };
   }
   if (group === "map") {
-    const capital = start?.battleType === maps.capital.battleType && capitalPreset(bossDict, start.level);
-    if (capital) return { mode: "capital", stage: maps.campaign.minStage, ...capital };
+    if (start?.battleType === maps.capital.battleType) return { mode: "capital", stage: maps.campaign.minStage, boss: null, level: null };
     return { mode: "campaign", stage: start?.level || maps.campaign.minStage, boss: null, level: null };
   }
   if (!player) return [];

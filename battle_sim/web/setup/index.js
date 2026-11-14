@@ -47,7 +47,7 @@ function App({ dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifa
       return next;
     });
   const toggleWithPrefill = async (group, on) => {
-    const value = on ? await prefill(dict, maps, bossDict, region, state.battle, group) : null;
+    const value = on ? await prefill(dict, maps, region, state.battle, group) : null;
     update((s) => void (s[group] = value));
   };
   const profile = useMemo(() => toProfile(state, dict), [state]);
@@ -138,7 +138,7 @@ async function showRegion(root, region, saved, switching = false) {
       profile = null;
     }
   }
-  if (!profile?.heroes) state.heroes = await prefill(dict, maps, bossDict, region, battle, "heroes");
+  if (!profile?.heroes) state.heroes = await prefill(dict, maps, region, battle, "heroes");
   normalize(state, dict);
   const changeRegion = (next, current) => showRegion(root, next, current, true);
   render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
