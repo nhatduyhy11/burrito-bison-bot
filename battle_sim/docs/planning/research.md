@@ -3,7 +3,6 @@
 **Mục tiêu cuối:** mini game battle standalone, chạy local, có hình, mở khoá mọi thứ
 (hero/skin/antique/organ max) để chơi cho vui. Chỉ dùng cá nhân, không phát tán và không
 đụng server thật. Cách chạy và cơ chế của code: [battle_sim/README.md](../../README.md).
-Trạng thái và bước tiếp theo: [NEXT_STEP.md](NEXT_STEP.md).
 
 ## Nguyên tắc an toàn (vùng xám, tránh dính ban)
 
