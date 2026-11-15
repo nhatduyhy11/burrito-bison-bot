@@ -35,7 +35,9 @@ function TabBar({ active, onSelect }) {
         aria-selected=${key === active} onClick=${select}>${title}</button>
     `;
   });
-  return html`<div class="tabs" role="tablist">${buttons}</div>`;
+  return html`
+    <div class="tabs" role="tablist">${buttons}</div>
+  `;
 }
 
 export function FormSections({ ctx }) {

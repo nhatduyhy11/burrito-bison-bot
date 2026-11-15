@@ -24,7 +24,9 @@ function ArtifactSection({ ctx, hero, index }) {
   const title = html`<strong>${`#${index + 1}`}</strong>${hero.name ? html`<span>${label(dict.heroes[hero.name])}</span>` : null}`;
   if (!pool) {
     const why = hero.name ? "Hero này không có Thần Khí" : "Chưa chọn hero";
-    return html`<section class="off"><header>${title}<span class="hint">${why}</span></header></section>`;
+    return html`
+      <section class="off"><header>${title}<span class="hint">${why}</span></header></section>
+    `;
   }
   const custom = hero.artifact !== undefined;
   const edit = (fn) => update((s) => void fn(s.heroes[index]));
@@ -34,7 +36,9 @@ function ArtifactSection({ ctx, hero, index }) {
   };
   const toggle = html`<label class="override"><${Checkbox} checked=${custom} onChange=${setCustom} />Tùy chỉnh</label>`;
   if (!custom) {
-    return html`<section><header>${title}${toggle}<span class="hint">theo capture</span></header></section>`;
+    return html`
+      <section><header>${title}${toggle}<span class="hint">theo capture</span></header></section>
+    `;
   }
   return html`
     <details class="accordion" open>
@@ -56,11 +60,15 @@ function ArtifactBody({ artifact, heroCode, pool, artifactDict, edit }) {
   });
   const quality = html`<label>Phẩm <${Select} aria-label="Phẩm" options=${qualityOptions}
     value=${String(artifact?.quality ?? 0)} onChange=${setQuality} /></label>`;
-  if (!artifact) return html`<div class="row">${quality}</div>`;
+  if (!artifact) {
+    return html`
+      <div class="row">${quality}</div>
+    `;
+  }
   const stageOptions = Array.from({ length: MAX_STAGE[artifact.quality] }, (_, i) => [String(i + 1), String(i + 1)]);
   const setStage = (value) => edit((h) => { h.artifact.stage = Number(value); });
   const slots = artifact.slots.map((slot, i) => html`
-    <${SlotRow} key=${i} index=${i} slot=${slot} heroCode=${heroCode} pool=${pool} artifactDict=${artifactDict} edit=${edit} />
+    <${SlotRow} key=${i} index=${i} slot=${slot} slots=${artifact.slots} heroCode=${heroCode} pool=${pool} artifactDict=${artifactDict} edit=${edit} />
   `);
   return html`
     <div class="row">
@@ -84,29 +92,51 @@ function buffEntry(pool, artifactDict, family, quality) {
   return { code: entryCode(pool, Number(family), q), value: buff.ranges[q][1] };
 }
 
-function SlotRow({ index, slot, heroCode, pool, artifactDict, edit }) {
+function SlotRow({ index, slot, slots, heroCode, pool, artifactDict, edit }) {
   const parsed = slot && parseEntryCode(slot.code);
   const kind = !slot ? "" : parsed.quality === RAINBOW_QUALITY ? "rare" : "buff";
   const families = Object.keys(artifactDict.buffs);
+  // Lines of the same family don't stack (buff overlay_limit=1, any phẩm — same buff id), so hide
+  // families and rainbows taken by sibling slots.
+  const used = new Set(slots.flatMap((s, i) => {
+    if (i === index || !s) return [];
+    const p = parseEntryCode(s.code);
+    return [p.family];
+  }));
+  const freeRainbows = RAINBOW.filter((family) => !used.has(family));
+  const freeFamilies = families.filter((family) => !used.has(Number(family)));
   const set = (next) => edit((h) => { h.artifact.slots[index] = next; });
+  const kindOptions = KINDS.map(([v, text]) => [v, text, v === "rare" && !freeRainbows.length]);
   const setKind = (value) => {
-    if (value === "buff") set(buffEntry(pool, artifactDict, families[0]));
-    else if (value === "rare") set({ code: entryCode(pool, RAINBOW[0], RAINBOW_QUALITY), value: 0 });
-    else set(null);
+    if (value === "buff") {
+      if (freeFamilies.length) set(buffEntry(pool, artifactDict, freeFamilies[0]));
+    } else if (value === "rare") {
+      if (freeRainbows.length) set({ code: entryCode(pool, freeRainbows[0], RAINBOW_QUALITY), value: 0 });
+    } else set(null);
   };
-  const kindSelect = html`<${Select} aria-label=${`Ô ${index + 1}`} options=${KINDS} value=${kind} onChange=${setKind} />`;
+  const kindSelect = html`<${Select} aria-label=${`Ô ${index + 1}`} options=${kindOptions} value=${kind} onChange=${setKind} />`;
   const head = html`<strong class="note">${`Ô ${index + 1}`}</strong>${kindSelect}`;
   if (kind === "rare") {
     const rainbowName = (family) => artifactDict.skills[rareSkill(heroCode, family)]?.name_vn || `Rainbow ${family}`;
-    const options = RAINBOW.map((family) => [String(family), rainbowName(family)]);
+    const options = RAINBOW
+      .filter((family) => family === parsed.family || !used.has(family))
+      .map((family) => [String(family), rainbowName(family)]);
     const setRainbow = (value) => set({ code: entryCode(pool, Number(value), RAINBOW_QUALITY), value: 0 });
-    return html`<div class="row">${head}<${Select} aria-label="Rainbow" options=${options}
-      value=${String(parsed.family)} onChange=${setRainbow} /></div>`;
+    return html`
+      <div class="row">${head}<${Select} aria-label="Rainbow" options=${options}
+        value=${String(parsed.family)} onChange=${setRainbow} /></div>
+    `;
   }
-  if (kind !== "buff") return html`<div class="row">${head}</div>`;
+  if (kind !== "buff") {
+    return html`
+      <div class="row">${head}</div>
+    `;
+  }
   const buff = artifactDict.buffs[parsed.family];
   const [min, max] = buff.ranges[parsed.quality];
-  const familyOptions = families.map((family) => [family, buffName(artifactDict, family)]);
+  const familyOptions = families
+    .filter((family) => Number(family) === parsed.family || !used.has(Number(family)))
+    .map((family) => [family, buffName(artifactDict, family)]);
   const qualityOptions = Object.keys(buff.ranges).map((q) => [q, LINE_QUALITY[q] || q]);
   const setFamily = (value) => set(buffEntry(pool, artifactDict, value, parsed.quality));
   const setLineQuality = (value) => set(buffEntry(pool, artifactDict, parsed.family, Number(value)));

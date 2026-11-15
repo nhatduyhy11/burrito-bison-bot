@@ -25,7 +25,9 @@ export function AntiquesSection({ ctx }) {
         </div>
       `;
     });
-    return html`<${Accordion} key=${color} title=${title} hint=${`${count}/${items.length} sở hữu`} defaultOpen=${false}>${rows}<//>`;
+    return html`
+      <${Accordion} key=${color} title=${title} hint=${`${count}/${items.length} sở hữu`} defaultOpen=${false}>${rows}<//>
+    `;
   });
   return html`
     <${Accordion} title="Đồ Cổ" hint=${`${Object.keys(owned).length} sở hữu`} defaultOpen=${false}>

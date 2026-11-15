@@ -130,6 +130,37 @@ của server chưa xác minh. Đã chạy offline `createAddUnitData` với từ
 | `80000208` | `10130706000` Ma Lâm Thiên Hạ | Đổi thẻ Thức Tỉnh `700004013 → 700005013` |
 | `80000308` | `10130708000` Võ Thần Bá Thể | Tăng ST mọi kỹ năng theo `CommonWeaponLevel` |
 
+### Cộng dồn skill rainbow (kiểm bundle 1377a, chưa đối chiếu trận thật)
+
+Cả 48 skill rainbow đều PASSIVE, `exclusionGroup=0`, `priority=11`. Câu hỏi "cùng một skill
+rainbow xuất hiện N lần trên một hero có cộng dồn không": **không** — engine chặn ở tầng buff:
+
+- `createAddUnitData` push `{code}` một lần cho mỗi dòng rainbow `value=0`, không dedupe;
+  `_skillPreprocess` cũng không dedupe code trùng (chỉ gộp code khác nhau trong cùng
+  `exclusionGroup`) → N bản sao passive đều vào unit. Vậy chỗ dedupe duy nhất là khi buff
+  `SkillBaseLO.actions` của skill được add lên unit.
+- Mỗi buff rainbow có `overlay_limit=1`. Engine (`module 53`, hàm check add buff) đếm buff cùng id
+  đang tồn tại trên target — policy `CASTER_UNIT` chỉ đếm bản cùng caster, `ANY_UNIT` đếm cả bản
+  khác caster — vượt limit thì trả `REACH_OVERLAY_LIMIT`, bản mới bị bỏ (không đè giá trị).
+  Rainbow 06 là `ANY_UNIT`, 07/08 là `CASTER_UNIT`; caster là chính hero đeo → bản sao thứ 2 trở đi
+  bị loại. N bản sao = 1 hiệu ứng.
+
+Hệ quả từng nhóm:
+- **3× skill 08** (`5%×cấp Thần Khí`): vẫn chỉ `5%×cấp`. Modifier của skill 08 là
+  `Add_Attr_By_Self_Target_Level` → `min(level×5, maxFactor=25)` trên `P_DAMAGE_PROMOTION_R`
+  (`SkillBuffDamageLO`) — cap 25% ứng với cấp thần khí tối đa 5. 7/16 hero có biến thể "tất cả
+  Anh Hùng phe ta" 3,5%×cấp (1003, 1004, 1005, 1023, 1026, 1030, 1032), 9 hero còn lại tự thân 5%×cấp.
+- **3× skill 06**: vẫn chỉ một lần. Nút +20% ST mọi kỹ năng "sau khi thức tỉnh" nằm trong **thẻ
+  thay thế** `700005013` (`BuildSkillLO._params [0.2, 20]`; bản gốc `700004013` là `[0.2, -10]`),
+  nhận một lần khi lấy thẻ — không nhân theo số bản sao skill. Skill 06 chỉ đổi việc thẻ nào được
+  offer (`BuildSummonLO._SpecialCondition [[6,<skill06>,0]]` là check "có code" → idempotent).
+- **Skill 06 + 07 + 08 trên cùng hero**: cộng dồn bình thường — ba buff id khác nhau, không chung
+  limit. Còn buff đội cùng family: **không cộng dồn, kể cả khác phẩm dòng** — phẩm chỉ đổi entry
+  code (hub giữ cả hai) nhưng buff id là `skillCode` của family, không theo phẩm → `overlay_limit=1,
+  CASTER_UNIT` chặn bản thứ hai, bản apply trước thắng (theo thứ tự ô trong `battleEntryInfos` và
+  thứ tự hero trong profile), dù giá trị nhỏ hơn. Khác family thì cộng dồn bình thường (mỗi family
+  một `skillCode` riêng). Ràng buộc này áp cả giữa hai hero khác nhau; cần một trận thật để chốt.
+
 ## Hướng sim
 
 Profile, cùng cách với `relic`:
@@ -160,7 +191,11 @@ artifact: { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }, { co
   thì để trống (không đưa vào `battleEntryInfos`).
   - Buff đội: chọn family, rồi **phẩm dòng** (chỉ liệt kê các phẩm family đó có), rồi slider.
     Range slider đổi theo phẩm dòng đã chọn. Chọn family hoặc phẩm dòng thì value về max.
-  - Rainbow: chọn 1 trong 3, không có slider (value 0).
+  - Rainbow: chọn 1 trong 3, không có slider (value 0). Rainbow đã chọn ở ô khác bị ẩn khỏi
+    dropdown (và option "Skill rainbow" trong dropdown loại bị tắt khi cả 3 rainbow đã dùng hết).
+  - Buff đội: family đã chọn ở ô khác bị ẩn khỏi dropdown "Buff", kể cả khác phẩm dòng (engine
+    không cộng dồn cùng family — xem mục Cộng dồn skill rainbow). Bật loại thì tự chọn family/​
+    rainbow còn free đầu tiên thay vì luôn phần tử đầu.
 - Đổi stage hoặc phẩm làm giảm số ô thì bỏ các ô cuối, không thông báo.
 
 Thứ tự làm:
@@ -174,6 +209,8 @@ Thứ tự làm:
 
 ## Còn mở
 
-- Buff cùng family trên hai hero khác nhau có cộng dồn không (xem mục Luồng trận).
+- Buff cùng family trên hai hero khác nhau: phân tích bundle cho thấy **không cộng dồn** (xem mục
+  Cộng dồn skill rainbow) — chờ một trận thật chốt.
 - Công thức server quy đổi dòng chỉ số % (`2010001`) vào `hero.attr`.
-- Ràng buộc roll thật: phẩm dòng so với phẩm món, rainbow trên món đỏ, thuật toán RNG.
+- Ràng buộc roll thật: phẩm dòng so với phẩm món, rainbow trên món đỏ, thuật toán RNG (server có cho
+  roll trùng một rainbow trên cùng món không cũng chưa biết — dù có thì engine vẫn chỉ tính một).
