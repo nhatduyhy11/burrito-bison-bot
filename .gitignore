@@ -8,5 +8,6 @@ dist/
 .idea/
 
 .tmp/
+.tmp-scratch/
 env.*
 *.env.*

@@ -1,9 +1,16 @@
 # SPEED_MODIFIER — Nghiên cứu tốc độ campaign
 
-Ngày: 2026-11-08. Trạng thái: đã probe runtime 2 lần (2026-11-09); POC hotkey đã code
-(`control_events/battle_speed.py`, `runner/speed_control.py`: Shift+] bật x1.6 khi screen
-detect = automap, watcher 5s re-apply / tắt khi hết trận, Shift+[ khôi phục). Chưa chạy
-POC trên game thật; chưa xác minh server chấp nhận kết quả trận.
+## Cách dùng POC hiện tại
+
+- `Shift+]` thử bật x2.2 ở mọi màn hình và mọi loại trận. Nếu chưa có battle loop sẵn sàng,
+  hotkey báo `no battle`.
+- Modifier chỉ đổi tốc độ của loop đang chạy. Watcher kiểm tra mỗi 5 giây, áp lại nếu game
+  ghi đè và tự tắt khi hết trận hoặc chuyển trận.
+- `Shift+[` tắt modifier và khôi phục tốc độ trước khi bật nếu vẫn trong cùng trận.
+
+POC hiện tại đã qua test tự động với loop mô phỏng. Chưa thử bản này trên game live hoặc
+xác nhận server chấp nhận kết quả sau khi đổi tốc độ. Các ghi chép bên dưới mô tả probe
+campaign và thiết kế được cân nhắc vào thời điểm đó.
 
 ## Runtime probe 2026-11-09
 

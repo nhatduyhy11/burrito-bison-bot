@@ -1,16 +1,4 @@
-"""Client-side campaign battle speed override (POC).
-
-The game resets ``timeScale`` from the battle's ``SetSpeed`` operation using the
-speed cached per battle type, so the override writes both the cache
-(``BattleModule.setSpeedByBattleType``) and the live ``BattleMainLoop``. The
-original cached speed is remembered in the page and restored on disable.
-See ``scripts/SPEED_MODIFIER.md`` for the runtime evidence.
-"""
-
-from dataclasses import dataclass
-from typing import Optional
-
-CAMPAIGN_BATTLE_TYPE = 3  # EBattleType_Battle_Enum.EBattleTypeHangUpSystem
+"""Temporarily override the live speed of the current battle loop."""
 
 _FIND_MAIN_LOOP = """
 const findMainLoop = () => {
@@ -19,44 +7,24 @@ const findMainLoop = () => {
   if (!scene) return null;
   const L = window.__require("BattleMainLoop").BattleMainLoop;
   const m = scene.getComponentInChildren(L);
-  return m && m._battleUUID ? m : null;
+  return m && m._battleUUID && m.frameSync && typeof m.setTimeScale === "function" ? m : null;
 };
-const battleModule = () => window.__require("BattleModule").BattleModule.Ins;
 """
 
-STATUS_SCRIPT = (
-    "() => {"
-    + _FIND_MAIN_LOOP
-    + """
-  if (typeof window.__require !== "function") return null;
-  const m = findMainLoop();
-  const vo = m && m.blackBoard && m.blackBoard.battleVo;
-  return {
-    inBattle: !!m,
-    battleType: vo ? vo.battleType : null,
-    timeScale: m && m.frameSync ? m.frameSync.timeScale : null,
-    active: !!window.__hauntedRoomSpeed,
-  };
-}"""
-)
-
 APPLY_SCRIPT = (
-    "([scale, battleType]) => {"
+    "([scale, reapply]) => {"
     + _FIND_MAIN_LOOP
     + """
   const m = findMainLoop();
   if (!m) return {applied: false, reason: "no battle"};
-  const vo = m.blackBoard && m.blackBoard.battleVo;
-  if (!vo || vo.battleType !== battleType) {
-    return {applied: false, reason: "battle type " + (vo && vo.battleType)};
+  const state = window.__hauntedRoomSpeed;
+  if (reapply && (!state || state.loop !== m || state.uuid !== m._battleUUID)) {
+    return {applied: false, reason: "battle changed"};
   }
-  const bm = battleModule();
-  if (!window.__hauntedRoomSpeed) {
-    window.__hauntedRoomSpeed = {storedOriginal: bm.getSpeedByBattleType(battleType), battleType};
-  }
-  if (bm.getSpeedByBattleType(battleType) !== scale) bm.setSpeedByBattleType(battleType, scale);
   const before = m.frameSync.timeScale;
+  if (!Number.isFinite(before)) return {applied: false, reason: "battle speed unavailable"};
   if (before !== scale) m.setTimeScale(scale);
+  if (!reapply) window.__hauntedRoomSpeed = {loop: m, uuid: m._battleUUID, original: before};
   return {applied: true, before, timeScale: m.frameSync.timeScale};
 }"""
 )
@@ -67,22 +35,13 @@ RESTORE_SCRIPT = (
     + """
   const state = window.__hauntedRoomSpeed;
   if (!state) return {restored: false};
-  const bm = battleModule();
-  bm.setSpeedByBattleType(state.battleType, state.storedOriginal);
-  const m = findMainLoop();
-  if (m) m.setTimeScale(state.storedOriginal);
   delete window.__hauntedRoomSpeed;
-  return {restored: true, speed: state.storedOriginal, inBattle: !!m};
+  const m = findMainLoop();
+  if (!m || state.loop !== m || state.uuid !== m._battleUUID) return {restored: false};
+  m.setTimeScale(state.original);
+  return {restored: true, speed: state.original};
 }"""
 )
-
-
-@dataclass(frozen=True)
-class BattleSpeedStatus:
-    in_battle: bool
-    battle_type: Optional[int]
-    time_scale: Optional[float]
-    active: bool
 
 
 async def find_game_frame(page):
@@ -98,23 +57,8 @@ async def find_game_frame(page):
     return None
 
 
-async def read_battle_speed(frame) -> Optional[BattleSpeedStatus]:
-    result = await frame.evaluate(STATUS_SCRIPT)
-    if result is None:
-        return None
-    return BattleSpeedStatus(
-        in_battle=bool(result["inBattle"]),
-        battle_type=result["battleType"],
-        time_scale=result["timeScale"],
-        active=bool(result["active"]),
-    )
-
-
-async def apply_battle_speed(
-    frame, scale: float, battle_type: int = CAMPAIGN_BATTLE_TYPE
-) -> dict:
-    """Set cached + live speed; idempotent so a watcher can re-apply after resets."""
-    return await frame.evaluate(APPLY_SCRIPT, [scale, battle_type])
+async def apply_battle_speed(frame, scale: float, *, reapply: bool = False) -> dict:
+    return await frame.evaluate(APPLY_SCRIPT, [scale, reapply])
 
 
 async def restore_battle_speed(frame) -> dict:

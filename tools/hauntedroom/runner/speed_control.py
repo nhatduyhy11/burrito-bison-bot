@@ -1,16 +1,14 @@
-"""Shift+] / Shift+[ campaign speed toggle (POC) with a battle watcher."""
+"""Shift+] / Shift+[ battle speed toggle (POC) with a battle watcher."""
 
 import asyncio
-from typing import Awaitable, Callable, Optional
+from typing import Optional
 
 from hauntedroom.control_events.battle_speed import (
     apply_battle_speed,
     find_game_frame,
-    read_battle_speed,
     restore_battle_speed,
 )
 from hauntedroom.core.terminal import BLUE, ORANGE, YELLOW, colorize
-from hauntedroom.screen_detect import ScreenName, detect_current_screen
 
 SPEED_ON_COMMAND = "]"
 SPEED_OFF_COMMAND = "["
@@ -28,12 +26,10 @@ class BattleSpeedController:
         page,
         scale: float = DEFAULT_SPEED_SCALE,
         interval_s: float = DEFAULT_WATCH_INTERVAL_S,
-        detect_screen: Callable[[object], Awaitable[ScreenName]] = detect_current_screen,
     ) -> None:
         self._page = page
         self._scale = scale
         self._interval_s = interval_s
-        self._detect_screen = detect_screen
         self._frame = None
         self._watcher: Optional[asyncio.Task] = None
 
@@ -53,11 +49,6 @@ class BattleSpeedController:
     async def enable(self) -> None:
         if self.active:
             _log(f"already x{self._scale}; Shift+[ to disable.", YELLOW)
-            return
-
-        screen = await self._detect_screen(self._page)
-        if screen is not ScreenName.AUTOMAP:
-            _log(f"not in battle (screen={screen.value}); speed unchanged.", ORANGE)
             return
 
         frame = await find_game_frame(self._page)
@@ -92,19 +83,18 @@ class BattleSpeedController:
         except Exception as error:
             _log(f"restore failed ({reason}): {error}", ORANGE)
             return
-        _log(f"disabled ({reason}); restored x{result.get('speed')}.", ORANGE)
+        if result.get("restored"):
+            _log(f"disabled ({reason}); restored x{result.get('speed')}.", ORANGE)
+        else:
+            _log(f"disabled ({reason}).", ORANGE)
 
     async def _watch(self) -> None:
         try:
             while True:
                 await asyncio.sleep(self._interval_s)
-                status = await read_battle_speed(self._frame)
-                if status is None or not status.in_battle:
-                    await self.disable("battle ended")
-                    return
-                result = await apply_battle_speed(self._frame, self._scale)
+                result = await apply_battle_speed(self._frame, self._scale, reapply=True)
                 if not result.get("applied"):
-                    await self.disable(f"left campaign: {result.get('reason')}")
+                    await self.disable(result.get("reason", "speed unavailable"))
                     return
                 if result.get("before") != self._scale:
                     _log(f"game reset speed to x{result.get('before')}; re-applied.", YELLOW)

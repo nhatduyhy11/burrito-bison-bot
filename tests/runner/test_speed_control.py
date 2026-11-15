@@ -7,17 +7,11 @@ from unittest.mock import AsyncMock, patch
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "tools"))
 
-from hauntedroom.control_events.battle_speed import BattleSpeedStatus
 from hauntedroom.core.browser_hook import HOTKEY_SCRIPT
 from hauntedroom.runner import speed_control
 from hauntedroom.runner.speed_control import BattleSpeedController
-from hauntedroom.screen_detect import ScreenName
 
 MODULE = "hauntedroom.runner.speed_control"
-
-
-def status(in_battle: bool) -> BattleSpeedStatus:
-    return BattleSpeedStatus(in_battle, 3 if in_battle else None, 1.6, True)
 
 
 class BattleSpeedControllerTest(IsolatedAsyncioTestCase):
@@ -33,24 +27,24 @@ class BattleSpeedControllerTest(IsolatedAsyncioTestCase):
                 f"{MODULE}.restore_battle_speed",
                 AsyncMock(return_value={"restored": True, "speed": 1}),
             ),
-            "read": patch(f"{MODULE}.read_battle_speed", AsyncMock(return_value=status(True))),
         }
         self.mocks = {name: p.start() for name, p in self.patches.items()}
         self.addCleanup(patch.stopall)
 
-    def controller(self, screen=ScreenName.AUTOMAP, interval_s=0.01):
-        return BattleSpeedController(
-            object(), interval_s=interval_s, detect_screen=AsyncMock(return_value=screen)
-        )
+    def controller(self, interval_s=0.01):
+        return BattleSpeedController(object(), interval_s=interval_s)
 
     def test_hotkey_script_maps_brackets(self):
         self.assertIn('event.code === "BracketRight"', HOTKEY_SCRIPT)
         self.assertIn('event.code === "BracketLeft"', HOTKEY_SCRIPT)
 
     async def test_enable_outside_battle_does_nothing(self):
-        controller = self.controller(screen=ScreenName.HOME)
+        self.mocks["apply"].return_value = {"applied": False, "reason": "no battle"}
+        controller = self.controller()
         self.assertTrue(await controller.handle_command("]"))
-        self.mocks["apply"].assert_not_awaited()
+        self.mocks["apply"].assert_awaited_once_with(
+            self.frame, speed_control.DEFAULT_SPEED_SCALE
+        )
         self.assertFalse(controller.active)
 
     async def test_enable_then_hotkey_disable_restores(self):
@@ -65,8 +59,12 @@ class BattleSpeedControllerTest(IsolatedAsyncioTestCase):
         self.mocks["restore"].assert_awaited_once_with(self.frame)
         self.assertFalse(controller.active)
 
-    async def test_watcher_restores_when_battle_ends(self):
-        self.mocks["read"].side_effect = [status(True), status(False)]
+    async def test_watcher_disables_when_battle_changes(self):
+        self.mocks["apply"].side_effect = [
+            {"applied": True, "before": 1},
+            {"applied": False, "reason": "battle changed"},
+        ]
+        self.mocks["restore"].return_value = {"restored": False}
         controller = self.controller()
         await controller.enable()
         for _ in range(50):
@@ -75,11 +73,12 @@ class BattleSpeedControllerTest(IsolatedAsyncioTestCase):
             await asyncio.sleep(0.01)
         self.assertFalse(controller.active)
         self.mocks["restore"].assert_awaited_once_with(self.frame)
-        # Initial apply + one re-apply while still in battle.
-        self.assertEqual(self.mocks["apply"].await_count, 2)
+        self.mocks["apply"].assert_awaited_with(
+            self.frame, speed_control.DEFAULT_SPEED_SCALE, reapply=True
+        )
 
     async def test_not_applied_keeps_controller_off(self):
-        self.mocks["apply"].return_value = {"applied": False, "reason": "battle type 7"}
+        self.mocks["apply"].return_value = {"applied": False, "reason": "battle speed unavailable"}
         controller = self.controller()
         await controller.enable()
         self.assertFalse(controller.active)
