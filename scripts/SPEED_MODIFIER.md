@@ -90,4 +90,4 @@ Chỉ quyết định triển khai sau khi rõ giới hạn runtime và luồng 
 
 ## Tham khảo phương pháp
 
-Cách xác định và phân tích bundle: [BUNDLE_RESEARCH.md](../docs/client/BUNDLE_RESEARCH.md). Tải + tách module: `scripts/bundle/fetch_bundle.py`.
+Tải + tách module bundle và cách phân tích (config `*LO`, proto, trace UI): [bundle/README.md](bundle/README.md).

@@ -10,7 +10,6 @@ crawl → dump → UI; chỉ đọc khi cần đào lại skin/hero chưa ra m�
 2. Config: lấy URL `preload_config` từ network, đổi thành `config`, giải nén
    `QuickLZ` → `BinaryReader` → `ConfigParser.writeBinaryDataWhenRead`, rồi
    dump mọi bảng `*LO` (tên lấy bằng regex `\b[A-Z]\w*LO\b` trên JS đã tải; ~450 bảng).
-   Cách chung xem [BUNDLE_RESEARCH.md](BUNDLE_RESEARCH.md).
 3. Asset ngoài bundle (`model/…`, `shuzhi/…`): danh sách key = `Object.keys(_verUrlMap)`
    (~13.8k key); URL tải = `extAssetMgr._transformUrl({ url: key })`.
 4. Hiệu ứng skill nằm trong Cocos bundle `battleSkillRes` (`prefabs/Hero_XXX_pfN/...`),

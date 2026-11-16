@@ -9,9 +9,6 @@ Planning notes only. Do not treat these as current implementation tasks.
   - [ ] Support the `blood_mode` and `udo_mode` signals.
   - [ ] Complete and validate the currently staged reference images before
     implementing the detectors.
-- [ ] Add an OS-global `Ctrl+Shift+F12` recovery hotkey that re-installs the
-  browser listener across the current Playwright context without changing flow
-  state. See [handoff](GLOBAL_HOTKEY_RECOVERY_HANDOFF.md).
 - [ ] Unify blockers containing the `để đóng` text pattern.
   - [ ] Replace the separate `hero_spin`, `lv_spin`, and related handling with the shared `để đóng` blocker.
   - [ ] Capture live full-screen samples for both the dim-text and clear-text `để đóng` cases to confirm where they occur in the screen flow.
