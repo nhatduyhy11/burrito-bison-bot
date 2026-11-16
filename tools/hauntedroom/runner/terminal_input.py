@@ -1,4 +1,4 @@
-"""Read manual reinjection requests from the focused CLI terminal."""
+"""Read runner keys from the focused CLI terminal: `|` reinject, Shift+A/Shift+D ads free."""
 
 import os
 import sys
@@ -6,6 +6,7 @@ import threading
 
 
 REINJECT_COMMAND = "__reinject_hotkeys__"
+TERMINAL_KEYS = {"A": "a", "D": "d"}
 
 
 class TerminalInput:
@@ -52,10 +53,9 @@ class TerminalInput:
                 char = os.read(self._fd, 1).decode(errors="ignore")
                 if not char:
                     return
-            if char == "|":
-                self.loop.call_soon_threadsafe(
-                    self.command_queue.put_nowait, REINJECT_COMMAND
-                )
+            command = REINJECT_COMMAND if char == "|" else TERMINAL_KEYS.get(char)
+            if command is not None:
+                self.loop.call_soon_threadsafe(self.command_queue.put_nowait, command)
 
     def close(self):
         self._stop.set()

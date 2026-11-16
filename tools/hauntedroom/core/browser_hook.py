@@ -17,6 +17,8 @@ HOTKEY_SCRIPT = """
                 ? "t"
                 : event.code === "KeyE"
                     ? "e"
+                    : event.code === "KeyA" || event.code === "KeyD"
+                        ? event.code.slice(-1).toLowerCase()
                     : event.code === "BracketRight"
                         ? "]"
                         : event.code === "BracketLeft"

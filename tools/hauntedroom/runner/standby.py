@@ -7,6 +7,7 @@ from hauntedroom.actions.models import Action
 from hauntedroom.core.browser_hook import reinject_hotkey_listener, start_hotkey_listener
 from hauntedroom.core.runtime import save_live_screenshot
 from hauntedroom.core.terminal import BLUE, GREEN, ORANGE, YELLOW, colorize
+from hauntedroom.runner.ads_free import handle_ads_free_command
 from hauntedroom.runner.commands import FlowCommand
 from hauntedroom.runner.speed_control import BattleSpeedController
 from hauntedroom.runner.terminal_input import REINJECT_COMMAND, TerminalInput
@@ -256,6 +257,8 @@ async def run_standby_controller(
             "  Shift+0    Stop current flow\n"
             "  Shift+]    Campaign speed x2.2 (POC)\n"
             "  Shift+[    Restore campaign speed\n"
+            "  Shift+A    Ads free on (also in terminal)\n"
+            "  Shift+D    Ads free off (also in terminal)\n"
             "  During auto-map/start-auto:\n"
             f"{format_start_auto_hotkeys(start_auto_hotkeys)}\n"
             "  Ctrl+C     Close runner\n"
@@ -300,6 +303,13 @@ async def run_standby_controller(
                     continue
             except Exception as error:
                 print(f"[speed] command failed: {error}", flush=True)
+                continue
+
+            try:
+                if await handle_ads_free_command(page, command_key):
+                    continue
+            except Exception as error:
+                print(f"[ads] command failed: {error}", flush=True)
                 continue
 
             if command_key == "1" and flow_task is None:
