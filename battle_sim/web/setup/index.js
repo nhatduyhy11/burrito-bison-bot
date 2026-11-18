@@ -22,7 +22,7 @@ const STORE_KEY = "battleSimSetup";
 
 // ---------- app ----------
 
-function App({ dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, captureByRegion, changeRegion }) {
+function App({ dict, maps, bossDict, creepsDict, campaignDict, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, captureByRegion, changeRegion }) {
   const [state, setState] = useState(initial);
   const capturesForSetup = { ...captureByRegion, [region]: state.battle };
   const [switchingRegion, setSwitchingRegion] = useState(false);
@@ -62,7 +62,7 @@ function App({ dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifa
 
   const capturedHeroArtifact = (heroCode) => capturedArtifact(region, state.battle, heroCode);
   const capturedSummonerGear = () => prefill(dict, maps, region, state.battle, "summonerGear");
-  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact, capturedSummonerGear };
+  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, bossDict, creepsDict, campaignDict, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact, capturedSummonerGear };
   return html`
     <main id="form">
       ${regionError && html`<p class="err" role="alert">${regionError}</p>`}
@@ -113,8 +113,8 @@ function bindAccordionToggle(root) {
 
 async function showRegion(root, region, saved, switching = false) {
   const suffix = `?region=${region}`;
-  const [heroDict, supportDict, maps, bossDict, creepsDict, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
-    ...["hero", "support", "map", "boss", "creeps", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
+  const [heroDict, supportDict, maps, bossDict, creepsDict, campaignDict, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
+    ...["hero", "support", "map", "boss", "creeps", "campaign", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
     getJson(`/__sim/battles.json${suffix}`),
   ]);
   // One lookup table for both sides: hero-dict (heroes) + support-dict (the non-hero groups).
@@ -148,7 +148,7 @@ async function showRegion(root, region, saved, switching = false) {
   // alive next to the rendered tree — drop it just before mounting (region switch diffs instead).
   if (!switching) root.textContent = "";
   try {
-    render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+    render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} campaignDict=${campaignDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   } catch (err) {
     // A render error leaves the old App already unmounted, so its regionError can't show: report here.
     console.error(err);

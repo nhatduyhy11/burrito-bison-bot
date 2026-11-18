@@ -4,7 +4,7 @@ const path = require("path");
 
 const DIR = path.join(__dirname, "..", "web", "dict");
 const GAT_OVERRIDES = require("../web/dict/gat-overrides.json");
-const DICTS = new Set(["hero", "support", "map", "boss", "creeps", "antique", "relic", "artifact"]);
+const DICTS = new Set(["hero", "support", "map", "boss", "creeps", "campaign", "antique", "relic", "artifact"]);
 const isRecord = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 
 function merge(base, overrides) {

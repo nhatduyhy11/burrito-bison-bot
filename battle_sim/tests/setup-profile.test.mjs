@@ -298,3 +298,51 @@ test('Thần Khí: slots follow quality/stage; empty slots are left out of the p
   normalize(state, dict);
   assert.deepEqual(toProfile(state, dict).heroes[0].artifact, { quality: 4, stage: 1, entries: [] });
 });
+
+test('campaign stage map: full stage range, boss + minions all resolvable in the creeps dict', () => {
+  const campaignDict = JSON.parse(readFileSync(new URL('../web/dict/campaign-dict.json', import.meta.url)));
+  const stages = campaignDict.stages;
+  const codes = Object.keys(stages).map(Number).sort((a, b) => a - b);
+  assert.deepEqual([codes[0], codes[codes.length - 1], codes.length], [maps.campaign.minStage, maps.campaign.maxStage, maps.campaign.stages]);
+  for (const [stage, entry] of Object.entries(stages)) {
+    if (entry.boss) assert.ok(creepsDict.campaign[entry.boss], `stage ${stage} boss ${entry.boss} missing from creeps dict`);
+    for (const code of entry.minions) assert.ok(creepsDict.campaign[code], `stage ${stage} minion ${code} missing from creeps dict`);
+    assert.ok(!entry.minions.includes(entry.boss), `stage ${stage} lists its own boss as a minion`);
+  }
+});
+
+test('Pet / Spell: reserved slots stay null in state, compact in the profile; traps stay compact', () => {
+  const state = fromProfile(
+    { pets: [{ name: 'colossal_ape', star: 2 }, 'alien_critter'], spells: ['sword_radiance'], traps: ['demon_spike'] },
+    base, dict,
+  );
+  assert.deepEqual([state.traps.length, state.pets.length, state.spells.length], [1, 3, 2]);
+  assert.deepEqual([state.pets[0].star, state.pets[1].level], [2, 1]);
+  assert.deepEqual([state.pets[2], state.spells[1]], [null, null]);
+  // The emit drops empty slots (the engine reads every entry head-on), traps map straight through.
+  const profile = toProfile(state, dict);
+  assert.deepEqual(profile.traps, [{ name: 'demon_spike', level: 1, star: 1 }]);
+  assert.deepEqual(profile.pets, [
+    { name: 'colossal_ape', level: 1, star: 2 },
+    { name: 'alien_critter', level: 1, star: 1 },
+  ]);
+  assert.deepEqual(profile.spells, [{ name: 'sword_radiance', star: 1 }]);
+  // Filling and clearing slots: state normalize keeps the null placeholders, emit compacts again.
+  state.pets[2] = { name: 'dreamweaver_spider', level: 3, star: 4 };
+  state.spells[1] = { name: 'hellish_flame', star: 2 };
+  state.pets[0] = null;
+  normalize(state, dict);
+  const next = toProfile(state, dict);
+  assert.deepEqual(next.pets, [
+    { name: 'alien_critter', level: 1, star: 1 },
+    { name: 'dreamweaver_spider', level: 3, star: 4 },
+  ]);
+  assert.deepEqual(next.spells, [
+    { name: 'sword_radiance', star: 1 },
+    { name: 'hellish_flame', star: 2 },
+  ]);
+  // Override on with every slot cleared still replaces the capture list (with nothing).
+  state.pets = state.pets.map(() => null);
+  normalize(state, dict);
+  assert.deepEqual(toProfile(state, dict).pets, []);
+});

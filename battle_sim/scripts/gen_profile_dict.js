@@ -29,6 +29,7 @@ const SUPPORT_OUT = path.join(__dirname, "..", "web", "dict", "support-dict.json
 const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
 const BOSS_OUT = path.join(__dirname, "..", "web", "dict", "boss-dict.json");
 const CREEPS_OUT = path.join(__dirname, "..", "web", "dict", "creeps-dict.json");
+const CAMPAIGN_OUT = path.join(__dirname, "..", "web", "dict", "campaign-dict.json");
 const ANTIQUE_OUT = path.join(__dirname, "..", "web", "dict", "antique-dict.json");
 const RELIC_OUT = path.join(__dirname, "..", "web", "dict", "relic-dict.json");
 const ARTIFACT_OUT = path.join(__dirname, "..", "web", "dict", "artifact-dict.json");
@@ -254,6 +255,7 @@ async function main() {
     .filter((stage) => Number.isInteger(stage) && M("BattleGroundLO").get(M("AdventuretdLevelLO").get(stage * 10).battleGroundCode))
     .sort((a, b) => a - b);
   const capital = capitalCatalogs(M, V);
+  const campaign = campaignCatalogs(M, V);
   const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length },
     capital: { battleType: capital.battleType, bosses: Object.keys(capital.bosses) } };
 
@@ -414,7 +416,8 @@ async function main() {
   write(SUPPORT_OUT, { summonerSkins, summonerGear, traps, pets, spells, buildings, mounts, mountPrivilegeTypes });
   write(MAP_OUT, maps);
   write(BOSS_OUT, { bosses: capital.bosses });
-  write(CREEPS_OUT, { creeps: capital.creeps });
+  write(CAMPAIGN_OUT, { stages: campaign.stages });
+  write(CREEPS_OUT, { creeps: capital.creeps, campaign: campaign.creeps });
   write(ANTIQUE_OUT, { antiques });
   write(RELIC_OUT, relics);
   write(ARTIFACT_OUT, { heroes: artifactHeroes, buffs, skills: artifactSkills });
@@ -426,7 +429,8 @@ async function main() {
     `${maps.capital.bosses.length} capital boss ids`);
   console.log(`wrote ${path.relative(process.cwd(), BOSS_OUT)}: ${count(capital.bosses)} capital bosses, ` +
     `${Object.values(capital.bosses).reduce((n, b) => n + b.presets.length, 0)} presets`);
-  console.log(`wrote ${path.relative(process.cwd(), CREEPS_OUT)}: ${count(capital.creeps)} creeps`);
+  console.log(`wrote ${path.relative(process.cwd(), CREEPS_OUT)}: ${count(capital.creeps)} creeps, ${count(campaign.creeps)} campaign creeps`);
+  console.log(`wrote ${path.relative(process.cwd(), CAMPAIGN_OUT)}: ${count(campaign.stages)} campaign stages`);
   console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques`);
   console.log(`wrote ${path.relative(process.cwd(), HERO_OUT)}: ${count(heroes)} heroes`);
   console.log(`wrote ${path.relative(process.cwd(), SUPPORT_OUT)}: ${count(traps)} traps, ` +
@@ -469,6 +473,44 @@ function capitalCatalogs(M, V) {
     }];
   });
   return { battleType: 21, bosses: keyed(list), creeps };
+}
+
+// Campaign (AdventuretdLevelLO, id = stage*10, battleGroundCode must exist — same check as the
+// stage range above). Each stage's _round list references AdventuretdRoundLO rows: _roundType 3 is
+// the stage boss (one elite creep spawning at the back row, pos 7 — stages 1-2 have none), 1/2/4
+// are the trash waves, 8 the stage 1-2 tutorial rounds, and 9 the enemy fountain (Suối Dị Thú, a
+// spawner building with a placeholder desc — left out entirely). The stage hover popover only
+// needs boss + the distinct minion types, so stages keep boss + deduped minion codes (not the
+// full round/wave dump), and creeps-dict.json's `campaign` section carries name + desc per creep
+// code (same simpleDesc weakness/resistance/trait format as the capital bosses).
+function campaignCatalogs(M, V) {
+  const strip = (s) => String(s || "").replace(/<br\s*\/?>/gi, " · ").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").replace(/\s*·\s*/g, " · ").trim();
+  const creep = (code) => {
+    const row = M("CreepLO").get(code);
+    if (!row) throw new Error(`campaign creep ${code} missing from CreepLO`);
+    const vi = V("CreepLO").get(code);
+    return { code, name: row.name, name_vn: vi?.name, desc: strip(row.simpleDesc), desc_vn: strip(vi?.simpleDesc) };
+  };
+  const creeps = {};
+  const stages = {};
+  for (const row of rows(M("AdventuretdLevelLO")).sort((a, b) => a.id - b.id)) {
+    const stage = row.id / 10;
+    if (!Number.isInteger(stage) || !M("BattleGroundLO").get(row.battleGroundCode)) continue;
+    const minions = new Set();
+    let boss = null;
+    for (const code of JSON.parse(row._round)) {
+      const round = M("AdventuretdRoundLO").get(code);
+      if (!round) continue;
+      const codes = JSON.parse(round._creep);
+      if (round._roundType === 3) boss = codes[0];
+      else if (round._roundType !== 9) codes.forEach((c) => minions.add(c));
+    }
+    minions.delete(boss);
+    if (boss) creeps[boss] = creep(boss);
+    [...minions].sort((a, b) => a - b).forEach((code) => { creeps[code] = creep(code); });
+    stages[stage] = { boss, minions: [...minions].sort((a, b) => a - b) };
+  }
+  return { stages, creeps };
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

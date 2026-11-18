@@ -1,7 +1,7 @@
 // "Màn chơi": campaign stage, or capital (U Đô) boss + creep preset (off = the capture's battle).
 // Capital: the room a boss shows up in never changes its stats, so the form only picks the boss and
 // which 3 creep types come with it (see battle_sim/docs/planning/capital.md).
-import { Accordion, html, NumberInput, Select, SelectPop, optionText } from "../ui.js";
+import { Accordion, html, NumberInput, PopHover, Select, SelectPop, optionText } from "../ui.js";
 
 const MODE_OPTIONS = [["campaign", "Campaign"], ["capital", "U Đô (Capital)"]];
 
@@ -27,14 +27,35 @@ function MapBody({ ctx }) {
   `;
 }
 
+// Stage hover card for the Campaign label: the stage boss with its desc, then each minion type
+// with desc (campaign-dict stages reference creeps-dict's campaign section by code). Boss is null
+// for the tutorial stages 1-2; an out-of-range entry falls back to a one-line note.
+const stagePop = (campaignDict, creepsDict, stage) => {
+  const entry = campaignDict?.stages[String(stage)];
+  if (!entry) return html`<div class="pop-title">${`Stage ${stage || "—"}`}</div><div class="note">Không có dữ liệu stage này.</div>`;
+  const creep = (code) => creepsDict.campaign[code] || { name_vn: code, desc_vn: "" };
+  const boss = entry.boss && creep(entry.boss);
+  // Star variants (CreepLO _type 1/2) repeat a family's name; drop a minion only when both its
+  // name and desc repeat, so same-name cousins with different traits (20s/30s waves) both show.
+  const minions = entry.minions.map(creep).filter((m, i, all) => !all.some((x, j) => j < i
+    && (x.name_vn || x.name) === (m.name_vn || m.name) && (x.desc_vn || x.desc) === (m.desc_vn || m.desc)));
+  return html`
+    <div class="pop-title">${boss ? boss.name_vn || boss.name : "Không có boss"}</div>
+    ${boss && html`<div class="pop-desc">${boss.desc_vn || boss.desc}</div>`}
+    ${minions.map((m) => html`<div class="pop-line"><div>${m.name_vn || m.name}</div><div class="pop-desc">${m.desc_vn || m.desc}</div></div>`)}
+  `;
+};
+
 function CampaignBody({ ctx }) {
-  const { state, maps, update } = ctx;
+  const { state, maps, campaignDict, creepsDict, update } = ctx;
   const { minStage, maxStage } = maps.campaign;
   const setStage = (v) => update((s) => void (s.map.stage = v));
   return html`
     <div class="row">
       <label>
-        ${`Stage (${minStage}–${maxStage}) `}
+        <${PopHover} content=${stagePop(campaignDict, creepsDict, state.map.stage)}>
+          <span class="pop-trigger">${`Stage (${minStage}–${maxStage}) `}</span>
+        <//>
         <${NumberInput} value=${state.map.stage} min=${minStage} max=${maxStage} onChange=${setStage} />
       </label>
     </div>
