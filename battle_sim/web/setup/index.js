@@ -143,6 +143,9 @@ async function showRegion(root, region, saved, switching = false) {
   if (!profile?.heroes) state.heroes = await prefill(dict, maps, region, battle, "heroes");
   normalize(state, dict);
   const changeRegion = (next, current) => showRegion(root, next, current, true);
+  // First mount adopts nothing from #app, so preact leaves the html placeholder ("đang tải…")
+  // alive next to the rendered tree — drop it just before mounting (region switch diffs instead).
+  if (!switching) root.textContent = "";
   render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   if (!switching) bindAccordionToggle(root);
   else root.dispatchEvent(new Event("toggle"));
@@ -150,5 +153,6 @@ async function showRegion(root, region, saved, switching = false) {
 
 const root = document.getElementById("app");
 savedSetup().then((saved) => showRegion(root, saved?.region === "gat" ? "gat" : "vn", saved)).catch((err) => {
+  root.textContent = ""; // same placeholder quirk on the error path
   render(html`<p class="err">${`Lỗi tải trang: ${err.message}`}</p>`, root);
 });
