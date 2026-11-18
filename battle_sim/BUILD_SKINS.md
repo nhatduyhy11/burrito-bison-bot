@@ -46,8 +46,36 @@ skill trong `BuildSkinLO` (发电机 / 招财猫) mới biết type 3 là chuộ
   từ đây.
 - `playerInfos[].skinInfos`: mọi skin building đã sở hữu (`skinId`, `skinLevel`).
   `TDPlayerEntity` dùng để liệt kê skin theo `buildType`.
-- `playerInfos[].goldenSkinsCount`: số skin vàng. `BattleEngineDelegate` dùng số này
-  nhân với `SummonCreatureDamageAddStep` để tăng sát thương pet.
+- `playerInfos[].goldenSkinsCount`: số skin vàng **hero/Summoner** (không phải skin
+  building), xem mục dưới.
+
+### `goldenSkinsCount`
+
+- **Đếm gì:** số skin trong `DermaLO` có `color` 7 (vàng) mà account đã sở hữu, gồm cả skin
+  hero (`heroCode` > 0) lẫn skin Summoner (`heroCode` 0, mã 202xx). Server tính, client chỉ
+  đọc. `SkillConstLO.SummonCreatureDamageAddStep.constDesc` ghi "Số lượng Skin Vàng trong
+  BST Tướng". Kiểm chứng với pmain (playerId 51921435): `GetDermaListR` có 5 skin vàng hero
+  (5000203, 5000302, 5000902, 5001302, 5001303) + 1 skin vàng Summoner (20214) = 6, khớp
+  `goldenSkinsCount` 6. Skin 7 màu (`color` 8) có được tính không thì chưa có account để
+  kiểm.
+- **Dùng ở đâu:** chỉ một chỗ, nhánh tạo `SummonCreatureLO` (pet) trong
+  `BattleEngineDelegate`. Không có skill/đồ cổ/thần khí nào khác đọc giá trị này.
+
+  ```js
+  if (JSON.parse(ConstLO.get("SummonCreatureLevelUpBattleType")?.constValue).includes(this._battleType)) {
+    hero.skills.push({ code: { 4: 1701000, 5: 1801000, 6: 1901000, 7: 2001000 }[cfg.color] });
+    var K = playerInfo.goldenSkinsCount;                          // 【召唤兽】金皮数量记录
+    var Y = SkillConstLO.get("SummonCreatureDamageAddStep").constValue || 1; // 150
+    hero.attr.add(FinalHurtAdd /* 10153 */, (hero.attr.getValue(FinalHurtAdd) || 0) + K * Y);
+  }
+  ```
+
+  Pet được thêm skill "Lối chơi Tăng ST" theo màu pet và cộng `FinalHurtAdd` = số skin vàng ×
+  150. Không phải skill riêng scale theo số skin, mà là chỉ số cộng thẳng.
+- **Gate:** config SEA (`sea_65553`, 777 dòng `ConstLO`) **không có**
+  `SummonCreatureLevelUpBattleType`. `JSON.parse` bản sửa của game trả `[]` cho `undefined`,
+  nên điều kiện luôn sai: trên SEA, `goldenSkinsCount` không ảnh hưởng trận nào. Config GAT
+  chưa kiểm.
 
 Account pmain (capture `6af3d7da…` và `6af3dacb…`):
 
@@ -95,9 +123,6 @@ Kiểm tra: dựng lại profile từ 5 capture (cả pmain `6af3d7da…` và `6
 thứ tự của account.
 
 Còn mở:
-- `goldenSkinsCount` của pmain là 6, không khớp số skin vàng building đã sở hữu (8) hay số
-  skin vàng của hero trong đội hình (4). Có thể là tổng skin vàng hero của cả account.
-  Profile đặt bằng tay qua `goldenSkinsCount`; bỏ trường này thì giữ giá trị capture.
 - Skill `90000300000` (击杀回怒, +25 nộ khi hero giết quái) trên giường không thuộc skin
   nào trong `BuildSkinLO`. Server thêm vào, chưa rõ nguồn.
 - Thứ tự skill do server sắp: cửa xếp vàng trước đỏ, giường xếp đỏ trước vàng. Có thể
