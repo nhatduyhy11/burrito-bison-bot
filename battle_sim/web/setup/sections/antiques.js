@@ -1,5 +1,5 @@
 import { starterAntiques } from "../../antiques.js";
-import { Accordion, Checkbox, html, label, NumberInput } from "../ui.js";
+import { Accordion, Checkbox, html, NumberInput, StarSkillsLabel } from "../ui.js";
 
 const COLORS = [["gold", "Vàng"], ["red", "Đỏ"], ["orange", "Cam"], ["purple", "Tím"], ["blue", "Xanh dương"]];
 
@@ -20,7 +20,7 @@ export function AntiquesSection({ ctx }) {
       const setStar = (value) => update((s) => { s.antiques[name] = value; });
       return html`
         <div class="antique-option" key=${name}>
-          <label><${Checkbox} checked=${star !== undefined} onChange=${setOwned} /><span>${label(item)}</span></label>
+          <label><${Checkbox} checked=${star !== undefined} onChange=${setOwned} /><${StarSkillsLabel} item=${item} star=${star} /></label>
           <label>Sao <${NumberInput} value=${star ?? 1} min=${1} max=${item.maxStar} disabled=${star === undefined} onChange=${setStar} /></label>
         </div>
       `;

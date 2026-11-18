@@ -1,5 +1,5 @@
 // "Skill Summoner": skill slots (up to 3), skill-less event skins (stats only, no slot) and the worn skin.
-import { Accordion, Checkbox, html, label, NumberInput, optionText, Select } from "../ui.js";
+import { Accordion, Checkbox, html, NumberInput, optionText, Select, StarSkillsLabel } from "../ui.js";
 import { eventUnlockNote, headerRow } from "./shared.js";
 import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkillsConflict } from "../../summoner-skills.js";
 
@@ -71,7 +71,7 @@ function SkillRow({ ctx, name, skin }) {
     : html`<${NumberInput} value=${entry?.star ?? 1} min=${1} max=${skin.maxStar} disabled=${!entry} onChange=${setStar} />`;
   return html`
     <tr>
-      <td class="name">${label(skin)}${passive ? eventUnlockNote(skin) : null}</td>
+      <td class="name"><${StarSkillsLabel} item=${skin} star=${entry?.star} empty="Skin sự kiện: không có skill, chỉ cộng chỉ số" />${passive ? eventUnlockNote(skin) : null}</td>
       <td>${passive ? html`<span class="note">Cộng chỉ số khi kích hoạt</span>` : skin.skill_vn || skin.skill}</td>
       <td>${star}</td>
       <td><${Checkbox} checked=${!!entry} disabled=${conflict || full} title=${slotTitle} onChange=${setSlot} /></td>

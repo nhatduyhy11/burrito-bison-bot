@@ -119,6 +119,27 @@ export function PopHover({ content, children }) {
   `;
 }
 
+// Hover summary of an item's skill per star run (skins, đồ cổ, mount). The skill title sits on top
+// when every run shares one skill name; otherwise each run is labelled. ✅ marks the run holding
+// `star` (pass undefined when not owned). `empty` is shown for items without star skills.
+export function starSkillsPop(item, star, empty = "Không có skill theo sao") {
+  const runs = item.starSkills || [];
+  if (!runs.length) return html`<div class="pop-title">${label(item)}</div><div class="note">${empty}</div>`;
+  const shared = runs.every((s) => s.name === runs[0].name);
+  const run = (s) => html`
+    <div class="pop-line" key=${s.code}>
+      <span class="hint">${s.stars.includes(star) ? "✅ " : ""}${starsLabel(s.stars)}</span>${shared ? null : label(s)}
+      <div class="pop-desc">${plain(s.desc_vn)}</div>
+    </div>
+  `;
+  return html`<div class="pop-title">${label(shared ? runs[0] : item)}</div>${runs.map(run)}`;
+}
+
+// Item name with a dotted underline that opens starSkillsPop on hover.
+export function StarSkillsLabel({ item, star, empty }) {
+  return html`<${PopHover} content=${starSkillsPop(item, star, empty)}><span class="pop-trigger">${label(item)}</span><//>`;
+}
+
 // One row of the SelectPop listbox; popover content shows while hovered.
 function PopOption({ opt, selected, active, onPick, onHover, onLeave }) {
   const [value, text, popover] = opt;

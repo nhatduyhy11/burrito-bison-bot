@@ -1,5 +1,5 @@
 // "Skin building": each building has its own "Ghi đè" and skin table (1 red / 2 gold / 1 special slot).
-import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, Accordion } from "../ui.js";
+import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, Accordion, StarSkillsLabel } from "../ui.js";
 import { BUILD_SLOTS, buildingForced, buildingLocks } from "../skin-rules.js";
 import { BUILDINGS, buildSkins, newBuilding } from "../profile-io.js";
 import { eventUnlockNote, headerRow, requiresNote, without } from "./shared.js";
@@ -107,7 +107,7 @@ function BuildingSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted
   else if (locked) slotCell = html`<span class="warn">khoá</span>`;
   return html`
     <tr>
-      <td class="name">${label(skin)}${requiresNote(skin, skins)}${eventUnlockNote(skin)}</td>
+      <td class="name"><${StarSkillsLabel} item=${skin} star=${state.owned ? state.star : undefined} />${requiresNote(skin, skins)}${eventUnlockNote(skin)}</td>
       <td>${colorTag(skin.color)}${slotLabel}</td>
       <td><${Checkbox} checked=${state.owned} disabled=${forcedStar !== undefined} onChange=${setOwned} /></td>
       <td>

@@ -1,6 +1,6 @@
 // Hero list; "Tùy chỉnh" on a hero card opens its Dị Năng skill nodes (red heroes), skin table
 // (owned, star, slots) and the Thần Khí editor (below the skin table, artifact.js).
-import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, plain, starsLabel, Accordion } from "../ui.js";
+import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, StarSkillsLabel, plain, starsLabel, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, newHero } from "../profile-io.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
@@ -239,7 +239,7 @@ function HeroSkinRow({ skinKey: key, skin, skins, state, forcedStar, slotted, sl
   return html`
     <tr>
       <td class="name">
-        ${label(skin)}${requiresNote(skin, skins)}
+        <${StarSkillsLabel} item=${skin} star=${state.owned ? state.star : undefined} />${requiresNote(skin, skins)}
         ${key === JOKER_SUMMON.skin && html`<div class="note">${JOKER_SUMMON.skillName} · Triệu hồi Joker</div>`}
       </td>
       <td>${colorTag(skin.color)}</td>

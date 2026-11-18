@@ -1,4 +1,10 @@
-import { Accordion, Checkbox, html, label, optionText, Select } from "../ui.js";
+import { Accordion, Checkbox, html, optionText, Select, StarSkillsLabel } from "../ui.js";
+
+// Mount ranks as star runs so the shared star-skill popover can show them.
+const mountSkills = (mount) => ({
+  ...mount,
+  starSkills: mount.ranks.filter((r) => r.showSkill).map((r) => ({ ...r.showSkill, stars: [r.star] })),
+});
 
 export function MountSection({ ctx }) {
   const { state, dict, update } = ctx;
@@ -16,7 +22,7 @@ export function MountSection({ ctx }) {
       return html`
         <label class="mount-option" key=${name}>
           <${Checkbox} checked=${mounts?.owned.includes(name)} onChange=${setOwned} />
-          <span>${label(mount)}</span>
+          <${StarSkillsLabel} item=${mountSkills(mount)} star=${mounts?.owned.includes(name) ? 1 : undefined} />
         </label>
       `;
     });
