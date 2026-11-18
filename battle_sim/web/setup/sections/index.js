@@ -1,6 +1,7 @@
-// Form sections of the setup page, in page order: Màn chơi, then tabs (Teams, Support). Teams
-// holds the hero cards (skins, Dị Năng, Thần Khí editor in sections/artifact.js); Support holds
-// everything non-hero: Trap, Pet, Spell (lists.js), Summoner, building skins, Mounts, Đồ Cổ, Golden.
+// Form sections of the setup page, in page order: Màn chơi, then tabs (Teams, Support, Summoner).
+// Teams holds the hero cards (skins, Dị Năng, Thần Khí editor in sections/artifact.js); Support
+// holds Trap, Pet, Spell (lists.js), building skins, Golden; Summoner holds what the Summoner
+// wears: Skill Summoner (summoner.js), Mounts, Đồ Cổ.
 // (Account gốc lives inside the "Thao tác" section, see side.js.)
 // Each section takes ctx = { state, dict, update(fn), toggleWithPrefill(group, on) }; update(fn)
 // runs fn on a copy of the state (fn may also return a replacement), normalizes it with skin-rules
@@ -17,11 +18,12 @@ import { GoldenSection } from "./golden.js";
 import { AntiquesSection } from "./antiques.js";
 
 const TAB_KEY = "battleSimSetupTab";
-const TABS = [["teams", "Teams"], ["support", "Support"]];
+const TABS = [["teams", "Teams"], ["support", "Support"], ["summoner", "Summoner"]];
 
 function savedTab() {
-  // Legacy keys ("summoner", "heroDetail" — tabs removed by the bbb-xbq/bbb-1rl rework) fall back
-  // to Teams through the same unknown-key path; the next explicit pick overwrites the key.
+  // Legacy key "heroDetail" (tab removed by the bbb-xbq/bbb-1rl rework) falls back to Teams through
+  // the same unknown-key path; the next explicit pick overwrites the key. ("summoner" was legacy
+  // too until bbb-505 reused it for this tab — old stored values land on the new tab, which is fine.)
   try {
     const tab = localStorage.getItem(TAB_KEY);
     return TABS.some(([key]) => key === tab) ? tab : TABS[0][0];
@@ -56,6 +58,7 @@ export function FormSections({ ctx }) {
   const list = (group) => html`<${ListSection} ctx=${ctx} group=${group} />`;
   return html`
     <${MapSection} ctx=${ctx} />
+    <hr class="section-divider" />
     <${TabBar} active=${tab} onSelect=${selectTab} />
     <div role="tabpanel" hidden=${tab !== "teams"}>
       <${HeroesSection} ctx=${ctx} />
@@ -64,11 +67,13 @@ export function FormSections({ ctx }) {
       ${list("traps")}
       ${list("pets")}
       ${list("spells")}
-      <${SummonerSection} ctx=${ctx} />
       <${BuildingsSection} ctx=${ctx} />
+      <${GoldenSection} ctx=${ctx} />
+    </div>
+    <div role="tabpanel" hidden=${tab !== "summoner"}>
+      <${SummonerSection} ctx=${ctx} />
       <${MountSection} ctx=${ctx} />
       <${AntiquesSection} ctx=${ctx} />
-      <${GoldenSection} ctx=${ctx} />
     </div>
   `;
 }

@@ -109,6 +109,8 @@ button.primary { background: var(--accent); color: #0b1220; border-color: var(--
 .pop-desc { margin-top: 1px; overflow-wrap: anywhere; }
 /* Divider between the purification and star sections of the relic popover. */
 .pop-divider { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 6px 0; }
+/* Full-width divider between the Màn chơi section and the tab bar below it. */
+.section-divider { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 0 0 10px; }
 .pop-hover { display: inline-flex; min-width: 0; }
 /* Hoverable summary label (Thánh Khí note) — dotted underline as the affordance. */
 .pop-trigger { cursor: help; text-decoration: underline dotted var(--muted); text-underline-offset: 2px; }
