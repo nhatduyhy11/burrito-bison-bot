@@ -1,7 +1,7 @@
 // "Màn chơi": campaign stage, or capital (U Đô) boss + creep preset (off = the capture's battle).
 // Capital: the room a boss shows up in never changes its stats, so the form only picks the boss and
 // which 3 creep types come with it (see battle_sim/docs/planning/capital.md).
-import { Accordion, html, NumberInput, Select, optionText } from "../ui.js";
+import { Accordion, html, NumberInput, Select, SelectPop, optionText } from "../ui.js";
 
 const MODE_OPTIONS = [["campaign", "Campaign"], ["capital", "U Đô (Capital)"]];
 
@@ -46,11 +46,18 @@ const creepName = (creepsDict, id) => {
   return c ? c.name_vn || c.name : id;
 };
 
+// Boss hover card: desc_vn is one "Điểm yếu: … · Kháng: … · Đặc điểm: …" string; split it into
+// one line per segment so the weakness reads at a glance.
+const bossPop = (b) => {
+  const parts = (b.desc_vn || b.desc || "").split(" · ");
+  return html`<div class="pop-title">${b.name_vn || b.name}</div>${parts.map((p) => html`<div class="pop-desc">${p}</div>`)}`;
+};
+
 function CapitalBody({ ctx }) {
   const { state, bossDict, creepsDict, update } = ctx;
   const { bosses } = bossDict;
   const boss = bosses[state.map.boss];
-  const bossOptions = [["", "— chọn boss —"], ...Object.entries(bosses).map(([key, b]) => [key, `${optionText(b)} · ${b.presets.length} bộ quái`])];
+  const bossOptions = [["", "— chọn boss —"], ...Object.entries(bosses).map(([key, b]) => [key, `${optionText(b)} · ${b.presets.length} bộ quái`, bossPop(b)])];
   const presetOptions = [["", boss ? "— chọn bộ quái —" : "— chọn boss trước —"],
     ...(boss?.presets || []).map((p) => [String(p.level), p.creeps.map((id) => creepName(creepsDict, id)).join(" + ")])];
   const preset = boss?.presets.find((p) => p.level === state.map.level);
@@ -63,7 +70,7 @@ function CapitalBody({ ctx }) {
   const setPreset = (value) => update((s) => void (s.map.level = value ? Number(value) : null));
   return html`
     <div class="row wide">
-      <label>Boss <${Select} options=${bossOptions} value=${state.map.boss || ""} onChange=${setBoss} /></label>
+      <label>Boss <${SelectPop} options=${bossOptions} value=${state.map.boss || ""} onChange=${setBoss} /></label>
     </div>
     ${boss && html`<p class="hint">${boss.desc_vn || boss.desc}</p>`}
     <div class="row wide">

@@ -105,7 +105,9 @@ button.primary { background: var(--accent); color: #0b1220; border-color: var(--
    the controls underneath, and mouse-leave stays with the trigger). */
 .popover { position: fixed; z-index: 60; width: 320px; pointer-events: none; background: #1e2128;
   border: 1px solid var(--line); border-radius: 6px; padding: 8px; box-shadow: 0 8px 24px #0006;
-  font-size: 11px; line-height: 1.45; max-height: calc(100vh - 16px); overflow: hidden; }
+  font-size: 11px; line-height: 1.45; max-height: calc(100vh - 16px); overflow: hidden;
+  /* Normal here: the card is a popover child of trigger labels (.row.wide label) whose nowrap would clip long descs. */
+  white-space: normal; }
 .pop-title { font-weight: 600; font-size: 12px; margin-bottom: 6px; }
 .pop-line { margin-bottom: 6px; }
 .pop-line:last-child { margin-bottom: 0; }
