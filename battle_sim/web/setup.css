@@ -112,6 +112,8 @@ button.primary { background: var(--accent); color: #0b1220; border-color: var(--
 .pop-line .hint { color: var(--muted); font-size: 11px; margin-right: 4px; }
 .pop-line div.hint { margin-top: 1px; }
 .pop-desc { margin-top: 1px; overflow-wrap: anywhere; }
+/* Compact run line (trap / spell, 10 runs): star label inline with the desc. */
+.pop-line.compact { margin-bottom: 3px; overflow-wrap: anywhere; }
 /* Divider between the purification and star sections of the relic popover. */
 .pop-divider { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 6px 0; }
 /* Full-width divider between the Màn chơi section and the tab bar below it. */

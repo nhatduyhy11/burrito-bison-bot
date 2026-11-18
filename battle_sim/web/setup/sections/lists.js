@@ -1,5 +1,5 @@
 // Trap / Pet / Spell lists: name, level (traps, pets), star.
-import { Accordion, html, label, NumberInput, plain, Select, SelectPop } from "../ui.js";
+import { Accordion, html, label, NumberInput, plain, SelectPop, starsLabel } from "../ui.js";
 import { LIMITS } from "../profile-io.js";
 import { AddButton, RemoveButton, nameOptions } from "./shared.js";
 
@@ -52,6 +52,25 @@ function petPop(pet) {
   `;
 }
 
+// Hover summary for a trap / spell: the skill title, then one compact line per star run (star label
+// inline with the desc — traps have 10 runs). Spells add each run's CD, and the range once on top
+// when every run shares it.
+function starRunsPop(item, group) {
+  const runs = item.starSkills || [];
+  if (!runs.length) return html`<div class="pop-title">${label(item)}</div><div class="note">Không có skill theo sao</div>`;
+  const ranges = new Set(runs.map((s) => s.range).filter(Boolean));
+  const range = group === "spells" && ranges.size === 1 ? ` · tầm ${[...ranges][0]}` : "";
+  const run = (s) => html`
+    <div class="pop-line compact" key=${s.code}>
+      <span class="hint">${starsLabel(s.stars)}${group === "spells" && s.cd ? ` · CD ${s.cd}s` : ""}${ranges.size > 1 && s.range ? ` · tầm ${s.range}` : ""}</span>
+      ${plain(s.desc_vn)}
+    </div>
+  `;
+  return html`<div class="pop-title">${label(runs[0])}<span class="note">${range}</span></div>${runs.map(run)}`;
+}
+
+const OPTION_POP = { pets: (item) => petPop(item), traps: (item) => starRunsPop(item, "traps"), spells: (item) => starRunsPop(item, "spells") };
+
 function ListRow({ ctx, group, item, index }) {
   const { state, dict, update } = ctx;
   const info = dict[group][item.name];
@@ -63,10 +82,9 @@ function ListRow({ ctx, group, item, index }) {
   const level = info.maxLevel
     ? html`<label>Level <${NumberInput} value=${item.level} min=${1} max=${info.maxLevel} onChange=${setLevel} /></label>`
     : null;
-  const picker = group === "pets"
-    ? html`<${SelectPop} options=${options.map(([key, text, disabled, grp]) => [key, text, petPop(dict.pets[key]), disabled, grp])}
-        value=${item.name} onChange=${setName} />`
-    : html`<${Select} options=${options} value=${item.name} onChange=${setName} />`;
+  const picker = html`<${SelectPop}
+    options=${options.map(([key, text, disabled, grp]) => [key, text, OPTION_POP[group](dict[group][key]), disabled, grp])}
+    value=${item.name} onChange=${setName} />`;
   return html`
     <div class="row list-row">
       ${picker}
