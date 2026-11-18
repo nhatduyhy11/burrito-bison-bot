@@ -3,7 +3,7 @@
 // change hero.skills: each swaps `replaces` for `skill` (adds it when replaces is null), later nodes
 // may replace an earlier node's skill. The battle engine loads skills by code alone, so rebuilding
 // hero.skills by this rule is all the game does. Attribute nodes are not modelled.
-// nodes = profile-dict avatarNodes (chapter order). See docs/planning/hero_gear.md.
+// nodes = hero-dict avatarNodes (chapter order). See docs/planning/hero_gear.md.
 
 export function applyAvatar(hero, nodes, count, rb, step) {
   if (!nodes?.length) throw new Error(`Hero ${hero.code} has no Dị Năng skill nodes`);

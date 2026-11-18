@@ -6,11 +6,13 @@
 // - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
 // - web/dict/artifact-dict.json: Thần Khí per hero (names, slot) + shared team buffs; rules in web/artifacts.js;
-// - web/dict/profile-dict.json: the rest of the account side: heroes with their skins, Summoner skins,
-//   traps, pets, spells (daoists), building skins and mounts.
+// - web/dict/hero-dict.json: the hero side: heroes with their skins and Dị Năng (avatar) nodes;
+// - web/dict/support-dict.json: the non-hero side: Summoner skins, traps, pets, spells (daoists),
+//   building skins, mounts and mount privilege types.
 // Entries are keyed by a slug of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
 // lang_vi.<ver>.bin, public CDN next to config.bin; downloaded once into
-// .tmp/battle_sim/config/<configVersion>/).
+// .tmp/battle_sim/config/<configVersion>/). Skill refs that feed the hover popovers also carry
+// `desc_vn` (lang_vi desc, en desc as fallback).
 //
 //   node battle_sim/scripts/gen_profile_dict.js [configVersion] [battleVersion]
 const fs = require("fs");
@@ -22,7 +24,8 @@ const versions = require("../lib/versions");
 const CONFIG_VERSION = process.argv[2] || "sea_65553";
 const BATTLE_VERSION = process.argv[3] || "2.3.1-2_E64067_P63528_C64067";
 const ASSETS = { battleVersion: BATTLE_VERSION, configVersion: CONFIG_VERSION, mapVersion: "trunk_61543" };
-const OUT = path.join(__dirname, "..", "web", "dict", "profile-dict.json");
+const HERO_OUT = path.join(__dirname, "..", "web", "dict", "hero-dict.json");
+const SUPPORT_OUT = path.join(__dirname, "..", "web", "dict", "support-dict.json");
 const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
 const BOSS_OUT = path.join(__dirname, "..", "web", "dict", "boss-dict.json");
 const CREEPS_OUT = path.join(__dirname, "..", "web", "dict", "creeps-dict.json");
@@ -70,10 +73,34 @@ async function main() {
   const V = await tablesIn("vi");
   const vn = (table, key) => V(table).get(key)?.name;
   const SkillBase = M("SkillBaseLO");
+  // Hover-popover skill data: desc prefers lang_vi (the pack the game itself loads), the en desc is
+  // the fallback. `starSkillsOf` folds per-star rows into relic-style runs: consecutive stars with
+  // an identical payload become one {stars, ...payload} entry.
+  const skillRef = (code) => ({ code, name: SkillBase.get(code)?.name, name_vn: vn("SkillBaseLO", code),
+    desc_vn: V("SkillBaseLO").get(code)?.desc?.trim() || SkillBase.get(code)?.desc?.trim() });
+  const starSkillsOf = (list) => { // [[star, payload]] -> [{stars, ...payload}]
+    const out = [];
+    for (const [star, payload] of [...list].sort((a, b) => a[0] - b[0])) {
+      const last = out.at(-1);
+      if (last) { const { stars, ...rest } = last;
+        if (JSON.stringify(rest) === JSON.stringify(payload)) { last.stars.push(star); continue; } }
+      out.push({ stars: [star], ...payload });
+    }
+    return out;
+  };
 
   // Hero and Summoner skins share DermaLO and DermaStarLO.
   const dermaMaxStar = new Map();
   for (const r of rows(M("DermaStarLO"))) dermaMaxStar.set(r.dermaCode, Math.max(dermaMaxStar.get(r.dermaCode) || 0, r.star));
+  // Per-star skin skill (DermaStarLO._skill, one SkillBaseLO code per star): popover data for hero
+  // and Summoner skins.
+  const dermaStarSkills = new Map();
+  for (const r of rows(M("DermaStarLO"))) {
+    if (!r.skill) continue;
+    const list = dermaStarSkills.get(r.dermaCode) || [];
+    list.push([r.star, skillRef(jsonField(r.skill)[0])]);
+    dermaStarSkills.set(r.dermaCode, list);
+  }
   const dermas = rows(M("DermaLO"));
   const heroSkins = dermas.filter((d) => d.dermatype === 1);
   const isEventReward = (row) => ["活动获得", "Obtained from events."].includes(row.sourceName);
@@ -85,6 +112,7 @@ async function main() {
     code: d.code, name: d.name, name_vn: vn("DermaLO", d.code), color: SKIN_COLOR[d.color] || d.color,
     maxStar: dermaMaxStar.get(d.code) || 1, model: d.deco,
     ...(d.skills?.length ? { skill: SkillBase.get(d.skills.get(0))?.name, skill_vn: vn("SkillBaseLO", d.skills.get(0)) } : {}),
+    ...(dermaStarSkills.has(d.code) ? { starSkills: starSkillsOf(dermaStarSkills.get(d.code)) } : {}),
     ...(!d.skills?.length && isEventReward(d) && d.hideStar ? {
       ...eventUnlock(d, d.costs),
       passiveAttr: jsonField(M("DermaStarLO").get(d.code * 100 + 1)?.attr),
@@ -97,7 +125,8 @@ async function main() {
   // hero.skills (adds it when replaces is null); the server builds hero.skills exactly by this rule.
   // `skillUnlock` = [heroId, breakthrough]: the node only applies from that breakthrough on (the
   // SkillReplaceLO level of the skill it replaces); the client never reads it, the server does.
-  // Attribute nodes are left out (server-side attr, not modelled). See docs/planning/hero_gear.md.
+  // `skillInfo` / `replacesInfo` carry name + desc for the hover popover. Attribute nodes are left
+  // out (server-side attr, not modelled). See docs/planning/hero_gear.md.
   const avatarRows = new Map();
   for (const row of rows(M("AvatarUpGradeLO"))) {
     if (!row.skillcode) continue;
@@ -105,6 +134,8 @@ async function main() {
     const list = avatarRows.get(point.subType) || [];
     const minBreakThrough = jsonField(row.skillUnlock)[1];
     list.push({ chapter: point.chapter, node: { replaces: row.oldSkillCode || null, skill: row.skillcode,
+      skillInfo: skillRef(row.skillcode),
+      ...(row.oldSkillCode ? { replacesInfo: skillRef(row.oldSkillCode) } : {}),
       ...(minBreakThrough ? { minBreakThrough } : {}) } });
     avatarRows.set(point.subType, list);
   }
@@ -123,6 +154,7 @@ async function main() {
       const requires = JSON.parse(d.requirement || "[]").map(([code]) => skinKey.get(code));
       skins[skinKey.get(d.code)] = {
         code: d.code, name: d.name, name_vn: vn("DermaLO", d.code), color: SKIN_COLOR[d.color] || d.color, maxStar: dermaMaxStar.get(d.code) || 1,
+        ...(dermaStarSkills.has(d.code) ? { starSkills: starSkillsOf(dermaStarSkills.get(d.code)) } : {}),
         ...(requires.length ? { requires } : {}),
       };
     }
@@ -131,20 +163,55 @@ async function main() {
   }));
 
   const organLevel = maxBy(M("OrganUpGradeLO"), "level"), organStar = maxBy(M("OrganStarLO"), "star");
+  // Per-star trap skill (OrganStarLO._skillCode); repalceSkillCodes (sic) lists the variants this
+  // star swaps out (Phantom Mirror stars 7-10 swap in a ...X100 variant).
+  const organStarSkills = new Map();
+  for (const r of rows(M("OrganStarLO"))) {
+    if (!r.skillCode) continue;
+    const replaces = jsonField(r.repalceSkillCodes);
+    const list = organStarSkills.get(r.mecType) || [];
+    list.push([r.star, { ...skillRef(r.skillCode), ...(replaces.length ? { replaces } : {}) }]);
+    organStarSkills.set(r.mecType, list);
+  }
   // A selectable trap needs its unlock items and the tags the battle UI renders.
   const availableTrap = (organ) =>
     jsonField(organ.cost).every(([type, item]) => type !== 3 || M("ItemLO").get(item)) &&
     jsonField(organ.tag).every((tag) => M("HeroTagLO").get(tag));
   const traps = keyed(rows(M("OrganLO")).filter(availableTrap).sort((a, b) => a.code - b.code).map((o) => [o.name,
-    { code: o.code, name: o.name, name_vn: vn("OrganLO", o.code), color: RARITY[o.color] || o.color, maxLevel: organLevel.get(o.mecType) || 1, maxStar: organStar.get(o.mecType) || 1 }]));
+    { code: o.code, name: o.name, name_vn: vn("OrganLO", o.code), color: RARITY[o.color] || o.color,
+      maxLevel: organLevel.get(o.mecType) || 1, maxStar: organStar.get(o.mecType) || 1,
+      ...(organStarSkills.has(o.mecType) ? { starSkills: starSkillsOf(organStarSkills.get(o.mecType)) } : {}) }]));
 
   const petLevel = maxBy(M("SummonCreatureUpGradeLO"), "level"), petStar = maxBy(M("SummonCreatureStarLO"), "star");
-  const pets = keyed(rows(M("SummonCreatureLO")).sort((a, b) => a.code - b.code).map((p) => [p.name,
-    { code: p.code, name: p.name, name_vn: vn("SummonCreatureLO", p.code), color: RARITY[p.color] || p.color, maxLevel: petLevel.get(p.mecType) || 1, maxStar: petStar.get(p.mecType) || 1 }]));
+  // Pet battle skills: SummonCreatureLO._skill holds SummonCreatureSkillLO._type group codes (not
+  // SkillBaseLO codes — why pets looked skill-less); each group is one battle skill whose levels
+  // unlock by star (_starRequire), one SkillBaseLO code per level.
+  const petSkillGroups = new Map();
+  for (const r of rows(M("SummonCreatureSkillLO"))) {
+    const list = petSkillGroups.get(r.type) || [];
+    list.push([r.starRequire, skillRef(r.skillCode)]);
+    petSkillGroups.set(r.type, list);
+  }
+  const pets = keyed(rows(M("SummonCreatureLO")).sort((a, b) => a.code - b.code).map((p) => {
+    const groups = jsonField(p.skill).filter((t) => petSkillGroups.has(t))
+      .map((t) => ({ type: t, starSkills: starSkillsOf(petSkillGroups.get(t)) }));
+    return [p.name, { code: p.code, name: p.name, name_vn: vn("SummonCreatureLO", p.code), color: RARITY[p.color] || p.color,
+      maxLevel: petLevel.get(p.mecType) || 1, maxStar: petStar.get(p.mecType) || 1,
+      ...(groups.length ? { skills: groups } : {}) }];
+  }));
 
   const spellStar = maxBy(M("DaoistStarLO"), "star");
+  // Per-star spell skill (DaoistStarLO._skillCode) with the cast params the popover shows.
+  const spellStarSkills = new Map();
+  for (const r of rows(M("DaoistStarLO"))) {
+    if (!r.skillCode) continue;
+    const list = spellStarSkills.get(r.mecType) || [];
+    list.push([r.star, { ...skillRef(r.skillCode), cd: r.skillCd, range: r.ranges }]);
+    spellStarSkills.set(r.mecType, list);
+  }
   const spells = keyed(rows(M("DaoistLO")).sort((a, b) => a.code - b.code).map((d) => [d.name,
-    { code: d.code, name: d.name, name_vn: vn("DaoistLO", d.code), maxStar: spellStar.get(d.mecType) || 1 }]));
+    { code: d.code, name: d.name, name_vn: vn("DaoistLO", d.code), maxStar: spellStar.get(d.mecType) || 1,
+      ...(spellStarSkills.has(d.mecType) ? { starSkills: starSkillsOf(spellStarSkills.get(d.mecType)) } : {}) }]));
 
   // Building skins: BuildSkinLO rows are per star (code = skinId * 100 + star).
   const buildSkins = new Map();
@@ -152,6 +219,14 @@ async function main() {
     const prev = buildSkins.get(r.skinId);
     if (!prev || r.star > prev.maxStar) buildSkins.set(r.skinId, { row: prev?.row?.star === 1 ? prev.row : r, maxStar: r.star });
     if (r.star === 1) buildSkins.get(r.skinId).row = r;
+  }
+  // Per-star building-skin skill (BuildSkinLO._skill).
+  const buildStarSkills = new Map();
+  for (const r of rows(M("BuildSkinLO"))) {
+    if (!r.skill) continue;
+    const list = buildStarSkills.get(r.skinId) || [];
+    list.push([r.star, skillRef(jsonField(r.skill)[0])]);
+    buildStarSkills.set(r.skinId, list);
   }
   const buildings = {};
   for (const [id, buildType] of Object.entries(BUILDINGS)) {
@@ -164,6 +239,7 @@ async function main() {
       skins[skinKey.get(row.skinId)] = {
         skinId: row.skinId, name: row.name, name_vn: vn("BuildSkinLO", row.code), color: SKIN_COLOR[row.color] || row.color,
         slot: BUILD_SLOT[row.skillType] ?? row.skillType, maxStar,
+        ...(buildStarSkills.has(row.skinId) ? { starSkills: starSkillsOf(buildStarSkills.get(row.skinId)) } : {}),
         ...(row.isInit ? { default: true } : {}), ...(requires.length ? { requires } : {}),
         ...(row.skillType === 3 && isEventReward(row) && row.hideStar ? {
           ...eventUnlock(row, row.cost1), skillCodes: jsonField(row.skill),
@@ -190,14 +266,21 @@ async function main() {
     ranks: mountRanks.filter((rank) => rank.mecType === mount.id).sort((a, b) => a.star - b.star).map((rank) => ({
       code: rank.code, star: rank.star, attr: Object.fromEntries(jsonField(rank.attr)),
       privileges: jsonField(rank.privilege),
-      ...(rank.showSkill ? { showSkill: { code: rank.showSkill, name: SkillBase.get(rank.showSkill)?.name,
-        name_vn: vn("SkillBaseLO", rank.showSkill) } } : {}),
+      ...(rank.showSkill ? { showSkill: skillRef(rank.showSkill) } : {}),
     })),
   }]));
   const mountPrivilegeTypes = { 1: "MoveSpeed", 2: "PassWall", 3: "GVGEnergy", 4: "GVGShow" };
 
   // The engine looks up effects and level limits in AntiqueHaloLO by rank code.
   const haloRows = rows(M("AntiqueHaloLO"));
+  // Per-star halo skill (AntiqueHaloLO._skillCode; 5 antiques have none).
+  const haloStarSkills = new Map();
+  for (const r of haloRows) {
+    if (!r.skillCode) continue;
+    const list = haloStarSkills.get(r.antiqueCode) || [];
+    list.push([r.star, skillRef(r.skillCode)]);
+    haloStarSkills.set(r.antiqueCode, list);
+  }
   const antiques = keyed(rows(M("AntiqueLO")).map((row) => {
     const haloRanks = haloRows.filter((halo) => halo.antiqueCode === row.code)
       .sort((a, b) => a.star - b.star);
@@ -208,6 +291,7 @@ async function main() {
     return [row.name, {
       code: row.code, name: row.name, name_vn: vn("AntiqueLO", row.code),
       color: RARITY[row.color] ?? row.color, maxStar: ranks.length, ranks,
+      ...(haloStarSkills.has(row.code) ? { starSkills: starSkillsOf(haloStarSkills.get(row.code)) } : {}),
     }];
   }));
 
@@ -218,8 +302,6 @@ async function main() {
   // already merged into hero.attr by the server, the client computes none; see docs/planning/hero_gear.md.
   const RELIC_COLOR = { ...RARITY, 8: "colorful" };
   const relicStars = rows(M("RelicStarLO"));
-  const skillRef = (code) => ({ code, name: SkillBase.get(code)?.name, name_vn: vn("SkillBaseLO", code),
-    desc_vn: V("SkillBaseLO").get(code)?.desc?.trim() });
   const relicFields = (r) => ({ code: r.code, quality: r.quality, color: RELIC_COLOR[r.quality] ?? r.quality,
     name: r.name, name_vn: vn("RelicLO", r.code) });
   const thanhKhi = rows(M("RelicLO")).filter((r) => r.type === 2).sort((a, b) => a.code - b.code);
@@ -302,12 +384,10 @@ async function main() {
     return [code, skillRef(code)];
   }));
 
-  const dict = {
-    _generated: `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, name_vn: lang_vi)`,
-    heroes, summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes,
-  };
-  const write = (file, data) => fs.writeFileSync(file, JSON.stringify({ _generated: dict._generated, ...data }, null, 2) + "\n");
-  fs.writeFileSync(OUT, JSON.stringify(dict, null, 2) + "\n");
+  const stamp = `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, vi: lang_vi, desc fallback: lang_en)`;
+  const write = (file, data) => fs.writeFileSync(file, JSON.stringify({ _generated: stamp, ...data }, null, 2) + "\n");
+  write(HERO_OUT, { heroes });
+  write(SUPPORT_OUT, { summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes });
   write(MAP_OUT, maps);
   write(BOSS_OUT, { bosses: capital.bosses });
   write(CREEPS_OUT, { creeps: capital.creeps });
@@ -324,8 +404,10 @@ async function main() {
     `${Object.values(capital.bosses).reduce((n, b) => n + b.presets.length, 0)} presets`);
   console.log(`wrote ${path.relative(process.cwd(), CREEPS_OUT)}: ${count(capital.creeps)} creeps`);
   console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques`);
-  console.log(`wrote ${path.relative(process.cwd(), OUT)}: ${count(heroes)} heroes, ${count(traps)} traps, ` +
+  console.log(`wrote ${path.relative(process.cwd(), HERO_OUT)}: ${count(heroes)} heroes`);
+  console.log(`wrote ${path.relative(process.cwd(), SUPPORT_OUT)}: ${count(traps)} traps, ` +
     `${count(pets)} pets, ${count(spells)} spells, ${count(summonerSkins)} Summoner skins, ` +
+    `${count(mounts)} mounts, ` +
     Object.entries(buildings).map(([k, b]) => `${k} ${count(b.skins)} skins`).join(", "));
 }
 

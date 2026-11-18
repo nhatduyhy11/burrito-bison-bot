@@ -116,7 +116,7 @@ function toProfile(state, dict) {
 function fromProfile(profile, base, dict, { maps, bossDict, antiqueDict, relicLines } = {}) {
   const next = { ...emptyState(dict, antiqueDict), battle: base.battle, seed: base.seed };
   const need = (group, name) => {
-    if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong profile-dict.json`);
+    if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong hero-dict.json / support-dict.json`);
     return name;
   };
   const entryOf = (item) => (typeof item === "string" ? { name: item } : item || {});
@@ -252,7 +252,7 @@ export {
   fromProfile,
 };
 
-// Thần Khí (tab Hero detail). State: undefined = as captured, null = none,
+// Thần Khí (hero card in Teams, artifact.js). State: undefined = as captured, null = none,
 // { quality, stage, slots } with one slot per rolled hole (holeNum), each null (empty) or { code, value }.
 // The profile keeps only the filled slots as `entries`; battle/hero/artifact.js checks them.
 export function artifactState(artifact) {

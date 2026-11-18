@@ -1,8 +1,8 @@
 // Setup page for local playtest profiles (served at /__sim/setup.html). Entry module.
 //
 // Builds the JSON that web/battle/profile.js reads (`sandbox --play --profile <file>`) from the
-// catalogs in profile-dict.json, map-dict.json, boss-dict.json, creeps-dict.json and
-// antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
+// catalogs in hero-dict.json + support-dict.json, map-dict.json, boss-dict.json, creeps-dict.json
+// and antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
 // (import map in setup.html, no build step): skin-rules.js (skin input rules), profile-io.js
 // (state <-> profile), ui.js (html`` + small components), sections/ (form sections), side.js (right
 // column), capture.js (capture prefill), and this file (app state and boot).
@@ -112,10 +112,12 @@ function bindAccordionToggle(root) {
 
 async function showRegion(root, region, saved, switching = false) {
   const suffix = `?region=${region}`;
-  const [dict, maps, bossDict, creepsDict, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
-    ...["profile", "map", "boss", "creeps", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
+  const [heroDict, supportDict, maps, bossDict, creepsDict, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
+    ...["hero", "support", "map", "boss", "creeps", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
     getJson(`/__sim/battles.json${suffix}`),
   ]);
+  // One lookup table for both sides: hero-dict (heroes) + support-dict (the non-hero groups).
+  const dict = { ...heroDict, ...supportDict };
   const captureByRegion = { ...saved?.captureByRegion };
   if (saved?.battle) captureByRegion[saved.region || "vn"] = saved.battle;
   const preferredCapture = captureByRegion[region];

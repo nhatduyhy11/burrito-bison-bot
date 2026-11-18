@@ -43,7 +43,7 @@ uv run python battle_sim/sandbox --setup
   (dùng lại được với `--profile`) và `last-setup.json` (kèm capture và seed, trang nạp lại lần
   sau), rồi mở trận như `--play --profile`. Trang cũng tải, sao chép và nhập được file JSON.
   Có thể mở trang qua `serve.js` trong browser thường để soạn profile. Trang chỉ đọc
-  `profile-dict.json` và capture, không nạp code game.
+  `hero-dict.json` + `support-dict.json` và capture, không nạp code game.
 - `sandbox` chạy `serve.js` bằng `node` trên PATH. Shell không thấy node (ví dụ node cài
   qua nvm nhưng terminal mở trước đó) thì đặt `$env:BATTLE_SIM_NODE = '<đường dẫn node.exe>'`.
 
@@ -92,7 +92,7 @@ Capture tạo ra dành cho chế độ **Chơi** offline và có danh sách thao
 
 - `replay.js` — replay + so sánh, 1 hoặc nhiều trận.
 - `scripts/` — công cụ chạy riêng: `snapshot.js` (cache code bundle + map của deploy đang
-  live), `mirror.js` (mirror asset battle), `gen_profile_dict.js` (sinh `profile-dict.json`).
+  live), `mirror.js` (mirror asset battle), `gen_profile_dict.js` (sinh `hero-dict.json` + `support-dict.json`).
 - `serve.js` — serve mirror local offline (`/sim.html`,
   `/__sim/*` = `web/`, `/__sim_config/*` = config cache, `/__sim/last-setup.json`).
 - `sandbox/` + `web/boot.{html,js}` — boot engine và code game trong browser cách ly.

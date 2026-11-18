@@ -5,7 +5,11 @@ import { emptyState, normalize, fromProfile, toProfile } from '../web/setup/prof
 import { hasSummonedJoker, JOKER_SUMMON } from '../web/hero-lineup.js';
 import { applyProfile } from '../web/battle/profile.js';
 
-const dict = JSON.parse(readFileSync(new URL('../web/dict/profile-dict.json', import.meta.url)));
+// One lookup table for both sides: hero-dict (heroes) + support-dict (the non-hero groups).
+const dict = {
+  ...JSON.parse(readFileSync(new URL('../web/dict/hero-dict.json', import.meta.url))),
+  ...JSON.parse(readFileSync(new URL('../web/dict/support-dict.json', import.meta.url))),
+};
 const maps = JSON.parse(readFileSync(new URL('../web/dict/map-dict.json', import.meta.url)));
 const bossDict = JSON.parse(readFileSync(new URL('../web/dict/boss-dict.json', import.meta.url)));
 const creepsDict = JSON.parse(readFileSync(new URL('../web/dict/creeps-dict.json', import.meta.url)));

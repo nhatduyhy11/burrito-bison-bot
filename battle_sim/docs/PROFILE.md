@@ -11,7 +11,7 @@ Bỏ trường muốn giữ từ capture. Với các danh sách như `traps`, `p
 ## Map và đội hình
 
 - `map` chọn màn chơi. Campaign dùng `{ "mode": "campaign", "stage": 66 }` và cần capture campaign để lấy đồng đội robot. U Đô dùng `{ "mode": "capital", "boss": "cursed_botchling", "level": 20701 }`, trong đó `level` phải là một preset thật của boss trong catalog. Khi bỏ `map`, trận giữ màn gốc. Xem [map-dict.json](../web/dict/map-dict.json) và [boss-dict.json](../web/dict/boss-dict.json).
-- `heroes` phải có đúng 5 hero khác nhau. Mỗi mục là slug hoặc object có `name` và phần tùy chỉnh. Hero đã có trong capture giữ tiến độ gốc. Hero mới lấy mẫu từ các hero cùng độ hiếm, hoặc từ toàn đội nếu thiếu mẫu cùng độ hiếm. Simulator lấy trung bình `attr` sau khi trừ `selfAttr` của skin, lấy level và `breakThrough` của hero trung vị, và chọn level skill theo đa số ở từng slot. Thánh Khí và Thần Khí của hero mẫu không được sao chép. Xem [catalog hero](../web/dict/profile-dict.json) và [cách cấu hình skin](../PROFILE_SKINS.md).
+- `heroes` phải có đúng 5 hero khác nhau. Mỗi mục là slug hoặc object có `name` và phần tùy chỉnh. Hero đã có trong capture giữ tiến độ gốc. Hero mới lấy mẫu từ các hero cùng độ hiếm, hoặc từ toàn đội nếu thiếu mẫu cùng độ hiếm. Simulator lấy trung bình `attr` sau khi trừ `selfAttr` của skin, lấy level và `breakThrough` của hero trung vị, và chọn level skill theo đa số ở từng slot. Thánh Khí và Thần Khí của hero mẫu không được sao chép. Xem [catalog hero](../web/dict/hero-dict.json) và [cách cấu hình skin](../PROFILE_SKINS.md).
 - `summonedJoker` có cùng định dạng với một hero. Khi Pháo Loli dùng skill skin `guns_n_roses` và Joker vắng mặt trong đội chính, setup mở Joker ở slot 6. Ví dụ `{ "name": "joker", "skin": "nocturnal_burglar", "star": 5 }` chỉ áp dụng cho Joker được triệu hồi.
 
 ### Gear và Dị Năng
@@ -44,7 +44,7 @@ Bỏ trường muốn giữ từ capture. Với các danh sách như `traps`, `p
 
 Dùng slug trong [web/dict](../web/dict/) khi điền tên. Key thường lấy từ tên tiếng Anh. Các mục thiếu tên dùng `id_<mã>`. `name` lấy từ gói tiếng Anh và `name_vn` từ gói tiếng Việt. `color` của hero, trap và pet thể hiện độ hiếm (`purple` 4, `orange` 5, `red` 6, `gold` 7).
 
-- `profile-dict.json` chứa tùy chọn hero, skin, mount, Summoner, trap, pet, spell và building. Các giới hạn level và số sao nằm ở `maxLevel` và `maxStar` của mục tương ứng.
+- `hero-dict.json` chứa hero + skin + node Dị Năng; `support-dict.json` chứa mount, Summoner, trap, pet, spell và building. Các giới hạn level và số sao nằm ở `maxLevel` và `maxStar` của mục tương ứng.
 - `map-dict.json` chứa khoảng stage campaign và danh sách boss U Đô. `boss-dict.json` chứa preset của boss và tham chiếu quái trong `creeps-dict.json`.
 - `antique-dict.json`, `relic-dict.json` và `artifact-dict.json` chứa metadata Đồ Cổ, Thánh Khí và Thần Khí. Catalog Thánh Khí gồm các dòng đỏ, vàng và 7 màu có skill, cùng dữ liệu thanh tẩy. Các chỉ số do server đã gộp vào `hero.attr`.
 

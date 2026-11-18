@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, name_vn: lang_vi)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
   "bosses": {
     "cursed_botchling": {
       "code": 70070101,

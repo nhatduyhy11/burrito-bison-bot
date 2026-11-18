@@ -1,0 +1,4572 @@
+{
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
+  "heroes": {
+    "hanuman": {
+      "code": 50000001,
+      "name": "Hanuman",
+      "name_vn": "Hanuman",
+      "color": "red",
+      "baseSkills": [
+        10010101000,
+        10010201000,
+        10010301000
+      ],
+      "skins": {
+        "wayward_fist": {
+          "code": 5000101,
+          "name": "Wayward Fist",
+          "name_vn": "Boxer Lãng Tử",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040101000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hanuman, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040102000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hanuman, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040103000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hanuman, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040104000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hanuman, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040105000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hanuman, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "tech_titan": {
+          "code": 5000102,
+          "name": "Tech Titan",
+          "name_vn": "Vua Công Nghệ",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040111000,
+              "name": "Ball Lightning",
+              "name_vn": "Sét Hình Cầu",
+              "desc_vn": "Khi Hanuman thi triển Tuyệt Kỹ, phóng cầu điện ngẫu nhiện 4 lần, mỗi lần gây ST bằng 60% Công và kèm 6s [Tê Liệt], mỗi giây gây ST bằng 35% Công"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040112000,
+              "name": "Ball Lightning",
+              "name_vn": "Sét Hình Cầu",
+              "desc_vn": "Khi Hanuman thi triển Tuyệt Kỹ, phóng cầu điện ngẫu nhiện 4 lần, mỗi lần gây ST bằng 75% Công và kèm 6s [Tê Liệt], mỗi giây gây ST bằng 45% Công"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040113000,
+              "name": "Ball Lightning",
+              "name_vn": "Sét Hình Cầu",
+              "desc_vn": "Khi Hanuman thi triển Tuyệt Kỹ, phóng cầu điện ngẫu nhiện 4 lần, mỗi lần gây ST bằng 90% Công và kèm 6s [Tê Liệt], mỗi giây gây ST bằng 55% Công"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040114000,
+              "name": "Ball Lightning",
+              "name_vn": "Sét Hình Cầu",
+              "desc_vn": "Khi Hanuman thi triển Tuyệt Kỹ, phóng cầu điện ngẫu nhiện 4 lần, mỗi lần gây ST bằng 105% Công và kèm 6s [Tê Liệt], mỗi giây gây ST bằng 65% Công"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040115000,
+              "name": "Ball Lightning",
+              "name_vn": "Sét Hình Cầu",
+              "desc_vn": "Khi Hanuman thi triển Tuyệt Kỹ, phóng cầu điện ngẫu nhiện 4 lần, mỗi lần gây ST bằng 120% Công và kèm 6s [Tê Liệt], mỗi giây gây ST bằng 75% Công"
+            }
+          ]
+        },
+        "heroic_legend": {
+          "code": 5000103,
+          "name": "Heroic Legend",
+          "name_vn": "Dũng Sĩ Huyền Thoại",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040121000,
+              "name": "Mushroom UFO",
+              "name_vn": "UFO Nấm Sao",
+              "desc_vn": "Mỗi 20s, triệu hồi UFO tham chiến 10s. UFO mỗi giây khiến 2 địch ngẫu nhiên trong trận bị Giật Điện 10s, mỗi giây gây ST Tê Liệt bằng 140% Công, sẽ không chọn trùng mục tiêu."
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040122000,
+              "name": "Mushroom UFO",
+              "name_vn": "UFO Nấm Sao",
+              "desc_vn": "Mỗi 20s, triệu hồi UFO tham chiến 10s. UFO mỗi giây khiến 2 địch ngẫu nhiên trong trận bị Giật Điện 10s, mỗi giây gây ST Tê Liệt bằng 180% Công, sẽ không chọn trùng mục tiêu."
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040123000,
+              "name": "Mushroom UFO",
+              "name_vn": "UFO Nấm Sao",
+              "desc_vn": "Mỗi 20s, triệu hồi UFO tham chiến 10s. UFO mỗi giây khiến 2 địch ngẫu nhiên trong trận bị Giật Điện 10s, mỗi giây gây ST Tê Liệt bằng 220% Công, sẽ không chọn trùng mục tiêu."
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040124000,
+              "name": "Mushroom UFO",
+              "name_vn": "UFO Nấm Sao",
+              "desc_vn": "Mỗi 20s, triệu hồi UFO tham chiến 10s. UFO mỗi giây khiến 2 địch ngẫu nhiên trong trận bị Giật Điện 10s, mỗi giây gây ST Tê Liệt bằng 260% Công, sẽ không chọn trùng mục tiêu."
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040125000,
+              "name": "Mushroom UFO",
+              "name_vn": "UFO Nấm Sao",
+              "desc_vn": "Mỗi 20s, triệu hồi UFO tham chiến 10s. UFO mỗi giây khiến 2 địch ngẫu nhiên trong trận bị Giật Điện 10s, mỗi giây gây ST Tê Liệt bằng 300% Công, sẽ không chọn trùng mục tiêu."
+            }
+          ]
+        },
+        "supreme_thunderlord": {
+          "code": 5000104,
+          "name": "Supreme Thunderlord",
+          "name_vn": "Tôn Lôi Thần",
+          "color": "colorful",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040131000,
+              "name": "Punishing Thunder",
+              "name_vn": "Sấm Sét Oanh Tạc",
+              "desc_vn": "哈奴曼每5秒对场上10个随机不同的敌方释放雷劫造成240%攻击力的伤害，并附加5秒<麻痹>,每秒造成240%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"48\"><u>雷霆清算</u></color>。"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040132000,
+              "name": "Punishing Thunder",
+              "name_vn": "Sấm Sét Oanh Tạc",
+              "desc_vn": "哈奴曼每5秒对场上15个随机不同的敌方释放雷劫造成280%攻击力的伤害，并附加5秒<麻痹>,每秒造成280%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"49\"><u>雷霆清算</u></color>。"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040133000,
+              "name": "Punishing Thunder",
+              "name_vn": "Sấm Sét Oanh Tạc",
+              "desc_vn": "哈奴曼每5秒对场上15个随机不同的敌方释放雷劫造成320%攻击力的伤害，并附加5秒<麻痹>,每秒造成320%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"50\"><u>雷霆清算</u></color>，期间每次清算伤害都有50%几率造成【打断】。"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040134000,
+              "name": "Punishing Thunder",
+              "name_vn": "Sấm Sét Oanh Tạc",
+              "desc_vn": "哈奴曼每5秒对场上20个随机不同的敌方释放雷劫造成360%攻击力的伤害，并附加5秒<麻痹>,每秒造成360%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"51\"><u>雷霆清算</u></color>，期间每次清算伤害都有50%几率造成【打断】。"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040135000,
+              "name": "Punishing Thunder",
+              "name_vn": "Sấm Sét Oanh Tạc",
+              "desc_vn": "哈奴曼每5秒对场上20个随机不同的敌方释放雷劫造成400%攻击力的伤害，并附加5秒<麻痹>,每秒造成400%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"52\"><u>雷霆清算</u></color>，期间每次清算伤害都有100%几率造成【打断】。"
+            }
+          ],
+          "requires": [
+            "wayward_fist",
+            "tech_titan",
+            "heroic_legend"
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10010101000,
+          "skill": 10010601000,
+          "skillInfo": {
+            "code": 10010601000,
+            "name": "Thunderous Chain",
+            "name_vn": "Dây Xích Sấm Sét",
+            "desc_vn": "Hanuman phóng Chuỗi Tia Sét lên địch gần nhất gây ST bằng 30% Công, phóng 3 lần, và gây 4s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 100% Công"
+          },
+          "replacesInfo": {
+            "code": 10010101000,
+            "name": "Thunderous Chain",
+            "name_vn": "Dây Xích Sấm Sét",
+            "desc_vn": "Hanuman phóng Chuỗi Tia Sét lên địch gần nhất gây ST bằng 30% Công, phóng 2 lần, và gây 4s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 20% Công"
+          }
+        },
+        {
+          "replaces": 10010201000,
+          "skill": 10010602000,
+          "skillInfo": {
+            "code": 10010602000,
+            "name": "Storm Descent",
+            "name_vn": "Triệu Hồi Đám Mây",
+            "desc_vn": "Hanuman triệu hồi sấm sét khiến địch gần nhất chịu ST bằng 50% Công, tạo Hồ Quang Điện khiến địch lân cận chịu ST phạm vi bằng 50% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 250% Công"
+          },
+          "replacesInfo": {
+            "code": 10010201000,
+            "name": "Storm Descent",
+            "name_vn": "Triệu Hồi Đám Mây",
+            "desc_vn": "Hanuman triệu hồi sấm sét khiến địch gần nhất chịu ST bằng 50% Công, tạo Hồ Quang Điện khiến địch lân cận chịu ST phạm vi bằng 50% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 50% Công"
+          }
+        },
+        {
+          "replaces": 10010303000,
+          "skill": 10010603000,
+          "skillInfo": {
+            "code": 10010603000,
+            "name": "Monkey Blessing",
+            "name_vn": "Thần Hầu Ân Điển",
+            "desc_vn": "Bị động Hanuman [Thần Hầu Ân Điển] biến thành Công+40%"
+          },
+          "replacesInfo": {
+            "code": 10010303000,
+            "name": "Monkey Blessing",
+            "name_vn": "Thần Hầu Ân Điển",
+            "desc_vn": "Hanuman mỗi 3s, khiến địch ngẫu nhiên chịu 1 lần Chuỗi Tia Sét Thứ Cấp, địch gần nhất chịu ST bằng 30% Công, phóng3 lần, và gây 4s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST bằng 20% Công"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10010603000,
+          "skill": 10010604000,
+          "skillInfo": {
+            "code": 10010604000,
+            "name": "Monkey Blessing",
+            "name_vn": "Thần Hầu Ân Điển",
+            "desc_vn": "Hanuman mỗi 3s, khiến địch ngẫu nhiên chịu 1 lần Chuỗi Tia Sét Thứ Cấp, địch gần nhất chịu ST bằng 30% Công, phóng4 lần, và gây 4s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST bằng 100% Công"
+          },
+          "replacesInfo": {
+            "code": 10010603000,
+            "name": "Monkey Blessing",
+            "name_vn": "Thần Hầu Ân Điển",
+            "desc_vn": "Bị động Hanuman [Thần Hầu Ân Điển] biến thành Công+40%"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10010602000,
+          "skill": 10010605000,
+          "skillInfo": {
+            "code": 10010605000,
+            "name": "Storm Descent",
+            "name_vn": "Triệu Hồi Đám Mây",
+            "desc_vn": "Hanuman triệu hồi sấm sét khiến địch gần nhất chịu ST bằng 25% Công, tạo Hồ Quang Điện khiến địch lân cận chịu ST phạm vi bằng 25% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 125% Công"
+          },
+          "replacesInfo": {
+            "code": 10010602000,
+            "name": "Storm Descent",
+            "name_vn": "Triệu Hồi Đám Mây",
+            "desc_vn": "Hanuman triệu hồi sấm sét khiến địch gần nhất chịu ST bằng 50% Công, tạo Hồ Quang Điện khiến địch lân cận chịu ST phạm vi bằng 50% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 250% Công"
+          }
+        }
+      ]
+    },
+    "spiker": {
+      "code": 50000002,
+      "name": "Spiker",
+      "name_vn": "Gai Độc",
+      "color": "red",
+      "baseSkills": [
+        10020101000,
+        10020201000,
+        10020301000
+      ],
+      "skins": {
+        "beach_party": {
+          "code": 5000201,
+          "name": "Beach Party",
+          "name_vn": "Tiệc Bãi Biển",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040201000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Gai Độc, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040202000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Gai Độc, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040203000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Gai Độc, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040204000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Gai Độc, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040205000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Gai Độc, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "undead_king": {
+          "code": 5000202,
+          "name": "Undead King",
+          "name_vn": "Vua Vong Linh",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040211000,
+              "name": "Judgment Scythe",
+              "name_vn": "Lưỡi Hái Phán Quyết",
+              "desc_vn": "Khi Gai Độc tấn công, có 40% giáng xuống 5 lưỡi liềm phán quyết, lần lượt khiến kẻ địch ngẫu nhiên chịu ST đơn bằng 500% Công"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040212000,
+              "name": "Judgment Scythe",
+              "name_vn": "Lưỡi Hái Phán Quyết",
+              "desc_vn": "Khi Gai Độc tấn công, có 40% giáng xuống 5 lưỡi liềm phán quyết, lần lượt khiến kẻ địch ngẫu nhiên chịu ST đơn bằng 650% Công"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040213000,
+              "name": "Judgment Scythe",
+              "name_vn": "Lưỡi Hái Phán Quyết",
+              "desc_vn": "Khi Gai Độc tấn công, có 40% giáng xuống 5 lưỡi liềm phán quyết, lần lượt khiến kẻ địch ngẫu nhiên chịu ST đơn bằng 800% Công"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040214000,
+              "name": "Judgment Scythe",
+              "name_vn": "Lưỡi Hái Phán Quyết",
+              "desc_vn": "Khi Gai Độc tấn công, có 40% giáng xuống 5 lưỡi liềm phán quyết, lần lượt khiến kẻ địch ngẫu nhiên chịu ST đơn bằng 950% Công"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040215000,
+              "name": "Judgment Scythe",
+              "name_vn": "Lưỡi Hái Phán Quyết",
+              "desc_vn": "Khi Gai Độc tấn công, có 40% giáng xuống 5 lưỡi liềm phán quyết, lần lượt khiến kẻ địch ngẫu nhiên chịu ST đơn bằng 1100% Công"
+            }
+          ]
+        },
+        "machine_rampage": {
+          "code": 5000203,
+          "name": "Machine Rampage",
+          "name_vn": "Cơ Thần Nổi Loạn",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040221000,
+              "name": "Overclock Burst",
+              "name_vn": "Bùng Nổ Ép Xung",
+              "desc_vn": "Gai Độc gây ST, có 20% gây ra 2 lần ST, 3% gây 10 lần ST"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040222000,
+              "name": "Overclock Burst",
+              "name_vn": "Bùng Nổ Ép Xung",
+              "desc_vn": "Gai Độc gây ST, có 25% gây ra 2 lần ST, 4% gây 10 lần ST"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040223000,
+              "name": "Overclock Burst",
+              "name_vn": "Bùng Nổ Ép Xung",
+              "desc_vn": "Gai Độc gây ST, có 30% gây ra 2 lần ST, 5% gây 10 lần ST"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040224000,
+              "name": "Overclock Burst",
+              "name_vn": "Bùng Nổ Ép Xung",
+              "desc_vn": "Gai Độc gây ST, có 35% gây ra 2 lần ST, 6% gây 10 lần ST"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040225000,
+              "name": "Overclock Burst",
+              "name_vn": "Bùng Nổ Ép Xung",
+              "desc_vn": "Gai Độc gây ST, có 40% gây ra 2 lần ST, 7% gây 10 lần ST"
+            }
+          ]
+        },
+        "sanguine_landing": {
+          "code": 5000204,
+          "name": "Sanguine Landing",
+          "name_vn": "Huyết Ngục Thống Trị",
+          "color": "colorful",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040231000,
+              "name": "Infernal Claw",
+              "name_vn": "Vuốt Địa Ngục",
+              "desc_vn": "Sau khi BOSS tập kích, Gai Độc tung <color=#f57c00 click=\"onClicked\" param=\"83\"><u>Vuốt Địa Ngục</u></color> ngắn lên BOSS hoặc Tinh Anh có HP thấp nhất. Mỗi 3.5s tiến hành [Vuốt Tử Vong] lên BOSS hoặc Tinh Anh trong phạm vi gây ST phạm vi bằng 18000% Công. Khi mục tiêu bị dây xích ảnh hưởng chịu Vuốt Tử Vong bạo kích, ST Bạo sẽ tăng đến 1.3 lần. ST mà mục tiêu bị [Định Thân] phải chịu +15%."
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040232000,
+              "name": "Infernal Claw",
+              "name_vn": "Vuốt Địa Ngục",
+              "desc_vn": "Sau khi BOSS tập kích, Gai Độc tung <color=#f57c00 click=\"onClicked\" param=\"83\"><u>Vuốt Địa Ngục</u></color> ngắn lên BOSS hoặc Tinh Anh có HP thấp nhất. Mỗi 3.5s tiến hành [Vuốt Tử Vong] lên BOSS hoặc Tinh Anh trong phạm vi gây ST phạm vi bằng 19000% Công. Khi mục tiêu bị dây xích ảnh hưởng chịu Vuốt Tử Vong bạo kích, ST Bạo sẽ tăng đến 1.5 lần. ST mà mục tiêu bị [Định Thân] phải chịu +15%."
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040233000,
+              "name": "Infernal Claw",
+              "name_vn": "Vuốt Địa Ngục",
+              "desc_vn": "Sau khi BOSS tập kích, Gai Độc tung <color=#f57c00 click=\"onClicked\" param=\"83\"><u>Vuốt Địa Ngục</u></color> hơi dài lên BOSS hoặc Tinh Anh có HP thấp nhất. Mỗi 3.5s tiến hành [Vuốt Tử Vong] lên BOSS hoặc Tinh Anh trong phạm vi gây ST phạm vi bằng 20000% Công. Khi mục tiêu bị dây xích ảnh hưởng chịu Vuốt Tử Vong bạo kích, ST Bạo sẽ tăng đến 1.5 lần. ST mà mục tiêu bị [Định Thân] phải chịu +20%."
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040234000,
+              "name": "Infernal Claw",
+              "name_vn": "Vuốt Địa Ngục",
+              "desc_vn": "Sau khi BOSS tập kích, Gai Độc tung <color=#f57c00 click=\"onClicked\" param=\"83\"><u>Vuốt Địa Ngục</u></color> hơi dài lên BOSS hoặc Tinh Anh có HP thấp nhất. Mỗi 3.5s tiến hành [Vuốt Tử Vong] lên BOSS hoặc Tinh Anh trong phạm vi gây ST phạm vi bằng 21000% Công. Khi mục tiêu bị dây xích ảnh hưởng chịu Vuốt Tử Vong bạo kích, ST Bạo sẽ tăng đến 1.8 lần. ST mà mục tiêu bị [Định Thân] phải chịu +20%."
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040235000,
+              "name": "Infernal Claw",
+              "name_vn": "Vuốt Địa Ngục",
+              "desc_vn": "Sau khi BOSS tập kích, Gai Độc tung <color=#f57c00 click=\"onClicked\" param=\"83\"><u>Vuốt Địa Ngục</u></color> siêu dài lên BOSS hoặc Tinh Anh có HP thấp nhất. Mỗi 3.5s tiến hành [Vuốt Tử Vong] lên BOSS hoặc Tinh Anh trong phạm vi gây ST phạm vi bằng 22000% Công. Khi mục tiêu bị dây xích ảnh hưởng chịu Vuốt Tử Vong bạo kích, ST Bạo sẽ tăng đến 1.8 lần. ST mà mục tiêu bị [Định Thân] phải chịu +25%."
+            }
+          ],
+          "requires": [
+            "beach_party",
+            "undead_king",
+            "machine_rampage"
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10020101000,
+          "skill": 10020601000,
+          "skillInfo": {
+            "code": 10020601000,
+            "name": "Rotblade Curse",
+            "name_vn": "Chú Đao Cá Thối",
+            "desc_vn": "Gai Độc vung vuốt khiến địch gần nhất chịu ST bằng 600% Công"
+          },
+          "replacesInfo": {
+            "code": 10020101000,
+            "name": "Rotblade Curse",
+            "name_vn": "Chú Đao Cá Thối",
+            "desc_vn": "Gai Độc vung vuốt khiến địch gần nhất chịu ST bằng 100% Công"
+          }
+        },
+        {
+          "replaces": 10020201000,
+          "skill": 10020602000,
+          "skillInfo": {
+            "code": 10020602000,
+            "name": "Reaper Scythe",
+            "name_vn": "Liềm Thu Hoạch",
+            "desc_vn": "Gai Độc phóng đao trí mạng về phía địch gần nhất, địch trên đường chịu 2 lần ST bằng 600% Công, ST mục tiêu phải chịu trong 6s+25%"
+          },
+          "replacesInfo": {
+            "code": 10020201000,
+            "name": "Reaper Scythe",
+            "name_vn": "Liềm Thu Hoạch",
+            "desc_vn": "Gai Độc phóng đao trí mạng về phía địch gần nhất, địch trên đường chịu 2 lần ST bằng 100% Công, ST mục tiêu phải chịu trong 6s+25%"
+          }
+        },
+        {
+          "replaces": 10020303000,
+          "skill": 10020603000,
+          "skillInfo": {
+            "code": 10020603000,
+            "name": "Master of Gold",
+            "name_vn": "Tiền Tài Tối Thượng",
+            "desc_vn": "Bị động Gai Độc【Tiền Tài Tối Thượng】biến thành mỗi khi có 100 Ngân Phiếu, ST bản thân gây ra+1%, tối đa+300%"
+          },
+          "replacesInfo": {
+            "code": 10020303000,
+            "name": "Greed Mask",
+            "name_vn": "Tham Lam",
+            "desc_vn": "Gai Độc tấn công mục tiêu bị <color=#f57c00 click=\"onClicked\" param=\"8\"><u>khống chế</u></color> hoặc [ST Duy Trì], gây thêm ST bằng 100% Công"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10020604000,
+          "skillInfo": {
+            "code": 10020604000,
+            "name": "Blood Rite",
+            "name_vn": "Huyết Quỷ Thuật",
+            "desc_vn": "ST do Gai Độc gây lên Tinh Anh và BOSS+50%"
+          }
+        },
+        {
+          "replaces": 10020601000,
+          "skill": 10020605000,
+          "skillInfo": {
+            "code": 10020605000,
+            "name": "Rotblade Curse",
+            "name_vn": "Chú Đao Cá Thối",
+            "desc_vn": "Gai Độc vung Liềm gây ST bằng 600% Công lên địch gần nhất"
+          },
+          "replacesInfo": {
+            "code": 10020601000,
+            "name": "Rotblade Curse",
+            "name_vn": "Chú Đao Cá Thối",
+            "desc_vn": "Gai Độc vung vuốt khiến địch gần nhất chịu ST bằng 600% Công"
+          }
+        }
+      ]
+    },
+    "frosthealer": {
+      "code": 50000003,
+      "name": "Frosthealer",
+      "name_vn": "Pháp Sư Sương",
+      "color": "red",
+      "baseSkills": [
+        10030101000,
+        10030201000,
+        10030301000
+      ],
+      "skins": {
+        "azure_shore": {
+          "code": 5000301,
+          "name": "Azure Shore",
+          "name_vn": "Bờ Biển Xanh Thẳm",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040301000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháp Sư Sương, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040302000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháp Sư Sương, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040303000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháp Sư Sương, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040304000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháp Sư Sương, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040305000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháp Sư Sương, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "dream_bubble": {
+          "code": 5000302,
+          "name": "Dream Bubble",
+          "name_vn": "Bong Bóng Mộng Ảo",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040311000,
+              "name": "Prism Wave",
+              "name_vn": "Sóng Biển Huyền Ảo",
+              "desc_vn": "Khi Pháp Sư Sương phóng Tuyệt Kỹ, dưới chân địch gần nhất xuất hiện 5s sóng màu sắc, trong phạm vi này khiến địch chịu 1 lần ST bằng 250% Công và Chính Xác của địch trong 5s-34% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040312000,
+              "name": "Prism Wave",
+              "name_vn": "Sóng Biển Huyền Ảo",
+              "desc_vn": "Khi Pháp Sư Sương phóng Tuyệt Kỹ, dưới chân địch gần nhất xuất hiện 5s sóng màu sắc, trong phạm vi này khiến địch chịu 1 lần ST bằng 315% Công và Chính Xác của địch trong 5s-38% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040313000,
+              "name": "Prism Wave",
+              "name_vn": "Sóng Biển Huyền Ảo",
+              "desc_vn": "Khi Pháp Sư Sương phóng Tuyệt Kỹ, dưới chân địch gần nhất xuất hiện 5s sóng màu sắc, trong phạm vi này khiến địch chịu 1 lần ST bằng 380% Công và Chính Xác của địch trong 5s-42% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040314000,
+              "name": "Prism Wave",
+              "name_vn": "Sóng Biển Huyền Ảo",
+              "desc_vn": "Khi Pháp Sư Sương phóng Tuyệt Kỹ, dưới chân địch gần nhất xuất hiện 5s sóng màu sắc, trong phạm vi này khiến địch chịu 1 lần ST bằng 450% Công và Chính Xác của địch trong 5s-46% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040315000,
+              "name": "Prism Wave",
+              "name_vn": "Sóng Biển Huyền Ảo",
+              "desc_vn": "Khi Pháp Sư Sương phóng Tuyệt Kỹ, dưới chân địch gần nhất xuất hiện 5s sóng màu sắc, trong phạm vi này khiến địch chịu 1 lần ST bằng 520% Công và Chính Xác của địch trong 5s-50% (không cộng dồn)"
+            }
+          ]
+        },
+        "fairytale_land": {
+          "code": 5000303,
+          "name": "Fairytale Land",
+          "name_vn": "Xứ Sở Cổ Tích",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040321000,
+              "name": "Miracle Tome",
+              "name_vn": "Sách Phép Kỳ Diệu",
+              "desc_vn": "Khi Cửa bị phá vỡ, lập tức hồi đầy HP và trong 3s giảm 10% ST phải chịu, mỗi trận chỉ kích hoạt 1 lần"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040322000,
+              "name": "Miracle Tome",
+              "name_vn": "Sách Phép Kỳ Diệu",
+              "desc_vn": "Khi Cửa bị phá vỡ, lập tức hồi đầy HP và trong 6s giảm 20% ST phải chịu, mỗi trận chỉ kích hoạt 1 lần"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040323000,
+              "name": "Miracle Tome",
+              "name_vn": "Sách Phép Kỳ Diệu",
+              "desc_vn": "Khi Cửa bị phá vỡ, lập tức hồi đầy HP và trong 9s giảm 30% ST phải chịu, mỗi trận chỉ kích hoạt 1 lần"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040324000,
+              "name": "Miracle Tome",
+              "name_vn": "Sách Phép Kỳ Diệu",
+              "desc_vn": "Khi Cửa bị phá vỡ, lập tức hồi đầy HP và trong 12s giảm 40% ST phải chịu, mỗi trận chỉ kích hoạt 1 lần"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040325000,
+              "name": "Miracle Tome",
+              "name_vn": "Sách Phép Kỳ Diệu",
+              "desc_vn": "Khi Cửa bị phá vỡ, lập tức hồi đầy HP và trong 15s giảm 50% ST phải chịu, mỗi trận chỉ kích hoạt 1 lần"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10030201000,
+          "skill": 10030601000,
+          "skillInfo": {
+            "code": 10030601000,
+            "name": "Demonbane",
+            "name_vn": "Thuật Sát Ma",
+            "desc_vn": "Pháp Sư Sương phóng Thuật Chữa Trị, Cửa sẽ hồi 2% Giới Hạn HP, đơn vị xung quanh Cửa chịu ST bằng 140% Công, và kèm 3s <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+          },
+          "replacesInfo": {
+            "code": 10030201000,
+            "name": "Demonbane",
+            "name_vn": "Thuật Sát Ma",
+            "desc_vn": "Pháp Sư Sương niệm chú, đơn vị xung quanh Cửa chịu ST bằng 140% Công, và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+          }
+        },
+        {
+          "replaces": 10030601000,
+          "skill": 10030602000,
+          "skillInfo": {
+            "code": 10030602000,
+            "name": "Demonbane",
+            "name_vn": "Thuật Sát Ma",
+            "desc_vn": "Pháp Sư Sương phóng Thuật Chữa Trị, Cửa sẽ hồi 2% Giới Hạn HP, đơn vị xung quanh Cửa chịu ST bằng 700% Công, và kèm 3s <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>, và tăng vĩnh viễn 20% ST mục tiêu phải chịu (Không thể cộng dồn)"
+          },
+          "replacesInfo": {
+            "code": 10030601000,
+            "name": "Demonbane",
+            "name_vn": "Thuật Sát Ma",
+            "desc_vn": "Pháp Sư Sương phóng Thuật Chữa Trị, Cửa sẽ hồi 2% Giới Hạn HP, đơn vị xung quanh Cửa chịu ST bằng 140% Công, và kèm 3s <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10030603000,
+          "skillInfo": {
+            "code": 10030603000,
+            "name": "Immunity",
+            "name_vn": "Miễn Dịch",
+            "desc_vn": "Mỗi khi thi triển Công Thường, có 5% tỷ lệ thêm 1 tầng【Miễn Dịch】"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10030604000,
+          "skillInfo": {
+            "code": 10030604000,
+            "name": "DMG Boost",
+            "name_vn": "Tăng ST",
+            "desc_vn": "Mỗi khi thi triển Công Thường, khiến tất cả Anh Hùng tăng 1% ST, tối đa 100%"
+          }
+        },
+        {
+          "replaces": 10030303000,
+          "skill": 10030605000,
+          "skillInfo": {
+            "code": 10030605000,
+            "name": "Wardcraft",
+            "name_vn": "Thuật Phòng Ngự",
+            "desc_vn": "Khi Pháp Sư Sương trong trận, tỷ lệ HP đơn vị phe ta dưới 20%, nhận ngay 9 tầng [Miễn Dịch], CD 60s"
+          },
+          "replacesInfo": {
+            "code": 10030303000,
+            "name": "Wardcraft",
+            "name_vn": "Thuật Phòng Ngự",
+            "desc_vn": "Khi Pháp Sư Sương trong trận, tỷ lệ HP đơn vị phe ta dưới 20%, nhận ngay 6 tầng [Miễn Dịch], CD 60s"
+          },
+          "minBreakThrough": 9
+        }
+      ]
+    },
+    "archmage": {
+      "code": 50000004,
+      "name": "Archmage",
+      "name_vn": "Vua Pháp Sư",
+      "color": "red",
+      "baseSkills": [
+        10040101000,
+        10040201000,
+        10040301000
+      ],
+      "skins": {
+        "elf_prince": {
+          "code": 5000401,
+          "name": "Elf Prince",
+          "name_vn": "Hoàng Tử Tinh Linh",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040401000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Vua Pháp Sư, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040402000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Vua Pháp Sư, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040403000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Vua Pháp Sư, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040404000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Vua Pháp Sư, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040405000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Vua Pháp Sư, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "lamp_sultan": {
+          "code": 5000402,
+          "name": "Lamp Sultan",
+          "name_vn": "Đèn Thần Sudan",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040411000,
+              "name": "Arcane Snowball",
+              "name_vn": "Cầu Tuyết Phép Thuật",
+              "desc_vn": "Khi Vua Pháp Sư Công Thường gây ST, có 30% tạo Đường Băng dưới chân địch, địch trên đường trúng hiệu quả [Băng Sương], sau đó phóng 1 Cầu Tuyết xuyên thấu, khiến địch đi qua chịu ST bằng 140% Công"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040412000,
+              "name": "Arcane Snowball",
+              "name_vn": "Cầu Tuyết Phép Thuật",
+              "desc_vn": "Khi Vua Pháp Sư Công Thường gây ST, có 30% tạo Đường Băng dưới chân địch, địch trên đường trúng hiệu quả [Băng Sương], sau đó phóng 1 Cầu Tuyết xuyên thấu, khiến địch đi qua chịu ST bằng 180% Công"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040413000,
+              "name": "Arcane Snowball",
+              "name_vn": "Cầu Tuyết Phép Thuật",
+              "desc_vn": "Khi Vua Pháp Sư Công Thường gây ST, có 30% tạo Đường Băng dưới chân địch, địch trên đường trúng hiệu quả [Băng Sương], sau đó phóng 1 Cầu Tuyết xuyên thấu, khiến địch đi qua chịu ST bằng 220% Công"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040414000,
+              "name": "Arcane Snowball",
+              "name_vn": "Cầu Tuyết Phép Thuật",
+              "desc_vn": "Khi Vua Pháp Sư Công Thường gây ST, có 30% tạo Đường Băng dưới chân địch, địch trên đường trúng hiệu quả [Băng Sương], sau đó phóng 1 Cầu Tuyết xuyên thấu, khiến địch đi qua chịu ST bằng 260% Công"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040415000,
+              "name": "Arcane Snowball",
+              "name_vn": "Cầu Tuyết Phép Thuật",
+              "desc_vn": "Khi Vua Pháp Sư Công Thường gây ST, có 30% tạo Đường Băng dưới chân địch, địch trên đường trúng hiệu quả [Băng Sương], sau đó phóng 1 Cầu Tuyết xuyên thấu, khiến địch đi qua chịu ST bằng 300% Công"
+            }
+          ]
+        },
+        "genius_hacker": {
+          "code": 5000403,
+          "name": "Genius Hacker",
+          "name_vn": "Hacker Tối Thượng",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040421000,
+              "name": "Holo UFO",
+              "name_vn": "Đĩa Bay Toàn Ảnh",
+              "desc_vn": "Khi tấn công, có 25% giáng đĩa bay xuống 3 mục tiêu khác nhau trong trận, gây 3 lần 90% ST phạm vi nhỏ và có 50% kèm 1.5s [Đóng Băng]"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040422000,
+              "name": "Holo UFO",
+              "name_vn": "Đĩa Bay Toàn Ảnh",
+              "desc_vn": "Khi tấn công, có 25% giáng đĩa bay xuống 3 mục tiêu khác nhau trong trận, gây 3 lần 115% ST phạm vi nhỏ và có 50% kèm 1.5s [Đóng Băng]"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040423000,
+              "name": "Holo UFO",
+              "name_vn": "Đĩa Bay Toàn Ảnh",
+              "desc_vn": "Khi tấn công, có 25% giáng đĩa bay xuống 3 mục tiêu khác nhau trong trận, gây 3 lần 140% ST phạm vi nhỏ và có 50% kèm 1.5s [Đóng Băng]"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040424000,
+              "name": "Holo UFO",
+              "name_vn": "Đĩa Bay Toàn Ảnh",
+              "desc_vn": "Khi tấn công, có 25% giáng đĩa bay xuống 3 mục tiêu khác nhau trong trận, gây 3 lần 165% ST phạm vi nhỏ và có 50% kèm 1.5s [Đóng Băng]"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040425000,
+              "name": "Holo UFO",
+              "name_vn": "Đĩa Bay Toàn Ảnh",
+              "desc_vn": "Khi tấn công, có 25% giáng đĩa bay xuống 3 mục tiêu khác nhau trong trận, gây 3 lần 190% ST phạm vi nhỏ và có 50% kèm 1.5s [Đóng Băng]"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10040101000,
+          "skill": 10040601000,
+          "skillInfo": {
+            "code": 10040601000,
+            "name": "Frostbolt",
+            "name_vn": "Đạn Băng",
+            "desc_vn": "Vua Pháp Sư phóng đạn băng về phái địch gần nhất gây ST bằng 450% Công và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"7\"><u> Băng Sương</u></color>,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>1 lần"
+          },
+          "replacesInfo": {
+            "code": 10040101000,
+            "name": "Frostbolt",
+            "name_vn": "Đạn Băng",
+            "desc_vn": "Vua Pháp Sư phóng đạn băng về phái địch gần nhất gây ST bằng 75% Công và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+          }
+        },
+        {
+          "replaces": 10040303000,
+          "skill": 10040602000,
+          "skillInfo": {
+            "code": 10040602000,
+            "name": "Arcane Grid",
+            "name_vn": "Hệ Thống Bí Ẩn",
+            "desc_vn": "Tỷ lệ Đóng Băng của Vua Pháp Sư tăng 30%, khi kết thúc Đóng Băng gây ST bằng 1080% Công"
+          },
+          "replacesInfo": {
+            "code": 10040303000,
+            "name": "Arcane Grid",
+            "name_vn": "Hệ Thống Bí Ẩn",
+            "desc_vn": "Tỷ lệ Đóng Băng của Vua Pháp Sư tăng 25%, khi kết thúc Đóng Băng gây ST bằng 180% Công"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10040603000,
+          "skillInfo": {
+            "code": 10040603000,
+            "name": "Paramount Reign",
+            "name_vn": "Quyền Lực Tối Cao",
+            "desc_vn": "Sau mỗi lần triệu hồi hoàn 15% Ngân Phiếu tiêu hao"
+          }
+        },
+        {
+          "replaces": 10040201000,
+          "skill": 10040604000,
+          "skillInfo": {
+            "code": 10040604000,
+            "name": "Shadow Storm",
+            "name_vn": "Bão Bóng Tối",
+            "desc_vn": "Vua Pháp Sư khiến địch gần nhất chịu 6s Bão Tuyết, mỗi giây gây ST bằng 300% Công, trong thời gian này kèm <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+          },
+          "replacesInfo": {
+            "code": 10040201000,
+            "name": "Shadow Storm",
+            "name_vn": "Bão Bóng Tối",
+            "desc_vn": "Vua Pháp Sư khiến địch gần nhất chịu 4s Bão Tuyết, mỗi giây gây ST bằng 50% Công, trong thời gian này kèm <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10040605000,
+          "skillInfo": {
+            "code": 10040605000,
+            "name": "Glacier Brand",
+            "name_vn": "Dấu Ấn Băng Giá",
+            "desc_vn": "Sau mỗi lần Đóng Băng thành công, vĩnh viễn tăng 5% ST Phép Trực Tiếp mục tiêu phải chịu, tối đa 30%"
+          }
+        }
+      ]
+    },
+    "cannon_girl": {
+      "code": 50000005,
+      "name": "Cannon Girl",
+      "name_vn": "Pháo Loli",
+      "color": "red",
+      "baseSkills": [
+        10050101000,
+        10050201000,
+        10050301000
+      ],
+      "skins": {
+        "trainee_nurse": {
+          "code": 5000501,
+          "name": "Trainee Nurse",
+          "name_vn": "Y Tá Thực Tập",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040501000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháo Loli, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040502000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháo Loli, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040503000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháo Loli, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040504000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháo Loli, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040505000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Pháo Loli, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "genius_doctor": {
+          "code": 5000502,
+          "name": "Genius Doctor",
+          "name_vn": "Bác Sĩ Thiên Tài",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040511000,
+              "name": "Soul Hurricane",
+              "name_vn": "Cơn Bão Nuốt Hồn",
+              "desc_vn": "Khi Pháo Loli phóng Tuyệt Kỹ, triệu hồi Lốc Phệ Hồn di chuyển ngẫu nhiên trên map 20s, mỗi giây khiến địch trên đường chịu 80% ST và giảm 20% Tốc Độ"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040512000,
+              "name": "Soul Hurricane",
+              "name_vn": "Cơn Bão Nuốt Hồn",
+              "desc_vn": "Khi Pháo Loli phóng Tuyệt Kỹ, triệu hồi Lốc Phệ Hồn di chuyển ngẫu nhiên trên map 20s, mỗi giây khiến địch trên đường chịu 105% ST và giảm 20% Tốc Độ"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040513000,
+              "name": "Soul Hurricane",
+              "name_vn": "Cơn Bão Nuốt Hồn",
+              "desc_vn": "Khi Pháo Loli phóng Tuyệt Kỹ, triệu hồi Lốc Phệ Hồn di chuyển ngẫu nhiên trên map 20s, mỗi giây khiến địch trên đường chịu 130% ST và giảm 20% Tốc Độ"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040514000,
+              "name": "Soul Hurricane",
+              "name_vn": "Cơn Bão Nuốt Hồn",
+              "desc_vn": "Khi Pháo Loli phóng Tuyệt Kỹ, triệu hồi Lốc Phệ Hồn di chuyển ngẫu nhiên trên map 20s, mỗi giây khiến địch trên đường chịu 155% ST và giảm 20% Tốc Độ"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040515000,
+              "name": "Soul Hurricane",
+              "name_vn": "Cơn Bão Nuốt Hồn",
+              "desc_vn": "Khi Pháo Loli phóng Tuyệt Kỹ, triệu hồi Lốc Phệ Hồn di chuyển ngẫu nhiên trên map 20s, mỗi giây khiến địch trên đường chịu 180% ST và giảm 20% Tốc Độ"
+            }
+          ]
+        },
+        "guns_n_roses": {
+          "code": 5000503,
+          "name": "Guns 'n' Roses",
+          "name_vn": "Súng & Hoa Hồng",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040521000,
+              "name": "Mad Duo",
+              "name_vn": "Đồng Đội Điên Cuồng",
+              "desc_vn": "2 linh hồn cô đơn, 1 ràng buộc điên cuồng. Pháo Loli và JOKER tăng 50% ST. Khi ra trận, triệu hồi JOKER <color=#f57c00 click=\"onClicked\" param=\"23\"><u>hỗ trợ</u></color> chiến đấu."
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040522000,
+              "name": "Mad Duo",
+              "name_vn": "Đồng Đội Điên Cuồng",
+              "desc_vn": "2 linh hồn cô đơn, 1 ràng buộc điên cuồng. Pháo Loli và JOKER tăng 100% ST. Khi ra trận, triệu hồi JOKER <color=#f57c00 click=\"onClicked\" param=\"23\"><u>hỗ trợ</u></color> chiến đấu."
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040523000,
+              "name": "Mad Duo",
+              "name_vn": "Đồng Đội Điên Cuồng",
+              "desc_vn": "2 linh hồn cô đơn, 1 ràng buộc điên cuồng. Pháo Loli và JOKER tăng 150% ST. Khi ra trận, triệu hồi JOKER <color=#f57c00 click=\"onClicked\" param=\"23\"><u>hỗ trợ</u></color> chiến đấu."
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040524000,
+              "name": "Mad Duo",
+              "name_vn": "Đồng Đội Điên Cuồng",
+              "desc_vn": "2 linh hồn cô đơn, 1 ràng buộc điên cuồng. Pháo Loli và JOKER tăng 200% ST. Khi ra trận, triệu hồi JOKER <color=#f57c00 click=\"onClicked\" param=\"23\"><u>hỗ trợ</u></color> chiến đấu."
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040525000,
+              "name": "Mad Duo",
+              "name_vn": "Đồng Đội Điên Cuồng",
+              "desc_vn": "2 linh hồn cô đơn, 1 ràng buộc điên cuồng. Pháo Loli và JOKER tăng 300% ST. Khi ra trận, triệu hồi JOKER <color=#f57c00 click=\"onClicked\" param=\"23\"><u>hỗ trợ</u></color> chiến đấu."
+            }
+          ]
+        },
+        "malevolent_bloom": {
+          "code": 5000504,
+          "name": "Malevolent Bloom",
+          "name_vn": "Cuồng Hoa Nghiệp Hải",
+          "color": "colorful",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040531000,
+              "name": "Shore of Sharks",
+              "name_vn": "Bờ Biển Cá Mập",
+              "desc_vn": "Pháo Loli cứ 5 Công Thường sẽ mở 10s【Bờ Biển Cá Mập】, trong thời gian này mỗi giây khiến địch trong lĩnh vực chịu ST diện rộng bằng 1600% Công và giảm 30% HP hồi phục, tăng 40% ST trực tiếp mà địch trong lĩnh vực phải chịu"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040532000,
+              "name": "Shore of Sharks",
+              "name_vn": "Bờ Biển Cá Mập",
+              "desc_vn": "Pháo Loli cứ 5 Công Thường sẽ mở 10s【Bờ Biển Cá Mập】, trong thời gian này mỗi giây khiến địch trong lĩnh vực chịu ST diện rộng bằng 2000% Công và giảm 50% HP hồi phục, tăng 40% ST trực tiếp mà địch trong lĩnh vực phải chịu"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040533000,
+              "name": "Shore of Sharks",
+              "name_vn": "Bờ Biển Cá Mập",
+              "desc_vn": "Pháo Loli cứ 5 Công Thường sẽ mở 10s【Bờ Biển Cá Mập】, trong thời gian này mỗi giây khiến địch trong lĩnh vực chịu ST diện rộng bằng 2400% Công và giảm 50% HP hồi phục, tăng 50% ST trực tiếp mà địch trong lĩnh vực phải chịu"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040534000,
+              "name": "Shore of Sharks",
+              "name_vn": "Bờ Biển Cá Mập",
+              "desc_vn": "Pháo Loli cứ 5 Công Thường sẽ mở 10s【Bờ Biển Cá Mập】, trong thời gian này mỗi giây khiến địch trong lĩnh vực chịu ST diện rộng bằng 2800% Công và giảm 80% HP hồi phục, tăng 50% ST trực tiếp mà địch trong lĩnh vực phải chịu"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040535000,
+              "name": "Shore of Sharks",
+              "name_vn": "Bờ Biển Cá Mập",
+              "desc_vn": "Pháo Loli cứ 5 Công Thường sẽ mở 10s【Bờ Biển Cá Mập】, trong thời gian này mỗi giây khiến địch trong lĩnh vực chịu ST diện rộng bằng 3200% Công và giảm 80% HP hồi phục, tăng 60% ST trực tiếp mà địch trong lĩnh vực phải chịu"
+            }
+          ],
+          "requires": [
+            "trainee_nurse",
+            "genius_doctor",
+            "guns_n_roses"
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10050101000,
+          "skill": 10050601000,
+          "skillInfo": {
+            "code": 10050601000,
+            "name": "Bullet Storm",
+            "name_vn": "Mưa Đạn",
+            "desc_vn": "Pháo Loli cầm súng máy, phóng đạn khiến địch gần nhất chịu ST bằng 350% Công,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu </u></color>3 lần"
+          },
+          "replacesInfo": {
+            "code": 10050101000,
+            "name": "Bullet Storm",
+            "name_vn": "Mưa Đạn",
+            "desc_vn": "Pháo Loli cầm súng máy, phóng đạn khiến địch gần nhất chịu ST bằng 70% Công,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu </u></color>2 lần"
+          }
+        },
+        {
+          "replaces": 10050303000,
+          "skill": 10050602000,
+          "skillInfo": {
+            "code": 10050602000,
+            "name": "Whirlwind Dance",
+            "name_vn": "Vũ Điệu Lốc Xoáy",
+            "desc_vn": "Mỗi khi có 15 Điện Năng ST bản thân gây ra+2.5%, tối đa+250%"
+          },
+          "replacesInfo": {
+            "code": 10050303000,
+            "name": "Sin Rush",
+            "name_vn": "Khoái Cảm Tội Lỗi",
+            "desc_vn": "Pháo Loli phóng Tuyệt Kỹ trong 6s khiến Tốc Công Anh Hùng phe ta+25% (không cộng dồn)"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10050602000,
+          "skill": 10050603000,
+          "skillInfo": {
+            "code": 10050603000,
+            "name": "Whirlwind Dance",
+            "name_vn": "Vũ Điệu Lốc Xoáy",
+            "desc_vn": "Pháo Loli phóng Tuyệt Kỹ trong 6s khiến Tốc Công Anh Hùng phe ta+40% (không cộng dồn)"
+          },
+          "replacesInfo": {
+            "code": 10050602000,
+            "name": "Whirlwind Dance",
+            "name_vn": "Vũ Điệu Lốc Xoáy",
+            "desc_vn": "Mỗi khi có 15 Điện Năng ST bản thân gây ra+2.5%, tối đa+250%"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10050201000,
+          "skill": 10050604000,
+          "skillInfo": {
+            "code": 10050604000,
+            "name": "Death Barrage",
+            "name_vn": "Tên Lửa Tử Thần",
+            "desc_vn": "Pháo Loli bắn Tên Lửa Tử Thần về hướng địch gần nhất, gây 1 lần ST bằng 2000% Công lên địch trên đường"
+          },
+          "replacesInfo": {
+            "code": 10050201000,
+            "name": "Death Barrage",
+            "name_vn": "Tên Lửa Tử Thần",
+            "desc_vn": "Pháo Loli tụ sức 5s phóng Tên Lửa Tử Thần về phía địch gần nhất, địch trên được chịu 1 lần ST bằng 400% Công"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10050605000,
+          "skillInfo": {
+            "code": 10050605000,
+            "name": "Raging Tempest",
+            "name_vn": "Mắt Bão Cuồng Bạo",
+            "desc_vn": "Thi Triển Tuyệt Kỹ vẫn trong 6s khiến ST Bạo Anh Hùng phe ta+100% (Không cộng dồn)"
+          }
+        }
+      ]
+    },
+    "redhood": {
+      "code": 50000006,
+      "name": "Redhood",
+      "name_vn": "Cô Bé Khăn Đỏ",
+      "color": "orange",
+      "baseSkills": [
+        10060101000,
+        10060201000,
+        10060301000
+      ]
+    },
+    "sherlock": {
+      "code": 50000007,
+      "name": "Sherlock",
+      "name_vn": "Sherlock",
+      "color": "orange",
+      "baseSkills": [
+        10070101000,
+        10070201000,
+        10070301000
+      ]
+    },
+    "metaman": {
+      "code": 50000008,
+      "name": "Metaman",
+      "name_vn": "Tôn Ngộ Không",
+      "color": "red",
+      "baseSkills": [
+        10080101000,
+        10080201000,
+        10080301000
+      ],
+      "skins": {
+        "purgatory_lord": {
+          "code": 5000801,
+          "name": "Purgatory Lord",
+          "name_vn": "Ma Vương Ngục Tù",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040801000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Tôn Ngộ Không, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040802000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Tôn Ngộ Không, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040803000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Tôn Ngộ Không, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040804000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Tôn Ngộ Không, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040805000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Tôn Ngộ Không, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "edgewalker": {
+          "code": 5000802,
+          "name": "Edgewalker",
+          "name_vn": "Kẻ Lãng Du",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040811000,
+              "name": "Army Sweep",
+              "name_vn": "Quét Sạch Thiên Quân",
+              "desc_vn": "Mỗi 10s, dưới chân địch ngẫu nhiên trong phạm vi tấn công xuất hiện Gậy Kim Cô liên tục tấn công 5s, mỗi giây gây 100% ST diện rộng. Trong thời gian duy trì Gậy Kim Cô, ST Bạo Tôn Ngộ Không+40%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040812000,
+              "name": "Army Sweep",
+              "name_vn": "Quét Sạch Thiên Quân",
+              "desc_vn": "Mỗi 10s, dưới chân địch ngẫu nhiên trong phạm vi tấn công xuất hiện Gậy Kim Cô liên tục tấn công 5s, mỗi giây gây 130% ST diện rộng. Trong thời gian duy trì Gậy Kim Cô, ST Bạo Tôn Ngộ Không+50%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040813000,
+              "name": "Army Sweep",
+              "name_vn": "Quét Sạch Thiên Quân",
+              "desc_vn": "Mỗi 10s, dưới chân địch ngẫu nhiên trong phạm vi tấn công xuất hiện Gậy Kim Cô liên tục tấn công 5s, mỗi giây gây 160% ST diện rộng. Trong thời gian duy trì Gậy Kim Cô, ST Bạo Tôn Ngộ Không+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040814000,
+              "name": "Army Sweep",
+              "name_vn": "Quét Sạch Thiên Quân",
+              "desc_vn": "Mỗi 10s, dưới chân địch ngẫu nhiên trong phạm vi tấn công xuất hiện Gậy Kim Cô liên tục tấn công 5s, mỗi giây gây 190% ST diện rộng. Trong thời gian duy trì Gậy Kim Cô, ST Bạo Tôn Ngộ Không+70%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040815000,
+              "name": "Army Sweep",
+              "name_vn": "Quét Sạch Thiên Quân",
+              "desc_vn": "Mỗi 10s, dưới chân địch ngẫu nhiên trong phạm vi tấn công xuất hiện Gậy Kim Cô liên tục tấn công 5s, mỗi giây gây 220% ST diện rộng. Trong thời gian duy trì Gậy Kim Cô, ST Bạo Tôn Ngộ Không+80%"
+            }
+          ]
+        },
+        "demon_detective": {
+          "code": 5000803,
+          "name": "Demon Detective",
+          "name_vn": "Thám Tử Ác Ma",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040821000,
+              "name": "Crimson Dragon",
+              "name_vn": "Xích Long Xuất Kích",
+              "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 30% triệu hồi 1 Xích Long bên cạnh địch ngẫu nhiên và tấn công 5s, mỗi giây gây ST phạm vi nhỏ bằng 50% Công"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040822000,
+              "name": "Crimson Dragon",
+              "name_vn": "Xích Long Xuất Kích",
+              "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 30% triệu hồi 1 Xích Long bên cạnh địch ngẫu nhiên và tấn công 5s, mỗi giây gây ST phạm vi nhỏ bằng 65% Công"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040823000,
+              "name": "Crimson Dragon",
+              "name_vn": "Xích Long Xuất Kích",
+              "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 30% triệu hồi 1 Xích Long bên cạnh địch ngẫu nhiên và tấn công 5s, mỗi giây gây ST phạm vi nhỏ bằng 80% Công"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040824000,
+              "name": "Crimson Dragon",
+              "name_vn": "Xích Long Xuất Kích",
+              "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 30% triệu hồi 1 Xích Long bên cạnh địch ngẫu nhiên và tấn công 5s, mỗi giây gây ST phạm vi nhỏ bằng 95% Công"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040825000,
+              "name": "Crimson Dragon",
+              "name_vn": "Xích Long Xuất Kích",
+              "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 30% triệu hồi 1 Xích Long bên cạnh địch ngẫu nhiên và tấn công 5s, mỗi giây gây ST phạm vi nhỏ bằng 110% Công"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10080201000,
+          "skill": 10080601000,
+          "skillInfo": {
+            "code": 10080601000,
+            "name": "Realm King",
+            "name_vn": "Hình Thái Giới Vương",
+            "desc_vn": "Tôn Ngộ Không xoay tròn tạo thành bão 5s, khiến địch trên đường mỗi giây chịu 3 lần ST phạm vi nhỏ/vừa bằng 300% Công,【Vô Địch】trong thời gian này và【Không Thể Chọn Trúng】"
+          },
+          "replacesInfo": {
+            "code": 10080201000,
+            "name": "Realm King",
+            "name_vn": "Hình Thái Giới Vương",
+            "desc_vn": "Tôn Ngộ Không xoay tròn tạo thành bão 5s, khiến địch trên đường mỗi giây chịu 2 lần ST phạm vi bằng 50% Công, [Vô Địch] trong thời gian này và [Không Thể Chọn Trúng]"
+          }
+        },
+        {
+          "replaces": 10080303000,
+          "skill": 10080602000,
+          "skillInfo": {
+            "code": 10080602000,
+            "name": "Wayward Staff",
+            "name_vn": "Gậy Như Ý",
+            "desc_vn": "Bị động Tôn Ngộ Không [Tự Tại] biến thành Bạo+70%, ST Bạo+350% (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10080303000,
+            "name": "Ultra Instinct",
+            "name_vn": "Tự Tại",
+            "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 20% kèm ST bằng 60% Công (ST này sau khi Bạo sẽ không thể kích hoạt lại kỹ năng này)"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10080602000,
+          "skill": 10080603000,
+          "skillInfo": {
+            "code": 10080603000,
+            "name": "Wayward Staff",
+            "name_vn": "Gậy Như Ý",
+            "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 35% kèm ST phạm vi nhỏ bằng 360% Công (ST này sau khi Bạo sẽ không thể kích hoạt lại kỹ năng này, đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10080602000,
+            "name": "Wayward Staff",
+            "name_vn": "Gậy Như Ý",
+            "desc_vn": "Bị động Tôn Ngộ Không [Tự Tại] biến thành Bạo+70%, ST Bạo+350% (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10080604000,
+          "skillInfo": {
+            "code": 10080604000,
+            "name": "Force of Strife",
+            "name_vn": "Sức Mạnh Chiến Đấu",
+            "desc_vn": "Trong chiến đấu, tăng thêm ST gây ra bằng 1 lần tỷ lệ Bạo trên bảng chỉ số của bản thân"
+          }
+        },
+        {
+          "replaces": 10080601000,
+          "skill": 10080605000,
+          "skillInfo": {
+            "code": 10080605000,
+            "name": "Realm King",
+            "name_vn": "Hình Thái Giới Vương",
+            "desc_vn": "Tôn Ngộ Không xoay tròn tạo 2 cơn bão 5s, khiến địch trên đường mỗi giây chịu 5 lần ST phạm vi nhỏ/vừa bằng 300% Công,【Vô Địch】trong thời gian này và【Không Thể Chọn Trúng】"
+          },
+          "replacesInfo": {
+            "code": 10080601000,
+            "name": "Realm King",
+            "name_vn": "Hình Thái Giới Vương",
+            "desc_vn": "Tôn Ngộ Không xoay tròn tạo thành bão 5s, khiến địch trên đường mỗi giây chịu 3 lần ST phạm vi nhỏ/vừa bằng 300% Công,【Vô Địch】trong thời gian này và【Không Thể Chọn Trúng】"
+          }
+        }
+      ]
+    },
+    "laserman": {
+      "code": 50000009,
+      "name": "Laserman",
+      "name_vn": "Hiệp Sĩ Sấm Sét",
+      "color": "red",
+      "baseSkills": [
+        10090101000,
+        10090201000,
+        10090301000
+      ],
+      "skins": {
+        "steam_warrior": {
+          "code": 5000901,
+          "name": "Steam Warrior",
+          "name_vn": "Chiến Thần Hơi Nước",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040901000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hiệp Sĩ Sấm Sét, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040902000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hiệp Sĩ Sấm Sét, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040903000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hiệp Sĩ Sấm Sét, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040904000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hiệp Sĩ Sấm Sét, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040905000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hiệp Sĩ Sấm Sét, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "future_cop": {
+          "code": 5000902,
+          "name": "Future Cop",
+          "name_vn": "Cảnh Sát Tương Lai",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040911000,
+              "name": "Skyfall",
+              "name_vn": "Trừng Phạt Thiên Khung",
+              "desc_vn": "Khi Hiệp Sĩ Sấm Sét phóng Tuyệt Kỹ, <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>2 <color=#f57c00 click=\"onClicked\" param=\"38\"><u>Drone</u></color>, luân phiên phóng kiếm ánh sáng tấn công mục tiêu Tuyệt Kỹ, mỗi giây gây 2 lần ST bằng 60% Công và Xuyên Thấu địch trên đường không giới hạn"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040912000,
+              "name": "Skyfall",
+              "name_vn": "Trừng Phạt Thiên Khung",
+              "desc_vn": "Khi Hiệp Sĩ Sấm Sét phóng Tuyệt Kỹ, <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>2 <color=#f57c00 click=\"onClicked\" param=\"38\"><u>Drone</u></color>, luân phiên phóng kiếm ánh sáng tấn công mục tiêu Tuyệt Kỹ, mỗi giây gây 2 lần ST bằng 75% Công và Xuyên Thấu địch trên đường không giới hạn"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040913000,
+              "name": "Skyfall",
+              "name_vn": "Trừng Phạt Thiên Khung",
+              "desc_vn": "Khi Hiệp Sĩ Sấm Sét phóng Tuyệt Kỹ, <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>2 <color=#f57c00 click=\"onClicked\" param=\"38\"><u>Drone</u></color>, luân phiên phóng kiếm ánh sáng tấn công mục tiêu Tuyệt Kỹ, mỗi giây gây 2 lần ST bằng 90% Công và Xuyên Thấu địch trên đường không giới hạn"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040914000,
+              "name": "Skyfall",
+              "name_vn": "Trừng Phạt Thiên Khung",
+              "desc_vn": "Khi Hiệp Sĩ Sấm Sét phóng Tuyệt Kỹ, <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>2 <color=#f57c00 click=\"onClicked\" param=\"38\"><u>Drone</u></color>, luân phiên phóng kiếm ánh sáng tấn công mục tiêu Tuyệt Kỹ, mỗi giây gây 2 lần ST bằng 105% Công và Xuyên Thấu địch trên đường không giới hạn"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040915000,
+              "name": "Skyfall",
+              "name_vn": "Trừng Phạt Thiên Khung",
+              "desc_vn": "Khi Hiệp Sĩ Sấm Sét phóng Tuyệt Kỹ, <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>2 <color=#f57c00 click=\"onClicked\" param=\"38\"><u>Drone</u></color>, luân phiên phóng kiếm ánh sáng tấn công mục tiêu Tuyệt Kỹ, mỗi giây gây 2 lần ST bằng 120% Công và Xuyên Thấu địch trên đường không giới hạn"
+            }
+          ]
+        },
+        "starship_master": {
+          "code": 5000903,
+          "name": "Starship Master",
+          "name_vn": "Thiên Vương Vũ Trụ",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040921000,
+              "name": "Fearless Mech",
+              "name_vn": "Cơ Giáp Vô Úy",
+              "desc_vn": "Khi bắt đầu chiến đấu, triệu hồi Robot Quả Cảm vĩnh viễn tham chiến. Robot Quả Cảm mỗi lần tấn công gây 3 lần ST phạm vi nhỏ bằng 80% Công, nếu mục tiêu là BOSS và Tinh Anh sẽ tăng vĩnh viễn 1% ST Robot Quả Cảm lên mục tiêu này, tối đa 100%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040922000,
+              "name": "Fearless Mech",
+              "name_vn": "Cơ Giáp Vô Úy",
+              "desc_vn": "Khi bắt đầu chiến đấu, triệu hồi Robot Quả Cảm vĩnh viễn tham chiến. Robot Quả Cảm mỗi lần tấn công gây 3 lần ST phạm vi nhỏ bằng 100% Công, nếu mục tiêu là BOSS và Tinh Anh sẽ tăng vĩnh viễn 1% ST Robot Quả Cảm lên mục tiêu này, tối đa 100%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040923000,
+              "name": "Fearless Mech",
+              "name_vn": "Cơ Giáp Vô Úy",
+              "desc_vn": "Khi bắt đầu chiến đấu, triệu hồi Robot Quả Cảm vĩnh viễn tham chiến. Robot Quả Cảm mỗi lần tấn công gây 3 lần ST phạm vi nhỏ bằng 120% Công, nếu mục tiêu là BOSS và Tinh Anh sẽ tăng vĩnh viễn 1% ST Robot Quả Cảm lên mục tiêu này, tối đa 100%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040924000,
+              "name": "Fearless Mech",
+              "name_vn": "Cơ Giáp Vô Úy",
+              "desc_vn": "Khi bắt đầu chiến đấu, triệu hồi Robot Quả Cảm vĩnh viễn tham chiến. Robot Quả Cảm mỗi lần tấn công gây 3 lần ST phạm vi nhỏ bằng 140% Công, nếu mục tiêu là BOSS và Tinh Anh sẽ tăng vĩnh viễn 1% ST Robot Quả Cảm lên mục tiêu này, tối đa 100%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040925000,
+              "name": "Fearless Mech",
+              "name_vn": "Cơ Giáp Vô Úy",
+              "desc_vn": "Khi bắt đầu chiến đấu, triệu hồi Robot Quả Cảm vĩnh viễn tham chiến. Robot Quả Cảm mỗi lần tấn công gây 3 lần ST phạm vi nhỏ bằng 160% Công, nếu mục tiêu là BOSS và Tinh Anh sẽ tăng vĩnh viễn 1% ST Robot Quả Cảm lên mục tiêu này, tối đa 100%"
+            }
+          ]
+        },
+        "cosmic_commander": {
+          "code": 5000904,
+          "name": "Cosmic Commander",
+          "name_vn": "Thống Soái Thiên Không",
+          "color": "colorful",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80040931000,
+              "name": "Doom Starfall",
+              "name_vn": "Điểm Cuối Vì Sao",
+              "desc_vn": "Hiệp Sĩ Sấm Sét và vật triệu hồi cứ tấn công 40 lần sẽ phóng 32 Trời Sao có ST bằng 1200% Công <color=#f57c00 click=\"onClicked\" param=\"41\"><u>[Trời Sao]</u></color>, có 2% tỷ lệ gây 1s <color=#f57c00 click=\"onClicked\" param=\"27\"><u>Định Thân</u></color>; Khi gây Định Thân, trong 5s bỏ qua Thủ V.Lý của mục tiêu này"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80040932000,
+              "name": "Doom Starfall",
+              "name_vn": "Điểm Cuối Vì Sao",
+              "desc_vn": "Hiệp Sĩ Sấm Sét và vật triệu hồi cứ tấn công 40 lần sẽ phóng 32 Trời Sao có ST bằng 1500% Công <color=#f57c00 click=\"onClicked\" param=\"41\"><u>[Trời Sao]</u></color>, có 2% tỷ lệ gây 1s <color=#f57c00 click=\"onClicked\" param=\"27\"><u>Định Thân</u></color>; Khi gây Định Thân, trong 5s bỏ qua Thủ V.Lý của mục tiêu này"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80040933000,
+              "name": "Doom Starfall",
+              "name_vn": "Điểm Cuối Vì Sao",
+              "desc_vn": "Hiệp Sĩ Sấm Sét và vật triệu hồi cứ tấn công 35 lần sẽ phóng 32 Trời Sao có ST bằng 1800% Công <color=#f57c00 click=\"onClicked\" param=\"41\"><u>[Trời Sao]</u></color>, có 2% tỷ lệ gây 1s <color=#f57c00 click=\"onClicked\" param=\"27\"><u>Định Thân</u></color>; Khi gây Định Thân, trong 5s bỏ qua Thủ V.Lý của mục tiêu này"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80040934000,
+              "name": "Doom Starfall",
+              "name_vn": "Điểm Cuối Vì Sao",
+              "desc_vn": "Hiệp Sĩ Sấm Sét và vật triệu hồi cứ tấn công 35 lần sẽ phóng 32 Trời Sao có ST bằng 2100% Công <color=#f57c00 click=\"onClicked\" param=\"41\"><u>[Trời Sao]</u></color>, có 2% tỷ lệ gây 1s <color=#f57c00 click=\"onClicked\" param=\"27\"><u>Định Thân</u></color>; Khi gây Định Thân, trong 5s bỏ qua Thủ V.Lý của mục tiêu này"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80040935000,
+              "name": "Doom Starfall",
+              "name_vn": "Điểm Cuối Vì Sao",
+              "desc_vn": "Hiệp Sĩ Sấm Sét và vật triệu hồi cứ tấn công 35 lần sẽ phóng 32 Trời Sao có ST bằng 2400% Công <color=#f57c00 click=\"onClicked\" param=\"41\"><u>[Trời Sao]</u></color>, có 5% tỷ lệ gây 2s <color=#f57c00 click=\"onClicked\" param=\"27\"><u>Định Thân</u></color>; Khi gây Định Thân, trong 5s bỏ qua Thủ V.Lý của mục tiêu này"
+            }
+          ],
+          "requires": [
+            "steam_warrior",
+            "future_cop",
+            "starship_master"
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10090201000,
+          "skill": 10090601000,
+          "skillInfo": {
+            "code": 10090601000,
+            "name": "Doom Beam",
+            "name_vn": "Tia Laser Hủy Diệt",
+            "desc_vn": "Hiệp Sĩ Sấm Sét dùng pháo phóng laser5s, mỗi giây gây ST bằng 600% Công lên địch gần nhất, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công"
+          },
+          "replacesInfo": {
+            "code": 10090201000,
+            "name": "Doom Beam",
+            "name_vn": "Tia Laser Hủy Diệt",
+            "desc_vn": "Hiệp Sĩ Sấm Sét phóng laser khổng lồ 5s, khiến địch gần nhất mỗi giây chịu ST bằng 100% Công, trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 50% Công"
+          }
+        },
+        {
+          "replaces": 10090303000,
+          "skill": 10090602000,
+          "skillInfo": {
+            "code": 10090602000,
+            "name": "Ark Core",
+            "name_vn": "Lò Phản Ứng Ark",
+            "desc_vn": "Hiệp Sĩ Sấm Sét gây ST Trực Tiếp时, ST tiếp theo lên mục tiêu này+8%, duy trì 12s"
+          },
+          "replacesInfo": {
+            "code": 10090303000,
+            "name": "Ark Core",
+            "name_vn": "Lò Phản Ứng Ark",
+            "desc_vn": "Trong thời gian phóng Tuyệt Kỹ, Hiệp Sĩ Sấm Sét gây ST+30%, mục tiêu đầu tiên trúng ST Tuyệt Kỹ chịu 2s<color=#f57c00 click=\"onClicked\" param=\"27\"><u> [Định Thân] </u></color>"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10090601000,
+          "skill": 10090603000,
+          "skillInfo": {
+            "code": 10090603000,
+            "name": "Doom Beam",
+            "name_vn": "Tia Laser Hủy Diệt",
+            "desc_vn": "Hiệp Sĩ Sấm Sét phóng laser khổng lồ 5s,mỗi 0.5s gây ST bằng 600% Công lên địch gần nhất, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công"
+          },
+          "replacesInfo": {
+            "code": 10090601000,
+            "name": "Doom Beam",
+            "name_vn": "Tia Laser Hủy Diệt",
+            "desc_vn": "Hiệp Sĩ Sấm Sét dùng pháo phóng laser5s, mỗi giây gây ST bằng 600% Công lên địch gần nhất, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công"
+          }
+        },
+        {
+          "replaces": 10090602000,
+          "skill": 10090604000,
+          "skillInfo": {
+            "code": 10090604000,
+            "name": "Ark Core",
+            "name_vn": "Lò Phản Ứng Ark",
+            "desc_vn": "Khi thi triển Tuyệt Kỹ, ST do Dương Tiễn gây ra+150%, và gây 3s <color=#f57c00 click=\"onClicked\" param=\"27\"><u>【Định Thân】</u></color> lên mục tiêu đầu tiên có Tuyệt Kỹ gây ST"
+          },
+          "replacesInfo": {
+            "code": 10090602000,
+            "name": "Ark Core",
+            "name_vn": "Lò Phản Ứng Ark",
+            "desc_vn": "Hiệp Sĩ Sấm Sét gây ST Trực Tiếp时, ST tiếp theo lên mục tiêu này+8%, duy trì 12s"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10090603000,
+          "skill": 10090605000,
+          "skillInfo": {
+            "code": 10090605000,
+            "name": "Doom Beam",
+            "name_vn": "Tia Laser Hủy Diệt",
+            "desc_vn": "Hiệp Sĩ Sấm Sét phóng laser khổng lồ 5s, mỗi 0.5s gây ST bằng 600% Công lên địch gần nhất, nảy 1 lần, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công, và khi tấn công Nộ bản thân mỗi giây+30"
+          },
+          "replacesInfo": {
+            "code": 10090603000,
+            "name": "Doom Beam",
+            "name_vn": "Tia Laser Hủy Diệt",
+            "desc_vn": "Hiệp Sĩ Sấm Sét phóng laser khổng lồ 5s,mỗi 0.5s gây ST bằng 600% Công lên địch gần nhất, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công"
+          }
+        }
+      ]
+    },
+    "plague_doctor": {
+      "code": 50000010,
+      "name": "Plague Doctor",
+      "name_vn": "Bác Sĩ Dịch Bệnh",
+      "color": "orange",
+      "baseSkills": [
+        10100101000,
+        10100201000,
+        10100301000
+      ]
+    },
+    "evil_bane": {
+      "code": 50000011,
+      "name": "Evil Bane",
+      "name_vn": "Linh Đồng Tà Ác",
+      "color": "orange",
+      "baseSkills": [
+        10110101000,
+        10110201000,
+        10110301000
+      ]
+    },
+    "double_faces": {
+      "code": 50000012,
+      "name": "Double Faces",
+      "name_vn": "Kẻ Hai Mặt",
+      "color": "orange",
+      "baseSkills": [
+        10120101000,
+        10120201000,
+        10120301000
+      ]
+    },
+    "lu_bu": {
+      "code": 50000013,
+      "name": "Lu Bu",
+      "name_vn": "Hắc Lữ Bố",
+      "color": "red",
+      "baseSkills": [
+        10130101000,
+        10130201000,
+        10130301000
+      ],
+      "skins": {
+        "ocean_master": {
+          "code": 5001301,
+          "name": "Ocean Master",
+          "name_vn": "Chúa Tể Biển Sâu",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041301000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hắc Quan Vũ, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041302000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hắc Quan Vũ, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041303000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hắc Quan Vũ, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041304000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hắc Quan Vũ, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041305000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Hắc Quan Vũ, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "mech_dragon": {
+          "code": 5001302,
+          "name": "Mech Dragon",
+          "name_vn": "Long Vương Thiết Giáp",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041311000,
+              "name": "Judgment Circle",
+              "name_vn": "Vòng Tròn Phán Quyết",
+              "desc_vn": "Mỗi 12s, Hắc Quan Vũ gọi 12 thành Thương Đoạn Tội quanh bản thân, lần lượt phóng về địch ngẫu nhiên, mỗi thanh gây ST bằng 120% Công, Xuyên Thấu 4 lần, trúng cùng 1 mục tiêu giảm 80% ST"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041312000,
+              "name": "Judgment Circle",
+              "name_vn": "Vòng Tròn Phán Quyết",
+              "desc_vn": "Mỗi 12s, Hắc Quan Vũ gọi 12 thành Thương Đoạn Tội quanh bản thân, lần lượt phóng về địch ngẫu nhiên, mỗi thanh gây ST bằng 155% Công, Xuyên Thấu 4 lần, trúng cùng 1 mục tiêu giảm 80% ST"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041313000,
+              "name": "Judgment Circle",
+              "name_vn": "Vòng Tròn Phán Quyết",
+              "desc_vn": "Mỗi 12s, Hắc Quan Vũ gọi 12 thành Thương Đoạn Tội quanh bản thân, lần lượt phóng về địch ngẫu nhiên, mỗi thanh gây ST bằng 190% Công, Xuyên Thấu 4 lần, trúng cùng 1 mục tiêu giảm 80% ST"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041314000,
+              "name": "Judgment Circle",
+              "name_vn": "Vòng Tròn Phán Quyết",
+              "desc_vn": "Mỗi 12s, Hắc Quan Vũ gọi 12 thành Thương Đoạn Tội quanh bản thân, lần lượt phóng về địch ngẫu nhiên, mỗi thanh gây ST bằng 225% Công, Xuyên Thấu 4 lần, trúng cùng 1 mục tiêu giảm 80% ST"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041315000,
+              "name": "Judgment Circle",
+              "name_vn": "Vòng Tròn Phán Quyết",
+              "desc_vn": "Mỗi 12s, Hắc Quan Vũ gọi 12 thành Thương Đoạn Tội quanh bản thân, lần lượt phóng về địch ngẫu nhiên, mỗi thanh gây ST bằng 260% Công, Xuyên Thấu 4 lần, trúng cùng 1 mục tiêu giảm 80% ST"
+            }
+          ]
+        },
+        "force_of_hell": {
+          "code": 5001303,
+          "name": "Force of Hell",
+          "name_vn": "Võ Thần Địa Ngục",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041321000,
+              "name": "Spirit Seal",
+              "name_vn": "Ấn Chú Quỷ Thần",
+              "desc_vn": "Hắc Quan Vũ lần đầu Xuyên Thấu Tinh Anh hoặc BOSS sẽ tự độc gây 1 tầng Ấn Ký lên mục tiêu. Mỗi tần Ấn Ký sẽ tăng ST Hắc Quan Vũ lên mục tiêu,tối đa tăng 300%, sau khi đủ 100 tầng, cứ cách 10s gây ST bằng 500% Công lên mục tiêu"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041322000,
+              "name": "Spirit Seal",
+              "name_vn": "Ấn Chú Quỷ Thần",
+              "desc_vn": "Hắc Quan Vũ lần đầu Xuyên Thấu Tinh Anh hoặc BOSS sẽ tự độc gây 1 tầng Ấn Ký lên mục tiêu. Mỗi tần Ấn Ký sẽ tăng ST Hắc Quan Vũ lên mục tiêu,tối đa tăng 400%, sau khi đủ 100 tầng, cứ cách 10s gây ST bằng 650% Công lên mục tiêu"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041323000,
+              "name": "Spirit Seal",
+              "name_vn": "Ấn Chú Quỷ Thần",
+              "desc_vn": "Hắc Quan Vũ lần đầu Xuyên Thấu Tinh Anh hoặc BOSS sẽ tự độc gây 1 tầng Ấn Ký lên mục tiêu. Mỗi tần Ấn Ký sẽ tăng ST Hắc Quan Vũ lên mục tiêu,tối đa tăng 500%, sau khi đủ 100 tầng, cứ cách 10s gây ST bằng 800% Công lên mục tiêu"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041324000,
+              "name": "Spirit Seal",
+              "name_vn": "Ấn Chú Quỷ Thần",
+              "desc_vn": "Hắc Quan Vũ lần đầu Xuyên Thấu Tinh Anh hoặc BOSS sẽ tự độc gây 1 tầng Ấn Ký lên mục tiêu. Mỗi tần Ấn Ký sẽ tăng ST Hắc Quan Vũ lên mục tiêu,tối đa tăng 600%, sau khi đủ 100 tầng, cứ cách 10s gây ST bằng 950% Công lên mục tiêu"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041325000,
+              "name": "Spirit Seal",
+              "name_vn": "Ấn Chú Quỷ Thần",
+              "desc_vn": "Hắc Quan Vũ lần đầu Xuyên Thấu Tinh Anh hoặc BOSS sẽ tự độc gây 1 tầng Ấn Ký lên mục tiêu. Mỗi tần Ấn Ký sẽ tăng ST Hắc Quan Vũ lên mục tiêu,tối đa tăng 700%, sau khi đủ 100 tầng, cứ cách 10s gây ST bằng 1100% Công lên mục tiêu"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10130101000,
+          "skill": 10130601000,
+          "skillInfo": {
+            "code": 10130601000,
+            "name": "Sundering Halberd",
+            "name_vn": "Ngọn Giáo Xuyên Thấu",
+            "desc_vn": "Hắc Lữ Bố vung ngọn giáo quỷ, khiến địch gần nhất chịu ST bằng 250% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>4 lần"
+          },
+          "replacesInfo": {
+            "code": 10130101000,
+            "name": "Sundering Halberd",
+            "name_vn": "Ngọn Giáo Xuyên Thấu",
+            "desc_vn": "Hắc Lữ Bố vung ngọn giáo quỷ, khiến địch gần nhất chịu ST bằng 50% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>3 lần"
+          }
+        },
+        {
+          "replaces": 10130601000,
+          "skill": 10130602000,
+          "skillInfo": {
+            "code": 10130602000,
+            "name": "Sundering Halberd",
+            "name_vn": "Ngọn Giáo Xuyên Thấu",
+            "desc_vn": "Hắc Lữ Bố phóng 3 Đao gây ST bằng 250% Công lên địch gần nhất, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>4 lần"
+          },
+          "replacesInfo": {
+            "code": 10130601000,
+            "name": "Sundering Halberd",
+            "name_vn": "Ngọn Giáo Xuyên Thấu",
+            "desc_vn": "Hắc Lữ Bố vung ngọn giáo quỷ, khiến địch gần nhất chịu ST bằng 250% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>4 lần"
+          }
+        },
+        {
+          "replaces": 10130202000,
+          "skill": 10130603000,
+          "skillInfo": {
+            "code": 10130603000,
+            "name": "Bloodmoon Slash",
+            "name_vn": "Tam Trảm Huyết Nguyệt",
+            "desc_vn": "Đao mỗi lần trúng địch có 10% tách thành 4 Hồn Trảm Thứ Cấp, mỗi Hồn Trảm gây ST bằng 100% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>2 lần"
+          },
+          "replacesInfo": {
+            "code": 10130202000,
+            "name": "Bloodmoon Slash",
+            "name_vn": "Tam Trảm Huyết Nguyệt",
+            "desc_vn": "Đao mỗi lần trúng địch có 10% tách thành 4 Hồn Trảm Thứ Cấp, mỗi Hồn Trảm gây ST bằng 20% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>1 lần"
+          },
+          "minBreakThrough": 6
+        },
+        {
+          "replaces": 10130302000,
+          "skill": 10130604000,
+          "skillInfo": {
+            "code": 10130604000,
+            "name": "Ghoulish Hunger",
+            "name_vn": "Dị Quỷ Hút Hồn",
+            "desc_vn": "Bị động Hắc Lữ Bố [Dị Quỷ Hút Hồn] biến thành mỗi Linh Hồn giúp bản thân nhận Công+0.5%, tối đa 50%"
+          },
+          "replacesInfo": {
+            "code": 10130302000,
+            "name": "Ghoulish Hunger",
+            "name_vn": "Dị Quỷ Hút Hồn",
+            "desc_vn": "Bị động Hắc Lữ Bố [Dị Quỷ Hút Hồn] biến thành mỗi Linh Hồn giúp bản thân nhận Công+0.2%, tối đa 30%"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10130603000,
+          "skill": 10130605000,
+          "skillInfo": {
+            "code": 10130605000,
+            "name": "Bloodmoon Slash",
+            "name_vn": "Tam Trảm Huyết Nguyệt",
+            "desc_vn": "Hắc Lữ Bố khiến địch phía trước chịu 3 lần tấn công, mỗi lần phóng 3 Đao, gây ST bằng 150% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>3 lần, trong 10s ST do bản thân gây ra trực tiếp tăng 20% (Không thể cộng dồn)"
+          },
+          "replacesInfo": {
+            "code": 10130603000,
+            "name": "Bloodmoon Slash",
+            "name_vn": "Tam Trảm Huyết Nguyệt",
+            "desc_vn": "Đao mỗi lần trúng địch có 10% tách thành 4 Hồn Trảm Thứ Cấp, mỗi Hồn Trảm gây ST bằng 100% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>2 lần"
+          }
+        }
+      ]
+    },
+    "pyrogon_mech": {
+      "code": 50000014,
+      "name": "Pyrogon Mech",
+      "name_vn": "Rồng Máy",
+      "color": "red",
+      "baseSkills": [
+        10140101000,
+        10140201000,
+        10140301000
+      ],
+      "skins": {
+        "lotus_matix": {
+          "code": 5001401,
+          "name": "Lotus Matix",
+          "name_vn": "Máy Sen Đỏ",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041401000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Rồng Máy, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041402000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Rồng Máy, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041403000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Rồng Máy, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041404000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Rồng Máy, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041405000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Rồng Máy, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "pyro_matix": {
+          "code": 5001402,
+          "name": "Pyro Matix",
+          "name_vn": "Viêm Thần",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041411000,
+              "name": "Doomsday Meteor",
+              "name_vn": "Thiên Thạch Tận Thế",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, sẽ giáng thiên thạch lên địch gần nhất gây ST diện rộng bằng 100% Công và kèm 8s [Thiêu Đốt], mỗi giây gây ST bằng 50% Công"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041412000,
+              "name": "Doomsday Meteor",
+              "name_vn": "Thiên Thạch Tận Thế",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, sẽ giáng thiên thạch lên địch gần nhất gây ST diện rộng bằng 130% Công và kèm 8s [Thiêu Đốt], mỗi giây gây ST bằng 65% Công"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041413000,
+              "name": "Doomsday Meteor",
+              "name_vn": "Thiên Thạch Tận Thế",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, sẽ giáng thiên thạch lên địch gần nhất gây ST diện rộng bằng 160% Công và kèm 8s [Thiêu Đốt], mỗi giây gây ST bằng 80% Công"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041414000,
+              "name": "Doomsday Meteor",
+              "name_vn": "Thiên Thạch Tận Thế",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, sẽ giáng thiên thạch lên địch gần nhất gây ST diện rộng bằng 190% Công và kèm 8s [Thiêu Đốt], mỗi giây gây ST bằng 95% Công"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041415000,
+              "name": "Doomsday Meteor",
+              "name_vn": "Thiên Thạch Tận Thế",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, sẽ giáng thiên thạch lên địch gần nhất gây ST diện rộng bằng 220% Công và kèm 8s [Thiêu Đốt], mỗi giây gây ST bằng 110% Công"
+            }
+          ]
+        },
+        "force_of_dawn": {
+          "code": 5001403,
+          "name": "Force of Dawn",
+          "name_vn": "Chiến Thần Ban Mai",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041421000,
+              "name": "Ruin Beacon",
+              "name_vn": "Tín Hiệu Hủy Diệt",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, phóng 10 Drone, mỗi Drone gây ST <color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> phạm vi nhỏ bằng 400% Công, mỗi khi mục tiêu mang 1 tầngThiêu Đốt, ST kỹ năng này tăng 25%, tối đa 10 tầng"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041422000,
+              "name": "Ruin Beacon",
+              "name_vn": "Tín Hiệu Hủy Diệt",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, phóng 10 Drone, mỗi Drone gây ST <color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> phạm vi nhỏ bằng 500% Công, mỗi khi mục tiêu mang 1 tầngThiêu Đốt, ST kỹ năng này tăng 25%, tối đa 10 tầng"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041423000,
+              "name": "Ruin Beacon",
+              "name_vn": "Tín Hiệu Hủy Diệt",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, phóng 10 Drone, mỗi Drone gây ST <color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> phạm vi nhỏ bằng 600% Công, mỗi khi mục tiêu mang 1 tầngThiêu Đốt, ST kỹ năng này tăng 25%, tối đa 10 tầng"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041424000,
+              "name": "Ruin Beacon",
+              "name_vn": "Tín Hiệu Hủy Diệt",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, phóng 10 Drone, mỗi Drone gây ST <color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> phạm vi nhỏ bằng 700% Công, mỗi khi mục tiêu mang 1 tầngThiêu Đốt, ST kỹ năng này tăng 25%, tối đa 10 tầng"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041425000,
+              "name": "Ruin Beacon",
+              "name_vn": "Tín Hiệu Hủy Diệt",
+              "desc_vn": "Khi Rồng Máy phóng Tuyệt Kỹ, phóng 10 Drone, mỗi Drone gây ST <color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> phạm vi nhỏ bằng 800% Công, mỗi khi mục tiêu mang 1 tầngThiêu Đốt, ST kỹ năng này tăng 25%, tối đa 10 tầng"
+            }
+          ]
+        },
+        "armored_dragonarch": {
+          "code": 5001404,
+          "name": "Armored Dragonarch",
+          "name_vn": "Giáp Đế Hoàng Long",
+          "color": "colorful",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041431000,
+              "name": "Dynamite Warbot",
+              "name_vn": "Robot Bộc Phá",
+              "desc_vn": "Tạo 6 Robot Bộc Phá trên sân, mỗi 10s kích hoạt ngẫu nhiên 1 Robot Bộc Phá gây sát thương phạm vi (bằng 1600% Công) <color=#f57c00 click=\"onClicked\" param=\"85\"><u>Lốc Xoáy Tận Thế</u></color> lên địch gần nhất, đồng thời ST gây lên BOSS +100%, Rồng Máy thi triển Tuyệt Kỹ sẽ kích hoạt ngay 1 Robot Bộc Phá, có 15% kích hoạt 2 con."
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041432000,
+              "name": "Dynamite Warbot",
+              "name_vn": "Robot Bộc Phá",
+              "desc_vn": "Tạo 6 Robot Bộc Phá trên sân, mỗi 8s kích hoạt ngẫu nhiên 1 Robot Bộc Phá gây sát thương phạm vi (bằng 1800% Công) <color=#f57c00 click=\"onClicked\" param=\"86\"><u>Lốc Xoáy Tận Thế</u></color> lên địch gần nhất, đồng thời ST gây lên BOSS +100%, Rồng Máy thi triển Tuyệt Kỹ sẽ kích hoạt ngay 1 Robot Bộc Phá, có 15% kích hoạt 2 con."
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041433000,
+              "name": "Dynamite Warbot",
+              "name_vn": "Robot Bộc Phá",
+              "desc_vn": "Tạo 6 Robot Bộc Phá trên sân, mỗi 8s kích hoạt ngẫu nhiên 1 Robot Bộc Phá gây sát thương phạm vi (bằng 2000% Công) <color=#f57c00 click=\"onClicked\" param=\"87\"><u>Lốc Xoáy Tận Thế</u></color> lên địch gần nhất, đồng thời ST gây lên BOSS +100%, Rồng Máy thi triển Tuyệt Kỹ sẽ kích hoạt ngay 1 Robot Bộc Phá, có 20% kích hoạt 2 con."
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041434000,
+              "name": "Dynamite Warbot",
+              "name_vn": "Robot Bộc Phá",
+              "desc_vn": "Tạo 6 Robot Bộc Phá trên sân, mỗi 6s kích hoạt ngẫu nhiên 1 Robot Bộc Phá gây sát thương phạm vi (bằng 2200% Công) <color=#f57c00 click=\"onClicked\" param=\"88\"><u>Lốc Xoáy Tận Thế</u></color> lên địch gần nhất, đồng thời ST gây lên BOSS +100%, Rồng Máy thi triển Tuyệt Kỹ sẽ kích hoạt ngay 1 Robot Bộc Phá, có 20% kích hoạt 2 con."
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041435000,
+              "name": "Dynamite Warbot",
+              "name_vn": "Robot Bộc Phá",
+              "desc_vn": "Tạo 6 Robot Bộc Phá trên sân, mỗi 6s kích hoạt ngẫu nhiên 1 Robot Bộc Phá gây sát thương phạm vi (bằng 2400% Công) <color=#f57c00 click=\"onClicked\" param=\"89\"><u>Lốc Xoáy Tận Thế</u></color> lên địch gần nhất, đồng thời ST gây lên BOSS +100%, Rồng Máy thi triển Tuyệt Kỹ sẽ kích hoạt ngay 1 Robot Bộc Phá, có 25% kích hoạt 2 con."
+            }
+          ],
+          "requires": [
+            "lotus_matix",
+            "pyro_matix",
+            "force_of_dawn"
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10140201000,
+          "skill": 10140601000,
+          "skillInfo": {
+            "code": 10140601000,
+            "name": "Hell Volley",
+            "name_vn": "Luyện Ngục Tề Xạ",
+            "desc_vn": "Rồng Máy triệu hồi tên lửa khiến địch ngẫu nhiên chịu 5 lần ST phạm vi nhỏ bằng 20% Công, mỗi lần kèm 8s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 20% Công"
+          },
+          "replacesInfo": {
+            "code": 10140201000,
+            "name": "Hell Volley",
+            "name_vn": "Luyện Ngục Tề Xạ",
+            "desc_vn": "Rồng Máy triệu hồi tên lửa khiến địch ngẫu nhiên chịu 5 lần ST phạm vi nhỏ bằng 20% Công, mỗi lần kèm 6s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 10% Công"
+          }
+        },
+        {
+          "replaces": 10140303000,
+          "skill": 10140602000,
+          "skillInfo": {
+            "code": 10140602000,
+            "name": "Core Burst",
+            "name_vn": "Lõi Nổ Cảm Tử",
+            "desc_vn": "Rồng Máy trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> tử trận sẽ bùng nổ, gây ST phạm vi nhỏ bằng 20% Công và có 50% kèm 4s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST bằng 75% Công (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10140303000,
+            "name": "Core Burst",
+            "name_vn": "Lõi Nổ Cảm Tử",
+            "desc_vn": "Bị động Rồng Máy [Lõi Nổ Cảm Tử] biến thành mỗi khi tăng 1 tầng, mọi ST <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> địch phải chịu tăng 15%, tối đa 150%"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10140603000,
+          "skillInfo": {
+            "code": 10140603000,
+            "name": "Core Burst",
+            "name_vn": "Lõi Nổ Cảm Tử",
+            "desc_vn": "Mỗi lần tung Tuyệt Kỹ trong 10s sẽ tăng 20% ST do bản thân gây ra"
+          }
+        },
+        {
+          "replaces": 10140602000,
+          "skill": 10140604000,
+          "skillInfo": {
+            "code": 10140604000,
+            "name": "Core Burst",
+            "name_vn": "Lõi Nổ Cảm Tử",
+            "desc_vn": "Bị động Rồng Máy【Lõi Nổ Cảm Tử】biến thành mỗi khi tăng 1 tầng, mọi ST <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> địch phải chịu tăng 30%, tối đa 300% (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10140602000,
+            "name": "Core Burst",
+            "name_vn": "Lõi Nổ Cảm Tử",
+            "desc_vn": "Rồng Máy trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> tử trận sẽ bùng nổ, gây ST phạm vi nhỏ bằng 20% Công và có 50% kèm 4s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST bằng 75% Công (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10140605000,
+          "skillInfo": {
+            "code": 10140605000,
+            "name": "Storm Burst",
+            "name_vn": "Lửa Trời Bùng Cháy",
+            "desc_vn": "<color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> của Rồng Máy trở thành <color=#f57c00 click=\"onClicked\" param=\"45\"><u>Lửa Trời Bùng Cháy</u></color>"
+          }
+        }
+      ]
+    },
+    "blue_giant": {
+      "code": 50000015,
+      "name": "Blue Giant",
+      "name_vn": "Khổng Lồ Xanh",
+      "color": "red",
+      "baseSkills": [
+        10150101000,
+        10150201000,
+        10150301000
+      ],
+      "skins": {
+        "wrestling_champion": {
+          "code": 5001501,
+          "name": "Wrestling Champion",
+          "name_vn": "Quán Quân Đấu Vật",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041501000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Khổng Lồ Xanh, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041502000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Khổng Lồ Xanh, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041503000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Khổng Lồ Xanh, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041504000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Khổng Lồ Xanh, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041505000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Khổng Lồ Xanh, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "realm_traveler": {
+          "code": 5001502,
+          "name": "Realm Traveler",
+          "name_vn": "Ma Nhân Không Gian",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041511000,
+              "name": "Earthbreaker",
+              "name_vn": "Băng Thiên Liệt Địa",
+              "desc_vn": "Khi Khổng Lồ Xanh phóng Tuyệt Kỹ, dùng Búa Thần Sấm nện xuống đất, sau khi đất nứt toát sẽ khiến địch trên đó phát nổ gây 100% ST, và kèm 8s [Mất HP], mỗi giây gây ST bằng 50% Công"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041512000,
+              "name": "Earthbreaker",
+              "name_vn": "Băng Thiên Liệt Địa",
+              "desc_vn": "Khi Khổng Lồ Xanh phóng Tuyệt Kỹ, dùng Búa Thần Sấm nện xuống đất, sau khi đất nứt toát sẽ khiến địch trên đó phát nổ gây 120% ST, và kèm 8s [Mất HP], mỗi giây gây ST bằng 60% Công"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041513000,
+              "name": "Earthbreaker",
+              "name_vn": "Băng Thiên Liệt Địa",
+              "desc_vn": "Khi Khổng Lồ Xanh phóng Tuyệt Kỹ, dùng Búa Thần Sấm nện xuống đất, sau khi đất nứt toát sẽ khiến địch trên đó phát nổ gây 140% ST, và kèm 8s [Mất HP], mỗi giây gây ST bằng 70% Công"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041514000,
+              "name": "Earthbreaker",
+              "name_vn": "Băng Thiên Liệt Địa",
+              "desc_vn": "Khi Khổng Lồ Xanh phóng Tuyệt Kỹ, dùng Búa Thần Sấm nện xuống đất, sau khi đất nứt toát sẽ khiến địch trên đó phát nổ gây 160% ST, và kèm 8s [Mất HP], mỗi giây gây ST bằng 80% Công"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041515000,
+              "name": "Earthbreaker",
+              "name_vn": "Băng Thiên Liệt Địa",
+              "desc_vn": "Khi Khổng Lồ Xanh phóng Tuyệt Kỹ, dùng Búa Thần Sấm nện xuống đất, sau khi đất nứt toát sẽ khiến địch trên đó phát nổ gây 180% ST, và kèm 8s [Mất HP], mỗi giây gây ST bằng 90% Công"
+            }
+          ]
+        },
+        "wave_breaker": {
+          "code": 5001503,
+          "name": "Wave Breaker",
+          "name_vn": "Bá Chủ Sóng Biển",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041521000,
+              "name": "Shark Airship",
+              "name_vn": "Khí Cầu Cá Mập",
+              "desc_vn": "Mỗi 15s, triệu hồi Tàu Cá Mập gây 10s oanh tạc, mỗi giây gây ST phạm vi nhỏ bằng 40% Công và trong 10s mục tiêu tăng 100% ST Mất HP phải chịu (không cộng dồn)"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041522000,
+              "name": "Shark Airship",
+              "name_vn": "Khí Cầu Cá Mập",
+              "desc_vn": "Mỗi 15s, triệu hồi Tàu Cá Mập gây 10s oanh tạc, mỗi giây gây ST phạm vi nhỏ bằng 50% Công và trong 10s mục tiêu tăng 120% ST Mất HP phải chịu (không cộng dồn)"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041523000,
+              "name": "Shark Airship",
+              "name_vn": "Khí Cầu Cá Mập",
+              "desc_vn": "Mỗi 15s, triệu hồi Tàu Cá Mập gây 10s oanh tạc, mỗi giây gây ST phạm vi nhỏ bằng 60% Công và trong 10s mục tiêu tăng 140% ST Mất HP phải chịu (không cộng dồn)"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041524000,
+              "name": "Shark Airship",
+              "name_vn": "Khí Cầu Cá Mập",
+              "desc_vn": "Mỗi 15s, triệu hồi Tàu Cá Mập gây 10s oanh tạc, mỗi giây gây ST phạm vi nhỏ bằng 70% Công và trong 10s mục tiêu tăng 160% ST Mất HP phải chịu (không cộng dồn)"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041525000,
+              "name": "Shark Airship",
+              "name_vn": "Khí Cầu Cá Mập",
+              "desc_vn": "Mỗi 15s, triệu hồi Tàu Cá Mập gây 10s oanh tạc, mỗi giây gây ST phạm vi nhỏ bằng 80% Công và trong 10s mục tiêu tăng 180% ST Mất HP phải chịu (không cộng dồn)"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10150303000,
+          "skill": 10150601000,
+          "skillInfo": {
+            "code": 10150601000,
+            "name": "Hulk Rule",
+            "name_vn": "Định Luật Hulk",
+            "desc_vn": "Khổng Lồ Xanh trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color> tử trận sẽ bùng nổ, gây ST phạm vi nhỏ bằng 240% Công"
+          },
+          "replacesInfo": {
+            "code": 10150303000,
+            "name": "Hulk Rule",
+            "name_vn": "Định Luật Hulk",
+            "desc_vn": "Khổng Lồ Xanh trong trận, địch <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color> lần đầu có HP dưới 10% sẽ chịu ngay 1 lần ST Hành Quyết, tối đa không vượt quá 500% Công Khổng Lồ Xanh"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10150201000,
+          "skill": 10150602000,
+          "skillInfo": {
+            "code": 10150602000,
+            "name": "Bloodwheel",
+            "name_vn": "Lốp Xe Huyết Đao",
+            "desc_vn": "Khổng Lồ Xanh ném lốp xe về phía địch ngẫu nhiên,Công6s, mỗi giây gây ST bằng 25% Công, mỗi lần ST kèm 3s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 75% Công"
+          },
+          "replacesInfo": {
+            "code": 10150201000,
+            "name": "Bloodwheel",
+            "name_vn": "Lốp Xe Huyết Đao",
+            "desc_vn": "Khổng Lồ Xanh ném lốp xe về phía địch ngẫu nhiên,Công6s, mỗi giây gây ST bằng 25% Công, mỗi lần ST kèm 3s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 15% Công"
+          }
+        },
+        {
+          "replaces": 10150601000,
+          "skill": 10150603000,
+          "skillInfo": {
+            "code": 10150603000,
+            "name": "Hulk Rule",
+            "name_vn": "Định Luật Hulk",
+            "desc_vn": "Khổng Lồ Xanh trong trận, Cửa hoặc HP bản thân mỗi khi giảm 3%, ST bản thân gây ra+2%, tối đa 60%"
+          },
+          "replacesInfo": {
+            "code": 10150601000,
+            "name": "Hulk Rule",
+            "name_vn": "Định Luật Hulk",
+            "desc_vn": "Khổng Lồ Xanh trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color> tử trận sẽ bùng nổ, gây ST phạm vi nhỏ bằng 240% Công"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10150604000,
+          "skillInfo": {
+            "code": 10150604000,
+            "name": "Loss of Blood",
+            "name_vn": "Mất huyết Quá Nhiều",
+            "desc_vn": "Khi Khổng Lồ Xanh trong trận, HP địch cứ giảm 3%, ST Mất HP phải chịu +2%, tối đa 60%"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10150605000,
+          "skillInfo": {
+            "code": 10150605000,
+            "name": "Ultimate Blow",
+            "name_vn": "Thi Triển Tuyệt Kỹ",
+            "desc_vn": "Cứ 30s sẽ tung 1 lần Tuyệt Kỹ không tiêu hao"
+          }
+        }
+      ]
+    },
+    "pinocchio": {
+      "code": 50000016,
+      "name": "Pinocchio",
+      "name_vn": "Pinocchio",
+      "color": "orange",
+      "baseSkills": [
+        10160101000,
+        10160201000,
+        10160301000
+      ]
+    },
+    "reaper": {
+      "code": 50000017,
+      "name": "Reaper",
+      "name_vn": "U Minh Thần",
+      "color": "purple",
+      "baseSkills": [
+        10170101000,
+        10170201000
+      ]
+    },
+    "jinx": {
+      "code": 50000018,
+      "name": "Jinx",
+      "name_vn": "Kẻ Xui Xẻo",
+      "color": "purple",
+      "baseSkills": [
+        10180101000,
+        10180201000
+      ]
+    },
+    "mad_alice": {
+      "code": 50000019,
+      "name": "Mad Alice",
+      "name_vn": "Alice",
+      "color": "red",
+      "baseSkills": [
+        10190101000,
+        10190201000,
+        10190301000
+      ],
+      "skins": {
+        "idol_sweetheart": {
+          "code": 5001901,
+          "name": "Idol Sweetheart",
+          "name_vn": "Idol Ngọt Ngào",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041901000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Alice, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041902000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Alice, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041903000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Alice, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041904000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Alice, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041905000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Alice, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "celestial_party": {
+          "code": 5001902,
+          "name": "Celestial Party",
+          "name_vn": "Tiệc Trà Xứ Tiên",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041911000,
+              "name": "Death Verdict",
+              "name_vn": "Phán Quyết Thần Chết",
+              "desc_vn": "Khi BOSS tập kích, Alice hóa thành Tử Thần, mở chế độ Tàn Diệt, tất cả ST gây ra trong 60s tăng 240%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041912000,
+              "name": "Death Verdict",
+              "name_vn": "Phán Quyết Thần Chết",
+              "desc_vn": "Khi BOSS tập kích, Alice hóa thành Tử Thần, mở chế độ Tàn Diệt, tất cả ST gây ra trong 120s tăng 300%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041913000,
+              "name": "Death Verdict",
+              "name_vn": "Phán Quyết Thần Chết",
+              "desc_vn": "Khi BOSS tập kích, Alice hóa thành Tử Thần, mở chế độ Tàn Diệt, tất cả ST gây ra trong 180s tăng 360%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041914000,
+              "name": "Death Verdict",
+              "name_vn": "Phán Quyết Thần Chết",
+              "desc_vn": "Khi BOSS tập kích, Alice hóa thành Tử Thần, mở chế độ Tàn Diệt, tất cả ST gây ra trong 240s tăng 430%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041915000,
+              "name": "Death Verdict",
+              "name_vn": "Phán Quyết Thần Chết",
+              "desc_vn": "Khi BOSS tập kích, Alice hóa thành Tử Thần, mở chế độ Tàn Diệt, tất cả ST gây ra tăng vĩnh viễn 500%"
+            }
+          ]
+        },
+        "undead_queen": {
+          "code": 5001903,
+          "name": "Undead Queen",
+          "name_vn": "Nữ Hoàng Bất Tử",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80041921000,
+              "name": "Crazy Crown",
+              "name_vn": "Mũ Điên",
+              "desc_vn": "Khi BOSS tập kích, Alice đội mũ điên cho Thỏ Tiên Sinh, khiến Thỏ Tiên Sinh tấn công có 5% tỷ lệ khiến địch chịu thêm 1 lần ST bằng 400% Công. Cứ cách 15s, trong 5s, mọi Thỏ Tiên Sinh trong trận tăng 20%Tốc Công, Tốc Độ (không cộng dồn)"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80041922000,
+              "name": "Crazy Crown",
+              "name_vn": "Mũ Điên",
+              "desc_vn": "Khi BOSS tập kích, Alice đội mũ điên cho Thỏ Tiên Sinh, khiến Thỏ Tiên Sinh tấn công có 5% tỷ lệ khiến địch chịu thêm 1 lần ST bằng 450% Công. Cứ cách 15s, trong 5s, mọi Thỏ Tiên Sinh trong trận tăng 22%Tốc Công, Tốc Độ (không cộng dồn)"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80041923000,
+              "name": "Crazy Crown",
+              "name_vn": "Mũ Điên",
+              "desc_vn": "Khi BOSS tập kích, Alice đội mũ điên cho Thỏ Tiên Sinh, khiến Thỏ Tiên Sinh tấn công có 5% tỷ lệ khiến địch chịu thêm 1 lần ST bằng 500% Công. Cứ cách 15s, trong 5s, mọi Thỏ Tiên Sinh trong trận tăng 24%Tốc Công, Tốc Độ (không cộng dồn)"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80041924000,
+              "name": "Crazy Crown",
+              "name_vn": "Mũ Điên",
+              "desc_vn": "Khi BOSS tập kích, Alice đội mũ điên cho Thỏ Tiên Sinh, khiến Thỏ Tiên Sinh tấn công có 5% tỷ lệ khiến địch chịu thêm 1 lần ST bằng 550% Công. Cứ cách 15s, trong 5s, mọi Thỏ Tiên Sinh trong trận tăng 26%Tốc Công, Tốc Độ (không cộng dồn)"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80041925000,
+              "name": "Crazy Crown",
+              "name_vn": "Mũ Điên",
+              "desc_vn": "Khi BOSS tập kích, Alice đội mũ điên cho Thỏ Tiên Sinh, khiến Thỏ Tiên Sinh tấn công có 5% tỷ lệ khiến địch chịu thêm 1 lần ST bằng 600% Công. Cứ cách 15s, trong 5s, mọi Thỏ Tiên Sinh trong trận tăng 28%Tốc Công, Tốc Độ (không cộng dồn)"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": null,
+          "skill": 10190601000,
+          "skillInfo": {
+            "code": 10190601000,
+            "name": "Tea Invite",
+            "name_vn": "Lời Mời Trà Hội",
+            "desc_vn": "Khi Vật Triệu Hồi của Alice tấn công mục tiêu có dao, ST gây ra lần này tăng 30%"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10190602000,
+          "skillInfo": {
+            "code": 10190602000,
+            "name": "Stun Damage",
+            "name_vn": "Sát Thương Choáng",
+            "desc_vn": "Khi Thỏ Tiên Sinh kèm Choáng thành công sẽ gây thêm 1 lần ST bằng 40% Công lên mục tiêu"
+          },
+          "minBreakThrough": 6
+        },
+        {
+          "replaces": null,
+          "skill": 10190603000,
+          "skillInfo": {
+            "code": 10190603000,
+            "name": "Sundering Punch",
+            "name_vn": "Thiên Quyền Rạn Vỡ",
+            "desc_vn": "Tuyệt Kỹ【Thỏ Tiên Sinh】ST do Thỏ Tiên Sinh gây ra sẽ bỏ qua 50% Thủ địch"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10190604000,
+          "skillInfo": {
+            "code": 10190604000,
+            "name": "Rage Regen Upon Death",
+            "name_vn": "Tử Vong Hồi Nộ",
+            "desc_vn": "Khi Thỏ Tiên Sinh tử trận, Alice hồi 40 Nộ"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10190605000,
+          "skillInfo": {
+            "code": 10190605000,
+            "name": "Ultimate Summon",
+            "name_vn": "Triệu Hồi Tối Thượng",
+            "desc_vn": "Khi Alice tấn công, có 13% tỷ lệ <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>Thỏ Tiên Sinh ở trước Cửa"
+          }
+        }
+      ]
+    },
+    "drillmaster": {
+      "code": 50000020,
+      "name": "Drillmaster",
+      "name_vn": "Khoan Điện",
+      "color": "purple",
+      "baseSkills": [
+        10200101000,
+        10200201000
+      ]
+    },
+    "scarecrow": {
+      "code": 50000021,
+      "name": "Scarecrow",
+      "name_vn": "Bù Nhìn",
+      "color": "orange",
+      "baseSkills": [
+        10210101000,
+        10210201000,
+        10210301000
+      ]
+    },
+    "oni_samurai": {
+      "code": 50000022,
+      "name": "Oni Samurai",
+      "name_vn": "Hắc Võ Sĩ",
+      "color": "orange",
+      "baseSkills": [
+        10220101000,
+        10220201000,
+        10220301000
+      ]
+    },
+    "ghost_captain": {
+      "code": 50000023,
+      "name": "Ghost Captain",
+      "name_vn": "Thuyền Trưởng U Ám",
+      "color": "red",
+      "baseSkills": [
+        10230101000,
+        10230201000,
+        10230301000
+      ],
+      "skins": {
+        "wild_vacation": {
+          "code": 5002301,
+          "name": "Wild Vacation",
+          "name_vn": "Ngày Nghỉ Thác Loạn",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80042301000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thuyền Trưởng U Ám, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80042302000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thuyền Trưởng U Ám, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80042303000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thuyền Trưởng U Ám, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80042304000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thuyền Trưởng U Ám, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80042305000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thuyền Trưởng U Ám, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "golden_cruise": {
+          "code": 5002302,
+          "name": "Golden Cruise",
+          "name_vn": "Đường Vàng",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80042311000,
+              "name": "Poseidon's Wrath",
+              "name_vn": "Poseidon Thịnh Nộ",
+              "desc_vn": "Khi Thuyền Trưởng U Ám tấn công, có 30% giáng xuống Đinh Ba Thần Biển, liên tục 5s, mỗi giây gây 100% ST diện rộng và giảm 20% Công của địch xung quanh (không cộng dồn)"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80042312000,
+              "name": "Poseidon's Wrath",
+              "name_vn": "Poseidon Thịnh Nộ",
+              "desc_vn": "Khi Thuyền Trưởng U Ám tấn công, có 30% giáng xuống Đinh Ba Thần Biển, liên tục 5s, mỗi giây gây 130% ST diện rộng và giảm 24% Công của địch xung quanh (không cộng dồn)"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80042313000,
+              "name": "Poseidon's Wrath",
+              "name_vn": "Poseidon Thịnh Nộ",
+              "desc_vn": "Khi Thuyền Trưởng U Ám tấn công, có 30% giáng xuống Đinh Ba Thần Biển, liên tục 5s, mỗi giây gây 160% ST diện rộng và giảm 28% Công của địch xung quanh (không cộng dồn)"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80042314000,
+              "name": "Poseidon's Wrath",
+              "name_vn": "Poseidon Thịnh Nộ",
+              "desc_vn": "Khi Thuyền Trưởng U Ám tấn công, có 30% giáng xuống Đinh Ba Thần Biển, liên tục 5s, mỗi giây gây 190% ST diện rộng và giảm 32% Công của địch xung quanh (không cộng dồn)"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80042315000,
+              "name": "Poseidon's Wrath",
+              "name_vn": "Poseidon Thịnh Nộ",
+              "desc_vn": "Khi Thuyền Trưởng U Ám tấn công, có 30% giáng xuống Đinh Ba Thần Biển, liên tục 5s, mỗi giây gây 220% ST diện rộng và giảm 36% Công của địch xung quanh (không cộng dồn)"
+            }
+          ]
+        },
+        "metallic_rave": {
+          "code": 5002303,
+          "name": "Metallic Rave",
+          "name_vn": "Cơn Sốt Kim Loại",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80042321000,
+              "name": "Speed Zone",
+              "name_vn": "Cấm Tốc Độ Cao",
+              "desc_vn": "Trong trận, toàn bộ phe ta tăng 20% ST. Khiên hiệu quả đột phá Lv9 của Thuyền Trưởng U Ám tạo ra biến thành Rào Sắt, thời gian Vô Địch biến thành 4s. Tăng ST Mất HP từ hiệu quả Đột Phá Lv6 của Thuyền Trưởng U Ám, biến thành tăng 100% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80042322000,
+              "name": "Speed Zone",
+              "name_vn": "Cấm Tốc Độ Cao",
+              "desc_vn": "Trong trận, toàn bộ phe ta tăng 22% ST. Khiên hiệu quả đột phá Lv9 của Thuyền Trưởng U Ám tạo ra biến thành Rào Sắt, thời gian Vô Địch biến thành 4.5s. Tăng ST Mất HP từ hiệu quả Đột Phá Lv6 của Thuyền Trưởng U Ám, biến thành tăng 120% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80042323000,
+              "name": "Speed Zone",
+              "name_vn": "Cấm Tốc Độ Cao",
+              "desc_vn": "Trong trận, toàn bộ phe ta tăng 25% ST. Khiên hiệu quả đột phá Lv9 của Thuyền Trưởng U Ám tạo ra biến thành Rào Sắt, thời gian Vô Địch biến thành 5.5s. Tăng ST Mất HP từ hiệu quả Đột Phá Lv6 của Thuyền Trưởng U Ám, biến thành tăng 140% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80042324000,
+              "name": "Speed Zone",
+              "name_vn": "Cấm Tốc Độ Cao",
+              "desc_vn": "Trong trận, toàn bộ phe ta tăng 27% ST. Khiên hiệu quả đột phá Lv9 của Thuyền Trưởng U Ám tạo ra biến thành Rào Sắt, thời gian Vô Địch biến thành 6s. Tăng ST Mất HP từ hiệu quả Đột Phá Lv6 của Thuyền Trưởng U Ám, biến thành tăng 160% (không cộng dồn)"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80042325000,
+              "name": "Speed Zone",
+              "name_vn": "Cấm Tốc Độ Cao",
+              "desc_vn": "Trong trận, toàn bộ phe ta tăng 30% ST. Khiên hiệu quả đột phá Lv9 của Thuyền Trưởng U Ám tạo ra biến thành Rào Sắt, thời gian Vô Địch biến thành 7s. Tăng ST Mất HP từ hiệu quả Đột Phá Lv6 của Thuyền Trưởng U Ám, biến thành tăng 180% (không cộng dồn)"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10230201000,
+          "skill": 10230601000,
+          "skillInfo": {
+            "code": 10230601000,
+            "name": "Wailing Tide",
+            "name_vn": "Hồn Phách Sóng Gào",
+            "desc_vn": "Thuyền Trưởng U Ám bùng nổ! Khiến địch trong phạm vi hình quạt chịu ST bằng 600% Công, và có 100% gây 3s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+          },
+          "replacesInfo": {
+            "code": 10230201000,
+            "name": "Wailing Tide",
+            "name_vn": "Hồn Phách Sóng Gào",
+            "desc_vn": "Thuyền Trưởng U Ám bùng nổ! Khiến địch trong phạm vi hình quạt chịu ST bằng 100% Công, và có 50% gây 2s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+          }
+        },
+        {
+          "replaces": 10230101000,
+          "skill": 10230602000,
+          "skillInfo": {
+            "code": 10230602000,
+            "name": "Rotblade Curse",
+            "name_vn": "Chú Đao Cá Thối",
+            "desc_vn": "Thuyền Trưởng U Ám chém địch gần nhất 2 lần gây ST phạm vi nhỏ bằng 20% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 100% Công"
+          },
+          "replacesInfo": {
+            "code": 10230101000,
+            "name": "Rotblade Curse",
+            "name_vn": "Chú Đao Cá Thối",
+            "desc_vn": "Thuyền Trưởng U Ám chém địch gần nhất 2 lần gây ST phạm vi nhỏ bằng 20% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 20% Công"
+          }
+        },
+        {
+          "replaces": 10230303000,
+          "skill": 10230603000,
+          "skillInfo": {
+            "code": 10230603000,
+            "name": "Abyss Pressure",
+            "name_vn": "Uy Áp Biển Sâu",
+            "desc_vn": "Thuyền Trưởng U Ám trong trận: Khiến địch trong phạm vi lớn lân cận chịu Thủ V.Lý-45%"
+          },
+          "replacesInfo": {
+            "code": 10230303000,
+            "name": "Abyss Pressure",
+            "name_vn": "Uy Áp Biển Sâu",
+            "desc_vn": "Cửa chịu ST Trí Mạng, giữ lại 1 HP và Kháng ST 3s, mỗi cấp Cửa chỉ kích hoạt 1 lần"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10230604000,
+          "skillInfo": {
+            "code": 10230604000,
+            "name": "Spectral Guard",
+            "name_vn": "Trận Thủ Hộ Vong Linh",
+            "desc_vn": "Mỗi cấp Cửa đều nhận Khiên bằng 20% HP tối đa<color=#f57c00 click=\"onClicked\" param=\"12\"><u></u></color>, tối đa cộng dồn 3 tầng"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10230605000,
+          "skillInfo": {
+            "code": 10230605000,
+            "name": "Abyssal Dominator",
+            "name_vn": "Chúa Tể Minh Uyên",
+            "desc_vn": "Khi Cửa đạt Lv10, ST do tất cả Anh Hùng phe ta gây ra tăng 50%"
+          }
+        }
+      ]
+    },
+    "count_dracula": {
+      "code": 50000024,
+      "name": "Count Dracula",
+      "name_vn": "Bá Tước Kì Bí",
+      "color": "orange",
+      "baseSkills": [
+        10240101000,
+        10240201000,
+        10240301000
+      ]
+    },
+    "young_mage": {
+      "code": 50000025,
+      "name": "Young Mage",
+      "name_vn": "Pháp Sư Nhí",
+      "color": "purple",
+      "baseSkills": [
+        10250101000,
+        10250201000
+      ]
+    },
+    "archangel": {
+      "code": 50000026,
+      "name": "Archangel",
+      "name_vn": "Thiên Sứ",
+      "color": "red",
+      "baseSkills": [
+        10260101000,
+        10260201000,
+        10260301000
+      ],
+      "skins": {
+        "celestial_presence": {
+          "code": 5002601,
+          "name": "Celestial Presence",
+          "name_vn": "Thần Linh Tiên Cảnh",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80042601000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thiên Sứ Bồ Tát, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80042602000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thiên Sứ Bồ Tát, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80042603000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thiên Sứ Bồ Tát, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80042604000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thiên Sứ Bồ Tát, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80042605000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Thiên Sứ Bồ Tát, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "crescent_seer": {
+          "code": 5002602,
+          "name": "Crescent Seer",
+          "name_vn": "Tiên Tri Ám Nguyệt",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80042611000,
+              "name": "Nightingale's Blessing",
+              "name_vn": "Họa Mi Chúc Phúc",
+              "desc_vn": "Toàn bộ Anh Hùng ngoại trừ bản thân Thiên Sứ triệu hồi Sơn Ca Phép Thuật. Khi Bạo, Sơn Ca Phép Thuật sẽ phóng tên lửa về mục tiêu bị Bạo gây ST bằng 20% Công của Anh Hùng, CD 0.5s"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80042612000,
+              "name": "Nightingale's Blessing",
+              "name_vn": "Họa Mi Chúc Phúc",
+              "desc_vn": "Toàn bộ Anh Hùng ngoại trừ bản thân Thiên Sứ triệu hồi Sơn Ca Phép Thuật. Khi Bạo, Sơn Ca Phép Thuật sẽ phóng tên lửa về mục tiêu bị Bạo gây ST bằng 25% Công của Anh Hùng, CD 0.5s"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80042613000,
+              "name": "Nightingale's Blessing",
+              "name_vn": "Họa Mi Chúc Phúc",
+              "desc_vn": "Toàn bộ Anh Hùng ngoại trừ bản thân Thiên Sứ triệu hồi Sơn Ca Phép Thuật. Khi Bạo, Sơn Ca Phép Thuật sẽ phóng tên lửa về mục tiêu bị Bạo gây ST bằng 30% Công của Anh Hùng, CD 0.5s"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80042614000,
+              "name": "Nightingale's Blessing",
+              "name_vn": "Họa Mi Chúc Phúc",
+              "desc_vn": "Toàn bộ Anh Hùng ngoại trừ bản thân Thiên Sứ triệu hồi Sơn Ca Phép Thuật. Khi Bạo, Sơn Ca Phép Thuật sẽ phóng tên lửa về mục tiêu bị Bạo gây ST bằng 35% Công của Anh Hùng, CD 0.5s"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80042615000,
+              "name": "Nightingale's Blessing",
+              "name_vn": "Họa Mi Chúc Phúc",
+              "desc_vn": "Toàn bộ Anh Hùng ngoại trừ bản thân Thiên Sứ triệu hồi Sơn Ca Phép Thuật. Khi Bạo, Sơn Ca Phép Thuật sẽ phóng tên lửa về mục tiêu bị Bạo gây ST bằng 40% Công của Anh Hùng, CD 0.5s"
+            }
+          ]
+        },
+        "dream_idol": {
+          "code": 5002603,
+          "name": "Dream Idol",
+          "name_vn": "Idol Mộng Ảo",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80042621000,
+              "name": "Cupid's Arrow",
+              "name_vn": "Thần Tình Yêu Cupid",
+              "desc_vn": "Mỗi 10s, bán tim về phía Anh Hùng phe ta có Nộ tối đa, giúp mục tiêu phóng 1 lần Tuyệt Kỹ không cần tiêu hao, trong 5s tăng 40% ST mục tiêu này gây ra"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80042622000,
+              "name": "Cupid's Arrow",
+              "name_vn": "Thần Tình Yêu Cupid",
+              "desc_vn": "Mỗi 10s, bán tim về phía Anh Hùng phe ta có Nộ tối đa, giúp mục tiêu phóng 1 lần Tuyệt Kỹ không cần tiêu hao, trong 5s tăng 80% ST mục tiêu này gây ra"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80042623000,
+              "name": "Cupid's Arrow",
+              "name_vn": "Thần Tình Yêu Cupid",
+              "desc_vn": "Mỗi 10s, bán tim về phía Anh Hùng phe ta có Nộ tối đa, giúp mục tiêu phóng 1 lần Tuyệt Kỹ không cần tiêu hao, trong 5s tăng 120% ST mục tiêu này gây ra"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80042624000,
+              "name": "Cupid's Arrow",
+              "name_vn": "Thần Tình Yêu Cupid",
+              "desc_vn": "Mỗi 10s, bán tim về phía Anh Hùng phe ta có Nộ tối đa, giúp mục tiêu phóng 1 lần Tuyệt Kỹ không cần tiêu hao, trong 5s tăng 160% ST mục tiêu này gây ra"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80042625000,
+              "name": "Cupid's Arrow",
+              "name_vn": "Thần Tình Yêu Cupid",
+              "desc_vn": "Mỗi 10s, bán tim về phía Anh Hùng phe ta có Nộ tối đa, giúp mục tiêu phóng 1 lần Tuyệt Kỹ không cần tiêu hao, trong 5s tăng 200% ST mục tiêu này gây ra"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10260303000,
+          "skill": 10260601000,
+          "skillInfo": {
+            "code": 10260601000,
+            "name": "Light Bless",
+            "name_vn": "Thánh Quang Che Chở",
+            "desc_vn": "Đột phá 6【Thánh Quang Che Chở】trở thành Anh Hùng có Nộ cao nhất tăng 45% Công, không bao gồm bản thân (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10260303000,
+            "name": "Light Bless",
+            "name_vn": "Thánh Quang Che Chở",
+            "desc_vn": "Khi Thiên Sứ phóng Tuyệt Kỹ, hồi cho tất cả Anh Hùng 200 Nộ, không bao gồm bản thân"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10260601000,
+          "skill": 10260602000,
+          "skillInfo": {
+            "code": 10260602000,
+            "name": "Light Bless",
+            "name_vn": "Thánh Quang Che Chở",
+            "desc_vn": "Khi Thiên Sứ phóng Tuyệt Kỹ, tất cả Anh Hùng phe ta hồi 200 Nộ, không bao gồm bản thân, ngoài ra trong 10s khiến tất cả Anh Hùng tăng 30% ST gây ra (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10260601000,
+            "name": "Light Bless",
+            "name_vn": "Thánh Quang Che Chở",
+            "desc_vn": "Đột phá 6【Thánh Quang Che Chở】trở thành Anh Hùng có Nộ cao nhất tăng 45% Công, không bao gồm bản thân (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10260602000,
+          "skill": 10260603000,
+          "skillInfo": {
+            "code": 10260603000,
+            "name": "Light Bless",
+            "name_vn": "Thánh Quang Che Chở",
+            "desc_vn": "Bị Động【Thánh Quang Che Chở】Hồi Nộ và số mục tiêu tăng Công+1 (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10260602000,
+            "name": "Light Bless",
+            "name_vn": "Thánh Quang Che Chở",
+            "desc_vn": "Khi Thiên Sứ phóng Tuyệt Kỹ, tất cả Anh Hùng phe ta hồi 200 Nộ, không bao gồm bản thân, ngoài ra trong 10s khiến tất cả Anh Hùng tăng 30% ST gây ra (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10260201000,
+          "skill": 10260604000,
+          "skillInfo": {
+            "code": 10260604000,
+            "name": "Divine Wrath",
+            "name_vn": "Thần Phạt Giáng Thế",
+            "desc_vn": "Thiên Sứ triệu hồi thập tự giá, khiến địch gần nhất chịu ST phạm vi vừa bằng 720% Công và khiến Anh Hùng phe ta trong 8s <color=#f57c00 click=\"onClicked\" param=\"9\"><u> nhận Bạo</u></color>+30%, ST Bạo+100% (Không thể cộng dồn)"
+          },
+          "replacesInfo": {
+            "code": 10260201000,
+            "name": "Divine Wrath",
+            "name_vn": "Thần Phạt Giáng Thế",
+            "desc_vn": "Thiên Sứ triệu hồi thập tự giá, khiến địch gần nhất chịu ST phạm vi vừa bằng 120% Công và khiến Anh Hùng phe ta trong 8s<color=#f57c00 click=\"onClicked\" param=\"9\"><u> nhận Bạo</u></color>+30% (không cộng dồn)"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10260605000,
+          "skillInfo": {
+            "code": 10260605000,
+            "name": "Divine Wrath",
+            "name_vn": "Thần Phạt Giáng Thế",
+            "desc_vn": "Trong chiến đấu, Thiên Sứ cứ 1% Tăng ST Cuối đều sẽ chia cho Anh Hùng khác 0.25% Tăng ST Cuối"
+          }
+        }
+      ]
+    },
+    "medusa": {
+      "code": 50000027,
+      "name": "Medusa",
+      "name_vn": "Người Đá",
+      "color": "orange",
+      "baseSkills": [
+        10270101000,
+        10270201000,
+        10270301000
+      ]
+    },
+    "ruins_hunter": {
+      "code": 50000028,
+      "name": "Ruins Hunter",
+      "name_vn": "Thợ Săn Phế Tích",
+      "color": "orange",
+      "baseSkills": [
+        10280101000,
+        10280201000,
+        10280301000
+      ]
+    },
+    "hellord": {
+      "code": 50000029,
+      "name": "Hellord",
+      "name_vn": "Hades",
+      "color": "orange",
+      "baseSkills": [
+        10290101000,
+        10290201000,
+        10290301000
+      ]
+    },
+    "bride_wraith": {
+      "code": 50000030,
+      "name": "Bride Wraith",
+      "name_vn": "Cô Dâu Linh Dị",
+      "color": "red",
+      "baseSkills": [
+        10300101000,
+        10300201000,
+        10300301000
+      ],
+      "skins": {
+        "modern_songstress": {
+          "code": 5003001,
+          "name": "Modern Songstress",
+          "name_vn": "Ca Sĩ Hiện Đại",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043001000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Cô Dâu Linh Dị, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043002000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Cô Dâu Linh Dị, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043003000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Cô Dâu Linh Dị, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043004000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Cô Dâu Linh Dị, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043005000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Cô Dâu Linh Dị, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "cleopatra": {
+          "code": 5003002,
+          "name": "Cleopatra",
+          "name_vn": "Nữ Hoàng Ai Cập",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043011000,
+              "name": "Pharaoh Flame",
+              "name_vn": "Thánh Hỏa Pharaoh",
+              "desc_vn": "Khi Cô Dâu Linh Dị Công Thường gây ST, có 15% khiến địch ngẫu nhiên bị Lửa Hồ Yêu thiêu đốt, gây 1 lần 40% ST phạm vi, và trong 5s giảm 15% Kháng ST Duy Trì, có 20% gây <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color> tức thì (không cộng dồn)"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043012000,
+              "name": "Pharaoh Flame",
+              "name_vn": "Thánh Hỏa Pharaoh",
+              "desc_vn": "Khi Cô Dâu Linh Dị Công Thường gây ST, có 15% khiến địch ngẫu nhiên bị Lửa Hồ Yêu thiêu đốt, gây 1 lần 55% ST phạm vi, và trong 5s giảm 20% Kháng ST Duy Trì, có 20% gây <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color> tức thì (không cộng dồn)"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043013000,
+              "name": "Pharaoh Flame",
+              "name_vn": "Thánh Hỏa Pharaoh",
+              "desc_vn": "Khi Cô Dâu Linh Dị Công Thường gây ST, có 15% khiến địch ngẫu nhiên bị Lửa Hồ Yêu thiêu đốt, gây 1 lần 70% ST phạm vi, và trong 5s giảm 25% Kháng ST Duy Trì, có 20% gây <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color> tức thì (không cộng dồn)"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043014000,
+              "name": "Pharaoh Flame",
+              "name_vn": "Thánh Hỏa Pharaoh",
+              "desc_vn": "Khi Cô Dâu Linh Dị Công Thường gây ST, có 15% khiến địch ngẫu nhiên bị Lửa Hồ Yêu thiêu đốt, gây 1 lần 85% ST phạm vi, và trong 5s giảm 30% Kháng ST Duy Trì, có 20% gây <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color> tức thì (không cộng dồn)"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043015000,
+              "name": "Pharaoh Flame",
+              "name_vn": "Thánh Hỏa Pharaoh",
+              "desc_vn": "Khi Cô Dâu Linh Dị Công Thường gây ST, có 15% khiến địch ngẫu nhiên bị Lửa Hồ Yêu thiêu đốt, gây 1 lần 100% ST phạm vi, và trong 5s giảm 35% Kháng ST Duy Trì, có 20% gây <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color> tức thì (không cộng dồn)"
+            }
+          ]
+        },
+        "dessert_princess": {
+          "code": 5003003,
+          "name": "Dessert Princess",
+          "name_vn": "Quà Kỳ Duyên",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043021000,
+              "name": "Sweet Abyss",
+              "name_vn": "Vực Sâu Ngọt Ngào",
+              "desc_vn": "Mỗi 10s sẽ tạo Khu Đồ Ngọt 4s trước cổng, mỗi giây gây ST bằng 120% Công, khi kết thúc sẽ sụp xuống khiến địch trong phạm vi bị <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color>"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043022000,
+              "name": "Sweet Abyss",
+              "name_vn": "Vực Sâu Ngọt Ngào",
+              "desc_vn": "Mỗi 10s sẽ tạo Khu Đồ Ngọt 4s trước cổng, mỗi giây gây ST bằng 150% Công, khi kết thúc sẽ sụp xuống khiến địch trong phạm vi bị <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color>"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043023000,
+              "name": "Sweet Abyss",
+              "name_vn": "Vực Sâu Ngọt Ngào",
+              "desc_vn": "Mỗi 10s sẽ tạo Khu Đồ Ngọt 4s trước cổng, mỗi giây gây ST bằng 180% Công và <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color> ngắn hạn, khi kết thúc sẽ sụp xuống khiến địch trong phạm vi bị <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color>"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043024000,
+              "name": "Sweet Abyss",
+              "name_vn": "Vực Sâu Ngọt Ngào",
+              "desc_vn": "Mỗi 10s sẽ tạo Khu Đồ Ngọt 4s trước cổng, mỗi giây gây ST bằng 210% Công và <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color> ngắn hạn, khi kết thúc sẽ sụp xuống khiến địch trong phạm vi bị <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color>"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043025000,
+              "name": "Sweet Abyss",
+              "name_vn": "Vực Sâu Ngọt Ngào",
+              "desc_vn": "Mỗi 10s sẽ tạo Khu Đồ Ngọt 4s trước cổng, mỗi giây gây ST bằng 250% Công và <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color> ngắn hạn, khi kết thúc sẽ sụp xuống khiến địch trong phạm vi bị <color=#f57c00 click=\"onClicked\" param=\"10\"><u>[Dẫn Dắt]</u></color>"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10300101000,
+          "skill": 10300601000,
+          "skillInfo": {
+            "code": 10300601000,
+            "name": "Vengeflame Rose",
+            "name_vn": "Hoa Hồng Oán Hận",
+            "desc_vn": "Cô Dâu Linh Dị ném hoa hồng khiến địch gần nhất chịu ST phạm vi nhỏ bằng 150% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> 1 lần, và kèm 4s <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 75% Công"
+          },
+          "replacesInfo": {
+            "code": 10300101000,
+            "name": "Vengeflame Rose",
+            "name_vn": "Hoa Hồng Oán Hận",
+            "desc_vn": "Cô Dâu Linh Dị ném hoa hồng khiến địch gần nhất chịu ST phạm vi nhỏ bằng 30% Công, và kèm 4s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 15% Công"
+          }
+        },
+        {
+          "replaces": 10300303000,
+          "skill": 10300602000,
+          "skillInfo": {
+            "code": 10300602000,
+            "name": "Decay Field",
+            "name_vn": "凋零领域",
+            "desc_vn": "Trong trận: Địch lân cận chịu Thủ Phép-45%"
+          },
+          "replacesInfo": {
+            "code": 10300303000,
+            "name": "Decay Field",
+            "name_vn": "凋零领域",
+            "desc_vn": "Trong trận: Kéo dài 60% thời gian <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10300603000,
+          "skillInfo": {
+            "code": 10300603000,
+            "name": "Burn DMG Boost",
+            "name_vn": "Tăng ST Thiêu Đốt",
+            "desc_vn": "Công Thường【Hoa Hồng Oán Hận】Khi gây ST trong 5s giảm 50% Kháng Thiêu Đốt của mục tiêu (Không cộng dồn)"
+          }
+        },
+        {
+          "replaces": 10300201000,
+          "skill": 10300604000,
+          "skillInfo": {
+            "code": 10300604000,
+            "name": "Thorn Bind",
+            "name_vn": "Xiềng Xích Gai Nhọn",
+            "desc_vn": "Cô Dâu Linh Dị triệu hồi 4s Xiềng Xích Gai Nhọn,mỗi giây gây ST phạm vi bằng 300% Công, trong thời gian này khiến địch trng phạm vi chịu <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color> và kèm Ngăn Chặn"
+          },
+          "replacesInfo": {
+            "code": 10300201000,
+            "name": "Thorn Bind",
+            "name_vn": "Xiềng Xích Gai Nhọn",
+            "desc_vn": "Cô Dâu Linh Dị triệu hồi 4s bụi gai, mỗi giây gây ST phạm vi bằng 50% Công, trong thời gian này khiến địch trng phạm vi chịu <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color>"
+          }
+        },
+        {
+          "replaces": 10300602000,
+          "skill": 10300605000,
+          "skillInfo": {
+            "code": 10300605000,
+            "name": "Decay Field",
+            "name_vn": "凋零领域",
+            "desc_vn": "Trong trận: Kéo dài 100% thời gian <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>"
+          },
+          "replacesInfo": {
+            "code": 10300602000,
+            "name": "Decay Field",
+            "name_vn": "凋零领域",
+            "desc_vn": "Trong trận: Địch lân cận chịu Thủ Phép-45%"
+          },
+          "minBreakThrough": 9
+        }
+      ]
+    },
+    "joker": {
+      "code": 50000031,
+      "name": "JOKER",
+      "name_vn": "JOKER",
+      "color": "red",
+      "baseSkills": [
+        10310101000,
+        10310201000,
+        10310301000
+      ],
+      "skins": {
+        "master_magician": {
+          "code": 5003101,
+          "name": "Master Magician",
+          "name_vn": "Bậc Thầy Ma Thuật",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043101000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay JOKER, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043102000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay JOKER, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043103000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay JOKER, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043104000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay JOKER, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043105000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay JOKER, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "cyber_star": {
+          "code": 5003102,
+          "name": "Cyber Star",
+          "name_vn": "Siêu Sao Cyber",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043111000,
+              "name": "Shark Sea",
+              "name_vn": "Cá Mập Điên Cuồng",
+              "desc_vn": "JOKER mỗi 10s triệu hồi 1 đàn Cá Mập, lần lượt phóng đạn về phía trước, khiến địch đầu tiên trúng đòn chịu 300% ST phạm vi nhỏ, và kèm <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043112000,
+              "name": "Shark Sea",
+              "name_vn": "Cá Mập Điên Cuồng",
+              "desc_vn": "JOKER mỗi 10s triệu hồi 1 đàn Cá Mập, lần lượt phóng đạn về phía trước, khiến địch đầu tiên trúng đòn chịu 400% ST phạm vi nhỏ, và kèm <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043113000,
+              "name": "Shark Sea",
+              "name_vn": "Cá Mập Điên Cuồng",
+              "desc_vn": "JOKER mỗi 10s triệu hồi 1 đàn Cá Mập, lần lượt phóng đạn về phía trước, khiến địch đầu tiên trúng đòn chịu 500% ST phạm vi nhỏ, và kèm <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043114000,
+              "name": "Shark Sea",
+              "name_vn": "Cá Mập Điên Cuồng",
+              "desc_vn": "JOKER mỗi 10s triệu hồi 1 đàn Cá Mập, lần lượt phóng đạn về phía trước, khiến địch đầu tiên trúng đòn chịu 600% ST phạm vi nhỏ, và kèm <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043115000,
+              "name": "Shark Sea",
+              "name_vn": "Cá Mập Điên Cuồng",
+              "desc_vn": "JOKER mỗi 10s triệu hồi 1 đàn Cá Mập, lần lượt phóng đạn về phía trước, khiến địch đầu tiên trúng đòn chịu 700% ST phạm vi nhỏ, và kèm <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+            }
+          ]
+        },
+        "magic_dean": {
+          "code": 5003103,
+          "name": "Magic Dean",
+          "name_vn": "Hiệu Trưởng Ma",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043121000,
+              "name": "Arcane Dragon",
+              "name_vn": "Phi Long Phép Thuật",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, sẽ triệu hồi Phi Long <color=#f57c00 click=\"onClicked\" param=\"34\"><u>hỗ trợ chiến đấu</u></color>, Phi Long cứ cách 30s phóng Tia Huyễn Ảo 12s, mỗi giây khiến mục tiêu chịu ST V.Lý bằng 0.2% <color=#f57c00 click=\"onClicked\" param=\"24\"><u> giới hạn HP </u></color> của mục tiêu, ưu tiên tấn công Tinh Anh và BOSS"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043122000,
+              "name": "Arcane Dragon",
+              "name_vn": "Phi Long Phép Thuật",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, sẽ triệu hồi Phi Long <color=#f57c00 click=\"onClicked\" param=\"34\"><u>hỗ trợ chiến đấu</u></color>, Phi Long cứ cách 30s phóng Tia Huyễn Ảo 15s, mỗi giây khiến mục tiêu chịu ST V.Lý bằng 0.2% <color=#f57c00 click=\"onClicked\" param=\"24\"><u> giới hạn HP </u></color> của mục tiêu, ưu tiên tấn công Tinh Anh và BOSS"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043123000,
+              "name": "Arcane Dragon",
+              "name_vn": "Phi Long Phép Thuật",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, sẽ triệu hồi Phi Long <color=#f57c00 click=\"onClicked\" param=\"34\"><u>hỗ trợ chiến đấu</u></color>, Phi Long cứ cách 30s phóng Tia Huyễn Ảo 18s, mỗi giây khiến mục tiêu chịu ST V.Lý bằng 0.2% <color=#f57c00 click=\"onClicked\" param=\"24\"><u> giới hạn HP</u></color> của mục tiêu, phóng 1 lần, ưu tiên tấn công Tinh Anh và BOSS"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043124000,
+              "name": "Arcane Dragon",
+              "name_vn": "Phi Long Phép Thuật",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, sẽ triệu hồi Phi Long <color=#f57c00 click=\"onClicked\" param=\"34\"><u>hỗ trợ chiến đấu</u></color>, Phi Long cứ cách 30s phóng Tia Huyễn Ảo 21s, mỗi giây khiến mục tiêu chịu ST V.Lý bằng 0.2% <color=#f57c00 click=\"onClicked\" param=\"24\"><u> giới hạn HP</u></color> của mục tiêu, phóng 1 lần, ưu tiên tấn công Tinh Anh và BOSS"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043125000,
+              "name": "Arcane Dragon",
+              "name_vn": "Phi Long Phép Thuật",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, sẽ triệu hồi Phi Long <color=#f57c00 click=\"onClicked\" param=\"34\"><u>hỗ trợ chiến đấu</u></color>, Phi Long cứ cách 30s phóng Tia Huyễn Ảo 25s, mỗi giây khiến mục tiêu chịu ST V.Lý bằng 0.2% <color=#f57c00 click=\"onClicked\" param=\"24\"><u> giới hạn HP</u></color> của mục tiêu, phóng 2 lần, ưu tiên tấn công Tinh Anh và BOSS"
+            }
+          ]
+        },
+        "nocturnal_burglar": {
+          "code": 5003104,
+          "name": "Nocturnal Burglar",
+          "name_vn": "Đạo Chích Đêm Đen",
+          "color": "colorful",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043131000,
+              "name": "Dark Knight",
+              "name_vn": "Kỵ Sĩ Bóng Đêm",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, tăng 200% ST Bạo của cả hai. Và Phi Long trở thành <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color>, <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color> cứ mỗi 4s sẽ ngẫu nhiên ném 1 Phi Tiêu Dơi, ưu tiên vào Tinh Anh và BOSS, Phi Tiêu Dơi nổ gây ST phạm vi nhỏ bằng 4000% Công, HP địch càng cao thì ST càng cao, tối đa 200%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043132000,
+              "name": "Dark Knight",
+              "name_vn": "Kỵ Sĩ Bóng Đêm",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, tăng 220% ST Bạo của cả hai. Và Phi Long trở thành <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color>, <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color> cứ mỗi 4s sẽ ngẫu nhiên ném 1 Phi Tiêu Dơi, ưu tiên vào Tinh Anh và BOSS, Phi Tiêu Dơi nổ gây ST phạm vi nhỏ bằng 4600% Công, HP địch càng cao thì ST càng cao, tối đa 210%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043133000,
+              "name": "Dark Knight",
+              "name_vn": "Kỵ Sĩ Bóng Đêm",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, tăng 240% ST Bạo của cả hai. Và Phi Long trở thành <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color>, <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color> cứ mỗi 4s sẽ ngẫu nhiên ném 1 Phi Tiêu Dơi, ưu tiên vào Tinh Anh và BOSS, Phi Tiêu Dơi nổ gây ST phạm vi nhỏ bằng 5200% Công, HP địch càng cao thì ST càng cao, tối đa 220%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043134000,
+              "name": "Dark Knight",
+              "name_vn": "Kỵ Sĩ Bóng Đêm",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, tăng 260% ST Bạo của cả hai. Và Phi Long trở thành <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color>, <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color> cứ mỗi 4s sẽ ngẫu nhiên ném 1 Phi Tiêu Dơi, ưu tiên vào Tinh Anh và BOSS, Phi Tiêu Dơi nổ gây ST phạm vi nhỏ bằng 5800% Công, HP địch càng cao thì ST càng cao, tối đa 230%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043135000,
+              "name": "Dark Knight",
+              "name_vn": "Kỵ Sĩ Bóng Đêm",
+              "desc_vn": "JOKER và Pháo Loli cùng lúc ra trận, tăng 280% ST Bạo của cả hai. Và Phi Long trở thành <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color>, <color=#f57c00 click=\"onClicked\" param=\"46\"><u>Người Dơi</u></color> cứ mỗi 4s sẽ ngẫu nhiên ném 1 Phi Tiêu Dơi, ưu tiên vào Tinh Anh và BOSS, Phi Tiêu Dơi nổ gây ST phạm vi nhỏ bằng 6400% Công, HP địch càng cao thì ST càng cao, tối đa 240%"
+            }
+          ],
+          "requires": [
+            "master_magician",
+            "cyber_star",
+            "magic_dean"
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10310101000,
+          "skill": 10310601000,
+          "skillInfo": {
+            "code": 10310601000,
+            "name": "Deadly Joke",
+            "name_vn": "Trò Đùa Chết Người",
+            "desc_vn": "JOKER khiến địch gần nhất chịu ST phạm vi nhỏ bằng 350% Công"
+          },
+          "replacesInfo": {
+            "code": 10310101000,
+            "name": "Deadly Joke",
+            "name_vn": "Trò Đùa Chết Người",
+            "desc_vn": "JOKER khiến địch gần nhất chịu ST phạm vi nhỏ bằng 70% Công"
+          }
+        },
+        {
+          "replaces": 10310201000,
+          "skill": 10310602000,
+          "skillInfo": {
+            "code": 10310602000,
+            "name": "Royal Flush",
+            "name_vn": "Thùng Phá Sảnh",
+            "desc_vn": "JOKER tung Thùng Phá Sảnh, trong 3s gây 3 lần ST phạm vi vừa/nhỏ bằng 250% Công và có 30% <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+          },
+          "replacesInfo": {
+            "code": 10310201000,
+            "name": "Royal Flush",
+            "name_vn": "Thùng Phá Sảnh",
+            "desc_vn": "JOKER tung Thùng Phá Sảnh, trong 3s gây 3 lần ST phạm vi vừa/nhỏ bằng 50% Công và có 20% <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+          }
+        },
+        {
+          "replaces": 10310303000,
+          "skill": 10310603000,
+          "skillInfo": {
+            "code": 10310603000,
+            "name": "Final Surprise",
+            "name_vn": "Màn Kết Bất Ngờ",
+            "desc_vn": "Sau khi gây [Đẩy Lùi], ST mục tiêu phải chịu+80%, duy trì 10s"
+          },
+          "replacesInfo": {
+            "code": 10310303000,
+            "name": "Final Surprise",
+            "name_vn": "Màn Kết Bất Ngờ",
+            "desc_vn": "HP Cửa giảm còn 75%/50%/25%, lập tức phóng 1 lần KN Tuyệt Kỹ không tiêu hao, mỗi cấp Cửa chỉ kích hoạt 1 lần"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10310604000,
+          "skillInfo": {
+            "code": 10310604000,
+            "name": "Sinful Capital",
+            "name_vn": "Thành Phố Tội Lỗi",
+            "desc_vn": "Mỗi lần gây Đẩy Lùi sẽ tăng 2% ST của tất cả Anh Hùng, tối đa 120%"
+          }
+        },
+        {
+          "replaces": null,
+          "skill": 10310605000,
+          "skillInfo": {
+            "code": 10310605000,
+            "name": "Ultimate Prank",
+            "name_vn": "Trò Đùa Cuối Cùng",
+            "desc_vn": "Trong chiến đấu, khiến ST do JOKER gây ra tăng 300%"
+          }
+        }
+      ]
+    },
+    "thundermaster": {
+      "code": 50000032,
+      "name": "Thundermaster",
+      "name_vn": "Lôi Thần Kiếm Quang",
+      "color": "red",
+      "baseSkills": [
+        10320101000,
+        10320201000,
+        10320301000
+      ],
+      "skins": {
+        "perfect_holiday": {
+          "code": 5003201,
+          "name": "Perfect Holiday",
+          "name_vn": "Kỳ Nghỉ Hoàn Hảo",
+          "color": "red",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043201000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Lôi Thần Kiếm Quang, Tăng ST bản thân+20%"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043202000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Lôi Thần Kiếm Quang, Tăng ST bản thân+40%"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043203000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Lôi Thần Kiếm Quang, Tăng ST bản thân+60%"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043204000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Lôi Thần Kiếm Quang, Tăng ST bản thân+80%"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043205000,
+              "name": "Preemptive Strike",
+              "name_vn": "Tiên Phát Chế Nhân",
+              "desc_vn": "Khi Anh Hùng dùng skin, đầu trận ra trận ngay Lôi Thần Kiếm Quang, Tăng ST bản thân+100%"
+            }
+          ]
+        },
+        "all_time_best": {
+          "code": 5003202,
+          "name": "All Time Best",
+          "name_vn": "Lịch Sử Lẫy Lừng",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043211000,
+              "name": "Fire Toss",
+              "name_vn": "Ném Cầu Lửa",
+              "desc_vn": "Mỗi lần Lôi Thần Kiếm Quang gây ST có 20% ném Bóng Bầu Dục bốc lửa về phía địch gây ST bằng 140% Công và có 25% kèm 1s [Choáng]"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043212000,
+              "name": "Fire Toss",
+              "name_vn": "Ném Cầu Lửa",
+              "desc_vn": "Mỗi lần Lôi Thần Kiếm Quang gây ST có 20% ném Bóng Bầu Dục bốc lửa về phía địch gây ST bằng 180% Công và có 25% kèm 1s [Choáng]"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043213000,
+              "name": "Fire Toss",
+              "name_vn": "Ném Cầu Lửa",
+              "desc_vn": "Mỗi lần Lôi Thần Kiếm Quang gây ST có 20% ném Bóng Bầu Dục bốc lửa về phía địch gây ST bằng 220% Công và có 25% kèm 1s [Choáng]"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043214000,
+              "name": "Fire Toss",
+              "name_vn": "Ném Cầu Lửa",
+              "desc_vn": "Mỗi lần Lôi Thần Kiếm Quang gây ST có 20% ném Bóng Bầu Dục bốc lửa về phía địch gây ST bằng 260% Công và có 25% kèm 1s [Choáng]"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043215000,
+              "name": "Fire Toss",
+              "name_vn": "Ném Cầu Lửa",
+              "desc_vn": "Mỗi lần Lôi Thần Kiếm Quang gây ST có 20% ném Bóng Bầu Dục bốc lửa về phía địch gây ST bằng 300% Công và có 25% kèm 1s [Choáng]"
+            }
+          ]
+        },
+        "alien_conqueror": {
+          "code": 5003203,
+          "name": "Alien Conqueror",
+          "name_vn": "Chinh Phục UFO",
+          "color": "gold",
+          "maxStar": 5,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 80043221000,
+              "name": "Earthstrike",
+              "name_vn": "Nhất Kích Phá Đất",
+              "desc_vn": "Mỗi 15s, Lôi Thần Kiếm Quang triệu hồi Thú Robot tấn công 4 lần, mỗi lần khiến địch ngẫu nhiên chịu  ST phạm vi bằng 90% Công và có 50% kèm 1s<color=#f57c00 click=\"onClicked\" param=\"16\"><u>Choáng Sâu</u></color>"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 80043222000,
+              "name": "Earthstrike",
+              "name_vn": "Nhất Kích Phá Đất",
+              "desc_vn": "Mỗi 15s, Lôi Thần Kiếm Quang triệu hồi Thú Robot tấn công 4 lần, mỗi lần khiến địch ngẫu nhiên chịu  ST phạm vi bằng 115% Công và có 50% kèm 2s<color=#f57c00 click=\"onClicked\" param=\"16\"><u>Choáng Sâu</u></color>"
+            },
+            {
+              "stars": [
+                3
+              ],
+              "code": 80043223000,
+              "name": "Earthstrike",
+              "name_vn": "Nhất Kích Phá Đất",
+              "desc_vn": "Mỗi 15s, Lôi Thần Kiếm Quang triệu hồi Thú Robot tấn công 5 lần, mỗi lần khiến địch ngẫu nhiên chịu  ST phạm vi bằng 140% Công và có 50% kèm 2s<color=#f57c00 click=\"onClicked\" param=\"16\"><u>Choáng Sâu</u></color>"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 80043224000,
+              "name": "Earthstrike",
+              "name_vn": "Nhất Kích Phá Đất",
+              "desc_vn": "Mỗi 15s, Lôi Thần Kiếm Quang triệu hồi Thú Robot tấn công 5 lần, mỗi lần khiến địch ngẫu nhiên chịu  ST phạm vi bằng 165% Công và có 50% kèm 2s<color=#f57c00 click=\"onClicked\" param=\"16\"><u>Choáng Sâu</u></color>"
+            },
+            {
+              "stars": [
+                5
+              ],
+              "code": 80043225000,
+              "name": "Earthstrike",
+              "name_vn": "Nhất Kích Phá Đất",
+              "desc_vn": "Mỗi 15s, Lôi Thần Kiếm Quang triệu hồi Thú Robot tấn công 5 lần, mỗi lần khiến địch ngẫu nhiên chịu  ST phạm vi bằng 190% Công và có 50% kèm 3s<color=#f57c00 click=\"onClicked\" param=\"16\"><u>Choáng Sâu</u></color>"
+            }
+          ]
+        }
+      },
+      "avatarNodes": [
+        {
+          "replaces": 10320101000,
+          "skill": 10320601000,
+          "skillInfo": {
+            "code": 10320601000,
+            "name": "Arc Toss",
+            "name_vn": "Hồ Quang Điện",
+            "desc_vn": "Lôi Thần Kiếm Quang vung kiếm ánh sáng, khiến địch gần nhất chịu ST <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> vô hạn bằng 175% Công"
+          },
+          "replacesInfo": {
+            "code": 10320101000,
+            "name": "Arc Toss",
+            "name_vn": "Hồ Quang Điện",
+            "desc_vn": "Lôi Thần Kiếm Quang vung kiếm ánh sáng, khiến địch gần nhất chịu ST <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> vô hạn bằng 35% Công"
+          }
+        },
+        {
+          "replaces": 10320303000,
+          "skill": 10320602000,
+          "skillInfo": {
+            "code": 10320602000,
+            "name": "Thunder Guard",
+            "name_vn": "Tường Sét Phòng Thủ",
+            "desc_vn": "Mỗi 4s, khiến địch ngẫu nhiên chịu ST đường thẳng bằng 175% Công"
+          },
+          "replacesInfo": {
+            "code": 10320303000,
+            "name": "Thunder Guard",
+            "name_vn": "Tường Sét Phòng Thủ",
+            "desc_vn": "Lôi Thần Kiếm Quang khiến mục tiêu trúng <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color> bị <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>, còn gây ST Thực bằng 140% Công"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": 10320201000,
+          "skill": 10320603000,
+          "skillInfo": {
+            "code": 10320603000,
+            "name": "Thunder Strike",
+            "name_vn": "Sấm Sét Đánh Gục",
+            "desc_vn": "Lôi Thần Kiếm Quang phóng sấm sét phẫn nộ, khiến địch gần nhất chịu ST phạm vi vừa/nhỏ bằng 700% Công, và có 50% gây 2.5s <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+          },
+          "replacesInfo": {
+            "code": 10320201000,
+            "name": "Thunder Strike",
+            "name_vn": "Sấm Sét Đánh Gục",
+            "desc_vn": "Lôi Thần Kiếm Quang phóng sấm sét phẫn nộ, khiến địch gần nhất chịu ST phạm vi vừa/ nhỏ bằng 140% Công, và có 50% gây 2s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+          }
+        },
+        {
+          "replaces": 10320602000,
+          "skill": 10320604000,
+          "skillInfo": {
+            "code": 10320604000,
+            "name": "Thunder Guard",
+            "name_vn": "Tường Sét Phòng Thủ",
+            "desc_vn": "Khi Cửa trúng ST Trực Tiếp, có 25% khiến phe công <color=#f57c00 click=\"onClicked\" param=\"4\"> 【Choáng】</color>3s, CD 1s (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "replacesInfo": {
+            "code": 10320602000,
+            "name": "Thunder Guard",
+            "name_vn": "Tường Sét Phòng Thủ",
+            "desc_vn": "Mỗi 4s, khiến địch ngẫu nhiên chịu ST đường thẳng bằng 175% Công"
+          },
+          "minBreakThrough": 9
+        },
+        {
+          "replaces": null,
+          "skill": 10320605000,
+          "skillInfo": {
+            "code": 10320605000,
+            "name": "Buddhist Grace",
+            "name_vn": "Phật Quang Phổ Chiếu",
+            "desc_vn": "Trong chiến đấu, Lôi Thần Kiếm Quang cứ 1% thời gian Choáng sẽ tăng thêm 0.25% ST do đội gây ra"
+          }
+        }
+      ]
+    },
+    "strawhat": {
+      "code": 50000033,
+      "name": "Strawhat",
+      "name_vn": "Vua Mũ Rơm",
+      "color": "purple",
+      "baseSkills": [
+        10330101000,
+        10330201000
+      ]
+    },
+    "twin_gunner": {
+      "code": 50000034,
+      "name": "Twin Gunner",
+      "name_vn": "Nữ Cảnh Sát",
+      "color": "purple",
+      "baseSkills": [
+        10340101000,
+        10340201000
+      ]
+    },
+    "ghoul": {
+      "code": 50000035,
+      "name": "Ghoul",
+      "name_vn": "Yêu Dị",
+      "color": "purple",
+      "baseSkills": [
+        10350101000,
+        10350201000
+      ]
+    },
+    "stapler_girl": {
+      "code": 50000036,
+      "name": "Stapler Girl",
+      "name_vn": "Cô Gái Dập Ghim",
+      "color": "purple",
+      "baseSkills": [
+        10360101000,
+        10360201000
+      ]
+    }
+  }
+}

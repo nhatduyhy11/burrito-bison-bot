@@ -1,6 +1,6 @@
 // Local playtest profile (?play&profile): traps, pets, spells, mounts, Summoner skins, buildings and
-// antiques from /__sim/active-profile.json, resolved by name through profile-dict.json and
-// antique-dict.json (scripts/gen_profile_dict.js).
+// antiques from /__sim/active-profile.json, resolved by name through hero-dict.json +
+// support-dict.json and antique-dict.json (scripts/gen_profile_dict.js).
 // Map: map-profile.js. Heroes: hero/ (selection.js, build.js, skin.js).
 // Building skins: build-skin-profile.js.
 import { battleAntiques } from "../antiques.js";
@@ -17,7 +17,10 @@ export async function applyProfile(start, rb, M, step) {
     if (!response.ok) throw new Error(`Could not load ${name}: HTTP ${response.status}`);
     return response.json();
   };
-  const [profile, catalog] = await Promise.all([read("active-profile"), read("dict/profile-dict")]);
+  const [profile, heroDict, supportDict] = await Promise.all([
+    read("active-profile"), read("dict/hero-dict"), read("dict/support-dict"),
+  ]);
+  const catalog = { ...heroDict, ...supportDict };
   if (Object.hasOwn(profile, "map")) await applyMapProfile(start, profile.map || {}, rb, M, step);
   const player = { ...rb.listItems(start.playerInfos)[0] };
   let summonerDerma = 0;

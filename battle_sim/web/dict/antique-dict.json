@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, name_vn: lang_vi)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
   "antiques": {
     "jadeite_cup": {
       "code": 3001,
@@ -23,6 +23,63 @@
         300113,
         300114,
         300115
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300101000,
+          "name": "Blue 1",
+          "name_vn": "Lam 1",
+          "desc_vn": "Công Đội trong chiến đấu +10, giới hạn 500"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300102000,
+          "name": "Blue 1",
+          "name_vn": "Lam 1",
+          "desc_vn": "Công Đội trong chiến đấu +12, giới hạn 1000"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300103000,
+          "name": "Blue 1",
+          "name_vn": "Lam 1",
+          "desc_vn": "Công Đội trong chiến đấu +14, giới hạn 2000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300104000,
+          "name": "Blue 1",
+          "name_vn": "Lam 1",
+          "desc_vn": "Công Đội trong chiến đấu +17, giới hạn 4000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300105000,
+          "name": "Blue 1",
+          "name_vn": "Lam 1",
+          "desc_vn": "Công Đội trong chiến đấu +20, giới hạn 10000"
+        }
       ]
     },
     "bronze_jue": {
@@ -47,6 +104,63 @@
         300213,
         300214,
         300215
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300201000,
+          "name": "Blue 2",
+          "name_vn": "Lam 2",
+          "desc_vn": "Công Đội trong chiến đấu +10, giới hạn 500"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300202000,
+          "name": "Blue 2",
+          "name_vn": "Lam 2",
+          "desc_vn": "Công Đội trong chiến đấu +11, giới hạn 1000"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300203000,
+          "name": "Blue 2",
+          "name_vn": "Lam 2",
+          "desc_vn": "Công Đội trong chiến đấu +12, giới hạn 2000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300204000,
+          "name": "Blue 2",
+          "name_vn": "Lam 2",
+          "desc_vn": "Công Đội trong chiến đấu +13, giới hạn 4000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300205000,
+          "name": "Blue 2",
+          "name_vn": "Lam 2",
+          "desc_vn": "Công Đội trong chiến đấu +14, giới hạn 10000"
+        }
       ]
     },
     "ban_chiang_painted_ewer": {
@@ -71,6 +185,63 @@
         300313,
         300314,
         300315
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300301000,
+          "name": "Blue 3",
+          "name_vn": "Lam 3",
+          "desc_vn": "Công Đội trong chiến đấu +3, giới hạn 500"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300302000,
+          "name": "Blue 3",
+          "name_vn": "Lam 3",
+          "desc_vn": "Công Đội trong chiến đấu +4, giới hạn 1000"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300303000,
+          "name": "Blue 3",
+          "name_vn": "Lam 3",
+          "desc_vn": "Công Đội trong chiến đấu +5, giới hạn 2000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300304000,
+          "name": "Blue 3",
+          "name_vn": "Lam 3",
+          "desc_vn": "Công Đội trong chiến đấu +6, giới hạn 4000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300305000,
+          "name": "Blue 3",
+          "name_vn": "Lam 3",
+          "desc_vn": "Công Đội trong chiến đấu +7, giới hạn 10000"
+        }
       ]
     },
     "jade_ruyi": {
@@ -95,6 +266,63 @@
         300413,
         300414,
         300415
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300401000,
+          "name": "Blue 4",
+          "name_vn": "Lam 4",
+          "desc_vn": "Công Đội trong chiến đấu +15, giới hạn 500"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300402000,
+          "name": "Blue 4",
+          "name_vn": "Lam 4",
+          "desc_vn": "Công Đội trong chiến đấu +16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300403000,
+          "name": "Blue 4",
+          "name_vn": "Lam 4",
+          "desc_vn": "Công Đội trong chiến đấu +17, giới hạn 2000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300404000,
+          "name": "Blue 4",
+          "name_vn": "Lam 4",
+          "desc_vn": "Công Đội trong chiến đấu +19, giới hạn 4000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300405000,
+          "name": "Blue 4",
+          "name_vn": "Lam 4",
+          "desc_vn": "Công Đội trong chiến đấu +21, giới hạn 10000"
+        }
       ]
     },
     "hongshan_jade_dragon": {
@@ -119,6 +347,63 @@
         300513,
         300514,
         300515
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300501000,
+          "name": "Blue 5",
+          "name_vn": "Lam 5",
+          "desc_vn": "Công Đội trong chiến đấu +15, giới hạn 500"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300502000,
+          "name": "Blue 5",
+          "name_vn": "Lam 5",
+          "desc_vn": "Công Đội trong chiến đấu +16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300503000,
+          "name": "Blue 5",
+          "name_vn": "Lam 5",
+          "desc_vn": "Công Đội trong chiến đấu +17, giới hạn 2000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300504000,
+          "name": "Blue 5",
+          "name_vn": "Lam 5",
+          "desc_vn": "Công Đội trong chiến đấu +19, giới hạn 4000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300505000,
+          "name": "Blue 5",
+          "name_vn": "Lam 5",
+          "desc_vn": "Công Đội trong chiến đấu +21, giới hạn 10000"
+        }
       ]
     },
     "painted_pottery_back_ewer": {
@@ -143,6 +428,63 @@
         300613,
         300614,
         300615
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300601000,
+          "name": "Blue 6",
+          "name_vn": "Lam 6",
+          "desc_vn": "ST trong tính năng này +0.11%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300602000,
+          "name": "Blue 6",
+          "name_vn": "Lam 6",
+          "desc_vn": "ST trong tính năng này +0.12%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300603000,
+          "name": "Blue 6",
+          "name_vn": "Lam 6",
+          "desc_vn": "ST trong tính năng này +0.13%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300604000,
+          "name": "Blue 6",
+          "name_vn": "Lam 6",
+          "desc_vn": "ST trong tính năng này +0.14%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300605000,
+          "name": "Blue 6",
+          "name_vn": "Lam 6",
+          "desc_vn": "ST trong tính năng này +0.15%, giới hạn 30%"
+        }
       ]
     },
     "jade_bracelet": {
@@ -191,6 +533,63 @@
         300813,
         300814,
         300815
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300801000,
+          "name": "Blue 8",
+          "name_vn": "Lam 8",
+          "desc_vn": "ST trong tính năng này +0.14%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300802000,
+          "name": "Blue 8",
+          "name_vn": "Lam 8",
+          "desc_vn": "ST trong tính năng này +0.15%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300803000,
+          "name": "Blue 8",
+          "name_vn": "Lam 8",
+          "desc_vn": "ST trong tính năng này +0.16%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300804000,
+          "name": "Blue 8",
+          "name_vn": "Lam 8",
+          "desc_vn": "ST trong tính năng này +0.17%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300805000,
+          "name": "Blue 8",
+          "name_vn": "Lam 8",
+          "desc_vn": "ST trong tính năng này +0.18%, giới hạn 30%"
+        }
       ]
     },
     "longevity_lock": {
@@ -215,6 +614,63 @@
         300913,
         300914,
         300915
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60300901000,
+          "name": "Blue 9",
+          "name_vn": "Lam 9",
+          "desc_vn": "ST trong tính năng này +0.09%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60300902000,
+          "name": "Blue 9",
+          "name_vn": "Lam 9",
+          "desc_vn": "ST trong tính năng này +0.1%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60300903000,
+          "name": "Blue 9",
+          "name_vn": "Lam 9",
+          "desc_vn": "ST trong tính năng này +0.11%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60300904000,
+          "name": "Blue 9",
+          "name_vn": "Lam 9",
+          "desc_vn": "ST trong tính năng này +0.12%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60300905000,
+          "name": "Blue 9",
+          "name_vn": "Lam 9",
+          "desc_vn": "ST trong tính năng này +0.13%, giới hạn 30%"
+        }
       ]
     },
     "blue_and_white_bowl": {
@@ -239,6 +695,63 @@
         301013,
         301014,
         301015
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60301001000,
+          "name": "Blue 10",
+          "name_vn": "Lam 10",
+          "desc_vn": "ST trong tính năng này +0.4%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60301002000,
+          "name": "Blue 10",
+          "name_vn": "Lam 10",
+          "desc_vn": "ST trong tính năng này +0.42%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60301003000,
+          "name": "Blue 10",
+          "name_vn": "Lam 10",
+          "desc_vn": "ST trong tính năng này +0.44%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60301004000,
+          "name": "Blue 10",
+          "name_vn": "Lam 10",
+          "desc_vn": "ST trong tính năng này +0.47%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60301005000,
+          "name": "Blue 10",
+          "name_vn": "Lam 10",
+          "desc_vn": "ST trong tính năng này +0.5%, giới hạn 30%"
+        }
       ]
     },
     "hill_censer": {
@@ -263,6 +776,63 @@
         401113,
         401114,
         401115
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60400101000,
+          "name": "Purple 1",
+          "name_vn": "Tím 1",
+          "desc_vn": "ST Bạo Đội trong chiến đấu +0.05%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60400102000,
+          "name": "Purple 1",
+          "name_vn": "Tím 1",
+          "desc_vn": "ST Bạo Đội trong chiến đấu +0.06%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60400103000,
+          "name": "Purple 1",
+          "name_vn": "Tím 1",
+          "desc_vn": "ST Bạo Đội trong chiến đấu +0.07%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60400104000,
+          "name": "Purple 1",
+          "name_vn": "Tím 1",
+          "desc_vn": "ST Bạo Đội trong chiến đấu +0.08%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60400105000,
+          "name": "Purple 1",
+          "name_vn": "Tím 1",
+          "desc_vn": "ST Bạo Đội trong chiến đấu +0.09%, giới hạn 30%"
+        }
       ]
     },
     "jade_pendant_with_phoenix_motif": {
@@ -287,6 +857,63 @@
         401213,
         401214,
         401215
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60400201000,
+          "name": "Purple 2",
+          "name_vn": "Tím 2",
+          "desc_vn": "ST Phép Đội trong chiến đấu +0.04%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60400202000,
+          "name": "Purple 2",
+          "name_vn": "Tím 2",
+          "desc_vn": "ST Phép Đội trong chiến đấu +0.05%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60400203000,
+          "name": "Purple 2",
+          "name_vn": "Tím 2",
+          "desc_vn": "ST Phép Đội trong chiến đấu +0.06%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60400204000,
+          "name": "Purple 2",
+          "name_vn": "Tím 2",
+          "desc_vn": "ST Phép Đội trong chiến đấu +0.07%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60400205000,
+          "name": "Purple 2",
+          "name_vn": "Tím 2",
+          "desc_vn": "ST Phép Đội trong chiến đấu +0.08%, giới hạn 30%"
+        }
       ]
     },
     "taotie_motif_mask": {
@@ -311,6 +938,63 @@
         401313,
         401314,
         401315
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60400301000,
+          "name": "Purple 3",
+          "name_vn": "Tím 3",
+          "desc_vn": "ST V.Lý Đội trong chiến đấu +0.12%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60400302000,
+          "name": "Purple 3",
+          "name_vn": "Tím 3",
+          "desc_vn": "ST V.Lý Đội trong chiến đấu +0.13%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60400303000,
+          "name": "Purple 3",
+          "name_vn": "Tím 3",
+          "desc_vn": "ST V.Lý Đội trong chiến đấu +0.14%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60400304000,
+          "name": "Purple 3",
+          "name_vn": "Tím 3",
+          "desc_vn": "ST V.Lý Đội trong chiến đấu +0.15%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60400305000,
+          "name": "Purple 3",
+          "name_vn": "Tím 3",
+          "desc_vn": "ST V.Lý Đội trong chiến đấu +0.16%, giới hạn 30%"
+        }
       ]
     },
     "sacred_bell_of_seongdeok": {
@@ -407,6 +1091,63 @@
         401713,
         401714,
         401715
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60400701000,
+          "name": "Purple 7",
+          "name_vn": "Tím 7",
+          "desc_vn": "ST trong tính năng này +0.3%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60400702000,
+          "name": "Purple 7",
+          "name_vn": "Tím 7",
+          "desc_vn": "ST trong tính năng này +0.32%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60400703000,
+          "name": "Purple 7",
+          "name_vn": "Tím 7",
+          "desc_vn": "ST trong tính năng này +0.34%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60400704000,
+          "name": "Purple 7",
+          "name_vn": "Tím 7",
+          "desc_vn": "ST trong tính năng này +0.37%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60400705000,
+          "name": "Purple 7",
+          "name_vn": "Tím 7",
+          "desc_vn": "ST trong tính năng này +0.4%, giới hạn 30%"
+        }
       ]
     },
     "nacre_inlaid_mirror": {
@@ -431,6 +1172,63 @@
         401813,
         401814,
         401815
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60400801000,
+          "name": "Purple 8",
+          "name_vn": "Tím 8",
+          "desc_vn": "ST trong tính năng này +0.4%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60400802000,
+          "name": "Purple 8",
+          "name_vn": "Tím 8",
+          "desc_vn": "ST trong tính năng này +0.42%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60400803000,
+          "name": "Purple 8",
+          "name_vn": "Tím 8",
+          "desc_vn": "ST trong tính năng này +0.44%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60400804000,
+          "name": "Purple 8",
+          "name_vn": "Tím 8",
+          "desc_vn": "ST trong tính năng này +0.47%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60400805000,
+          "name": "Purple 8",
+          "name_vn": "Tím 8",
+          "desc_vn": "ST trong tính năng này +0.5%, giới hạn 30%"
+        }
       ]
     },
     "beast_head_agate_cup": {
@@ -455,6 +1253,63 @@
         401913,
         401914,
         401915
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60400901000,
+          "name": "Purple 9",
+          "name_vn": "Tím 9",
+          "desc_vn": "ST trong tính năng này +0.5%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60400902000,
+          "name": "Purple 9",
+          "name_vn": "Tím 9",
+          "desc_vn": "ST trong tính năng này +0.52%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60400903000,
+          "name": "Purple 9",
+          "name_vn": "Tím 9",
+          "desc_vn": "ST trong tính năng này +0.54%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60400904000,
+          "name": "Purple 9",
+          "name_vn": "Tím 9",
+          "desc_vn": "ST trong tính năng này +0.57%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60400905000,
+          "name": "Purple 9",
+          "name_vn": "Tím 9",
+          "desc_vn": "ST trong tính năng này +0.6%, giới hạn 30%"
+        }
       ]
     },
     "two_handled_winged_cup": {
@@ -479,6 +1334,63 @@
         402013,
         402014,
         402015
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60401001000,
+          "name": "Purple 10",
+          "name_vn": "Tím 10",
+          "desc_vn": "ST trong tính năng này +1.6%, giới hạn 3%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60401002000,
+          "name": "Purple 10",
+          "name_vn": "Tím 10",
+          "desc_vn": "ST trong tính năng này +1.62%, giới hạn 6%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60401003000,
+          "name": "Purple 10",
+          "name_vn": "Tím 10",
+          "desc_vn": "ST trong tính năng này +1.64%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60401004000,
+          "name": "Purple 10",
+          "name_vn": "Tím 10",
+          "desc_vn": "ST trong tính năng này +1.67%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60401005000,
+          "name": "Purple 10",
+          "name_vn": "Tím 10",
+          "desc_vn": "ST trong tính năng này +1.7%, giới hạn 30%"
+        }
       ]
     },
     "gold_inlaid_sword_with_cloud_motif": {
@@ -503,6 +1415,63 @@
         502113,
         502114,
         502115
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500101000,
+          "name": "Orange 1",
+          "name_vn": "Cam 1",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500102000,
+          "name": "Orange 1",
+          "name_vn": "Cam 1",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500103000,
+          "name": "Orange 1",
+          "name_vn": "Cam 1",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500104000,
+          "name": "Orange 1",
+          "name_vn": "Cam 1",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500105000,
+          "name": "Orange 1",
+          "name_vn": "Cam 1",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "phoenix_shaped_ewer": {
@@ -527,6 +1496,63 @@
         502213,
         502214,
         502215
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500201000,
+          "name": "Orange 2",
+          "name_vn": "Cam 2",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500202000,
+          "name": "Orange 2",
+          "name_vn": "Cam 2",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500203000,
+          "name": "Orange 2",
+          "name_vn": "Cam 2",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500204000,
+          "name": "Orange 2",
+          "name_vn": "Cam 2",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500205000,
+          "name": "Orange 2",
+          "name_vn": "Cam 2",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "jadeite_cabbage": {
@@ -551,6 +1577,63 @@
         502313,
         502314,
         502315
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500301000,
+          "name": "Orange 3",
+          "name_vn": "Cam 3",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500302000,
+          "name": "Orange 3",
+          "name_vn": "Cam 3",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500303000,
+          "name": "Orange 3",
+          "name_vn": "Cam 3",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500304000,
+          "name": "Orange 3",
+          "name_vn": "Cam 3",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500305000,
+          "name": "Orange 3",
+          "name_vn": "Cam 3",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "lotus_glass_stand": {
@@ -575,6 +1658,63 @@
         502413,
         502414,
         502415
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500401000,
+          "name": "Orange 4",
+          "name_vn": "Cam 4",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500402000,
+          "name": "Orange 4",
+          "name_vn": "Cam 4",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500403000,
+          "name": "Orange 4",
+          "name_vn": "Cam 4",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500404000,
+          "name": "Orange 4",
+          "name_vn": "Cam 4",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500405000,
+          "name": "Orange 4",
+          "name_vn": "Cam 4",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "armillary_sphere": {
@@ -599,6 +1739,63 @@
         502513,
         502514,
         502515
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500501000,
+          "name": "Orange 5",
+          "name_vn": "Cam 5",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500502000,
+          "name": "Orange 5",
+          "name_vn": "Cam 5",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500503000,
+          "name": "Orange 5",
+          "name_vn": "Cam 5",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500504000,
+          "name": "Orange 5",
+          "name_vn": "Cam 5",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500505000,
+          "name": "Orange 5",
+          "name_vn": "Cam 5",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "gold_inlaid_bronze_hill_censer": {
@@ -623,6 +1820,63 @@
         502613,
         502614,
         502615
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500601000,
+          "name": "Orange 6",
+          "name_vn": "Cam 6",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500602000,
+          "name": "Orange 6",
+          "name_vn": "Cam 6",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500603000,
+          "name": "Orange 6",
+          "name_vn": "Cam 6",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500604000,
+          "name": "Orange 6",
+          "name_vn": "Cam 6",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500605000,
+          "name": "Orange 6",
+          "name_vn": "Cam 6",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "blue_lidded_jar_with_fish_motif": {
@@ -647,6 +1901,63 @@
         502713,
         502714,
         502715
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500701000,
+          "name": "Orange 7",
+          "name_vn": "Cam 7",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500702000,
+          "name": "Orange 7",
+          "name_vn": "Cam 7",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500703000,
+          "name": "Orange 7",
+          "name_vn": "Cam 7",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500704000,
+          "name": "Orange 7",
+          "name_vn": "Cam 7",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500705000,
+          "name": "Orange 7",
+          "name_vn": "Cam 7",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "toad_shaped_censer": {
@@ -671,6 +1982,63 @@
         502813,
         502814,
         502815
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500801000,
+          "name": "Orange 8",
+          "name_vn": "Cam 8",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500802000,
+          "name": "Orange 8",
+          "name_vn": "Cam 8",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500803000,
+          "name": "Orange 8",
+          "name_vn": "Cam 8",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500804000,
+          "name": "Orange 8",
+          "name_vn": "Cam 8",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500805000,
+          "name": "Orange 8",
+          "name_vn": "Cam 8",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "five_pillared_vessel_with_cloud_motif": {
@@ -695,6 +2063,63 @@
         502913,
         502914,
         502915
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60500901000,
+          "name": "Orange 9",
+          "name_vn": "Cam 9",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60500902000,
+          "name": "Orange 9",
+          "name_vn": "Cam 9",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60500903000,
+          "name": "Orange 9",
+          "name_vn": "Cam 9",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60500904000,
+          "name": "Orange 9",
+          "name_vn": "Cam 9",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60500905000,
+          "name": "Orange 9",
+          "name_vn": "Cam 9",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "kagura_bell": {
@@ -719,6 +2144,63 @@
         503013,
         503014,
         503015
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60501001000,
+          "name": "Orange 10",
+          "name_vn": "Cam 10",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60501002000,
+          "name": "Orange 10",
+          "name_vn": "Cam 10",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60501003000,
+          "name": "Orange 10",
+          "name_vn": "Cam 10",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60501004000,
+          "name": "Orange 10",
+          "name_vn": "Cam 10",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60501005000,
+          "name": "Orange 10",
+          "name_vn": "Cam 10",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "jade_lotus_ewer": {
@@ -743,6 +2225,63 @@
         503113,
         503114,
         503115
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60501101000,
+          "name": "Orange 11",
+          "name_vn": "Cam 11",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60501102000,
+          "name": "Orange 11",
+          "name_vn": "Cam 11",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60501103000,
+          "name": "Orange 11",
+          "name_vn": "Cam 11",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60501104000,
+          "name": "Orange 11",
+          "name_vn": "Cam 11",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60501105000,
+          "name": "Orange 11",
+          "name_vn": "Cam 11",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "divine_phoenix_of_mount_qi": {
@@ -767,6 +2306,63 @@
         503213,
         503214,
         503215
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60501201000,
+          "name": "Orange 12",
+          "name_vn": "Cam 12",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60501202000,
+          "name": "Orange 12",
+          "name_vn": "Cam 12",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60501203000,
+          "name": "Orange 12",
+          "name_vn": "Cam 12",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60501204000,
+          "name": "Orange 12",
+          "name_vn": "Cam 12",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60501205000,
+          "name": "Orange 12",
+          "name_vn": "Cam 12",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "silver_inlaid_sachet_with_grape_motif": {
@@ -791,6 +2387,63 @@
         503313,
         503314,
         503315
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60501301000,
+          "name": "Orange 13",
+          "name_vn": "Cam 13",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60501302000,
+          "name": "Orange 13",
+          "name_vn": "Cam 13",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60501303000,
+          "name": "Orange 13",
+          "name_vn": "Cam 13",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60501304000,
+          "name": "Orange 13",
+          "name_vn": "Cam 13",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60501305000,
+          "name": "Orange 13",
+          "name_vn": "Cam 13",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "crown_of_silla": {
@@ -815,6 +2468,63 @@
         503413,
         503414,
         503415
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60501401000,
+          "name": "Orange 14",
+          "name_vn": "Cam 14",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60501402000,
+          "name": "Orange 14",
+          "name_vn": "Cam 14",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60501403000,
+          "name": "Orange 14",
+          "name_vn": "Cam 14",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60501404000,
+          "name": "Orange 14",
+          "name_vn": "Cam 14",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60501405000,
+          "name": "Orange 14",
+          "name_vn": "Cam 14",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "gilded_white_jade_octagonal_box": {
@@ -839,6 +2549,63 @@
         503513,
         503514,
         503515
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60501501000,
+          "name": "Orange 15",
+          "name_vn": "Cam 15",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60501502000,
+          "name": "Orange 15",
+          "name_vn": "Cam 15",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60501503000,
+          "name": "Orange 15",
+          "name_vn": "Cam 15",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60501504000,
+          "name": "Orange 15",
+          "name_vn": "Cam 15",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60501505000,
+          "name": "Orange 15",
+          "name_vn": "Cam 15",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "meat_shaped_stone": {
@@ -863,6 +2630,63 @@
         503613,
         503614,
         503615
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60501601000,
+          "name": "Orange 16",
+          "name_vn": "Cam 16",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+16, giới hạn 1000"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60501602000,
+          "name": "Orange 16",
+          "name_vn": "Cam 16",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+20, giới hạn 2500"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60501603000,
+          "name": "Orange 16",
+          "name_vn": "Cam 16",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+24, giới hạn 6000"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60501604000,
+          "name": "Orange 16",
+          "name_vn": "Cam 16",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+30, giới hạn 20000"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60501605000,
+          "name": "Orange 16",
+          "name_vn": "Cam 16",
+          "desc_vn": "Công bản thân khi mục tiêu trong chiến đấu+36, giới hạn 50000"
+        }
       ]
     },
     "golden_cicada_on_a_jade_leaf": {
@@ -935,6 +2759,63 @@
         603913,
         603914,
         603915
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60600301000,
+          "name": "Red 3",
+          "name_vn": "Đỏ 3",
+          "desc_vn": "Lượt khiêu chiến Ác Mộng Bất Tận/Hồi Kết Ác Mộng+1, Lượt khiêu chiến Guild Chiến Địa Phủ/Đấu Đỉnh Cao Địa Phủ+1, giới Tinh Lực Huyễn Hải+5%, ST trong tính năng+10%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60600302000,
+          "name": "Red 3",
+          "name_vn": "Đỏ 3",
+          "desc_vn": "Lượt khiêu chiến Ác Mộng Bất Tận/Hồi Kết Ác Mộng+2, Lượt khiêu chiến Guild Chiến Địa Phủ/Đấu Đỉnh Cao Địa Phủ+1, giới Tinh Lực Huyễn Hải+5%, ST trong tính năng+20%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60600303000,
+          "name": "Red 3",
+          "name_vn": "Đỏ 3",
+          "desc_vn": "Lượt khiêu chiến Ác Mộng Bất Tận/Hồi Kết Ác Mộng+2, Lượt khiêu chiến Guild Chiến Địa Phủ/Đấu Đỉnh Cao Địa Phủ+1, giới Tinh Lực Huyễn Hải+10%, ST trong tính năng+30%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60600304000,
+          "name": "Red 3",
+          "name_vn": "Đỏ 3",
+          "desc_vn": "Lượt khiêu chiến Ác Mộng Bất Tận/Hồi Kết Ác Mộng+3, Lượt khiêu chiến Guild Chiến Địa Phủ/Đấu Đỉnh Cao Địa Phủ+2, giới Tinh Lực Huyễn Hải+15%, ST trong tính năng+50%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60600305000,
+          "name": "Red 3",
+          "name_vn": "Đỏ 3",
+          "desc_vn": "Lượt khiêu chiến Ác Mộng Bất Tận/Hồi Kết Ác Mộng+3, Lượt khiêu chiến Guild Chiến Địa Phủ/Đấu Đỉnh Cao Địa Phủ+2, giới Tinh Lực Huyễn Hải+20%, ST trong tính năng+70%"
+        }
       ]
     },
     "dragon_knobbed_heirloom_jade_seal": {
@@ -959,6 +2840,63 @@
         604013,
         604014,
         604015
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60600401000,
+          "name": "Red 4",
+          "name_vn": "Đỏ 4",
+          "desc_vn": "ST Bạo toàn đội trong chiến đấu tăng, Buff là 5%+Tổng số sao Skin nhân vật x0.7%, giới hạn Buff này là 30%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60600402000,
+          "name": "Red 4",
+          "name_vn": "Đỏ 4",
+          "desc_vn": "ST Bạo toàn đội trong chiến đấu tăng, Buff là 10%+Tổng số sao Skin nhân vật x0.8%, giới hạn Buff này là 50%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60600403000,
+          "name": "Red 4",
+          "name_vn": "Đỏ 4",
+          "desc_vn": "ST Bạo toàn đội trong chiến đấu tăng, Buff là 15%+Tổng số sao Skin nhân vật x0.9%, giới hạn Buff này là 70%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60600404000,
+          "name": "Red 4",
+          "name_vn": "Đỏ 4",
+          "desc_vn": "ST Bạo toàn đội trong chiến đấu tăng, Buff là 20%+Tổng số sao Skin nhân vật x1%, giới hạn Buff này là 100%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60600405000,
+          "name": "Red 4",
+          "name_vn": "Đỏ 4",
+          "desc_vn": "ST Bạo toàn đội trong chiến đấu tăng, Buff là 25%+Tổng số sao Skin nhân vật x1.1%, giới hạn Buff này là 150%"
+        }
       ]
     },
     "gold_chalice_of_eternal_stability": {
@@ -983,6 +2921,63 @@
         604113,
         604114,
         604115
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60600501000,
+          "name": "Red 5",
+          "name_vn": "Đỏ 5",
+          "desc_vn": "Tăng/Giảm ST Đội trong chiến đấu +0.6%, giới hạn 30%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60600502000,
+          "name": "Red 5",
+          "name_vn": "Đỏ 5",
+          "desc_vn": "Tăng/Giảm ST Đội trong chiến đấu +0.7%, giới hạn 50%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60600503000,
+          "name": "Red 5",
+          "name_vn": "Đỏ 5",
+          "desc_vn": "Tăng/Giảm ST Đội trong chiến đấu +0.8%, giới hạn 70%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60600504000,
+          "name": "Red 5",
+          "name_vn": "Đỏ 5",
+          "desc_vn": "Tăng/Giảm ST Đội trong chiến đấu +0.9%, giới hạn 100%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60600505000,
+          "name": "Red 5",
+          "name_vn": "Đỏ 5",
+          "desc_vn": "Tăng/Giảm ST Đội trong chiến đấu +1%, giới hạn 150%"
+        }
       ]
     },
     "painted_enamel_gourd_shaped_vase": {
@@ -1007,6 +3002,63 @@
         604213,
         604214,
         604215
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60600601000,
+          "name": "Red 6",
+          "name_vn": "Đỏ 6",
+          "desc_vn": "ST Duy Trì của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 8 lần ST"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60600602000,
+          "name": "Red 6",
+          "name_vn": "Đỏ 6",
+          "desc_vn": "ST Duy Trì của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 12 lần ST"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60600603000,
+          "name": "Red 6",
+          "name_vn": "Đỏ 6",
+          "desc_vn": "ST Duy Trì của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 16 lần ST"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60600604000,
+          "name": "Red 6",
+          "name_vn": "Đỏ 6",
+          "desc_vn": "ST Duy Trì của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 20 lần ST"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60600605000,
+          "name": "Red 6",
+          "name_vn": "Đỏ 6",
+          "desc_vn": "ST Duy Trì của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 25 lần ST"
+        }
       ]
     },
     "bronze_mask_with_protruding_eyes": {
@@ -1031,6 +3083,63 @@
         604313,
         604314,
         604315
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60600701000,
+          "name": "Red 7",
+          "name_vn": "Đỏ 7",
+          "desc_vn": "ST Trực Tiếp của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 8 lần ST"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60600702000,
+          "name": "Red 7",
+          "name_vn": "Đỏ 7",
+          "desc_vn": "ST Trực Tiếp của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 12 lần ST"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60600703000,
+          "name": "Red 7",
+          "name_vn": "Đỏ 7",
+          "desc_vn": "ST Trực Tiếp của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 16 lần ST"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60600704000,
+          "name": "Red 7",
+          "name_vn": "Đỏ 7",
+          "desc_vn": "ST Trực Tiếp của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 20 lần ST"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60600705000,
+          "name": "Red 7",
+          "name_vn": "Đỏ 7",
+          "desc_vn": "ST Trực Tiếp của Anh Hùng mỗi lần gây ST, có 1% xác suất tăng 25 lần ST"
+        }
       ]
     },
     "golden_cloud_beast_seal": {
@@ -1055,6 +3164,63 @@
         604413,
         604414,
         604415
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60600801000,
+          "name": "Red 8",
+          "name_vn": "Đỏ 8",
+          "desc_vn": "Anh Hùng mỗi khi có 10% Bạo bảng chỉ số, Tốc Công bản thân sẽ tăng 0.7%, giới hạn 10%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60600802000,
+          "name": "Red 8",
+          "name_vn": "Đỏ 8",
+          "desc_vn": "Anh Hùng mỗi khi có 10% Bạo bảng chỉ số, Tốc Công bản thân sẽ tăng 0.75%, giới hạn 15%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60600803000,
+          "name": "Red 8",
+          "name_vn": "Đỏ 8",
+          "desc_vn": "Anh Hùng mỗi khi có 10% Bạo bảng chỉ số, Tốc Công bản thân sẽ tăng 0.8%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60600804000,
+          "name": "Red 8",
+          "name_vn": "Đỏ 8",
+          "desc_vn": "Anh Hùng mỗi khi có 10% Bạo bảng chỉ số, Tốc Công bản thân sẽ tăng 0.85%, giới hạn 30%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60600805000,
+          "name": "Red 8",
+          "name_vn": "Đỏ 8",
+          "desc_vn": "Anh Hùng mỗi khi có 10% Bạo bảng chỉ số, Tốc Công bản thân sẽ tăng 0.9%, giới hạn 40%"
+        }
       ]
     },
     "flying_horse_of_gansu": {
@@ -1079,6 +3245,63 @@
         604513,
         604514,
         604515
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60600901000,
+          "name": "Red 9",
+          "name_vn": "Đỏ 9",
+          "desc_vn": "Trong chiến đấu, Bạo Thú Triệu Hồi+30%, tổng cấp sao Thú Triệu Hồi mỗi khi tăng 1 sao, ST Bạo mục tiêu+1.5%, giới hạn 50%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60600902000,
+          "name": "Red 9",
+          "name_vn": "Đỏ 9",
+          "desc_vn": "Trong chiến đấu, Bạo Thú Triệu Hồi+35%, tổng cấp sao Thú Triệu Hồi mỗi khi tăng 1 sao, ST Bạo mục tiêu+2%, giới hạn 100%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60600903000,
+          "name": "Red 9",
+          "name_vn": "Đỏ 9",
+          "desc_vn": "Trong chiến đấu, Bạo Thú Triệu Hồi+40%, tổng cấp sao Thú Triệu Hồi mỗi khi tăng 1 sao, ST Bạo mục tiêu+2.5%, giới hạn 150%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60600904000,
+          "name": "Red 9",
+          "name_vn": "Đỏ 9",
+          "desc_vn": "Trong chiến đấu, Bạo Thú Triệu Hồi+45%, tổng cấp sao Thú Triệu Hồi mỗi khi tăng 1 sao, ST Bạo mục tiêu+3%, giới hạn 200%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60600905000,
+          "name": "Red 9",
+          "name_vn": "Đỏ 9",
+          "desc_vn": "Trong chiến đấu, Bạo Thú Triệu Hồi+50%, tổng cấp sao Thú Triệu Hồi mỗi khi tăng 1 sao, ST Bạo mục tiêu+3.5%, giới hạn 250%"
+        }
       ]
     },
     "golden_jade_dragon_pendant": {
@@ -1103,6 +3326,63 @@
         704613,
         704614,
         704615
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60700101000,
+          "name": "Gold 1",
+          "name_vn": "Vàng 1",
+          "desc_vn": "Cường hóa hiệu quả Thẻ Phép <color=#f57c00 click=\"onClicked\" param=\"53\"><u>Vũ Điệu Bướm Tiên</u></color>, <color=#f57c00 click=\"onClicked\" param=\"58\"><u>Cá Âm Dương Hộ Thể</u></color>, <color=#f57c00 click=\"onClicked\" param=\"63\"><u>Bùng Nổ Năng Suất</u></color>, <color=#f57c00 click=\"onClicked\" param=\"68\"><u>Thức Tỉnh Lần Hai</u></color>, <color=#f57c00 click=\"onClicked\" param=\"73\"><u>Thế Giới Ngừng Lại</u></color>"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60700102000,
+          "name": "Gold 1",
+          "name_vn": "Vàng 1",
+          "desc_vn": "Cường hóa hiệu quả Thẻ Phép <color=#f57c00 click=\"onClicked\" param=\"54\"><u>Vũ Điệu Bướm Tiên</u></color>, <color=#f57c00 click=\"onClicked\" param=\"59\"><u>Cá Âm Dương Hộ Thể</u></color>, <color=#f57c00 click=\"onClicked\" param=\"64\"><u>Bùng Nổ Năng Suất</u></color>, <color=#f57c00 click=\"onClicked\" param=\"69\"><u>Thức Tỉnh Lần Hai</u></color>, <color=#f57c00 click=\"onClicked\" param=\"74\"><u>Thế Giới Ngừng Lại</u></color>"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60700103000,
+          "name": "Gold 1",
+          "name_vn": "Vàng 1",
+          "desc_vn": "Cường hóa hiệu quả Thẻ Phép <color=#f57c00 click=\"onClicked\" param=\"55\"><u>Vũ Điệu Bướm Tiên</u></color>, <color=#f57c00 click=\"onClicked\" param=\"60\"><u>Cá Âm Dương Hộ Thể</u></color>, <color=#f57c00 click=\"onClicked\" param=\"65\"><u>Bùng Nổ Năng Suất</u></color>, <color=#f57c00 click=\"onClicked\" param=\"70\"><u>Thức Tỉnh Lần Hai</u></color>, <color=#f57c00 click=\"onClicked\" param=\"75\"><u>Thế Giới Ngừng Lại</u></color>"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60700104000,
+          "name": "Gold 1",
+          "name_vn": "Vàng 1",
+          "desc_vn": "Cường hóa hiệu quả Thẻ Phép <color=#f57c00 click=\"onClicked\" param=\"56\"><u>Vũ Điệu Bướm Tiên</u></color>, <color=#f57c00 click=\"onClicked\" param=\"61\"><u>Cá Âm Dương Hộ Thể</u></color>, <color=#f57c00 click=\"onClicked\" param=\"66\"><u>Bùng Nổ Năng Suất</u></color>, <color=#f57c00 click=\"onClicked\" param=\"71\"><u>Thức Tỉnh Lần Hai</u></color>, <color=#f57c00 click=\"onClicked\" param=\"76\"><u>Thế Giới Ngừng Lại</u></color>"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60700105000,
+          "name": "Gold 1",
+          "name_vn": "Vàng 1",
+          "desc_vn": "Cường hóa hiệu quả Thẻ Phép <color=#f57c00 click=\"onClicked\" param=\"57\"><u>Vũ Điệu Bướm Tiên</u></color>, <color=#f57c00 click=\"onClicked\" param=\"62\"><u>Cá Âm Dương Hộ Thể</u></color>, <color=#f57c00 click=\"onClicked\" param=\"67\"><u>Bùng Nổ Năng Suất</u></color>, <color=#f57c00 click=\"onClicked\" param=\"72\"><u>Thức Tỉnh Lần Hai</u></color>, <color=#f57c00 click=\"onClicked\" param=\"77\"><u>Thế Giới Ngừng Lại</u></color>"
+        }
       ]
     },
     "nine_dragon_sword_of_emperor_qianlong": {
@@ -1127,6 +3407,63 @@
         704713,
         704714,
         704715
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60700201000,
+          "name": "Gold 2",
+          "name_vn": "Vàng 2",
+          "desc_vn": "ST mà Anh Hùng toàn đội trong chiến đấu gây thêm+0.24%, giới hạn 20%"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60700202000,
+          "name": "Gold 2",
+          "name_vn": "Vàng 2",
+          "desc_vn": "ST mà Anh Hùng toàn đội trong chiến đấu gây thêm+0.26%, giới hạn 35%"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60700203000,
+          "name": "Gold 2",
+          "name_vn": "Vàng 2",
+          "desc_vn": "ST mà Anh Hùng toàn đội trong chiến đấu gây thêm+0.28%, giới hạn 50%"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60700204000,
+          "name": "Gold 2",
+          "name_vn": "Vàng 2",
+          "desc_vn": "ST mà Anh Hùng toàn đội trong chiến đấu gây thêm+0.3%, giới hạn 65%"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60700205000,
+          "name": "Gold 2",
+          "name_vn": "Vàng 2",
+          "desc_vn": "ST mà Anh Hùng toàn đội trong chiến đấu gây thêm+0.32%, giới hạn 80%"
+        }
       ]
     },
     "golden_zun_shaped_seismoscope": {
@@ -1151,6 +3488,63 @@
         704813,
         704814,
         704815
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60700301000,
+          "name": "Gold 3",
+          "name_vn": "Vàng 3",
+          "desc_vn": "Trong chiến đấu mỗi 3 lần triệu hồi, tung Máy Móc, Máy Móc, Thần Thú, Siêu Nhiên sẽ kéo dài thời gian chiến đấu 1s, giới hạn 10s"
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60700302000,
+          "name": "Gold 3",
+          "name_vn": "Vàng 3",
+          "desc_vn": "Trong chiến đấu mỗi 2 lần triệu hồi, tung Máy Móc, Máy Móc, Thần Thú, Siêu Nhiên sẽ kéo dài thời gian chiến đấu 1s, giới hạn 15s"
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60700303000,
+          "name": "Gold 3",
+          "name_vn": "Vàng 3",
+          "desc_vn": "Trong chiến đấu mỗi 2 lần triệu hồi, tung Máy Móc, Máy Móc, Thần Thú, Siêu Nhiên sẽ kéo dài thời gian chiến đấu 1s, giới hạn 20s"
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60700304000,
+          "name": "Gold 3",
+          "name_vn": "Vàng 3",
+          "desc_vn": "Trong chiến đấu mỗi 1 lần triệu hồi, tung Máy Móc, Máy Móc, Thần Thú, Siêu Nhiên sẽ kéo dài thời gian chiến đấu 1s, giới hạn 25s"
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60700305000,
+          "name": "Gold 3",
+          "name_vn": "Vàng 3",
+          "desc_vn": "Trong chiến đấu mỗi 1 lần triệu hồi, tung Máy Móc, Máy Móc, Thần Thú, Siêu Nhiên sẽ kéo dài thời gian chiến đấu 1s, giới hạn 30s"
+        }
       ]
     }
   }

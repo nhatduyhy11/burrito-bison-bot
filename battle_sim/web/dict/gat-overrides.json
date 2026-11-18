@@ -1,15 +1,5 @@
 {
-  "profile": {
-    "traps": {
-      "party_cake": {
-        "code": 18,
-        "name": "Party Cake",
-        "name_vn": "Bánh Kem Cuồng Hoan",
-        "color": "red",
-        "maxLevel": 100,
-        "maxStar": 10
-      }
-    },
+  "hero": {
     "heroes": {
       "blue_giant": {
         "skins": {
@@ -40,6 +30,18 @@
             ]
           }
         }
+      }
+    }
+  },
+  "support": {
+    "traps": {
+      "party_cake": {
+        "code": 18,
+        "name": "Party Cake",
+        "name_vn": "Bánh Kem Cuồng Hoan",
+        "color": "red",
+        "maxLevel": 100,
+        "maxStar": 10
       }
     },
     "summonerSkins": {
