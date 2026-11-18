@@ -178,8 +178,9 @@ Nguồn: capture pmain 2026-11-18 (`.tmp/battle_research/events-pmain-20261118.j
   (`COLOR_2_FONT_COLOR[quality]`), ngôi sao = `isRare`. Vì vậy dòng vàng/đỏ phần lớn là attr,
   không phải skill.
 - Attr của dòng do server gộp: bundle trận không đọc mã attr của pool (11164, 11262, 1101001…),
-  `StartGameP` cũng không có key này. Chưa rõ gộp vào đâu: cần capture `entryInfos` của túi đồ
-  rồi so `hero.attr` khi đổi một món.
+  `StartGameP` cũng không có key này. Không theo đuổi việc truy ra chỗ gộp (bbb-27n.3, closed
+  won't-do): tổng attr gồm nhiều yếu tố (tẩy luyện, cường hoá, sao…) cộng logic server không có
+  trong bundle nên capture không tách được; sim bỏ qua attr đi kèm, chỉ nạp 3 skill `9000x00000`.
 
 ### Hướng sim
 
