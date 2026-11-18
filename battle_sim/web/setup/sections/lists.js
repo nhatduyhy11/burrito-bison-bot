@@ -1,5 +1,5 @@
 // Trap / Pet / Spell lists: name, level (traps, pets), star.
-import { Accordion, html, NumberInput, Select } from "../ui.js";
+import { Accordion, html, label, NumberInput, plain, Select, SelectPop } from "../ui.js";
 import { LIMITS } from "../profile-io.js";
 import { AddButton, RemoveButton, nameOptions } from "./shared.js";
 
@@ -31,6 +31,27 @@ function ListBody({ ctx, group }) {
   `;
 }
 
+// Hover summary for a pet: one block per star (Sao 1..maxStar) listing the skills a pet gains or
+// upgrades at that star. Pets have up to 5 skills, each unlocking/upgrading on its own stars.
+function petPop(pet) {
+  const runs = pet.skills.flatMap((skill) => skill.starSkills);
+  const star = (n) => {
+    const here = runs.filter((s) => s.stars.includes(n));
+    return html`
+      <div class="pop-line" key=${n}>
+        <span class="hint">Sao ${n}</span>
+        ${here.length ? here.map((s) => html`
+          <div class="pop-desc" key=${s.code}><b>${label(s)}</b> · ${plain(s.desc_vn)}</div>`)
+          : html`<div class="pop-desc note">Không đổi skill</div>`}
+      </div>
+    `;
+  };
+  return html`
+    <div class="pop-title">${label(pet)}</div>
+    ${Array.from({ length: pet.maxStar }, (_, i) => star(i + 1))}
+  `;
+}
+
 function ListRow({ ctx, group, item, index }) {
   const { state, dict, update } = ctx;
   const info = dict[group][item.name];
@@ -42,9 +63,13 @@ function ListRow({ ctx, group, item, index }) {
   const level = info.maxLevel
     ? html`<label>Level <${NumberInput} value=${item.level} min=${1} max=${info.maxLevel} onChange=${setLevel} /></label>`
     : null;
+  const picker = group === "pets"
+    ? html`<${SelectPop} options=${options.map(([key, text, disabled, grp]) => [key, text, petPop(dict.pets[key]), disabled, grp])}
+        value=${item.name} onChange=${setName} />`
+    : html`<${Select} options=${options} value=${item.name} onChange=${setName} />`;
   return html`
     <div class="row list-row">
-      <${Select} options=${options} value=${item.name} onChange=${setName} />
+      ${picker}
       ${level}
       <label>Sao <${NumberInput} value=${item.star} min=${1} max=${info.maxStar} onChange=${setStar} /></label>
       <span class="note">${`max lv ${info.maxLevel || "-"} / ${info.maxStar}★`}</span>

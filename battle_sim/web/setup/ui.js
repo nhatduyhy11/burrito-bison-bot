@@ -142,17 +142,17 @@ export function StarSkillsLabel({ item, star, empty }) {
 
 // One row of the SelectPop listbox; popover content shows while hovered.
 function PopOption({ opt, selected, active, onPick, onHover, onLeave }) {
-  const [value, text, popover] = opt;
+  const [value, text, , disabled] = opt;
   // Keep focus on the trigger: a focusout (blur to body) must not close the list before the
   // option's click event lands. preventDefault on the click also cancels a wrapping <label>'s
   // activation behavior — it would forward this click to the trigger button and re-open the
   // just-closed list.
   const press = (e) => e.preventDefault();
-  const pick = (e) => { e.preventDefault(); onPick(value); };
+  const pick = (e) => { e.preventDefault(); if (!disabled) onPick(value); };
   const hover = (e) => onHover(opt, e.currentTarget);
-  const cls = `dd-opt${selected ? " selected" : ""}${active ? " active" : ""}`;
+  const cls = `dd-opt${selected ? " selected" : ""}${active ? " active" : ""}${disabled ? " disabled" : ""}`;
   return html`
-    <div class=${cls} role="option" aria-selected=${selected}
+    <div class=${cls} role="option" aria-selected=${selected} aria-disabled=${!!disabled}
       onMouseDown=${press} onClick=${pick} onMouseEnter=${hover} onMouseLeave=${onLeave}>
       ${text}
     </div>
@@ -160,7 +160,8 @@ function PopOption({ opt, selected, active, onPick, onHover, onLeave }) {
 }
 
 // Custom dropdown for options that need a hover popover (native <select> options can't). options:
-// [value, text, popover?] — the popover element is optional per option. Commits like <select>:
+// [value, text, popover?, disabled?, group?] — the popover element is optional per option; like
+// Select, consecutive options with a group sit under one group header and disabled ones can't be picked. Commits like <select>:
 // pick on click or Enter, closes on pick / outside click (focusout) / Escape; arrows move the
 // keyboard cursor. Reused by the relic picker and the later hover tasks.
 export function SelectPop({ options, value, onChange, ...attrs }) {
@@ -176,15 +177,20 @@ export function SelectPop({ options, value, onChange, ...attrs }) {
     if (open) reset();
     else { setOpen(true); setActive(Math.max(0, options.findIndex(([k]) => k === value))); }
   };
+  // Next enabled option in direction dir; stays put at either end.
+  const step = (a, dir) => {
+    for (let i = a + dir; i >= 0 && i < options.length; i += dir) if (!options[i][3]) return i;
+    return clamp(a, 0, options.length - 1);
+  };
   const onKey = (e) => {
     if (e.key === "Escape") { reset(); return; }
     if (!open) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
       return;
     }
-    if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => clamp(a + 1, 0, options.length - 1)); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => clamp(a - 1, 0, options.length - 1)); }
-    else if (e.key === "Enter") { e.preventDefault(); if (active >= 0) pick(options[active][0]); }
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => step(a, 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => step(a, -1)); }
+    else if (e.key === "Enter") { e.preventDefault(); if (active >= 0 && !options[active][3]) pick(options[active][0]); }
   };
   // Clicking outside the dropdown (focus leaves it) closes; relatedTarget is null for body clicks.
   const blur = (e) => { if (!root.current?.contains(e.relatedTarget)) reset(); };
@@ -198,6 +204,7 @@ export function SelectPop({ options, value, onChange, ...attrs }) {
       ${open && html`
         <div class="dd-list" role="listbox" onMouseLeave=${hidePop}>
           ${options.map((opt, i) => html`
+            ${opt[4] && opt[4] !== options[i - 1]?.[4] && html`<div class="dd-group" key=${`g-${opt[4]}`}>${opt[4]}</div>`}
             <${PopOption} key=${opt[0]} opt=${opt} selected=${opt[0] === value} active=${i === active}
               onPick=${pick} onHover=${hover} onLeave=${hidePop} />`)}
         </div>
