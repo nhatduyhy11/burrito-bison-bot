@@ -46,18 +46,22 @@ skill trong `BuildSkinLO` (发电机 / 招财猫) mới biết type 3 là chuộ
   từ đây.
 - `playerInfos[].skinInfos`: mọi skin building đã sở hữu (`skinId`, `skinLevel`).
   `TDPlayerEntity` dùng để liệt kê skin theo `buildType`.
-- `playerInfos[].goldenSkinsCount`: số skin vàng **hero/Summoner** (không phải skin
-  building), xem mục dưới.
+- `playerInfos[].goldenSkinsCount`: tổng sao skin vàng **hero** (không phải skin building),
+  xem mục dưới.
 
 ### `goldenSkinsCount`
 
-- **Đếm gì:** số skin trong `DermaLO` có `color` 7 (vàng) mà account đã sở hữu, gồm cả skin
-  hero (`heroCode` > 0) lẫn skin Summoner (`heroCode` 0, mã 202xx). Server tính, client chỉ
-  đọc. `SkillConstLO.SummonCreatureDamageAddStep.constDesc` ghi "Số lượng Skin Vàng trong
-  BST Tướng". Kiểm chứng với pmain (playerId 51921435): `GetDermaListR` có 5 skin vàng hero
-  (5000203, 5000302, 5000902, 5001302, 5001303) + 1 skin vàng Summoner (20214) = 6, khớp
-  `goldenSkinsCount` 6. Skin 7 màu (`color` 8) có được tính không thì chưa có account để
-  kiểm.
+- **Đếm gì:** tổng **số sao** của các skin vàng hero (`DermaLO` `color` 7, `heroCode` > 0)
+  account đã sở hữu (trong 图鉴/BST). Server tính, client chỉ đọc. Bằng chứng:
+  `SkillConstLO.SummonCreatureDamageAddStep.constDesc` bản gốc (config GAT 66196) ghi
+  "总增伤 = 图鉴武将金皮总星数 * 这个常量 / 100". Bản dịch VN chỉ ghi "Số lượng Skin Vàng
+  trong BST Tướng", thiếu chữ "sao" (星数).
+  Kiểm chứng với pmain (playerId 51921435), `GetDermaListR` chụp 16/11: skin vàng hero
+  5000203★2, 5000302★1, 5000902★1, 5001302★1, 5001303★1, tổng 6 sao, khớp `goldenSkinsCount`
+  6 (chụp 11–13/11). Account này có đúng 1 skin vàng lên 2 sao và 1 skin vàng Summoner
+  (20214★1). Vì vậy cách đếm "số skin vàng hero + Summoner" cũng ra 6, data chưa phân biệt
+  được hai cách. Theo mô tả gốc thì chọn cách tổng sao. Skin 7 màu (`color` 8) có được tính
+  không thì chưa kiểm.
 - **Dùng ở đâu:** chỉ một chỗ, nhánh tạo `SummonCreatureLO` (pet) trong
   `BattleEngineDelegate`. Không có skill/đồ cổ/thần khí nào khác đọc giá trị này.
 
@@ -70,12 +74,18 @@ skill trong `BuildSkinLO` (发电机 / 招财猫) mới biết type 3 là chuộ
   }
   ```
 
-  Pet được thêm skill "Lối chơi Tăng ST" theo màu pet và cộng `FinalHurtAdd` = số skin vàng ×
-  150. Không phải skill riêng scale theo số skin, mà là chỉ số cộng thẳng.
-- **Gate:** config SEA (`sea_65553`, 777 dòng `ConstLO`) **không có**
-  `SummonCreatureLevelUpBattleType`. `JSON.parse` bản sửa của game trả `[]` cho `undefined`,
-  nên điều kiện luôn sai: trên SEA, `goldenSkinsCount` không ảnh hưởng trận nào. Config GAT
-  chưa kiểm.
+  Pet được thêm skill 打伤害玩法增伤 ("Lối chơi Tăng ST") theo màu pet và cộng
+  `FinalHurtAdd` (最终增伤, attr percent) = `goldenSkinsCount` × 150. Đây không phải skill
+  riêng scale theo số skin mà là chỉ số cộng thẳng. Code này giống hệt nhau ở bundle VN và
+  GAT (`cda14`, `bc1d2`).
+- **Gate theo vùng:**
+  - **GAT** (live 18/11: ClientVer 66241, main `bc1d2`, config `trunk_66196`): `ConstLO`
+    có `SummonCreatureLevelUpBattleType = [21,37,38,42,43]`, tức GuildNavalWar (U Đô),
+    WorldBoss, GuildCoBoss, GuildNavalWarMatch và WorldBossMonthly (Ác Mộng). Ở các mode này
+    bonus **có tác dụng**.
+  - **SEA/VN** (`sea_65553`, 777 dòng `ConstLO`): **không có** key này. `JSON.parse` bản sửa
+    của game trả `[]` cho `undefined`, nên điều kiện luôn sai và `goldenSkinsCount` không ảnh
+    hưởng trận nào.
 
 Account pmain (capture `6af3d7da…` và `6af3dacb…`):
 

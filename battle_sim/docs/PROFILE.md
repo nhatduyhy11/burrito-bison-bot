@@ -38,7 +38,7 @@ Bỏ trường muốn giữ từ capture. Với các danh sách như `traps`, `p
 | `pets` | Cùng dạng với `traps`, tối đa 3 pet khác nhau. Với mỗi loại skill trong `SummonCreatureLO.skill`, simulator chọn level cao nhất có `starRequire` không vượt số sao. |
 | `spells` | Tối đa 2 spell khác nhau theo `DaoistFormationLO`. Mỗi mục là slug hoặc object có `name` và `star` (mặc định 1). Skill lấy từ `DaoistStarLO`. |
 | `buildings` | Skin cửa, giường, chuột và mèo qua các key `door`, `bed`, `generator`, `cat`. Xem [cấu hình skin công trình](../BUILD_SKINS.md#trong-profile-playtest). |
-| `goldenSkinsCount` | Số nguyên không âm: số skin vàng (`DermaLO.color` 7) account sở hữu, gồm skin hero và skin Summoner. Chỉ tăng sát thương pet ở battle type có trong `ConstLO.SummonCreatureLevelUpBattleType`; config SEA hiện không có key này nên giá trị không ảnh hưởng trận. Xem [BUILD_SKINS.md](../BUILD_SKINS.md#dữ-liệu-trong-startgamep). |
+| `goldenSkinsCount` | Số nguyên không âm: tổng sao skin vàng hero (`DermaLO.color` 7) account sở hữu. Pet được cộng `FinalHurtAdd` = giá trị × 150 ở battle type có trong `ConstLO.SummonCreatureLevelUpBattleType`. GAT bật cho U Đô, World Boss, Guild Co-Boss và Ác Mộng (21/37/38/42/43). Config SEA không có key này nên trên VN giá trị không ảnh hưởng trận. Xem [BUILD_SKINS.md](../BUILD_SKINS.md#dữ-liệu-trong-startgamep). |
 
 ## Catalog
 
