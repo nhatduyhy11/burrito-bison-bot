@@ -27,9 +27,13 @@ function MapBody({ ctx }) {
   `;
 }
 
-// Stage hover card for the Campaign label: the stage boss with its desc, then each minion type
-// with desc (campaign-dict stages reference creeps-dict's campaign section by code). Boss is null
-// for the tutorial stages 1-2; an out-of-range entry falls back to a one-line note.
+// desc_vn is one "Điểm yếu: … · Kháng: … · Đặc điểm: …" string; one line per segment so the
+// weakness reads at a glance.
+const descLines = (c) => (c.desc_vn || c.desc || "").split(" · ").map((p) => html`<div class="pop-desc">${p}</div>`);
+
+// Stage hover card for the Campaign label: "Stage N · <boss>" on top with its desc, then each
+// minion type with desc (campaign-dict stages reference creeps-dict's campaign section by code).
+// Boss is null for the tutorial stages 1-2; an out-of-range entry falls back to a one-line note.
 const stagePop = (campaignDict, creepsDict, stage) => {
   const entry = campaignDict?.stages[String(stage)];
   if (!entry) return html`<div class="pop-title">${`Stage ${stage || "—"}`}</div><div class="note">Không có dữ liệu stage này.</div>`;
@@ -40,9 +44,9 @@ const stagePop = (campaignDict, creepsDict, stage) => {
   const minions = entry.minions.map(creep).filter((m, i, all) => !all.some((x, j) => j < i
     && (x.name_vn || x.name) === (m.name_vn || m.name) && (x.desc_vn || x.desc) === (m.desc_vn || m.desc)));
   return html`
-    <div class="pop-title">${boss ? boss.name_vn || boss.name : "Không có boss"}</div>
-    ${boss && html`<div class="pop-desc">${boss.desc_vn || boss.desc}</div>`}
-    ${minions.map((m) => html`<div class="pop-line"><div>${m.name_vn || m.name}</div><div class="pop-desc">${m.desc_vn || m.desc}</div></div>`)}
+    <div class="pop-title">${`Stage ${stage} · ${boss ? boss.name_vn || boss.name : "Không có boss"}`}</div>
+    ${boss && descLines(boss)}
+    ${minions.map((m) => html`<div class="pop-line"><div>${m.name_vn || m.name}</div>${descLines(m)}</div>`)}
   `;
 };
 
@@ -67,12 +71,8 @@ const creepName = (creepsDict, id) => {
   return c ? c.name_vn || c.name : id;
 };
 
-// Boss hover card: desc_vn is one "Điểm yếu: … · Kháng: … · Đặc điểm: …" string; split it into
-// one line per segment so the weakness reads at a glance.
-const bossPop = (b) => {
-  const parts = (b.desc_vn || b.desc || "").split(" · ");
-  return html`<div class="pop-title">${b.name_vn || b.name}</div>${parts.map((p) => html`<div class="pop-desc">${p}</div>`)}`;
-};
+// Boss hover card (U Đô picker rows).
+const bossPop = (b) => html`<div class="pop-title">${b.name_vn || b.name}</div>${descLines(b)}`;
 
 function CapitalBody({ ctx }) {
   const { state, bossDict, creepsDict, update } = ctx;
