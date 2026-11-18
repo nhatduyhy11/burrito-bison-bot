@@ -3,7 +3,7 @@
 // (no inline functions).
 import { h } from "preact";
 import htm from "htm";
-import { useState, useRef } from "preact/hooks";
+import { useState, useRef, useLayoutEffect } from "preact/hooks";
 import { clamp } from "./skin-rules.js";
 
 export const html = htm.bind(h);
@@ -88,15 +88,22 @@ const popAt = (target, setPop, content) => {
   const r = target.getBoundingClientRect();
   setPop({
     x: Math.min(r.right + 8, window.innerWidth - 332),
-    y: Math.max(8, Math.min(r.top, window.innerHeight - 330)),
+    y: Math.max(8, r.top),
     content,
   });
 };
 
 // Floating informational card; pointer-events stay off the popover so it never blocks the
-// controls underneath and mouse-leave logic stays on the trigger side.
+// controls underneath and mouse-leave logic stays on the trigger side. After layout it is lifted
+// by its real height so a tall card (5 Dị Năng nodes) stays inside the viewport.
 export function Popover({ x, y, children }) {
-  return html`<div class="popover" style=${{ left: `${x}px`, top: `${y}px` }}>${children}</div>`;
+  const ref = useRef(null);
+  const [top, setTop] = useState(y);
+  useLayoutEffect(() => {
+    const height = ref.current?.offsetHeight ?? 0;
+    setTop(Math.max(8, Math.min(y, window.innerHeight - height - 8)));
+  }, [y, children]);
+  return html`<div class="popover" ref=${ref} style=${{ left: `${x}px`, top: `${top}px` }}>${children}</div>`;
 }
 
 // Hover popover on an arbitrary trigger element (skin labels, the Dị Năng (i) icon).

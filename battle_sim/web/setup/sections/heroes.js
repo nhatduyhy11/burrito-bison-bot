@@ -83,13 +83,36 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
   `;
 }
 
+// Hover summary for the Dị Năng skill nodes in chapter order: the new skill, what it replaces (the
+// hero's base skill or an earlier node's skill) and the break-through gate. ✅ marks open nodes.
+function avatarPop(nodes, level) {
+  const node = (n, i) => {
+    const prev = nodes.findIndex((m) => m.skill === n.replaces);
+    const replaces = prev >= 0 ? `nâng cấp mốc ${prev + 1}` : n.replacesInfo && html`thay ${label(n.replacesInfo)}`;
+    return html`
+      <div class="pop-line" key=${n.skill}>
+        <span class="hint">${i < level ? "✅ " : ""}Mốc ${i + 1}</span> ${label(n.skillInfo)}
+        ${(replaces || n.minBreakThrough) && html`
+          <div class="hint">${replaces}${replaces && n.minBreakThrough ? " · " : ""}${n.minBreakThrough ? `cần đột phá ≥ ${n.minBreakThrough}` : ""}</div>`}
+        <div class="pop-desc">${plain(n.skillInfo?.desc_vn)}</div>
+      </div>
+    `;
+  };
+  return html`
+    <div class="avatar-pop">
+      <div class="pop-title">Dị Năng · ${nodes.length} mốc skill</div>
+      ${nodes.map(node)}
+    </div>
+  `;
+}
+
 // Dị Năng level N = skill nodes 1..N open (opening a node opens every lower one); "Tùy chỉnh" starts
 // it at 0. Attribute nodes are not modelled.
 function AvatarPicker({ hero, nodes, edit }) {
   const setLevel = (v) => edit((h) => (h.avatar = v));
   return html`
     <div class="row">
-      <label>Dị Năng (node skill)</label>
+      <${PopHover} content=${avatarPop(nodes, hero.avatar ?? 0)}><label class="pop-trigger">Dị Năng (node skill)</label><//>
       <${NumberInput} value=${hero.avatar ?? 0} min=${0} max=${nodes.length} onChange=${setLevel} />
       <span class="note">${` /${nodes.length}`}</span>
     </div>
