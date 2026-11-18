@@ -172,6 +172,14 @@ Nguồn: capture pmain 2026-11-18 (`.tmp/battle_research/events-pmain-20261118.j
 - Trong `StartGameP` các skill này nằm ở `builds[type 2].skills` (giường), không nằm trên
   `summonerInfos` hay hero. Capture mới thêm `90000200000` sau khi đổi đồ. Chỉ số entry/cường
   hoá do server gộp, không thấy field riêng.
+- Tẩy luyện: mỗi món roll `_entryNum` (1–3) dòng từ `_entryPool`. Pool có 1 skill (tỉ lệ 50 ở
+  phẩm 7), 1 attr hiếm (vd 11262) và khoảng 10 attr thường (tỉ lệ 550–1200). Chỉ Mũ/Giáp/Giày có
+  skill, nên tối đa 3 skill. Client tô mọi dòng theo màu phẩm của món
+  (`COLOR_2_FONT_COLOR[quality]`), ngôi sao = `isRare`. Vì vậy dòng vàng/đỏ phần lớn là attr,
+  không phải skill.
+- Attr của dòng do server gộp: bundle trận không đọc mã attr của pool (11164, 11262, 1101001…),
+  `StartGameP` cũng không có key này. Chưa rõ gộp vào đâu: cần capture `entryInfos` của túi đồ
+  rồi so `hero.attr` khi đổi một món.
 
 ### Hướng sim
 

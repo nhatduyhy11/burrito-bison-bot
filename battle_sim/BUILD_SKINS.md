@@ -24,8 +24,19 @@ skill trong `BuildSkinLO` (发电机 / 招财猫) mới biết type 3 là chuộ
 - `skill`: mảng skill ở số sao đó (`SkillBaseLO`).
 - `requirement`: chỉ có ở skin 7 màu, liệt kê 3 skin yêu cầu ở cùng số sao. Cửa có 2 skin
   7 màu: 10011 cần 10005/10008/10009, 10013 cần 10001/10009/10012. Giường: 20010 cần
-  20002/20007/20008, 20012 cần 20005/20009/20011. Chuột và mèo chưa có skin 7 màu. 10013 và
-  20012 chưa có tên tiếng Anh, dict dùng key `id_10013` / `id_20012`.
+  20002/20007/20008, 20012 cần 20005/20009/20011. Chuột: 30006 星穹舰主 (Hạm Chủ Tinh Không)
+  cần 30002/30004/30003. Mèo: 40006 造物圣猫 (Thánh Miêu Tạo Vật) cần 40002/40004/40003.
+  10013 và 20012 chưa có tên tiếng Anh, dict dùng key `id_10013` / `id_20012`.
+- Skill skin chuột/mèo 7 màu (80060601000–05 环宙逐光, 80050601000–05 环宇猫瞳) và skin 05
+  (8006050x 炽尾喷射, 8005050x 放纵狂宴) **chỉ có trong `SkillBaseLO` của GAT** (`trunk_66196`,
+  kèm desc). SEA `sea_65553` và `sea_66328` có dòng `BuildSkinLO` (tên VN/EN) nhưng thiếu
+  các skill này trong `SkillBaseLO` → không có tên/desc skill. Desc GAT (★1 → ★5):
+  - Chuột: +1 số lượng xây; mỗi máy phát điện mỗi cấp +2%→4% ST toàn đội; mỗi 200 điện còn
+    dư +2%→4% công và +4%→8% ST chí mạng toàn đội, tối đa 20%→40% / 40%→80%. Từ ★2 +1 giới
+    hạn cấp, ★5 thêm +20% sản lượng cơ bản.
+  - Mèo: +1 số lượng xây; mỗi mèo chiêu tài mỗi cấp +2%→4% ST toàn đội; mỗi 2500 ngân phiếu
+    còn dư +2%→4% tốc đánh và chí mạng toàn đội, tối đa 20%→40%. Từ ★2 +1 giới hạn cấp, ★5
+    thêm +20% sản lượng cơ bản.
 - `attr` / `addAttr`: chỉ số của skin.
 
 ## Quy tắc slot (`BuildSkinModule`, `BuildSkinEquipSkillPanel`)

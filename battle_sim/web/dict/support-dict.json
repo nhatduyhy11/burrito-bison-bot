@@ -1227,6 +1227,65 @@
       ]
     }
   },
+  "summonerGear": {
+    "cash_boost": {
+      "code": 90000100000,
+      "name": "Cash Boost",
+      "name_vn": "Tăng Cường Ngân Phiếu",
+      "desc_vn": "Sản lượng Mèo Chiêu Tài+5",
+      "piece": 6,
+      "example": {
+        "code": 60620004,
+        "name": "T20 Boots",
+        "name_vn": "Giày Bậc 20"
+      },
+      "minStage": 20,
+      "maxStage": 31,
+      "qualities": [
+        5,
+        6,
+        7
+      ]
+    },
+    "spark_boost": {
+      "code": 90000200000,
+      "name": "Spark Boost",
+      "name_vn": "Tăng Cường Điện Năng",
+      "desc_vn": "Sản lượng Trạm Sạc+1 (Duy nhất)",
+      "piece": 1,
+      "example": {
+        "code": 60120004,
+        "name": "T20 Helmet",
+        "name_vn": "Mũ Giáp Bậc 20"
+      },
+      "minStage": 20,
+      "maxStage": 31,
+      "qualities": [
+        5,
+        6,
+        7
+      ]
+    },
+    "rage_gain_upon_defeat": {
+      "code": 90000300000,
+      "name": "Rage gain upon defeat",
+      "name_vn": "Tiêu Diệt Hồi Nộ",
+      "desc_vn": "Anh Hùng tiêu diệt hồi Nộ+25",
+      "piece": 2,
+      "example": {
+        "code": 60220004,
+        "name": "T20 Armor",
+        "name_vn": "Giáp Bậc 20"
+      },
+      "minStage": 20,
+      "maxStage": 31,
+      "qualities": [
+        5,
+        6,
+        7
+      ]
+    }
+  },
   "traps": {
     "demon_spike": {
       "code": 1,

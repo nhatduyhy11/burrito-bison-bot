@@ -8,7 +8,7 @@
 // - web/dict/artifact-dict.json: Thần Khí per hero (names, slot) + shared team buffs; rules in web/artifacts.js;
 // - web/dict/hero-dict.json: the hero side: heroes with their skins and Dị Năng (avatar) nodes;
 // - web/dict/support-dict.json: the non-hero side: Summoner skins, traps, pets, spells (daoists),
-//   building skins, mounts and mount privilege types.
+//   Summoner gear skills, building skins, mounts and mount privilege types.
 // Entries are keyed by a slug of the English name. `name` / `name_vn` come from the game's language packs (lang_en /
 // lang_vi.<ver>.bin, public CDN next to config.bin; downloaded once into
 // .tmp/battle_sim/config/<configVersion>/). Skill refs that feed the hover popovers also carry
@@ -271,6 +271,30 @@ async function main() {
   }]));
   const mountPrivilegeTypes = { 1: "MoveSpeed", 2: "PassWall", 3: "GVGEnergy", 4: "GVGShow" };
 
+  // Summoner gear (EquipmentLO, 6 slots): the only battle skills are EquipmentEntryLO rows with a
+  // skillCode (one "unique" entry per piece type). EquipmentLO code = 60 P SS QQ (P = piece type,
+  // SS = tier/stage); a piece rolls entries from its _entryPool. In StartGameP these skills sit on
+  // builds[type 2].skills. Stats are left out (server merges them). See docs/planning/hero_gear.md.
+  const entrySkill = new Map(rows(M("EquipmentEntryLO")).filter((e) => e.skillCode).map((e) => [e.entryPool, e.skillCode]));
+  const gearSkillPieces = new Map();
+  for (const eq of rows(M("EquipmentLO"))) {
+    const code = entrySkill.get(eq.entryPool);
+    if (!code) continue;
+    const list = gearSkillPieces.get(code) || [];
+    list.push(eq);
+    gearSkillPieces.set(code, list);
+  }
+  const summonerGear = keyed([...gearSkillPieces].sort(([a], [b]) => a - b).map(([code, pieces]) => {
+    const pieceTypes = new Set(pieces.map((p) => Math.floor(p.code / 1e5) % 10));
+    if (pieceTypes.size !== 1) throw new Error(`gear skill ${code}: on several piece types`);
+    const first = pieces.reduce((a, b) => (b.stage < a.stage || (b.stage === a.stage && b.quality < a.quality) ? b : a));
+    const stages = pieces.map((p) => p.stage);
+    return [SkillBase.get(code)?.name, { ...skillRef(code), piece: [...pieceTypes][0],
+      example: { code: first.code, name: first.name, name_vn: vn("EquipmentLO", first.code) },
+      minStage: Math.min(...stages), maxStage: Math.max(...stages),
+      qualities: [...new Set(pieces.map((p) => p.quality))].sort((a, b) => a - b) }];
+  }));
+
   // The engine looks up effects and level limits in AntiqueHaloLO by rank code.
   const haloRows = rows(M("AntiqueHaloLO"));
   // Per-star halo skill (AntiqueHaloLO._skillCode; 5 antiques have none).
@@ -387,7 +411,7 @@ async function main() {
   const stamp = `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, vi: lang_vi, desc fallback: lang_en)`;
   const write = (file, data) => fs.writeFileSync(file, JSON.stringify({ _generated: stamp, ...data }, null, 2) + "\n");
   write(HERO_OUT, { heroes });
-  write(SUPPORT_OUT, { summonerSkins, traps, pets, spells, buildings, mounts, mountPrivilegeTypes });
+  write(SUPPORT_OUT, { summonerSkins, summonerGear, traps, pets, spells, buildings, mounts, mountPrivilegeTypes });
   write(MAP_OUT, maps);
   write(BOSS_OUT, { bosses: capital.bosses });
   write(CREEPS_OUT, { creeps: capital.creeps });
@@ -407,7 +431,7 @@ async function main() {
   console.log(`wrote ${path.relative(process.cwd(), HERO_OUT)}: ${count(heroes)} heroes`);
   console.log(`wrote ${path.relative(process.cwd(), SUPPORT_OUT)}: ${count(traps)} traps, ` +
     `${count(pets)} pets, ${count(spells)} spells, ${count(summonerSkins)} Summoner skins, ` +
-    `${count(mounts)} mounts, ` +
+    `${count(mounts)} mounts, ${count(summonerGear)} Summoner gear skills, ` +
     Object.entries(buildings).map(([k, b]) => `${k} ${count(b.skins)} skins`).join(", "));
 }
 
