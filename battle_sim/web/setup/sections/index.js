@@ -1,7 +1,7 @@
 // Form sections of the setup page, in page order: Màn chơi, then tabs (Teams, Support, Summoner).
 // Teams holds the hero cards (skins, Dị Năng, Thần Khí editor in sections/artifact.js); Support
 // holds Trap, Pet, Spell (lists.js), building skins, Golden; Summoner holds what the Summoner
-// wears: Skill Summoner (summoner.js), Mounts, Đồ Cổ.
+// wears: Trang bị (gear skill checkboxes) and Skill Summoner (both in summoner.js), Mounts, Đồ Cổ.
 // (Account gốc lives inside the "Thao tác" section, see side.js.)
 // Each section takes ctx = { state, dict, update(fn), toggleWithPrefill(group, on) }; update(fn)
 // runs fn on a copy of the state (fn may also return a replacement), normalizes it with skin-rules
@@ -11,7 +11,7 @@ import { html } from "../ui.js";
 import { MapSection } from "./map.js";
 import { HeroesSection } from "./heroes.js";
 import { MountSection } from "./mounts.js";
-import { SummonerSection } from "./summoner.js";
+import { SummonerGearSection, SummonerSection } from "./summoner.js";
 import { ListSection } from "./lists.js";
 import { BuildingsSection } from "./buildings.js";
 import { GoldenSection } from "./golden.js";
@@ -71,6 +71,7 @@ export function FormSections({ ctx }) {
       <${GoldenSection} ctx=${ctx} />
     </div>
     <div role="tabpanel" hidden=${tab !== "summoner"}>
+      <${SummonerGearSection} ctx=${ctx} />
       <${SummonerSection} ctx=${ctx} />
       <${MountSection} ctx=${ctx} />
       <${AntiquesSection} ctx=${ctx} />

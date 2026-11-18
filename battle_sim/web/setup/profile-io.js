@@ -19,7 +19,7 @@ function emptyState(dict, antiqueDict) {
     battle: "", seed: "", map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
     mounts: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null, summonerSkins: null,
-    summonerWorn: null,
+    summonerWorn: null, summonerGear: null,
     antiques: antiqueDict ? defaultAntiques(antiqueDict.antiques) : {},
   };
 }
@@ -90,6 +90,13 @@ function toProfile(state, dict) {
   if (state.summonerSkins) {
     profile.summonerSkins = state.summonerSkins.map(({ name, star }) => ({ name, star }));
     profile.summonerWorn = state.summonerWorn;
+  }
+  // Gear skills: true/false per known name; names left out keep the capture (null state = untouched).
+  if (state.summonerGear) {
+    const gear = Object.fromEntries(Object.keys(dict.summonerGear)
+      .filter((key) => state.summonerGear[key] !== undefined)
+      .map((key) => [key, !!state.summonerGear[key]]));
+    if (Object.keys(gear).length) profile.summonerGear = gear;
   }
   const buildings = {};
   for (const [building] of BUILDINGS) {
@@ -200,6 +207,12 @@ function fromProfile(profile, base, dict, { maps, bossDict, antiqueDict, relicLi
       throw new Error("Skin Summoner đang mặc phải nằm trong các skin đã chọn");
     }
     next.summonerWorn = worn;
+  }
+  if (profile.summonerGear && typeof profile.summonerGear === "object") {
+    next.summonerGear = {};
+    for (const [name, on] of Object.entries(profile.summonerGear)) {
+      next.summonerGear[need("summonerGear", name)] = !!on;
+    }
   }
   for (const [building, sel] of Object.entries(profile.buildings || {})) {
     if (!dict.buildings[building]) throw new Error(`Không có building "${building}"`);

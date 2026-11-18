@@ -127,6 +127,27 @@ export async function applyProfile(start, rb, M, step) {
       return { code, level: star };
     }));
   }
+  if (Object.hasOwn(profile, "summonerGear")) {
+    // Summoner equipment skills (fixed codes in support-dict summonerGear): true adds the skill to
+    // the bed build (builds[type 2]), false removes it; keys absent from the map keep the capture,
+    // so only codes the map names are stripped from the existing skills. applyBuildSkins keeps
+    // non-skin-skill codes as extras, so either branch order works.
+    const builds = rb.listItems(player.builds);
+    const index = builds.findIndex((build) => build.type === catalog.buildings.bed.buildType);
+    if (index < 0) throw new Error("Captured StartGameP has no bed build for summonerGear");
+    const gear = (name) => {
+      const row = catalog.summonerGear[name];
+      if (!row) throw new Error(`Unknown summonerGear option: ${name}`);
+      return row;
+    };
+    const entries = Object.entries(profile.summonerGear || {});
+    const controlled = new Set(entries.map(([name]) => gear(name).code));
+    const extras = rb.listItems(builds[index].skills).filter(({ code }) => !controlled.has(code));
+    const skills = entries.flatMap(([name, on]) =>
+      on ? [{ code: gear(name).code, index: 1, level: 1, isShow: false }] : []);
+    builds[index] = { ...builds[index], skills: asList([...skills, ...extras]) };
+    player.builds = asList(builds);
+  }
   if (Object.hasOwn(profile, "buildings")) {
     Object.assign(player, applyBuildSkins(player, profile.buildings, catalog.buildings, rb, M, (resolved) => {
       step("profile building skins", resolved);

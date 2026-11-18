@@ -16,6 +16,10 @@ export function forRegion(profile, dict, { antiqueDict }) {
   if (adjusted.summonerWorn && !exists(dict.summonerSkins, adjusted.summonerWorn)) {
     delete adjusted.summonerWorn;
   }
+  if (adjusted.summonerGear) {
+    adjusted.summonerGear = Object.fromEntries(Object.entries(adjusted.summonerGear)
+      .filter(([key]) => exists(dict.summonerGear, key)));
+  }
   if (adjusted.antiques) {
     adjusted.antiques = Object.fromEntries(Object.entries(adjusted.antiques)
       .filter(([key]) => exists(antiqueDict.antiques, key)));

@@ -52,6 +52,48 @@ test('Summoner: event skin takes no skill slot, worn skin round trips and must b
   assert.throws(() => fromProfile({ summonerSkins: ['skeletian'], summonerWorn: 'azure_valkyrie' }, base, dict));
 });
 
+test('Summoner gear: partial toggle map round trips and drives the bed build skills', async (t) => {
+  assert.equal(emptyState(dict).summonerGear, null);
+  const gear = { cash_boost: true, rage_gain_upon_defeat: false };
+  assert.deepEqual(toProfile(fromProfile({ summonerGear: gear }, base, dict), dict).summonerGear, gear);
+  assert.throws(() => fromProfile({ summonerGear: { missing: true } }, base, dict));
+
+  const list = (items) => ({ ...Object.fromEntries(items.map((item, i) => [i, item])), _length: items.length });
+  const start = () => ({
+    playerInfos: {
+      0: {
+        builds: list([{
+          type: dict.buildings.bed.buildType,
+          skills: list([
+            { code: 123, index: 1, level: 1, isShow: false }, // a server-added non-gear skill
+            { code: dict.summonerGear.rage_gain_upon_defeat.code, index: 1, level: 1, isShow: false }, // captured gear skill
+          ]),
+        }]),
+      },
+      _length: 1,
+    },
+  });
+  const skills = (s) => Array.from({ length: s.playerInfos[0].builds[0].skills._length },
+    (_, i) => s.playerInfos[0].builds[0].skills[i].code);
+  const realFetch = globalThis.fetch;
+  let profile, s;
+  globalThis.fetch = async (url) => ({ ok: true, json: async () => url.includes('active-profile') ? profile : dict });
+  t.after(() => { globalThis.fetch = realFetch; });
+  const rb = { listItems: (list_) => Array.from({ length: list_?._length || 0 }, (_, i) => list_[i]) };
+  const M = () => ({ get: () => ({}) });
+  const run = async (p) => { profile = p; s = start(); await applyProfile(s, rb, M, () => {}); };
+  // A key absent from the map keeps the captured gear skill; true/false add/remove their code.
+  await run({ summonerGear: { cash_boost: true } });
+  assert.deepEqual(skills(s), [dict.summonerGear.cash_boost.code, 123, dict.summonerGear.rage_gain_upon_defeat.code]);
+  await run({ summonerGear: { cash_boost: true, rage_gain_upon_defeat: false } });
+  assert.deepEqual(skills(s), [dict.summonerGear.cash_boost.code, 123]);
+  await run({ summonerGear: { cash_boost: false, rage_gain_upon_defeat: true } });
+  assert.deepEqual(skills(s), [dict.summonerGear.rage_gain_upon_defeat.code, 123]);
+  await run({ summonerGear: null });
+  assert.deepEqual(skills(s), [123, dict.summonerGear.rage_gain_upon_defeat.code]); // untouched
+  await assert.rejects(run({ summonerGear: { missing_name: true } }), /Unknown summonerGear/);
+});
+
 test('Joker support requires Loli summon skin in a slot and no regular Joker', () => {
   assert.equal(hasSummonedJoker([{ name: JOKER_SUMMON.hero }], true), true);
   assert.equal(hasSummonedJoker([{ name: JOKER_SUMMON.hero }], false), false);

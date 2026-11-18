@@ -1,9 +1,61 @@
-// "Skill Summoner": skill slots (up to 3), skill-less event skins (stats only, no slot) and the worn skin.
-import { Accordion, Checkbox, html, NumberInput, optionText, Select, StarSkillsLabel } from "../ui.js";
+// "Trang bị Summoner" (gear checkboxes) and "Skill Summoner": skill slots (up to 3), skill-less
+// event skins (stats only, no slot) and the worn skin.
+import { useEffect, useState } from "preact/hooks";
+import { Accordion, Checkbox, html, NumberInput, optionText, PopHover, Select, StarSkillsLabel, label, plain } from "../ui.js";
 import { eventUnlockNote, headerRow } from "./shared.js";
 import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkillsConflict } from "../../summoner-skills.js";
 
 const COLORS = [["gold", "Vàng"], ["red", "Đỏ"]];
+
+// The three Summoner equipment skills (support-dict summonerGear, one per gear slot at stage 20+).
+// Untouched (state null) keeps the bed build from the capture; the first toggle materializes every
+// checkbox from the capture, so unchecking a captured skill removes it.
+export function SummonerGearSection({ ctx }) {
+  const { state, dict } = ctx;
+  const [captured, setCaptured] = useState(null); // gear names on the base capture's bed, for display
+  const battle = state.battle;
+  useEffect(() => {
+    let live = true;
+    ctx.capturedSummonerGear().then((names) => { if (live) setCaptured(names); });
+    return () => { live = false; };
+  }, [battle]);
+  const rows = Object.entries(dict.summonerGear).map(([name, gear]) =>
+    html`<${GearCheck} key=${name} ctx=${ctx} name=${name} gear=${gear} captured=${captured} />`);
+  return html`
+    <div class="card">
+      <strong>Trang bị Summoner</strong>
+      <div class="row">${rows}</div>
+      <div class="note">Tick = thêm skill vào build Giường, bỏ tick = xóa; mặc định (chưa đụng) giữ nguyên capture.</div>
+    </div>
+  `;
+}
+
+function GearCheck({ ctx, name, gear, captured }) {
+  const { state, dict, update } = ctx;
+  const untouched = state.summonerGear === null;
+  const disabled = untouched && captured === null; // capture names not loaded yet
+  const setGear = (value) => update((s) => {
+    s.summonerGear ??= Object.fromEntries(Object.keys(dict.summonerGear).map((key) => [key, captured.includes(key)]));
+    s.summonerGear[name] = value;
+  });
+  return html`
+    <label>
+      <${Checkbox} checked=${untouched ? !!captured?.includes(name) : !!state.summonerGear[name]}
+        disabled=${disabled} onChange=${setGear} />
+      <${PopHover} content=${gearPop(gear)}><span class="pop-trigger">${label(gear)}</span><//>
+    </label>
+  `;
+}
+
+// Popover for one gear skill: effect, the gear slot that grants it (example piece) and stage range.
+function gearPop(gear) {
+  return html`
+    <div class="pop-title">${label(gear)}</div>
+    <div class="pop-desc">${plain(gear.desc_vn)}</div>
+    <div class="note">vd: ${gear.example.name_vn} · stage ${gear.minStage}–${gear.maxStage}</div>
+  `;
+}
+
 
 export function SummonerSection({ ctx }) {
   const { state, dict, update } = ctx;

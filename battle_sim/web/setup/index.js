@@ -61,7 +61,8 @@ function App({ dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifa
   }, [profile, state.battle, state.seed]);
 
   const capturedHeroArtifact = (heroCode) => capturedArtifact(region, state.battle, heroCode);
-  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact };
+  const capturedSummonerGear = () => prefill(dict, maps, region, state.battle, "summonerGear");
+  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, bossDict, creepsDict, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact, capturedSummonerGear };
   return html`
     <main id="form">
       ${regionError && html`<p class="err" role="alert">${regionError}</p>`}

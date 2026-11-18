@@ -25,6 +25,12 @@ export async function prefill(dict, maps, region, battle, group) {
     const selected = owned.find((key) => dict.mounts[key].code === player?.mountCode) || null;
     return { owned, selected };
   }
+  if (group === "summonerGear") {
+    // Gear-skill toggles: names whose fixed skill code (9000x00000) sits on the bed build.
+    const bed = listItems(player?.builds).find((build) => build.type === dict.buildings.bed.buildType);
+    const codes = new Set(listItems(bed?.skills).map(({ code }) => code));
+    return Object.keys(dict.summonerGear).filter((key) => codes.has(dict.summonerGear[key].code));
+  }
   if (group === "map") {
     if (start?.battleType === maps.capital.battleType) return { mode: "capital", stage: maps.campaign.minStage, boss: null, level: null };
     return { mode: "campaign", stage: start?.level || maps.campaign.minStage, boss: null, level: null };
