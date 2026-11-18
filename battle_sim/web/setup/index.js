@@ -146,7 +146,15 @@ async function showRegion(root, region, saved, switching = false) {
   // First mount adopts nothing from #app, so preact leaves the html placeholder ("đang tải…")
   // alive next to the rendered tree — drop it just before mounting (region switch diffs instead).
   if (!switching) root.textContent = "";
-  render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  try {
+    render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+  } catch (err) {
+    // A render error leaves the old App already unmounted, so its regionError can't show: report here.
+    console.error(err);
+    root.textContent = "";
+    render(html`<p class="err">${`Lỗi hiển thị vùng ${region.toUpperCase()}: ${err.message}`}</p>`, root);
+    throw err;
+  }
   if (!switching) bindAccordionToggle(root);
   else root.dispatchEvent(new Event("toggle"));
 }

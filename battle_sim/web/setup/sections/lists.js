@@ -34,6 +34,8 @@ function ListBody({ ctx, group }) {
 // Hover summary for a pet: one block per star (Sao 1..maxStar) listing the skills a pet gains or
 // upgrades at that star. Pets have up to 5 skills, each unlocking/upgrading on its own stars.
 function petPop(pet) {
+  // GAT-only pets from gat-overrides.json carry no skill data.
+  if (!pet.skills?.length) return html`<div class="pop-title">${label(pet)}</div><div class="note">Không có dữ liệu skill</div>`;
   const runs = pet.skills.flatMap((skill) => skill.starSkills);
   const star = (n) => {
     const here = runs.filter((s) => s.stars.includes(n));
