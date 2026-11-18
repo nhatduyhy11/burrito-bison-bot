@@ -96,24 +96,28 @@ function AvatarPicker({ hero, nodes, edit }) {
   `;
 }
 
-// Hover summary for a relic line: the gold/colorful purification skills ("2 mốc thanh tẩy") on
-// top, a divider, then every star run of the line skill.
-function relicPop(line) {
+// Hover summary for a relic line: the line skill's title, the gold/colorful purification skills
+// ("2 mốc thanh tẩy"), a divider, then every star run of the line skill. With a resolved selection,
+// ✅ marks the chosen purification tier and star run.
+function relicPop(line, selected) {
+  const mark = (on) => (on ? "✅ " : "");
   const star = (s) => html`
     <div class="pop-line" key=${s.code}>
-      <span class="hint">${starsLabel(s.stars)}</span> ${label(s)}
+      <span class="hint">${mark(s === selected?.starSkill)}${starsLabel(s.stars)}</span>
       <div class="pop-desc">${plain(s.desc_vn)}</div>
     </div>
   `;
   const pur = (p) => html`
     <div class="pop-line" key=${p.fixedSkill.code}>
-      <span class="hint">Thanh tẩy ${COLOR_LABEL[p.color]}</span> ${label(p.fixedSkill)}
+      <span class="hint">${mark(p === selected?.tier)}Thanh tẩy ${COLOR_LABEL[p.color]}</span> ${label(p.fixedSkill)}
       <div class="pop-desc">${plain(p.fixedSkill.desc_vn)}</div>
     </div>
   `;
   const purs = line.purifications.filter((p) => p.fixedSkill);
+  const title = line.starSkills[0];
   return html`
     <div class="relic-pop">
+      ${title && html`<div class="pop-title">${label(title)}</div>`}
       ${purs.map(pur)}
       ${purs.length && line.starSkills.length ? html`<hr class="pop-divider" />` : null}
       ${line.starSkills.map(star)}
@@ -138,7 +142,9 @@ function RelicPicker({ selection, lines, edit }) {
   const setPurification = (value) => edit((h) => (h.relic.purification = Number(value)));
   return html`
     <div class="row">
-      <label>Thánh Khí</label>
+      ${selected
+        ? html`<${PopHover} content=${relicPop(lines[selection.name], selected)}><label class="pop-trigger">Thánh Khí</label><//>`
+        : html`<label>Thánh Khí</label>`}
       <${SelectPop} aria-label="Thánh Khí" options=${options}
         value=${selection === undefined ? "capture" : selection?.name ?? ""} onChange=${choose} />
       ${selected && html`
@@ -146,9 +152,6 @@ function RelicPicker({ selection, lines, edit }) {
         <label>Thanh tẩy
           <${Select} aria-label="Thanh tẩy" options=${levels} value=${String(selected.purification)} onChange=${setPurification} />
         </label>
-        <${PopHover} content=${relicPop(lines[selection.name])}>
-          <span class="note pop-trigger">${label(selected.starSkill)}${selected.tier.fixedSkill && html` + ${label(selected.tier.fixedSkill)}`}</span>
-        <//>
       `}
     </div>
   `;
