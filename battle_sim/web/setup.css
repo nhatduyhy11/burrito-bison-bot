@@ -84,6 +84,34 @@ button:hover:not(:disabled) { border-color: var(--accent); }
 button:disabled { opacity: .45; cursor: default; }
 button.primary { background: var(--accent); color: #0b1220; border-color: var(--accent); font-weight: 600; }
 .x { padding: 2px 8px; }
+/* Custom dropdown with per-option hover popovers (Thánh Khí line picker; the skin / pet / trap /
+   spell hover tasks reuse it). The list may scroll — the popover is position:fixed and rendered
+   next to the list, so it never clips. The trigger mimics the select look. */
+.dd { position: relative; display: inline-flex; min-width: 0; max-width: 100%; }
+.dd > button { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; text-align: left;
+  background: #111318; color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; font: inherit; cursor: pointer; }
+.dd > button:hover:not(:disabled) { border-color: var(--accent); }
+.dd-caret { flex: none; width: 0; height: 0; border-style: solid; border-width: 4.5px 4.5px 0 4.5px; border-color: var(--muted) transparent transparent transparent; }
+.dd-list { position: absolute; z-index: 40; top: calc(100% + 4px); left: 0; min-width: max(100%, 180px); max-width: min(320px, 48vw);
+  max-height: min(280px, 50vh); overflow-y: auto; background: #1e2128; color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 4px; box-shadow: 0 8px 24px #0006; }
+.dd-opt { padding: 6px 8px; border-radius: 3px; white-space: normal; overflow-wrap: anywhere; cursor: pointer; }
+.dd-opt:hover, .dd-opt.active { background: #323743; }
+.dd-opt.selected { background: #283d55; }
+/* Hover popover: fixed viewport coords, informational only (pointer-events off — it never blocks
+   the controls underneath, and mouse-leave stays with the trigger). */
+.popover { position: fixed; z-index: 60; width: 320px; pointer-events: none; background: #1e2128;
+  border: 1px solid var(--line); border-radius: 6px; padding: 8px; box-shadow: 0 8px 24px #0006;
+  font-size: 11px; line-height: 1.45; }
+.pop-line { margin-bottom: 6px; }
+.pop-line:last-child { margin-bottom: 0; }
+.pop-line .hint { color: var(--muted); font-size: 11px; margin-right: 4px; }
+.pop-desc { margin-top: 1px; overflow-wrap: anywhere; }
+/* Divider between the purification and star sections of the relic popover. */
+.pop-divider { width: 100%; border: 0; border-top: 1px solid var(--line); margin: 6px 0; }
+.pop-hover { display: inline-flex; min-width: 0; }
+/* Hoverable summary label (Thánh Khí note) — dotted underline as the affordance. */
+.pop-trigger { cursor: help; text-decoration: underline dotted var(--muted); text-underline-offset: 2px; }
 /* Trap / pet / spell row: the name picker shrinks so level, star and × stay on one line at 640px. */
 .list-row { flex-wrap: nowrap; gap: 6px; }
 .list-row select { flex: 1 1 auto; min-width: 0; }

@@ -44,7 +44,7 @@ export async function prefill(dict, maps, region, battle, group) {
   return from().filter((item) => item.name).slice(0, LIMITS[group]);
 }
 
-// Thần Khí of a hero in the base capture as setup state (tab Hero detail), null when it has none.
+// Thần Khí of a hero in the base capture as setup state (hero card in Teams), null when it has none.
 export async function capturedArtifact(region, battle, heroCode) {
   const start = await capturedStart(region, battle);
   const player = start && listItems(start.playerInfos)[0];

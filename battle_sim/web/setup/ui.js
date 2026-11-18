@@ -3,6 +3,7 @@
 // (no inline functions).
 import { h } from "preact";
 import htm from "htm";
+import { useState, useRef } from "preact/hooks";
 import { clamp } from "./skin-rules.js";
 
 export const html = htm.bind(h);
@@ -66,6 +67,115 @@ export function Select({ options, value, onChange, ...attrs }) {
     <select ...${attrs} value=${value} onChange=${handleChange}>
       ${groupOptions(options)}
     </select>
+  `;
+}
+
+// ---------- hover popovers (Thánh Khí picker; reused by the skin / pet / trap / spell hover tasks) ----------
+
+// Config descs carry rich-text markup (<color>, <u>, <br>) — flatten for plain-text UI.
+export const plain = (s) => String(s ?? "").replace(/<br\s*\/?>/gi, " · ").replace(/<[^>]+>/g, "").trim();
+
+// "Sao 0–1" for a run of consecutive stars, "Sao 1, 4" for a gap.
+export const starsLabel = (stars) => {
+  const [first, last = first] = stars;
+  const run = stars.length > 1 && last - first === stars.length - 1 ? `${first}–${last}` : stars.join(", ");
+  return `Sao ${run}`;
+};
+
+// Place a popover right of the anchor row, clamped into the viewport (fixed coords, so overflow
+// ancestors can't clip it).
+const popAt = (target, setPop, content) => {
+  const r = target.getBoundingClientRect();
+  setPop({
+    x: Math.min(r.right + 8, window.innerWidth - 332),
+    y: Math.max(8, Math.min(r.top, window.innerHeight - 330)),
+    content,
+  });
+};
+
+// Floating informational card; pointer-events stay off the popover so it never blocks the
+// controls underneath and mouse-leave logic stays on the trigger side.
+export function Popover({ x, y, children }) {
+  return html`<div class="popover" style=${{ left: `${x}px`, top: `${y}px` }}>${children}</div>`;
+}
+
+// Hover popover on an arbitrary trigger element (skin labels, the Dị Năng (i) icon).
+export function PopHover({ content, children }) {
+  const [pop, setPop] = useState(null);
+  const show = (e) => popAt(e.currentTarget, setPop, content);
+  const hide = () => setPop(null);
+  return html`
+    <span class="pop-hover" onMouseEnter=${show} onMouseLeave=${hide}>
+      ${children}
+      ${pop && html`<${Popover} x=${pop.x} y=${pop.y}>${pop.content}<//>`}
+    </span>
+  `;
+}
+
+// One row of the SelectPop listbox; popover content shows while hovered.
+function PopOption({ opt, selected, active, onPick, onHover, onLeave }) {
+  const [value, text, popover] = opt;
+  // Keep focus on the trigger: a focusout (blur to body) must not close the list before the
+  // option's click event lands. preventDefault on the click also cancels a wrapping <label>'s
+  // activation behavior — it would forward this click to the trigger button and re-open the
+  // just-closed list.
+  const press = (e) => e.preventDefault();
+  const pick = (e) => { e.preventDefault(); onPick(value); };
+  const hover = (e) => onHover(opt, e.currentTarget);
+  const cls = `dd-opt${selected ? " selected" : ""}${active ? " active" : ""}`;
+  return html`
+    <div class=${cls} role="option" aria-selected=${selected}
+      onMouseDown=${press} onClick=${pick} onMouseEnter=${hover} onMouseLeave=${onLeave}>
+      ${text}
+    </div>
+  `;
+}
+
+// Custom dropdown for options that need a hover popover (native <select> options can't). options:
+// [value, text, popover?] — the popover element is optional per option. Commits like <select>:
+// pick on click or Enter, closes on pick / outside click (focusout) / Escape; arrows move the
+// keyboard cursor. Reused by the relic picker and the later hover tasks.
+export function SelectPop({ options, value, onChange, ...attrs }) {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const [pop, setPop] = useState(null);
+  const root = useRef(null);
+  const reset = () => { setOpen(false); setActive(-1); setPop(null); };
+  const hidePop = () => setPop(null);
+  const hover = (opt, target) => (opt[2] ? popAt(target, setPop, opt[2]) : hidePop());
+  const pick = (key) => { reset(); if (key !== value) onChange(key); };
+  const toggle = () => {
+    if (open) reset();
+    else { setOpen(true); setActive(Math.max(0, options.findIndex(([k]) => k === value))); }
+  };
+  const onKey = (e) => {
+    if (e.key === "Escape") { reset(); return; }
+    if (!open) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      return;
+    }
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => clamp(a + 1, 0, options.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => clamp(a - 1, 0, options.length - 1)); }
+    else if (e.key === "Enter") { e.preventDefault(); if (active >= 0) pick(options[active][0]); }
+  };
+  // Clicking outside the dropdown (focus leaves it) closes; relatedTarget is null for body clicks.
+  const blur = (e) => { if (!root.current?.contains(e.relatedTarget)) reset(); };
+  const current = options.find(([k]) => k === value);
+  return html`
+    <span class="dd" ref=${root} onKeyDown=${onKey} onFocusOut=${blur}>
+      <button type="button" ...${attrs} aria-haspopup="listbox" aria-expanded=${open} onClick=${toggle}>
+        ${current ? current[1] : value}
+        <span class="dd-caret" />
+      </button>
+      ${open && html`
+        <div class="dd-list" role="listbox" onMouseLeave=${hidePop}>
+          ${options.map((opt, i) => html`
+            <${PopOption} key=${opt[0]} opt=${opt} selected=${opt[0] === value} active=${i === active}
+              onPick=${pick} onHover=${hover} onLeave=${hidePop} />`)}
+        </div>
+      `}
+      ${pop && html`<${Popover} x=${pop.x} y=${pop.y}>${pop.content}<//>`}
+    </span>
   `;
 }
 

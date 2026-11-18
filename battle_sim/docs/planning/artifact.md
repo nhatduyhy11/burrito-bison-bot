@@ -175,13 +175,15 @@ artifact: { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }, { co
 - Kiểm tối thiểu: số dòng ≤ `holeNum`, value trong range, rainbow value 0. Không chặn hay cảnh báo
   thêm (gacha, rainbow trên món phẩm thấp vẫn có). Nếu engine throw thì mới xem lại.
 
-### UI ([web/setup/sections/hero-detail.js](../../web/setup/sections/hero-detail.js))
+### UI ([web/setup/sections/artifact.js](../../web/setup/sections/artifact.js))
 
-- Tab **Hero detail** nằm cạnh tab Summoner. Có 5 section ứng với 5 vị trí bên Teams. Tab này chỉ
-  dùng để tùy chỉnh Thần Khí.
-- Mặc định mỗi hero dùng món trong capture. Tick **Tùy chỉnh** thì section mở ra ngay, điền sẵn
-  món trong capture (hero không có món thì bắt đầu ở Tím stage 1). Chỉ sau khi tick mới xuất hiện
-  icon accordion. Hero không có Thần Khí hoặc ô chưa chọn hero thì section mờ, không có checkbox.
+- Tab **Hero detail** đã bỏ (2026-11-18); editor Thần Khí nằm trong card hero bên Teams
+  ([heroes.js](../../web/setup/sections/heroes.js)), ngay dưới bảng skin. Card Joker triệu hồi
+  không có phần này.
+- Mặc định mỗi hero dùng món trong capture. Tick **Tùy chỉnh** trên card thì bảng skin + Dị Năng +
+  editor Thần Khí mở ra cùng lúc; Thần Khí được điền sẵn món trong capture (hero không có món thì
+  bắt đầu ở Tím stage 1). Bỏ tick trả về "theo capture" (artifact về undefined). Hero không có
+  pool Thần Khí thì không hiện editor.
 - **Không hiện tên món, tên skill hay mô tả**, kể cả với rainbow. Người dùng tự tra trong game,
   app không thay thế game. Ngoại lệ: dropdown buff đội dùng tên dòng (vd "Tăng ST Đội Chiến Đấu"),
   vì không có tên thì không phân biệt được 10 family. Rainbow dùng tên skill của hero (vd "Ma Lâm Thiên Hạ"), vẫn không có mô tả.
@@ -204,7 +206,7 @@ Thứ tự làm:
    - Stage 51 `6af2ab8a…`, lắp `10806003` + `80003005: 704` cho Hắc Lữ Bố → thẻ roll ra
      `300002013`, `400012013`, `400022013`, không còn bản cơ bản. Thêm rainbow `80000208` →
      thẻ Thức Tỉnh `700005013` thay `700004013`.
-2. ~~UI tab Hero detail~~ (xong).
+2. ~~UI editor Thần Khí trong card hero (Teams)~~ (xong).
 3. Kiểm bằng hình các rainbow passive (`80000108`, `80000308`) trong trận.
 
 ## Còn mở

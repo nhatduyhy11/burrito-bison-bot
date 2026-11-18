@@ -1,8 +1,8 @@
-// Tab "Hero detail": one section per Teams slot, customizing that hero's Thần Khí (artifact).
-// Untouched = as captured; "Tùy chỉnh" fills it from the capture and opens it. Item names and every
-// description are left out on purpose (look them up in game); only line names (team buff, rainbow
-// skill) are shown. State shape: profile-io.js artifactState.
-import { html, label, Checkbox, Select } from "../ui.js";
+// Thần Khí (artifact) editor of one hero card: quality, stage and the rolled slots. Rendered inside
+// the hero card in heroes.js, below the skin table — "Tùy chỉnh" on the card customizes it too.
+// Item names and every description are left out on purpose (look them up in game); only line names
+// (team buff, rainbow skill) are shown. State shape: profile-io.js artifactState.
+import { html, Select } from "../ui.js";
 import { MAX_STAGE, entryCode, parseEntryCode, rareSkill } from "../../artifacts.js";
 
 const QUALITIES = [[4, "Tím"], [5, "Cam"], [6, "Đỏ"], [7, "Vàng"]];
@@ -11,46 +11,7 @@ const KINDS = [["", "— Trống —"], ["buff", "Buff đội"], ["rare", "Skill
 const RAINBOW = [1, 2, 3];
 const RAINBOW_QUALITY = 8;
 
-export function HeroDetailTab({ ctx }) {
-  return ctx.state.heroes.map(
-    (hero, index) => html`<${ArtifactSection} key=${index} ctx=${ctx} hero=${hero} index=${index} />`,
-  );
-}
-
-function ArtifactSection({ ctx, hero, index }) {
-  const { dict, artifactDict, update } = ctx;
-  const heroCode = dict.heroes[hero.name]?.code;
-  const pool = artifactDict.heroes[heroCode]?.pool;
-  const title = html`<strong>${`#${index + 1}`}</strong>${hero.name ? html`<span>${label(dict.heroes[hero.name])}</span>` : null}`;
-  if (!pool) {
-    const why = hero.name ? "Hero này không có Thần Khí" : "Chưa chọn hero";
-    return html`
-      <section class="off"><header>${title}<span class="hint">${why}</span></header></section>
-    `;
-  }
-  const custom = hero.artifact !== undefined;
-  const edit = (fn) => update((s) => void fn(s.heroes[index]));
-  const setCustom = async (on) => {
-    const artifact = on ? (await ctx.capturedHeroArtifact(heroCode)) ?? { quality: 4, stage: 1, slots: [] } : undefined;
-    edit((h) => { h.artifact = artifact; });
-  };
-  const toggle = html`<label class="override"><${Checkbox} checked=${custom} onChange=${setCustom} />Tùy chỉnh</label>`;
-  if (!custom) {
-    return html`
-      <section><header>${title}${toggle}<span class="hint">theo capture</span></header></section>
-    `;
-  }
-  return html`
-    <details class="accordion" open>
-      <summary>${title}${toggle}</summary>
-      <div class="accordion-body">
-        <${ArtifactBody} artifact=${hero.artifact} heroCode=${heroCode} pool=${pool} artifactDict=${artifactDict} edit=${edit} />
-      </div>
-    </details>
-  `;
-}
-
-function ArtifactBody({ artifact, heroCode, pool, artifactDict, edit }) {
+export function ArtifactBody({ artifact, heroCode, pool, artifactDict, edit }) {
   const qualityOptions = [["0", "Không đeo"], ...QUALITIES.map(([q, text]) => [String(q), text])];
   const setQuality = (value) => edit((h) => {
     const quality = Number(value);

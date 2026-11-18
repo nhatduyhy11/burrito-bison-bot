@@ -1,11 +1,12 @@
-// Hero list; "Tùy chỉnh" on a hero card opens its Dị Năng skill nodes (red heroes) and skin table
-// (owned, star, slots).
-import { html, label, optionText, colorTag, NumberInput, Checkbox, Select, Accordion } from "../ui.js";
+// Hero list; "Tùy chỉnh" on a hero card opens its Dị Năng skill nodes (red heroes), skin table
+// (owned, star, slots) and the Thần Khí editor (below the skin table, artifact.js).
+import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, plain, starsLabel, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, newHero } from "../profile-io.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { resolveRelic } from "../../relics.js";
 import { headerRow, nameOptions, requiresNote, without } from "./shared.js";
+import { ArtifactBody } from "./artifact.js";
 
 const HEADERS = ["Skin", "Màu", "Sở hữu", "Sao", "Slot"];
 
@@ -35,22 +36,36 @@ function HeroesBody({ ctx }) {
 }
 
 function HeroCard({ ctx, hero, index, summoned = false }) {
-  const { state, dict, update } = ctx;
+  const { state, dict, artifactDict, update, capturedHeroArtifact } = ctx;
   const skins = heroSkins(dict, hero.name);
   const hasSkins = Object.keys(skins).length > 0;
   const nodes = dict.heroes[hero.name]?.avatarNodes || [];
+  const heroCode = dict.heroes[hero.name]?.code;
+  const pool = artifactDict.heroes[heroCode]?.pool;
   const options = [["", "— Chọn hero —"], ...nameOptions(dict, "heroes", state.heroes.map((h) => h.name), hero.name)];
   const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s.heroes[index]));
   const setName = (v) => update((s) => void (s.heroes[index] = newHero(v)));
-  const setCustom = (on) => edit((h) => {
-    h.custom = on;
-    if (on && h.relic === undefined) h.relic = null;
-  });
-  const custom = hasSkins || nodes.length
+  // "Tùy chỉnh" also owns the Thần Khí: tick fills it from the capture (Teams slots only — the
+  // summoned Joker has none), untick returns to "theo capture".
+  const setCustom = async (on) => {
+    const artifact = on && !summoned && pool
+      ? (await capturedHeroArtifact(heroCode)) ?? { quality: 4, stage: 1, slots: [] }
+      : undefined;
+    edit((h) => {
+      h.custom = on;
+      if (on && h.relic === undefined) h.relic = null;
+      if (on && pool && !summoned && h.artifact === undefined) h.artifact = artifact;
+      if (!on && !summoned) h.artifact = undefined;
+    });
+  };
+  const custom = hasSkins || nodes.length || pool
     ? html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh</label>`
     : html`<span class="note">không có skin</span>`;
   const avatar = hero.custom && nodes.length ? html`<${AvatarPicker} hero=${hero} nodes=${nodes} edit=${edit} />` : null;
   const table = hero.custom && hasSkins ? html`<${HeroSkinTable} hero=${hero} skins=${skins} edit=${edit} />` : null;
+  const artifact = !summoned && hero.custom && pool
+    ? html`<div class="subsection"><${ArtifactBody} artifact=${hero.artifact} heroCode=${heroCode} pool=${pool} artifactDict=${artifactDict} edit=${edit} /></div>`
+    : null;
   return html`
     <div class="card">
       <div class="row">
@@ -63,6 +78,7 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
       ${hero.name && html`<${RelicPicker} selection=${hero.relic} lines=${ctx.relicLines} edit=${edit} />`}
       ${avatar}
       ${table}
+      ${artifact}
     </div>
   `;
 }
@@ -80,12 +96,37 @@ function AvatarPicker({ hero, nodes, edit }) {
   `;
 }
 
+// Hover summary for a relic line: the gold/colorful purification skills ("2 mốc thanh tẩy") on
+// top, a divider, then every star run of the line skill.
+function relicPop(line) {
+  const star = (s) => html`
+    <div class="pop-line" key=${s.code}>
+      <span class="hint">${starsLabel(s.stars)}</span> ${label(s)}
+      <div class="pop-desc">${plain(s.desc_vn)}</div>
+    </div>
+  `;
+  const pur = (p) => html`
+    <div class="pop-line" key=${p.fixedSkill.code}>
+      <span class="hint">Thanh tẩy ${COLOR_LABEL[p.color]}</span> ${label(p.fixedSkill)}
+      <div class="pop-desc">${plain(p.fixedSkill.desc_vn)}</div>
+    </div>
+  `;
+  const purs = line.purifications.filter((p) => p.fixedSkill);
+  return html`
+    <div class="relic-pop">
+      ${purs.map(pur)}
+      ${purs.length && line.starSkills.length ? html`<hr class="pop-divider" />` : null}
+      ${line.starSkills.map(star)}
+    </div>
+  `;
+}
+
 function RelicPicker({ selection, lines, edit }) {
   const selected = selection ? resolveRelic(selection, lines) : null;
   const options = [
     ["", "Không có Thánh Khí"],
     ["capture", "Theo capture"],
-    ...Object.entries(lines).map(([key, line]) => [key, optionText(line)]),
+    ...Object.entries(lines).map(([key, line]) => [key, optionText(line), relicPop(line)]),
   ];
   const stars = selected ? Array.from({ length: selected.tier.maxStar + 1 }, (_, star) => [String(star), String(star)]) : [];
   const levels = [["0", "0 · Đỏ"], ["1", "1 · Vàng"], ["2", "2 · 7 màu"]];
@@ -97,16 +138,17 @@ function RelicPicker({ selection, lines, edit }) {
   const setPurification = (value) => edit((h) => (h.relic.purification = Number(value)));
   return html`
     <div class="row">
-      <label>Thánh Khí
-        <${Select} aria-label="Thánh Khí" options=${options}
-          value=${selection === undefined ? "capture" : selection?.name ?? ""} onChange=${choose} />
-      </label>
+      <label>Thánh Khí</label>
+      <${SelectPop} aria-label="Thánh Khí" options=${options}
+        value=${selection === undefined ? "capture" : selection?.name ?? ""} onChange=${choose} />
       ${selected && html`
         <label>Sao <${Select} aria-label="Sao" options=${stars} value=${String(selected.star)} onChange=${setStar} /></label>
         <label>Thanh tẩy
           <${Select} aria-label="Thanh tẩy" options=${levels} value=${String(selected.purification)} onChange=${setPurification} />
         </label>
-        <span class="note">${label(selected.starSkill)}${selected.tier.fixedSkill && html` + ${label(selected.tier.fixedSkill)}`}</span>
+        <${PopHover} content=${relicPop(lines[selection.name])}>
+          <span class="note pop-trigger">${label(selected.starSkill)}${selected.tier.fixedSkill && html` + ${label(selected.tier.fixedSkill)}`}</span>
+        <//>
       `}
     </div>
   `;
