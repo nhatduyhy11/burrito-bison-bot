@@ -1,0 +1,2 @@
+# beads git hooks are sh scripts; CRLF line endings break them ("/usr/bin/env: 'sh\r'")
+.beads/hooks/* text eol=lf

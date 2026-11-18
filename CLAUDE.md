@@ -72,6 +72,28 @@ _Add your build and test commands here_
 
 _Add a brief overview of your project architecture_
 
+## Beads Setup (per clone)
+
+Repo-specific notes kept outside the managed Beads block so `bd` updates don't overwrite them.
+
+- Fresh clone / new machine: `bd bootstrap`, then `bd hooks install --beads`.
+  The hooks in `.beads/hooks/` are committed, but `core.hooksPath` is per-clone git config and `bd bootstrap` does not set it — without this step no beads hook runs.
+- Check hooks with `bd hooks list` (expect 5/5 installed). `bd doctor` is not supported in embedded mode, so it will not catch missing hooks.
+- `.gitattributes` pins `.beads/hooks/*` to LF; this repo uses `core.autocrlf=true`, and CRLF breaks the sh hooks.
+
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+### Beads issue sizing
+
+The managed block says to track ALL work in `bd`; in this repo that is scoped as follows:
+
+- **Small standalone fix** (one commit, nothing left over, no other agent could pick it up): no issue needed; the commit message is the record.
+- **Follow-up to an existing issue** (even if already closed): do not create a new issue. Add `bd update <id> --append-notes "..."` (reopen only if the work is genuinely unfinished) and reference the ID in the commit.
+- **Multi-session, has dependencies, may be interrupted, or runs in parallel with other agents/sessions**: create the issue before writing code and `--claim` it.
+
+Run `bd search <keywords>` before `bd create` to avoid duplicates.
+
+### Linking issues and commits
+
+- Put the bead ID in the commit message, e.g. `feat: ... (bbb-qjk)`.
+- Do not write commit SHAs into bead notes/descriptions: history here is rebased, so SHAs go stale. Describe the change instead.

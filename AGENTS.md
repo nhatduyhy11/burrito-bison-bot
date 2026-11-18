@@ -126,3 +126,27 @@ bd prime                # Refresh Beads context
 
 **Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/core-concepts/sync-concepts.md for details and anti-patterns.
 <!-- END BEADS CODEX SETUP -->
+
+<!-- Repo-specific notes below are kept outside the managed blocks; mirror edits in CLAUDE.md. -->
+
+## Beads Setup (per clone)
+
+- Fresh clone / new machine: `bd bootstrap`, then `bd hooks install --beads`.
+  The hooks in `.beads/hooks/` are committed, but `core.hooksPath` is per-clone git config and `bd bootstrap` does not set it — without this step no beads hook runs.
+- Check hooks with `bd hooks list` (expect 5/5 installed). `bd doctor` is not supported in embedded mode, so it will not catch missing hooks.
+- `.gitattributes` pins `.beads/hooks/*` to LF; this repo uses `core.autocrlf=true`, and CRLF breaks the sh hooks.
+
+## Beads Issue Sizing
+
+The managed blocks say to track ALL work in `bd`; in this repo that is scoped as follows:
+
+- **Small standalone fix** (one commit, nothing left over, no other agent could pick it up): no issue needed; the commit message is the record.
+- **Follow-up to an existing issue** (even if already closed): do not create a new issue. Add `bd update <id> --append-notes "..."` (reopen only if the work is genuinely unfinished) and reference the ID in the commit.
+- **Multi-session, has dependencies, may be interrupted, or runs in parallel with other agents/sessions**: create the issue before writing code and `--claim` it.
+
+Run `bd search <keywords>` before `bd create` to avoid duplicates.
+
+## Linking Issues and Commits
+
+- Put the bead ID in the commit message, e.g. `feat: ... (bbb-qjk)`.
+- Do not write commit SHAs into bead notes/descriptions: history here is rebased, so SHAs go stale. Describe the change instead.
