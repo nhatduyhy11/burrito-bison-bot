@@ -1,7 +1,7 @@
 // Trap / Pet / Spell lists: name, level (traps, pets), star.
 import { Accordion, html, label, NumberInput, plain, SelectPop, starsLabel } from "../ui.js";
 import { LIMITS } from "../profile-io.js";
-import { AddButton, RemoveButton, nameOptions } from "./shared.js";
+import { nameOptions } from "./shared.js";
 
 const LIST_TITLES = { traps: "Trap", pets: "Pet", spells: "Spell (thần)" };
 
@@ -13,7 +13,7 @@ export function ListSection({ ctx, group }) {
   return html`
     <${Accordion}
       title=${LIST_TITLES[group]}
-      hint=${`tối đa ${LIMITS[group]}; tắt = giữ từ capture`}
+      hint=${`${LIMITS[group]} slot; tắt = giữ từ capture`}
       override=${{ enabled, onToggle }}
     >
       ${enabled && html`<${ListBody} ctx=${ctx} group=${group} />`}
@@ -21,14 +21,10 @@ export function ListSection({ ctx, group }) {
   `;
 }
 
+// Every group reserves LIMITS slots: empty slot = picker '(trống)', × = reset the slot to empty.
 function ListBody({ ctx, group }) {
-  const rows = ctx.state[group].map(
-    (item, index) => html`<${ListRow} key=${index} ctx=${ctx} group=${group} item=${item} index=${index} />`,
-  );
-  return html`
-    ${rows}
-    <div class="row"><${AddButton} ctx=${ctx} group=${group} make=${newListItem(group)} /></div>
-  `;
+  return Array.from({ length: LIMITS[group] }, (_, index) =>
+    html`<${ListRow} key=${index} ctx=${ctx} group=${group} item=${ctx.state[group][index] || null} index=${index} />`);
 }
 
 // Hover summary for a pet: one block per star (Sao 1..maxStar) listing the skills a pet gains or
@@ -44,7 +40,7 @@ function petPop(pet) {
         <span class="hint">Sao ${n}</span>
         ${here.length ? here.map((s) => html`
           <div class="pop-desc" key=${s.code}><b>${label(s)}</b> · ${plain(s.desc_vn)}</div>`)
-          : html`<div class="pop-desc note">Không đổi skill</div>`}
+        : html`<div class="pop-desc note">Không đổi skill</div>`}
       </div>
     `;
   };
@@ -75,25 +71,32 @@ const OPTION_POP = { pets: (item) => petPop(item), traps: (item) => starRunsPop(
 
 function ListRow({ ctx, group, item, index }) {
   const { state, dict, update } = ctx;
-  const info = dict[group][item.name];
-  const options = nameOptions(dict, group, state[group].map((x) => x.name), item.name);
+  const chosen = state[group].map((x) => x?.name).filter(Boolean);
+  // The slot fills in place (null = empty): pick a name to fill, '(trống)' or ↻ to reset it.
+  const setSlot = (v) => update((s) => void (s[group][index] = v ? newListItem(group)(v) : null));
   const edit = (fn) => update((s) => void fn(s[group][index]));
-  const setName = (v) => edit((x) => (x.name = v));
   const setLevel = (v) => edit((x) => (x.level = v));
   const setStar = (v) => edit((x) => (x.star = v));
+  // Reset sits on every row — disabled when the slot is already empty — so the layout never shifts.
+  const reset = html`<button class="x" title=${item ? "Reset về trống" : "Slot trống"} disabled=${!item}
+    onClick=${() => setSlot("")}>×</button>`;
+  const options = [
+    ["", "(trống)"],
+    ...nameOptions(dict, group, chosen, item?.name),
+  ].map(([key, text, disabled, grp]) => [key, text, key ? OPTION_POP[group](dict[group][key]) : null, disabled, grp]);
+  const picker = html`<${SelectPop} options=${options} value=${item?.name || ""} onChange=${setSlot} />`;
+  if (!item) return html`<div class="row list-row">${reset}${picker}</div>`;
+  const info = dict[group][item.name];
   const level = info.maxLevel
     ? html`<label>Level <${NumberInput} value=${item.level} min=${1} max=${info.maxLevel} onChange=${setLevel} /></label>`
     : null;
-  const picker = html`<${SelectPop}
-    options=${options.map(([key, text, disabled, grp]) => [key, text, OPTION_POP[group](dict[group][key]), disabled, grp])}
-    value=${item.name} onChange=${setName} />`;
   return html`
     <div class="row list-row">
+      ${reset}
       ${picker}
       ${level}
       <label>Sao <${NumberInput} value=${item.star} min=${1} max=${info.maxStar} onChange=${setStar} /></label>
       <span class="note">${`max lv ${info.maxLevel || "-"} / ${info.maxStar}★`}</span>
-      <${RemoveButton} ctx=${ctx} group=${group} index=${index} />
     </div>
   `;
 }

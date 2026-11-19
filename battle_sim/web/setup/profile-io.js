@@ -35,6 +35,11 @@ function newBuilding(dict, building) {
 
 function normalize(state, dict) {
   state.heroes = Array.from({ length: LIMITS.heroes }, (_, i) => state.heroes?.[i] || newHero(""));
+  // Trap / Pet / Spell reserve fixed slots: the state pads with null placeholders; null stays null
+  // so "tắt = giữ từ capture" still works.
+  for (const group of ["traps", "pets", "spells"]) {
+    if (state[group]) state[group] = Array.from({ length: LIMITS[group] }, (_, i) => state[group][i] || null);
+  }
   if (state.mounts && !state.mounts.owned.includes(state.mounts.selected)) state.mounts.selected = null;
   // The worn Summoner skin is picked among the skins checked in the Summoner table.
   if (!state.summonerSkins?.some(({ name }) => name === state.summonerWorn)) state.summonerWorn = null;
@@ -84,9 +89,11 @@ function toProfile(state, dict) {
     }
   }
   if (state.mounts) profile.mounts = structuredClone(state.mounts);
-  if (state.traps) profile.traps = state.traps.map(({ name, level, star }) => ({ name, level, star }));
-  if (state.pets) profile.pets = state.pets.map(({ name, level, star }) => ({ name, level, star }));
-  if (state.spells) profile.spells = state.spells.map(({ name, star }) => ({ name, star }));
+  // Reserved slots keep null placeholders in the state; the profile stays compact — the engine reads
+  // every emitted entry head-on (web/battle/profile.js), so empty slots must not be emitted.
+  if (state.traps) profile.traps = state.traps.filter(Boolean).map(({ name, level, star }) => ({ name, level, star }));
+  if (state.pets) profile.pets = state.pets.filter(Boolean).map(({ name, level, star }) => ({ name, level, star }));
+  if (state.spells) profile.spells = state.spells.filter(Boolean).map(({ name, star }) => ({ name, star }));
   if (state.summonerSkins) {
     profile.summonerSkins = state.summonerSkins.map(({ name, star }) => ({ name, star }));
     profile.summonerWorn = state.summonerWorn;

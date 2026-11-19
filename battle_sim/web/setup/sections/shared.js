@@ -1,7 +1,6 @@
-// Pieces shared by the form sections: name pickers grouped by rarity, add / remove buttons, table
-// header row and the "cần: ..." note under colorful skins.
+// Pieces shared by the form sections: name pickers grouped by rarity, table header row and the
+// "cần: ..." note under colorful skins.
 import { html, optionText } from "../ui.js";
-import { LIMITS } from "../profile-io.js";
 
 // Rarity groups in the hero / trap / pet pickers (card border in game), highest first. Spells have none.
 const RARITY_GROUPS = [
@@ -26,23 +25,6 @@ export function nameOptions(dict, group, chosen, current) {
       .filter(([key]) => dict[group][key].color === color)
       .map((entry) => [...entry, group === "heroes" && color === "red" ? `${title} (có skin)` : title]),
   );
-}
-
-export function AddButton({ ctx, group, make }) {
-  const list = ctx.state[group];
-  const unused = Object.keys(ctx.dict[group]).find((key) => !list.some((item) => item.name === key));
-  const disabled = list.length >= LIMITS[group] || !unused;
-  const add = () => ctx.update((s) => void s[group].push(make(unused)));
-  return html`
-    <button disabled=${disabled} onClick=${add}>${`+ Thêm (${list.length}/${LIMITS[group]})`}</button>
-  `;
-}
-
-export function RemoveButton({ ctx, group, index }) {
-  const remove = () => ctx.update((s) => void s[group].splice(index, 1));
-  return html`
-    <button class="x" title="Bỏ" onClick=${remove}>×</button>
-  `;
 }
 
 export function headerRow(titles) {

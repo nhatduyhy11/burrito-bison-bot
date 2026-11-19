@@ -311,15 +311,15 @@ test('campaign stage map: full stage range, boss + minions all resolvable in the
   }
 });
 
-test('Pet / Spell: reserved slots stay null in state, compact in the profile; traps stay compact', () => {
+test('Trap / Pet / Spell: reserved slots stay null in state, compact in the profile', () => {
   const state = fromProfile(
     { pets: [{ name: 'colossal_ape', star: 2 }, 'alien_critter'], spells: ['sword_radiance'], traps: ['demon_spike'] },
     base, dict,
   );
-  assert.deepEqual([state.traps.length, state.pets.length, state.spells.length], [1, 3, 2]);
-  assert.deepEqual([state.pets[0].star, state.pets[1].level], [2, 1]);
-  assert.deepEqual([state.pets[2], state.spells[1]], [null, null]);
-  // The emit drops empty slots (the engine reads every entry head-on), traps map straight through.
+  assert.deepEqual([state.traps.length, state.pets.length, state.spells.length], [3, 3, 2]);
+  assert.deepEqual([state.traps[0].name, state.pets[0].star, state.pets[1].level], ['demon_spike', 2, 1]);
+  assert.deepEqual([state.traps[1], state.pets[2], state.spells[1]], [null, null, null]);
+  // The emit drops empty slots: the engine reads every entry head-on, so it must not see nulls.
   const profile = toProfile(state, dict);
   assert.deepEqual(profile.traps, [{ name: 'demon_spike', level: 1, star: 1 }]);
   assert.deepEqual(profile.pets, [
@@ -328,11 +328,14 @@ test('Pet / Spell: reserved slots stay null in state, compact in the profile; tr
   ]);
   assert.deepEqual(profile.spells, [{ name: 'sword_radiance', star: 1 }]);
   // Filling and clearing slots: state normalize keeps the null placeholders, emit compacts again.
+  state.traps[1] = { name: 'molten_furnace', level: 2, star: 3 };
   state.pets[2] = { name: 'dreamweaver_spider', level: 3, star: 4 };
   state.spells[1] = { name: 'hellish_flame', star: 2 };
+  state.traps[0] = null;
   state.pets[0] = null;
   normalize(state, dict);
   const next = toProfile(state, dict);
+  assert.deepEqual(next.traps, [{ name: 'molten_furnace', level: 2, star: 3 }]);
   assert.deepEqual(next.pets, [
     { name: 'alien_critter', level: 1, star: 1 },
     { name: 'dreamweaver_spider', level: 3, star: 4 },
