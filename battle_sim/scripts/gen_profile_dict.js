@@ -57,6 +57,11 @@ function maxBy(lo, field) { // mecType -> max of field
   for (const r of rows(lo)) max.set(r.mecType, Math.max(max.get(r.mecType) || 0, r[field]));
   return max;
 }
+// simpleDesc cleanup: <br> becomes the " · " segment separator the popovers split on and rich-text
+// tags go. The lang packs sometimes keep a stray hex tail right after an opening color tag
+// (e.g. "<color=#FF6347>ff>Trống</c>" — ship data, not our parse), so drop that with the tag too.
+const strip = (s) => String(s || "").replace(/<br\s*\/?>/gi, " · ").replace(/(<color[^>]*>)[0-9a-fA-F]{2,8}>/gi, "$1")
+  .replace(/<[^>]+>/g, "").replace(/\s+/g, " ").replace(/\s*·\s*/g, " · ").trim();
 
 async function main() {
   const assets = await versions.resolveAssets(ASSETS);
@@ -448,7 +453,6 @@ async function main() {
 // Split into three catalogs: map-dict.json keeps the map and the boss ids, boss-dict.json the boss
 // records with their presets (creeps referenced by id), creeps-dict.json the deduped creeps.
 function capitalCatalogs(M, V) {
-  const strip = (s) => String(s || "").replace(/<br\s*\/?>/gi, " · ").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").replace(/\s*·\s*/g, " · ").trim();
   const creep = (code) => {
     const row = M("CreepLO").get(code);
     return { code, name: row.name, name_vn: V("CreepLO").get(code)?.name };
@@ -484,12 +488,13 @@ function capitalCatalogs(M, V) {
 // full round/wave dump), and creeps-dict.json's `campaign` section carries name + desc per creep
 // code (same simpleDesc weakness/resistance/trait format as the capital bosses).
 function campaignCatalogs(M, V) {
-  const strip = (s) => String(s || "").replace(/<br\s*\/?>/gi, " · ").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").replace(/\s*·\s*/g, " · ").trim();
   const creep = (code) => {
     const row = M("CreepLO").get(code);
     if (!row) throw new Error(`campaign creep ${code} missing from CreepLO`);
     const vi = V("CreepLO").get(code);
-    return { code, name: row.name, name_vn: vi?.name, desc: strip(row.simpleDesc), desc_vn: strip(vi?.simpleDesc) };
+    // star = CreepLO._type: same-name star variants differ (20s/30s waves), so the stage popover
+    // can label the repeat instead of leaving it to read as a dup.
+    return { code, name: row.name, name_vn: vi?.name, star: row._type, desc: strip(row.simpleDesc), desc_vn: strip(vi?.simpleDesc) };
   };
   const creeps = {};
   const stages = {};

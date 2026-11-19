@@ -31,22 +31,31 @@ function MapBody({ ctx }) {
 // weakness reads at a glance.
 const descLines = (c) => (c.desc_vn || c.desc || "").split(" · ").map((p) => html`<div class="pop-desc">${p}</div>`);
 
-// Stage hover card for the Campaign label: "Stage N · <boss>" on top with its desc, then each
-// minion type with desc (campaign-dict stages reference creeps-dict's campaign section by code).
-// Boss is null for the tutorial stages 1-2; an out-of-range entry falls back to a one-line note.
+// Stage hover card for the Campaign label: "Stage N · <boss>" on top with its desc, a divider,
+// then each minion type with desc (campaign-dict stages reference creeps-dict's campaign section
+// by code). Boss is null for the tutorial stages 1-2; an out-of-range entry falls back to a
+// one-line note.
 const stagePop = (campaignDict, creepsDict, stage) => {
   const entry = campaignDict?.stages[String(stage)];
   if (!entry) return html`<div class="pop-title">${`Stage ${stage || "—"}`}</div><div class="note">Không có dữ liệu stage này.</div>`;
   const creep = (code) => creepsDict.campaign[code] || { name_vn: code, desc_vn: "" };
   const boss = entry.boss && creep(entry.boss);
-  // Star variants (CreepLO _type 1/2) repeat a family's name; drop a minion only when both its
-  // name and desc repeat, so same-name cousins with different traits (20s/30s waves) both show.
+  // Star variants (CreepLO _type) repeat a family's name; drop a minion only when both its name
+  // and desc repeat, so same-name cousins with different traits (20s/30s waves) both show — and a
+  // name that survives twice gets a ★ per star so the repeat doesn't read as a dup.
   const minions = entry.minions.map(creep).filter((m, i, all) => !all.some((x, j) => j < i
     && (x.name_vn || x.name) === (m.name_vn || m.name) && (x.desc_vn || x.desc) === (m.desc_vn || m.desc)));
+  const counts = new Map();
+  for (const m of minions) { const n = m.name_vn || m.name; counts.set(n, (counts.get(n) || 0) + 1); }
+  const minionName = (m) => {
+    const n = m.name_vn || m.name;
+    return counts.get(n) > 1 && m.star > 1 ? `${n} ${"★".repeat(m.star)}` : n;
+  };
   return html`
     <div class="pop-title">${`Stage ${stage} · ${boss ? boss.name_vn || boss.name : "Không có boss"}`}</div>
     ${boss && descLines(boss)}
-    ${minions.map((m) => html`<div class="pop-line"><div>${m.name_vn || m.name}</div>${descLines(m)}</div>`)}
+    ${boss && minions.length > 0 && html`<hr class="pop-divider" />`}
+    ${minions.map((m) => html`<div class="pop-line"><div>${minionName(m)}</div>${descLines(m)}</div>`)}
   `;
 };
 

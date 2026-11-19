@@ -117,6 +117,7 @@
       "code": 10070102,
       "name": "Cursed Botchling",
       "name_vn": "U Linh Nhi",
+      "star": 3,
       "desc": "Weakness: None · Resistance: None · Trait: Enters Rage mode at low HP, massively increases ASPD",
       "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Khi HP dưới mức nhất định sẽ vào trạng thái Cuồng Bạo, tăng mạnh Tốc Công"
     },
@@ -124,6 +125,7 @@
       "code": 10070103,
       "name": "Cursed Botchling",
       "name_vn": "U Linh Nhi",
+      "star": 3,
       "desc": "Weakness: None · Resistance: None · Trait: Enters Rage mode at low HP, massively increases ASPD",
       "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Khi HP dưới mức nhất định sẽ vào trạng thái Cuồng Bạo, tăng mạnh Tốc Công"
     },
@@ -131,6 +133,7 @@
       "code": 10070104,
       "name": "Cursed Botchling",
       "name_vn": "U Linh Nhi",
+      "star": 3,
       "desc": "Weakness: None · Resistance: None · Trait: Enters Rage mode at low HP, massively increases ASPD",
       "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Khi HP dưới mức nhất định sẽ vào trạng thái Cuồng Bạo, tăng mạnh Tốc Công"
     },
@@ -138,6 +141,7 @@
       "code": 10070106,
       "name": "Cursed Botchling",
       "name_vn": "U Linh Nhi",
+      "star": 3,
       "desc": "Weakness: None · Resistance: None · Trait: Enters Rage mode at low HP, massively increases ASPD",
       "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Khi HP dưới mức nhất định sẽ vào trạng thái Cuồng Bạo, tăng mạnh Tốc Công"
     },
@@ -145,6 +149,7 @@
       "code": 10070203,
       "name": "Masked Spirit",
       "name_vn": "Mặt Nạ Oán Linh",
+      "star": 3,
       "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: There is a chance to restore HP when taking Burn",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt có tỷ lệ hồi HP"
     },
@@ -152,6 +157,7 @@
       "code": 10070204,
       "name": "Masked Spirit",
       "name_vn": "Mặt Nạ Oán Linh",
+      "star": 3,
       "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: There is a chance to restore HP when taking Burn",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt có tỷ lệ hồi HP"
     },
@@ -159,6 +165,7 @@
       "code": 10070205,
       "name": "Masked Spirit",
       "name_vn": "Mặt Nạ Oán Linh",
+      "star": 3,
       "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: There is a chance to restore HP when taking Burn",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt có tỷ lệ hồi HP"
     },
@@ -166,6 +173,7 @@
       "code": 10070206,
       "name": "Masked Spirit",
       "name_vn": "Mặt Nạ Oán Linh",
+      "star": 3,
       "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: There is a chance to restore HP when taking Burn",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt có tỷ lệ hồi HP"
     },
@@ -173,6 +181,7 @@
       "code": 10070304,
       "name": "Voodoo Doll",
       "name_vn": "Búp Bê Hắc Ám",
+      "star": 3,
       "desc": "Weakness: Paralysis · Resistance: Bleed, Frost, Frozen, Pull, Knockback · Trait: Increases All RES by 25% when taking Knockback, lasts 10s",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi, bản thân tăng 25% Kháng Kép, duy trì 10s"
     },
@@ -180,6 +189,7 @@
       "code": 10070305,
       "name": "Voodoo Doll",
       "name_vn": "Búp Bê Hắc Ám",
+      "star": 3,
       "desc": "Weakness: Paralysis · Resistance: Bleed, Frost, Frozen, Pull, Knockback · Trait: Increases All RES by 25% when taking Knockback, lasts 10s",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi, bản thân tăng 25% Kháng Kép, duy trì 10s"
     },
@@ -187,6 +197,7 @@
       "code": 10070306,
       "name": "Voodoo Doll",
       "name_vn": "Búp Bê Hắc Ám",
+      "star": 3,
       "desc": "Weakness: Paralysis · Resistance: Bleed, Frost, Frozen, Pull, Knockback · Trait: Increases All RES by 25% when taking Knockback, lasts 10s",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi, bản thân tăng 25% Kháng Kép, duy trì 10s"
     },
@@ -194,6 +205,7 @@
       "code": 10070404,
       "name": "Hell Flytrap",
       "name_vn": "Hắc Hoa U Vực",
+      "star": 3,
       "desc": "Weak: Burn · Resistance: Paralysis, Knockback, Stun · Trait: Deals more DMG the more the Door loses HP",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao"
     },
@@ -201,6 +213,7 @@
       "code": 10070405,
       "name": "Hell Flytrap",
       "name_vn": "Hắc Hoa U Vực",
+      "star": 3,
       "desc": "Weak: Burn · Resistance: Paralysis, Knockback, Stun · Trait: Deals more DMG the more the Door loses HP",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao"
     },
@@ -208,6 +221,7 @@
       "code": 10070406,
       "name": "Hell Flytrap",
       "name_vn": "Hắc Hoa U Vực",
+      "star": 3,
       "desc": "Weak: Burn · Resistance: Paralysis, Knockback, Stun · Trait: Deals more DMG the more the Door loses HP",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao"
     },
@@ -215,6 +229,7 @@
       "code": 10070504,
       "name": "Master Dread",
       "name_vn": "Tâm Khiếp Giả",
+      "star": 3,
       "desc": "Weakness: P.DMG · Resistance: Knockback, Frost, Stun, Pull · Trait: Gains 4s of DMG Immunity when taking M.DMG. Cooldown: 10s",
       "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Đẩy Lùi Băng Sương Choáng Dẫn Dắt · Đặc điểm: Khi chịu ST Phép, bản thân nhận 4s Miễn ST, CD 10s"
     },
@@ -222,6 +237,7 @@
       "code": 10070505,
       "name": "Master Dread",
       "name_vn": "Tâm Khiếp Giả",
+      "star": 3,
       "desc": "Weakness: P.DMG · Resistance: Knockback, Frost, Stun, Pull · Trait: Gains 4s of DMG Immunity when taking M.DMG. Cooldown: 10s",
       "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Đẩy Lùi Băng Sương Choáng Dẫn Dắt · Đặc điểm: Khi chịu ST Phép, bản thân nhận 4s Miễn ST, CD 10s"
     },
@@ -229,6 +245,7 @@
       "code": 10070506,
       "name": "Master Dread",
       "name_vn": "Tâm Khiếp Giả",
+      "star": 3,
       "desc": "Weakness: P.DMG · Resistance: Knockback, Frost, Stun, Pull · Trait: Gains 4s of DMG Immunity when taking M.DMG. Cooldown: 10s",
       "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Đẩy Lùi Băng Sương Choáng Dẫn Dắt · Đặc điểm: Khi chịu ST Phép, bản thân nhận 4s Miễn ST, CD 10s"
     },
@@ -236,6 +253,7 @@
       "code": 10070605,
       "name": "Lady Boggart",
       "name_vn": "Hắc Ám Phu Nhân",
+      "star": 3,
       "desc": "Weakness: M.DMG · Resistance: Physical, Frozen, Knockback · Trait: Every 15s, generates a Shield that blocks 10 instances of DMG",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: V.Lý Đóng Băng Đẩy Lùi · Đặc điểm: Cứ cách 15s sẽ tạo 1 khiên ngăn 10 lần ST cho bản thân"
     },
@@ -243,6 +261,7 @@
       "code": 10070606,
       "name": "Lady Boggart",
       "name_vn": "Hắc Ám Phu Nhân",
+      "star": 3,
       "desc": "Weakness: M.DMG · Resistance: Physical, Frozen, Knockback · Trait: Every 15s, generates a Shield that blocks 10 instances of DMG",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: V.Lý Đóng Băng Đẩy Lùi · Đặc điểm: Cứ cách 15s sẽ tạo 1 khiên ngăn 10 lần ST cho bản thân"
     },
@@ -250,6 +269,7 @@
       "code": 10070701,
       "name": "Rotten Butcher",
       "name_vn": "Tàn Đao Giả",
+      "star": 3,
       "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: Restores HP per second when taking Burn DMG",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt mỗi giây hồi HP"
     },
@@ -257,6 +277,7 @@
       "code": 10070801,
       "name": "Doom Doll",
       "name_vn": "Búp Bê Diệt Phạt",
+      "star": 3,
       "desc": "Weakness: Paralysis · Resistance: Bleed, Frost, Frozen, Pull, Knockback · Trait: Increases DMG Immunity by 50% when taking Knockback, lasts 10s",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi khiến bản thân tăng 50% Giảm ST, duy trì 10s"
     },
@@ -264,6 +285,7 @@
       "code": 10070901,
       "name": "Abyss Flytrap",
       "name_vn": "Liên Hoa Hắc Vực",
+      "star": 3,
       "desc": "Weak: Burn · Resistance: Paralysis, Knockback, Bleed, Stun · Trait: Deals more DMG the more the Door loses HP",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Mất HP Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao"
     },
@@ -271,6 +293,7 @@
       "code": 10071001,
       "name": "Mummy Pharaoh",
       "name_vn": "Cổ Thi",
+      "star": 3,
       "desc": "Weakness: P.DMG · Resistance: Burn, Pull, Frost · Trait: Gains 6s of DMG Immunity when taking M.DMG",
       "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Thiêu Đốt Dẫn Dắt Băng Sương · Đặc điểm: Khi chịu ST Phép, bản thân nhận 6s Miễn ST"
     },
@@ -278,6 +301,7 @@
       "code": 10071101,
       "name": "Nether Boggart",
       "name_vn": "U Ảnh Phu Nhân",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Knockback, Pull, Frost, Stun · Trait: Generates a Shield that blocks 15 instances of DMG at intervals",
       "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Dẫn Dắt Băng Sương Choáng · Đặc điểm: Cứ cách một khoảng thời gian sẽ tạo 1 khiên ngăn 15 lần ST cho bản thân"
     },
@@ -285,6 +309,7 @@
       "code": 10071201,
       "name": "Xenoqueen",
       "name_vn": "Nữ Hoàng Alien",
+      "star": 3,
       "desc": "Weakness: Paralysis · Resistance: Bleed, Burn, Stun, Pull · Trait: Blocks projectiles; summons 5 small snakes behind at intervals",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Chặn đường đạn bắn, cứ cách một khoảng thời gian triệu hồi 5 rắn nhỏ phía sau"
     },
@@ -292,6 +317,7 @@
       "code": 10071301,
       "name": "Grudge Cauldron",
       "name_vn": "Oán Khí Chi Oa",
+      "star": 3,
       "desc": "Weakness: Bleed · Resistance: Burn, Paralysis, Knockback, Frost · Trait: Restores own HP when nearby monsters die",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Tê Liệt Đẩy Lùi Băng Sương · Đặc điểm: Dị Thú xung quanh tử trận sẽ hồi HP bản thân"
     },
@@ -299,6 +325,7 @@
       "code": 10071401,
       "name": "Faceless Chomper",
       "name_vn": "Vô Diện Giả",
+      "star": 3,
       "desc": "Weak: Burn · Resistance: Paralysis, Bleed, Frost, Frozen, Pull, Knockback · Trait: Charges an attack every 10s, and Stuns all Heroes",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Cứ cách 10s tích lực tấn công 1 lần, làm Choáng toàn bộ Anh Hùng"
     },
@@ -306,6 +333,7 @@
       "code": 10071501,
       "name": "Headless Knight",
       "name_vn": "Ẩn Diện Kỵ Sĩ",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Frost, Frozen, Pull · Trait: Immune to M.DMG and DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Dẫn Dắt · Đặc điểm: Miễn ST Phép và ST Duy Trì"
     },
@@ -313,6 +341,7 @@
       "code": 10071504,
       "name": "Headless Knight",
       "name_vn": "Ẩn Diện Kỵ Sĩ",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Frost, Frozen, Pull · Trait: Immune to M.DMG and DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Dẫn Dắt · Đặc điểm: Miễn ST Phép và ST Duy Trì"
     },
@@ -320,6 +349,7 @@
       "code": 10071506,
       "name": "Headless Knight",
       "name_vn": "Ẩn Diện Kỵ Sĩ",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Frost, Frozen, Pull · Trait: Immune to M.DMG and DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Dẫn Dắt · Đặc điểm: Miễn ST Phép và ST Duy Trì"
     },
@@ -327,6 +357,7 @@
       "code": 10071602,
       "name": "Chainsaw Lynx",
       "name_vn": "Hắc Linh Cưa Giả",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Knockback, Stun · Trait: Immune to P.DMG and DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng · Đặc điểm: Miễn ST V.Lý và ST Duy Trì"
     },
@@ -334,6 +365,7 @@
       "code": 10071603,
       "name": "Chainsaw Lynx",
       "name_vn": "Hắc Linh Cưa Giả",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Knockback, Stun · Trait: Immune to P.DMG and DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng · Đặc điểm: Miễn ST V.Lý và ST Duy Trì"
     },
@@ -341,6 +373,7 @@
       "code": 10071605,
       "name": "Chainsaw Lynx",
       "name_vn": "Hắc Linh Cưa Giả",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Knockback, Stun · Trait: Immune to P.DMG and DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng · Đặc điểm: Miễn ST V.Lý và ST Duy Trì"
     },
@@ -348,6 +381,7 @@
       "code": 10071606,
       "name": "Chainsaw Lynx",
       "name_vn": "Hắc Linh Cưa Giả",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Knockback, Stun · Trait: Immune to P.DMG and DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng · Đặc điểm: Miễn ST V.Lý và ST Duy Trì"
     },
@@ -355,6 +389,7 @@
       "code": 10071701,
       "name": "Skeleton Eye",
       "name_vn": "Hắc Nhãn Vương",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Knockback, Stun, Frost, Frozen, Pull · Trait: Low Move SPD and ASPD, but high DMG per hit, and higher HP",
       "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng Băng Sương Đóng Băng Dẫn Dắt · Đặc điểm: Di chuyển và tấn công chậm hơn nhưng mỗi lần gây ST cao và tăng HP"
     },
@@ -362,6 +397,7 @@
       "code": 10071801,
       "name": "Olden Lord",
       "name_vn": "Cổ Thần",
+      "star": 3,
       "desc": "Weakness: DoT · Resistance: Direct DMG, Frozen, Knockback · Trait: Fires 9 bullets per attack, but reduces ACC by 35%",
       "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đóng Băng Đẩy Lùi · Đặc điểm: Mỗi lần tấn công bắn 9 viên đạn nhưng Chính Xác bản thân giảm 35%"
     },
@@ -369,6 +405,7 @@
       "code": 10071901,
       "name": "Ghost Train",
       "name_vn": "Hắc Hạm",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Stun, Pull · Trait: Recovers 5% Max HP per second while under DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: Choáng Dẫn Dắt · Đặc điểm: Khi bản thân chịu ST Duy Trì, mỗi giây hồi 5% HP tối đa"
     },
@@ -376,6 +413,7 @@
       "code": 10072001,
       "name": "Overtime Hex",
       "name_vn": "Hắc Nữ Tăng Ca",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Frost, Frozen, Knockback · Trait: Taking P.DMG grants 5s of Invincible and 70% increased ATK. Cooldown: 10s",
       "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Đẩy Lùi · Đặc điểm: Khi chịu ST V.Lý vô địch 5s, Công tăng 70% khi Vô Địch, CD 10s"
     },
@@ -383,6 +421,7 @@
       "code": 10072101,
       "name": "Clawman",
       "name_vn": "Hắc Trảo",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Paralysis DMG, Burn DMG, Stun, Pull · Trait: Devours Summons or Minions every 10s, restores HP, and summons monsters when taking Paralysis or Burn DMG",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt ST Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Mỗi 10s nuốt chửng Vật Triệu Hồi hoặc Quái Nhỏ, hồi HP, khi chịu ST Tê Liệt hoặc Thiêu Đốt sẽ triệu hồi Dị Thú"
     },
@@ -390,6 +429,7 @@
       "code": 10072201,
       "name": "Drum Monkey",
       "name_vn": "Khỉ Điên Đánh Trống",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Melee DMG Pull Knockback · Trait: Deals DMG to the Door every 8s",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến Dẫn Dắt Đẩy Lùi · Đặc điểm: mỗi 8s gây 1 lần ST lên cửa"
     },
@@ -397,6 +437,7 @@
       "code": 10072301,
       "name": "Botchling",
       "name_vn": "Hắc Quỷ Hài",
+      "star": 3,
       "desc": "Weakness: None · Resistance: All CC Trait: Seals all Doors after Boss Invasion; sealed Doors cannot be upgraded",
       "desc_vn": "Điểm yếu: Trống · Kháng: Tất cả Khống ChếĐặc điểm: Khi BOSS tập kích sẽ phong ấn tất cả Cửa trong trận, không thể tăng cấp Cửa bị phong ấn"
     },
@@ -404,6 +445,7 @@
       "code": 10072401,
       "name": "Headless Reaper",
       "name_vn": "Vô Diện Tử Thần",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Burn · Trait: Extremely long ATK range; summons 1 RnR Ghouls every 5s",
       "desc_vn": "Điểm yếu: Trống · Kháng: Thiêu Đốt · Đặc điểm: Tầm tấn công cực xa, cứ 5s sẽ triệu hồi 1 Dạ Quỷ Mê Rock"
     },
@@ -411,6 +453,7 @@
       "code": 10072801,
       "name": "Scorpion Queen",
       "name_vn": "Bọ Cạp Hoàng Tuyền",
+      "star": 3,
       "desc": "Weakness: Summon DMG · Resistance: Non-summon DMG, Frost, Frozen, Pull, Knockback · Trait: Summons 5 Scorpions at 80% and 40% HP, and burrows underground. Respawns after all Scorpions die",
       "desc_vn": "Điểm yếu: ST Vật Triệu Hồi · Kháng: ST ngoài Vật Triệu Hồi Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi HP dưới 80% và 40%, sẽ triệu hồi 5 con bọ cạp nhỏ và chui xuống lòng đất, tất cả bọ cạp nhỏ sẽ xuất hiện lại sau khi tử trận"
     },
@@ -418,6 +461,7 @@
       "code": 10072901,
       "name": "Banded Curselord",
       "name_vn": "Khế Ước Quỷ Vương",
+      "star": 3,
       "desc": "Weakness: Bleed DMG, Paralysis DMG · Resistance: Crit, Knockback, Frozen · Trait: DMG converts to 0 when taking Crit. Restores Boss HP when player heals the Door",
       "desc_vn": "Điểm yếu: ST Mất HP ST Tê Liệt · Kháng: Bạo Đẩy Lùi Đóng Băng · Đặc điểm: Khi chịu Bạo, ST trở thành 0. Khi người hồi HP cho cửa, Yêu Vương tự hồi HP"
     },
@@ -425,6 +469,7 @@
       "code": 10073001,
       "name": "Shining Twins",
       "name_vn": "Song Sinh",
+      "star": 3,
       "desc": "Weakness: None · Resistance: Melee DMG, M.DMG, CC · Trait: Periodically summons a Patchwork Rabbit",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến ST Phép hiệu quả Khống Chế · Đặc điểm: Cứ cách một khoảng thời gian sẽ triệu hồi Thỏ Hung Dữ"
     },
@@ -432,6 +477,7 @@
       "code": 10073101,
       "name": "Bonescorcher",
       "name_vn": "Tướng Quân Phần Cốt",
+      "star": 3,
       "desc": "Weakness: Burn DMG, Paralysis DMG · Resistance: Physical, Knockback, Frost, Stun · Trait: Attacks ignore and destroy the Door's Immunity effect; for every 30 instances of DMG dealt to the door, immediately executes the hero dealing the lowest DMG and increases DMG by 20%",
       "desc_vn": "Điểm yếu: ST Thiêu Đốt ST Tê Liệt · Kháng: V.Lý Đẩy Lùi Băng Sương Choáng · Đặc điểm: Khi tấn công sẽ bỏ qua và phá hiệu quả Miễn Dịch của Cửa. Mỗi 30 lần gây ST lên Cửa sẽ Trảm Sát ngay 1 Tướng có sát thương thấp nhất và tăng 20% ST"
     },
@@ -439,6 +485,7 @@
       "code": 10073201,
       "name": "Skinnerette",
       "name_vn": "Búp Bê Da",
+      "star": 3,
       "desc": "Weakness: Melee DMG, Direct DMG · Resistance: DoT, Knockback, Interrupt, Teleport · Trait: Restores own HP every second; with more than 10 summons on the field, immediately becomes Enraged, restores double HP, and greatly increases ASPD",
       "desc_vn": "Điểm yếu: ST Cận Chiến ST Trực Tiếp · Kháng: ST Duy Trì Đẩy Lùi Ngăn Chặn Dịch Chuyển · Đặc điểm: Mỗi giây tự hồi phục HP, khi số lượng vật triệu hồi trên sân lớn hơn 10 sẽ lập tức nổi giận, gấp đôi lượng HP hồi phục, Công và Tốc Công tăng mạnh"
     },
@@ -446,6 +493,7 @@
       "code": 10080201,
       "name": "Common Zombie",
       "name_vn": "Zombie Thường",
+      "star": 1,
       "desc": "Weakness: None · Resistance: None · Trait: None",
       "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Trống"
     },
@@ -453,6 +501,7 @@
       "code": 10080202,
       "name": "Common Zombie",
       "name_vn": "Zombie Thường",
+      "star": 2,
       "desc": "Weakness: None · Resistance: None · Trait: None",
       "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Trống"
     },
@@ -460,6 +509,7 @@
       "code": 10080301,
       "name": "Twin Zombie",
       "name_vn": "Zombie Song Sinh",
+      "star": 1,
       "desc": "Weakness: Burn, Bleed · Resistance: None · Trait: Splits into two Zombies on death",
       "desc_vn": "Điểm yếu: Thiêu Đốt Mất HP · Kháng: Trống · Đặc điểm: Khi tử trận sẽ tách thành 2 Zombie"
     },
@@ -467,6 +517,7 @@
       "code": 10080302,
       "name": "Twin Zombie",
       "name_vn": "Zombie Song Sinh",
+      "star": 2,
       "desc": "Weakness: Burn, Bleed · Resistance: None · Trait: Splits into two Zombies on death",
       "desc_vn": "Điểm yếu: Thiêu Đốt Mất HP · Kháng: Trống · Đặc điểm: Khi tử trận sẽ tách thành 2 Zombie"
     },
@@ -474,6 +525,7 @@
       "code": 10080401,
       "name": "Zombie Wolf",
       "name_vn": "Sói Zombie",
+      "star": 1,
       "desc": "Weakness: Paralysis · Resistance: None · Trait: Charges quickly at start",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Trống · Đặc điểm: Bắt đầu sẽ lao nhanh"
     },
@@ -481,6 +533,7 @@
       "code": 10080402,
       "name": "Zombie Wolf",
       "name_vn": "Sói Zombie",
+      "star": 2,
       "desc": "Weakness: Paralysis · Resistance: None · Trait: Charges quickly at start",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Trống · Đặc điểm: Bắt đầu sẽ lao nhanh"
     },
@@ -488,6 +541,7 @@
       "code": 10080501,
       "name": "Ghost Bird",
       "name_vn": "Chim Mặt Quỷ",
+      "star": 1,
       "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Ranged, Flying",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Tầm Xa Đơn vị Bay"
     },
@@ -495,6 +549,7 @@
       "code": 10080502,
       "name": "Ghost Bird",
       "name_vn": "Chim Mặt Quỷ",
+      "star": 2,
       "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Ranged, Flying",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Tầm Xa Đơn vị Bay"
     },
@@ -502,6 +557,7 @@
       "code": 10080601,
       "name": "Thief Zombie",
       "name_vn": "Zombie Trộm",
+      "star": 1,
       "desc": "Weakness: P.DMG · Resistance: None · Trait: Steals Banknotes on attack",
       "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Trống · Đặc điểm: Khi tấn công sẽ hút tiền"
     },
@@ -509,6 +565,7 @@
       "code": 10080602,
       "name": "Thief Zombie",
       "name_vn": "Zombie Trộm",
+      "star": 2,
       "desc": "Weakness: P.DMG · Resistance: None · Trait: Steals Banknotes on attack",
       "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Trống · Đặc điểm: Khi tấn công sẽ hút tiền"
     },
@@ -516,6 +573,7 @@
       "code": 10080701,
       "name": "Demon Hag",
       "name_vn": "Quỷ Bà Bà",
+      "star": 1,
       "desc": "Weak: Burn · Resistance: None · Trait: Ranged, restores HP when low",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Trống · Đặc điểm: Tầm Xa Khi HP thấp sẽ duy trì hồi HP bản thân"
     },
@@ -523,6 +581,7 @@
       "code": 10080702,
       "name": "Demon Hag",
       "name_vn": "Quỷ Bà Bà",
+      "star": 2,
       "desc": "Weak: Burn · Resistance: None · Trait: Ranged, restores HP when low",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Trống · Đặc điểm: Tầm Xa Khi HP thấp sẽ duy trì hồi HP bản thân"
     },
@@ -530,6 +589,7 @@
       "code": 10080801,
       "name": "Flame Zombie",
       "name_vn": "Zombie Lửa",
+      "star": 1,
       "desc": "Weakness: Paralysis, Frost · Resistance: Burn, Stun, Pull · Trait: None",
       "desc_vn": "Điểm yếu: Tê Liệt Sương Giá · Kháng: Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Trống"
     },
@@ -537,6 +597,7 @@
       "code": 10080802,
       "name": "Flame Zombie",
       "name_vn": "Zombie Lửa",
+      "star": 2,
       "desc": "Weakness: Paralysis, Frost · Resistance: Burn, Stun, Pull · Trait: None",
       "desc_vn": "Điểm yếu: Tê Liệt Sương Giá · Kháng: Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Trống"
     },
@@ -544,6 +605,7 @@
       "code": 10080901,
       "name": "Gorilla Zombie",
       "name_vn": "Zombie Khỉ Đột",
+      "star": 1,
       "desc": "Weakness: Paralysis · Resistance: P.DMG, Knockback, Stun · Trait: None",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: ST V.Lý Đẩy Lùi Choáng · Đặc điểm: Trống"
     },
@@ -551,6 +613,7 @@
       "code": 10080902,
       "name": "Gorilla Zombie",
       "name_vn": "Zombie Khỉ Đột",
+      "star": 2,
       "desc": "Weakness: Paralysis · Resistance: P.DMG, Knockback, Stun · Trait: None",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: ST V.Lý Đẩy Lùi Choáng · Đặc điểm: Trống"
     },
@@ -558,6 +621,7 @@
       "code": 10081001,
       "name": "Xenom Zombie",
       "name_vn": "Zombie Biến Dị",
+      "star": 1,
       "desc": "Weakness: Bleed · Resistance: M.DMG, Paralysis, Pull · Trait: Ranged",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Tê Liệt Dẫn Dắt · Đặc điểm: Tầm Xa"
     },
@@ -565,6 +629,7 @@
       "code": 10081002,
       "name": "Xenom Zombie",
       "name_vn": "Zombie Biến Dị",
+      "star": 2,
       "desc": "Weakness: Bleed · Resistance: M.DMG, Paralysis, Pull · Trait: Ranged",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Tê Liệt Dẫn Dắt · Đặc điểm: Tầm Xa"
     },
@@ -572,6 +637,7 @@
       "code": 10081101,
       "name": "Yeti Zombie",
       "name_vn": "Zombie Người Tuyết",
+      "star": 1,
       "desc": "Weak: Burn · Resistance: Frost, Bleed, Paralysis · Trait: None",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Băng Sương Mất HP Tê Liệt · Đặc điểm: Trống"
     },
@@ -579,6 +645,7 @@
       "code": 10081102,
       "name": "Yeti Zombie",
       "name_vn": "Zombie Người Tuyết",
+      "star": 2,
       "desc": "Weak: Burn · Resistance: Frost, Bleed, Paralysis · Trait: None",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Băng Sương Mất HP Tê Liệt · Đặc điểm: Trống"
     },
@@ -586,6 +653,7 @@
       "code": 10081201,
       "name": "Antenna Zombie",
       "name_vn": "Zombie Ăng-ten",
+      "star": 1,
       "desc": "Weak: Burn · Resistance:Paralysis · Trait: Ranged, steals Sparks on attack",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt · Đặc điểm: Tầm Xa Khi tấn công sẽ hút điện"
     },
@@ -593,6 +661,7 @@
       "code": 10081202,
       "name": "Antenna Zombie",
       "name_vn": "Zombie Ăng-ten",
+      "star": 2,
       "desc": "Weak: Burn · Resistance:Paralysis · Trait: Ranged, steals Sparks on attack",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt · Đặc điểm: Tầm Xa Khi tấn công sẽ hút điện"
     },
@@ -600,6 +669,7 @@
       "code": 10081301,
       "name": "Explosive Spider",
       "name_vn": "Nhện Nổ",
+      "star": 1,
       "desc": "Weakness: Physical · Resistance: Burn, Bleed · Trait: Moves faster at low HP, self-destructs",
       "desc_vn": "Điểm yếu: V.Lý · Kháng: Thiêu Đốt Mất HP · Đặc điểm: Khi HP thấp sẽ tăng Vận Tốc và tự phát nổ"
     },
@@ -607,6 +677,7 @@
       "code": 10081302,
       "name": "Explosive Spider",
       "name_vn": "Nhện Nổ",
+      "star": 2,
       "desc": "Weakness: Physical · Resistance: Burn, Bleed · Trait: Moves faster at low HP, self-destructs",
       "desc_vn": "Điểm yếu: V.Lý · Kháng: Thiêu Đốt Mất HP · Đặc điểm: Khi HP thấp sẽ tăng Vận Tốc và tự phát nổ"
     },
@@ -614,6 +685,7 @@
       "code": 10081401,
       "name": "Clumsy Zombie",
       "name_vn": "Zombie Nặng Nề",
+      "star": 1,
       "desc": "Weakness: Bleed · Resistance: Knockback, Frost · Trait: Ranged",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Đẩy Lùi Băng Sương · Đặc điểm: Tầm Xa"
     },
@@ -621,6 +693,7 @@
       "code": 10081402,
       "name": "Clumsy Zombie",
       "name_vn": "Zombie Nặng Nề",
+      "star": 2,
       "desc": "Weakness: Bleed · Resistance: Knockback, Frost · Trait: Ranged",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: Đẩy Lùi Băng Sương · Đặc điểm: Tầm Xa"
     },
@@ -628,6 +701,7 @@
       "code": 10081501,
       "name": "Zombie Bloom",
       "name_vn": "Minh Hoa Hoán Thi",
+      "star": 1,
       "desc": "Weakness: M.DMG · Resistance: Bleed, Paralysis, Stun · Trait: Ranged, periodically spawns mini Zombies",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: Mất HP Tê Liệt Choáng · Đặc điểm: Tầm Xa Cứ cách một khoảng thời gian sẽ ấp nở Zombie nhỏ"
     },
@@ -635,6 +709,7 @@
       "code": 10081502,
       "name": "Zombie Bloom",
       "name_vn": "Minh Hoa Hoán Thi",
+      "star": 2,
       "desc": "Weakness: M.DMG · Resistance: Bleed, Paralysis, Stun · Trait: Ranged, periodically spawns mini Zombies",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: Mất HP Tê Liệt Choáng · Đặc điểm: Tầm Xa Cứ cách một khoảng thời gian sẽ ấp nở Zombie nhỏ"
     },
@@ -642,6 +717,7 @@
       "code": 10081601,
       "name": "Shield Zombie",
       "name_vn": "Zombie Khiên",
+      "star": 1,
       "desc": "Weak: Burn · Resistance: Interrupt, Knockback · Trait: Blocks projectiles with shield",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Ngăn Chặn Đẩy Lùi · Đặc điểm: Sẽ dùng Khiên chặn đường đạn bắn"
     },
@@ -649,6 +725,7 @@
       "code": 10081602,
       "name": "Shield Zombie",
       "name_vn": "Zombie Khiên",
+      "star": 2,
       "desc": "Weak: Burn · Resistance: Interrupt, Knockback · Trait: Blocks projectiles with shield",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Ngăn Chặn Đẩy Lùi · Đặc điểm: Sẽ dùng Khiên chặn đường đạn bắn"
     },
@@ -656,6 +733,7 @@
       "code": 10081701,
       "name": "Mummy",
       "name_vn": "Xác Ướp",
+      "star": 1,
       "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Immune to 10 hits and debuffs",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Sẽ miễn 10 lần ST và hiệu quả DEBUFF"
     },
@@ -663,6 +741,7 @@
       "code": 10081702,
       "name": "Mummy",
       "name_vn": "Xác Ướp",
+      "star": 2,
       "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Immune to 10 hits and debuffs",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Sẽ miễn 10 lần ST và hiệu quả DEBUFF"
     },
@@ -670,6 +749,7 @@
       "code": 10081801,
       "name": "Bell Zombie",
       "name_vn": "Zombie Chuông Lớn",
+      "star": 1,
       "desc": "Weakness: Paralysis · Resistance: Bleed, Knockback, Frost · Trait: Blocks piercing bullets",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Đẩy Lùi Băng Sương · Đặc điểm: Sẽ chặn đạn xuyên thấu"
     },
@@ -677,6 +757,7 @@
       "code": 10081802,
       "name": "Bell Zombie",
       "name_vn": "Zombie Chuông Lớn",
+      "star": 2,
       "desc": "Weakness: Paralysis · Resistance: Bleed, Knockback, Frost · Trait: Blocks piercing bullets, gains 70% DMG Immunity when hit by Pierce",
       "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Đẩy Lùi Băng Sương · Đặc điểm: Sẽ chặn đạn xuyên thấu, khi chịu ST Xuyên sẽ tăng 70% Giảm ST bản thân"
     },
@@ -684,6 +765,7 @@
       "code": 10081901,
       "name": "Tongue Ghost",
       "name_vn": "Quỷ Lưỡi Dài",
+      "star": 1,
       "desc": "Weakness: Bleed, Physical · Resistance: Pull · Trait: Reduces production if more than 8 present",
       "desc_vn": "Điểm yếu: Mất HP V.Lý · Kháng: Dẫn Dắt · Đặc điểm: Số lượng trong trận trên 8 giờ sẽ giảm hiệu suất sản xuất"
     },
@@ -691,6 +773,7 @@
       "code": 10081902,
       "name": "Tongue Ghost",
       "name_vn": "Quỷ Lưỡi Dài",
+      "star": 2,
       "desc": "Weakness: Bleed, Physical · Resistance: Pull · Trait: Reduces production if more than 8 present",
       "desc_vn": "Điểm yếu: Mất HP V.Lý · Kháng: Dẫn Dắt · Đặc điểm: Số lượng trong trận trên 8 giờ sẽ giảm hiệu suất sản xuất"
     },
@@ -698,6 +781,7 @@
       "code": 10082001,
       "name": "Armored Drake",
       "name_vn": "Thể Rồng Giáp",
+      "star": 1,
       "desc": "Weakness: Bleed · Resistance: M.DMG, Burn, Pull, Frozen · Trait: There is a chance to dodge M.DMG",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Thiêu Đốt Dẫn Dắt Đóng Băng · Đặc điểm: Có tỷ lệ né ST Phép"
     },
@@ -705,6 +789,7 @@
       "code": 10082002,
       "name": "Armored Drake",
       "name_vn": "Thể Rồng Giáp",
+      "star": 2,
       "desc": "Weakness: Bleed · Resistance: M.DMG, Burn, Pull, Frozen · Trait: There is a chance to dodge M.DMG",
       "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Thiêu Đốt Dẫn Dắt Đóng Băng · Đặc điểm: Có tỷ lệ né ST Phép"
     },
@@ -712,6 +797,7 @@
       "code": 10082101,
       "name": "Ancient Ghoul",
       "name_vn": "Dị Quỷ Ngàn Năm",
+      "star": 1,
       "desc": "Weak: Burn · Resistance: Paralysis, Bleed · Trait: Increases own Crit RES by 100%",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP · Đặc điểm: Sẽ tăng 100% Kháng Bạo bản thân"
     },
@@ -719,6 +805,7 @@
       "code": 10082102,
       "name": "Ancient Ghoul",
       "name_vn": "Dị Quỷ Ngàn Năm",
+      "star": 2,
       "desc": "Weak: Burn · Resistance: Paralysis, Bleed · Trait: Immune to Crit",
       "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP · Đặc điểm: Không thể bị Bạo"
     },
@@ -726,6 +813,7 @@
       "code": 10082201,
       "name": "Stone Lion",
       "name_vn": "Quỷ Sư Tử Đá",
+      "star": 1,
       "desc": "Weakness: Direct DMG · Resistance: Burn, Paralysis, Bleed, Interrupt, Knockback, Stun, Frost · Trait: None",
       "desc_vn": "Điểm yếu: ST Trực Tiếp · Kháng: Thiêu Đốt Tê Liệt Mất HP Ngăn Chặn Đẩy Lùi Choáng Băng Sương · Đặc điểm: Trống"
     },
@@ -733,6 +821,7 @@
       "code": 10082202,
       "name": "Stone Lion",
       "name_vn": "Quỷ Sư Tử Đá",
+      "star": 2,
       "desc": "Weakness: Direct DMG · Resistance: Burn, Paralysis, Bleed, Interrupt, Knockback, Stun, Frost · Trait: None",
       "desc_vn": "Điểm yếu: ST Trực Tiếp · Kháng: Thiêu Đốt Tê Liệt Mất HP Ngăn Chặn Đẩy Lùi Choáng Băng Sương · Đặc điểm: Trống"
     },
@@ -740,6 +829,7 @@
       "code": 10082301,
       "name": "Hundred-Eyed Zombie",
       "name_vn": "Cuồng Thi Trăm Mắt",
+      "star": 1,
       "desc": "Weakness: None · Resistance: Bleed, Interrupt, Stun · Trait: Gains ASPD & Move SPD when HP is low",
       "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Ngăn Chặn Choáng · Đặc điểm: Tăng Tốc Công và Tốc Độ khi HP bản thân thấp"
     },
@@ -747,6 +837,7 @@
       "code": 10082302,
       "name": "Hundred-Eyed Zombie",
       "name_vn": "Cuồng Thi Trăm Mắt",
+      "star": 2,
       "desc": "Weakness: None · Resistance: Bleed, Interrupt, Stun · Trait: Gains ASPD & Move SPD when HP is low",
       "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Ngăn Chặn Choáng · Đặc điểm: Tăng Tốc Công và Tốc Độ khi HP bản thân thấp"
     },
@@ -754,6 +845,7 @@
       "code": 10082401,
       "name": "Resentful Teen",
       "name_vn": "Oan Hồn Nữ Sinh",
+      "star": 1,
       "desc": "Weakness: None · Resistance: Bleed, Stun · Trait: Gains Rage when taking Bleed DMG",
       "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Choáng · Đặc điểm: Khi chịu ST Mất HP sẽ Cuồng Bạo"
     },
@@ -761,6 +853,7 @@
       "code": 10082402,
       "name": "Resentful Teen",
       "name_vn": "Oan Hồn Nữ Sinh",
+      "star": 2,
       "desc": "Weakness: None · Resistance: Bleed, Stun · Trait: Gains Rage when taking Bleed DMG",
       "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Choáng · Đặc điểm: Khi chịu ST Mất HP sẽ Cuồng Bạo"
     },
@@ -768,6 +861,7 @@
       "code": 10082501,
       "name": "Demon Nun",
       "name_vn": "Nữ Tu Ác Quỷ",
+      "star": 1,
       "desc": "Weakness: None · Resistance:Paralysis, Knockback · Trait: There is a chance to stun Heroes on death while paralyzed",
       "desc_vn": "Điểm yếu: Trống · Kháng: Tê Liệt Đẩy Lùi · Đặc điểm: Tử trận trong trạng thái Tê Liệt có tỷ lệ làm Choáng Anh Hùng"
     },
@@ -775,6 +869,7 @@
       "code": 10082502,
       "name": "Demon Nun",
       "name_vn": "Nữ Tu Ác Quỷ",
+      "star": 2,
       "desc": "Weakness: None · Resistance:Paralysis, Knockback · Trait: Stuns Heroes on death while paralyzed",
       "desc_vn": "Điểm yếu: Trống · Kháng: Tê Liệt Đẩy Lùi · Đặc điểm: Khi tử trận trong trạng thái Tê Liệt chắc chắn làm Choáng Anh Hùng"
     },
@@ -782,6 +877,7 @@
       "code": 10082601,
       "name": "Soul Clown",
       "name_vn": "Gã Hề Hút Hồn",
+      "star": 1,
       "desc": "Weakness: None · Resistance: Burn, Pull · Trait: Heals per second after taking Burn DMG",
       "desc_vn": "Điểm yếu: Trống · Kháng: Thiêu Đốt Dẫn Dắt · Đặc điểm: Khi chịu ST Thiêu Đốt, mỗi giây hồi HP"
     },
@@ -789,6 +885,7 @@
       "code": 10082602,
       "name": "Soul Clown",
       "name_vn": "Gã Hề Hút Hồn",
+      "star": 2,
       "desc": "Weakness: None · Resistance: Burn, Pull · Trait: Heals per second after taking Burn DMG",
       "desc_vn": "Điểm yếu: Trống · Kháng: Thiêu Đốt Dẫn Dắt · Đặc điểm: Khi chịu ST Thiêu Đốt, mỗi giây hồi HP"
     },
@@ -796,6 +893,7 @@
       "code": 10082701,
       "name": "Bronze Colossus",
       "name_vn": "Ma Thể Đồng",
+      "star": 1,
       "desc": "Weakness: Melee Hero DMG · Resistance: Ranged Hero DMG, Frost, Pull · Trait: Leaves corpse for 4s on death, blocks projectiles",
       "desc_vn": "Điểm yếu: ST Anh Hùng Cận Chiến · Kháng: ST Anh Hùng Tầm Xa Băng Sương Dẫn Dắt · Đặc điểm: Khi tử trận, dị thể tồn tại 4s và có thể chặn đường đạn bắn"
     },
@@ -803,6 +901,7 @@
       "code": 10082702,
       "name": "Bronze Colossus",
       "name_vn": "Ma Thể Đồng",
+      "star": 2,
       "desc": "Weakness: Melee Hero DMG · Resistance: Ranged Hero DMG, Frost, Pull · Trait: Leaves corpse for 20s on death, blocks projectiles",
       "desc_vn": "Điểm yếu: ST Anh Hùng Cận Chiến · Kháng: ST Anh Hùng Tầm Xa Băng Sương Dẫn Dắt · Đặc điểm: Khi tử trận, dị thể tồn tại 20s và có thể chặn đường đạn bắn"
     },
@@ -810,6 +909,7 @@
       "code": 10082801,
       "name": "Smile Butcher",
       "name_vn": "Đồ Tể Mặt Cười",
+      "star": 1,
       "desc": "Weakness: DoT · Resistance: Direct DMG, Knockback · Trait: Huge ASPD boost after first attack",
       "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi · Đặc điểm: Sau lần đầu tấn công, tăng mạnh Tốc Công bản thân"
     },
@@ -817,6 +917,7 @@
       "code": 10082802,
       "name": "Smile Butcher",
       "name_vn": "Đồ Tể Mặt Cười",
+      "star": 2,
       "desc": "Weakness: DoT · Resistance: Direct DMG, Knockback · Trait: Huge ASPD & DMG Immunity boost after first hit",
       "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi · Đặc điểm: Sau lần đầu tấn công, tăng mạnh Tốc Công và Giảm ST bản thân"
     },
@@ -824,6 +925,7 @@
       "code": 10082901,
       "name": "Glow Specter",
       "name_vn": "Lửa Ma",
+      "star": 1,
       "desc": "Weakness: None · Resistance: DoT, Stun, Frozen · Trait: Move SPD increase",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Choáng Đóng Băng · Đặc điểm: Tăng Tốc Độ"
     },
@@ -831,6 +933,7 @@
       "code": 10082902,
       "name": "Glow Specter",
       "name_vn": "Lửa Ma",
+      "star": 2,
       "desc": "Weakness: None · Resistance: DoT, Stun, Frozen · Trait: Boosts own & nearby small-area monsters' Move SPD",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Choáng Đóng Băng · Đặc điểm: Tăng Tốc Độ bản thân và Dị Thú phạm vi nhỏ xung quanh"
     },
@@ -838,6 +941,7 @@
       "code": 10083001,
       "name": "Bomb Ghoul",
       "name_vn": "Thi Ma Pháo",
+      "star": 1,
       "desc": "Weakness: None · Resistance: M.DMG · Trait: Immune to all CC effects after Pull or Frozen, ATK boosted",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép · Đặc điểm: Khi chịu Dẫn Dắt hoặc Đóng Băng, miễn vĩnh viễn tất cả hiệu quả Khống Chế và tăng Công"
     },
@@ -845,6 +949,7 @@
       "code": 10083002,
       "name": "Bomb Ghoul",
       "name_vn": "Thi Ma Pháo",
+      "star": 2,
       "desc": "Weakness: None · Resistance: M.DMG · Trait: Immune to all CC effects after Pull or Frozen, ATK boosted",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép · Đặc điểm: Khi chịu Dẫn Dắt hoặc Đóng Băng, miễn vĩnh viễn tất cả hiệu quả Khống Chế và tăng Công"
     },
@@ -852,6 +957,7 @@
       "code": 10083101,
       "name": "Hungry Grimoire",
       "name_vn": "Sách Ma Khát Thịt",
+      "star": 1,
       "desc": "Weakness: M.DMG · Resistance: P.DMG, Pull, Knockback · Trait: On death, grants 6 layers of Armor to nearby monsters",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý Dẫn Dắt Đẩy Lùi · Đặc điểm: Sau khi tử trận thêm 6 tầng Giáp cho Dị Thú xung quanh"
     },
@@ -859,6 +965,7 @@
       "code": 10083102,
       "name": "Hungry Grimoire",
       "name_vn": "Sách Ma Khát Thịt",
+      "star": 2,
       "desc": "Weakness: M.DMG · Resistance: P.DMG, Pull, Knockback · Trait: Every 10s grants 6 layers of Armor to nearby monsters, also grants 18 layers Armor on death",
       "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý Dẫn Dắt Đẩy Lùi · Đặc điểm: Cứ cách 10s sẽ thêm 6 tầng Giáp cho Dị Thú xung quanh. Sau khi tử trận sẽ thêm 18 tầng Giáp cho Dị Thú xung quanh"
     },
@@ -866,6 +973,7 @@
       "code": 10083201,
       "name": "Mask Spider",
       "name_vn": "Nhện Mặt Quỷ",
+      "star": 1,
       "desc": "Weakness: None · Resistance: Paralysis DMG, Frost, Frozen · Trait: Special movement, steals Banknotes on attack, teleports to Door when Stunned",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Băng Sương Đóng Băng · Đặc điểm: Cách di chuyển đặc biệt, tấn công sẽ trộm Ngân Phiếu, bị làm Choáng sẽ tốc biến đến trước cửa"
     },
@@ -873,6 +981,7 @@
       "code": 10083202,
       "name": "Mask Spider",
       "name_vn": "Nhện Mặt Quỷ",
+      "star": 2,
       "desc": "Weakness: None · Resistance: Paralysis DMG, Frost, Frozen · Trait: Special movement, steals Banknotes on attack, teleports to Door when Stunned",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Băng Sương Đóng Băng · Đặc điểm: Cách di chuyển đặc biệt, tấn công sẽ trộm Ngân Phiếu, bị làm Choáng sẽ tốc biến đến trước cửa"
     },
@@ -880,6 +989,7 @@
       "code": 10083301,
       "name": "Voodoo Nurse",
       "name_vn": "Y Tá Vu Độc",
+      "star": 1,
       "desc": "Weakness: Crit DMG · Resistance: Knockback, Frozen · Trait: Immune to all non-Crit DMG; when more than 12 present, all Heroes' Rage Regen is reduced by 25%",
       "desc_vn": "Điểm yếu: ST Bạo · Kháng: Đẩy Lùi Đóng Băng · Đặc điểm: Miễn tất cả ST không Bạo, khi trong trận có trên 12 cái, hiệu quả Hồi Nộ của tất cả Anh Hùng giảm 25%"
     },
@@ -887,6 +997,7 @@
       "code": 10083302,
       "name": "Voodoo Nurse",
       "name_vn": "Y Tá Vu Độc",
+      "star": 2,
       "desc": "Weakness: Crit DMG · Resistance: Knockback, Frozen · Trait: Immune to all non-Crit DMG; when more than 12 present, all Heroes' Rage Regen is reduced by 25%",
       "desc_vn": "Điểm yếu: ST Bạo · Kháng: Đẩy Lùi Đóng Băng · Đặc điểm: Miễn tất cả ST không Bạo, khi trong trận có trên 12 cái, hiệu quả Hồi Nộ của tất cả Anh Hùng giảm 25%"
     },
@@ -894,6 +1005,7 @@
       "code": 10083401,
       "name": "RnR Ghoul",
       "name_vn": "Dạ Quỷ Mê Rock",
+      "star": 1,
       "desc": "Weakness: None · Resistance: Burn DMG, Stun, Frost · Trait: Heals nearby monsters on death",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Thiêu Đốt Choáng Băng Sương · Đặc điểm: Sau khi tử trận sẽ hồi HP cho Dị Thú xung quanh"
     },
@@ -901,6 +1013,7 @@
       "code": 10083402,
       "name": "RnR Ghoul",
       "name_vn": "Dạ Quỷ Mê Rock",
+      "star": 2,
       "desc": "Weakness: None · Resistance: Burn DMG, Stun, Frost · Trait: Heals nearby monsters on death",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Thiêu Đốt Choáng Băng Sương · Đặc điểm: Sau khi tử trận sẽ hồi HP cho Dị Thú xung quanh"
     },
@@ -908,6 +1021,7 @@
       "code": 10083501,
       "name": "Jerk Trio",
       "name_vn": "Bộ Ba Quỷ Lầy",
+      "star": 1,
       "desc": "Weakness: DoT · Resistance: None · Trait: Immune to all CC effects after 20s from spawn",
       "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: Trống · Đặc điểm: Sau 20s xuất hiện, miễn tất cả hiệu quả Khống Chế"
     },
@@ -915,13 +1029,15 @@
       "code": 10083502,
       "name": "Jerk Trio",
       "name_vn": "Bộ Ba Quỷ Lầy",
+      "star": 2,
       "desc": "Weakness: DoT · Resistance: None · Trait: Immune to all CC effects after 30s from spawn",
-      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ff>Trống · Đặc điểm: Sau 30s xuất hiện, miễn tất cả hiệu quả Khống Chế"
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: Trống · Đặc điểm: Sau 30s xuất hiện, miễn tất cả hiệu quả Khống Chế"
     },
     "10083601": {
       "code": 10083601,
       "name": "Thunder Rhino",
       "name_vn": "Tê Giác Sấm Sét",
+      "star": 1,
       "desc": "Weakness: None · Resistance: Paralysis DMG, Pull, Knockback · Trait: Charges lightning attacks, stops if Interrupted by CC",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Dẫn Dắt Đẩy Lùi · Đặc điểm: Sẽ tích lực để tích lũy Sấm Sét tấn công, bị khống chế làm gián đoạn sẽ dừng tích lực"
     },
@@ -929,6 +1045,7 @@
       "code": 10083602,
       "name": "Thunder Rhino",
       "name_vn": "Tê Giác Sấm Sét",
+      "star": 2,
       "desc": "Weakness: None · Resistance: Paralysis DMG, Pull, Knockback · Trait: Charges lightning attacks, stops if Interrupted by CC, and takes 50% less DMG while charging",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Dẫn Dắt Đẩy Lùi · Đặc điểm: Sẽ tích lực để tích lũy Sấm Sét tấn công, bị khống chế làm gián đoạn sẽ dừng tích lực. Khi tích lực, ST phải chịu giảm 50%"
     },
@@ -936,6 +1053,7 @@
       "code": 10083701,
       "name": "Alien Presence",
       "name_vn": "Tà Linh Ngoại Lai",
+      "star": 1,
       "desc": "Weakness: None · Resistance: DoT, Frost · Trait: Long-range attack",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Băng Sương · Đặc điểm: Tấn công tầm xa"
     },
@@ -943,6 +1061,7 @@
       "code": 10083702,
       "name": "Alien Presence",
       "name_vn": "Tà Linh Ngoại Lai",
+      "star": 2,
       "desc": "Weakness: None · Resistance: DoT, Frost · Trait: Long-range attack",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Băng Sương · Đặc điểm: Tấn công tầm xa"
     },
@@ -950,6 +1069,7 @@
       "code": 10083801,
       "name": "Toxic Beetle",
       "name_vn": "Sâu Độc",
+      "star": 1,
       "desc": "Weakness: None · Resistance: M.DMG, Stun, Frost · Trait: Leaves behind a pool of poison after death, dealing DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép Choáng Băng Sương · Đặc điểm: Để lại một vũng độc khi tử trận, duy trì gây ST"
     },
@@ -957,6 +1077,7 @@
       "code": 10083802,
       "name": "Toxic Beetle",
       "name_vn": "Sâu Độc",
+      "star": 2,
       "desc": "Weakness: None · Resistance: M.DMG, Stun, Frost · Trait: Leaves behind a pool of poison upon death, dealing DoT",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép Choáng Băng Sương · Đặc điểm: Để lại một vũng độc khi tử trận, duy trì gây ST"
     },
@@ -964,6 +1085,7 @@
       "code": 10083901,
       "name": "Shadow Killer",
       "name_vn": "Sát Thủ Bóng Đêm",
+      "star": 1,
       "desc": "Weakness: DoT · Resistance: Direct Damage, Knockback, Stun · Trait: Long-range attack",
       "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi Choáng · Đặc điểm: Tấn công tầm xa"
     },
@@ -971,6 +1093,7 @@
       "code": 10083902,
       "name": "Shadow Killer",
       "name_vn": "Sát Thủ Bóng Đêm",
+      "star": 2,
       "desc": "Weakness: DoT · Resistance: Direct Damage, Knockback, Stun · Trait: Long-range attack",
       "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi Choáng · Đặc điểm: Tấn công tầm xa"
     },
@@ -978,6 +1101,7 @@
       "code": 10084001,
       "name": "Rotten Heart",
       "name_vn": "Trái Tim Thối Rữa",
+      "star": 1,
       "desc": "Weakness: Bleed DMG · Resistance: Burn DMG, Paralysis DMG, Pull, Frost, Frozen · Trait: Increases Max HP every second, restores HP when low",
       "desc_vn": "Điểm yếu: ST Mất HP · Kháng: ST Thiêu Đốt ST Tê Liệt Dẫn Dắt Băng Sương Đóng Băng · Đặc điểm: Mỗi giây tăng giới hạn HP, hồi HP khi HP thấp"
     },
@@ -985,6 +1109,7 @@
       "code": 10084002,
       "name": "Rotten Heart",
       "name_vn": "Trái Tim Thối Rữa",
+      "star": 2,
       "desc": "Weakness: Bleed DMG · Resistance: Burn DMG, Paralysis DMG, Pull, Frost, Frozen · Trait: Increases Max HP every second, restores HP when low",
       "desc_vn": "Điểm yếu: ST Mất HP · Kháng: ST Thiêu Đốt ST Tê Liệt Dẫn Dắt Băng Sương Đóng Băng · Đặc điểm: Mỗi giây tăng giới hạn HP, hồi HP khi HP thấp"
     },
@@ -992,6 +1117,7 @@
       "code": 10084101,
       "name": "Patchwork Rabbit",
       "name_vn": "Thỏ Hung Dữ",
+      "star": 1,
       "desc": "Weakness: None · Resistance: Melee DMG, M.DMG, CC · Trait: High HP, ignores Door immunity layers on attack",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến ST Phép hiệu quả Khống Chế · Đặc điểm: HP cao, tấn công xuyên cửa miễn số tầng"
     },
@@ -999,6 +1125,7 @@
       "code": 10084102,
       "name": "Patchwork Rabbit",
       "name_vn": "Thỏ Hung Dữ",
+      "star": 2,
       "desc": "Weakness: None · Resistance: Melee DMG, M.DMG, CC · Trait: High HP, ignores Door immunity layers on attack",
       "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến ST Phép hiệu quả Khống Chế · Đặc điểm: HP cao, tấn công xuyên cửa miễn số tầng"
     }
