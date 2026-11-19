@@ -73,13 +73,27 @@ function battleRoute(urlPath, reqRegion) {
     return reqRegion.loadBattles().map((b) => {
       const extra = JSON.parse(b.quit.extra || "{}");
       return { uuid: b.start.uuid, level: b.start.level, battleType: b.start.battleType, result: extra.result,
-        ops: capture.listItems(b.quit.operations).length, file: path.basename(b.file) };
+        ops: capture.listItems(b.quit.operations).length, file: path.basename(b.file),
+        ...(b.team ? { team: teamSummary(b) } : {}) };
     });
   }
   const m = /^\/__sim\/battle\/([0-9a-f]{24})\.json$/.exec(urlPath);
   if (!m) return undefined;
   const b = reqRegion.loadBattles().find((x) => x.start.uuid === m[1]);
-  return b ? { start: b.start, quit: b.quit } : null;
+  return b ? { start: b.start, quit: b.quit, ...(b.team ? { team: b.team } : {}) } : null;
+}
+
+// Đêm Đỏ capture: per member, master (leaderId) first: name, account fightCap and the summed
+// fightCap of the heroes it put in the battle lineup (matched by uuid in its roster).
+function teamSummary({ start, team }) {
+  const lineup = capture.listItems(capture.listItems(start.playerInfos)[0]?.heros);
+  return [...team].sort((a, b) => (b.playerId === Number(start.leaderId)) - (a.playerId === Number(start.leaderId)))
+    .map((m) => {
+      const own = new Set(capture.listItems(m.heros).map((h) => h.uuid));
+      const heroes = lineup.filter((h) => own.has(h.uuid));
+      return { playerId: m.playerId, name: m.name, side: m.playerId === Number(start.leaderId) ? "master" : "guest",
+        fightCap: m.fightCap, lineupFightCap: heroes.reduce((n, h) => n + (h.fightCap || 0), 0), lineup: heroes.map((h) => h.code) };
+    });
 }
 
 function within(base, rel) {
@@ -119,7 +133,7 @@ async function fetchConfig(rel) {
 const server = http.createServer(async (req, res) => {
   const [urlPath, query] = req.url.split("?", 2);
   const reqRegion = requestRegion(region, query);
-  const dict = /^\/__sim\/dict\/(hero|support|map|boss|creeps|campaign|antique|relic|artifact)-dict\.json$/.exec(urlPath);
+  const dict = /^\/__sim\/dict\/(hero|support|map|boss|creeps|campaign|blood|antique|relic|artifact)-dict\.json$/.exec(urlPath);
   if (region.locale && req.method === "GET" && urlPath === "/__sim/deploy.json") {
     sendJson(res, { ...JSON.parse(fs.readFileSync(path.join(root, "deploy.json"), "utf8")), locale: region.locale });
     return;
