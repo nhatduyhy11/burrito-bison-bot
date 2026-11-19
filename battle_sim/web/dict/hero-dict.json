@@ -11,6 +11,26 @@
         10010201000,
         10010301000
       ],
+      "baseSkillRefs": [
+        {
+          "code": 10010101000,
+          "name": "Thunderous Chain",
+          "name_vn": "Dây Xích Sấm Sét",
+          "desc_vn": "Hanuman phóng Chuỗi Tia Sét lên địch gần nhất gây ST bằng 30% Công, phóng 2 lần, và gây 4s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 20% Công"
+        },
+        {
+          "code": 10010201000,
+          "name": "Storm Descent",
+          "name_vn": "Triệu Hồi Đám Mây",
+          "desc_vn": "Hanuman triệu hồi sấm sét khiến địch gần nhất chịu ST bằng 50% Công, tạo Hồ Quang Điện khiến địch lân cận chịu ST phạm vi bằng 50% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 50% Công"
+        },
+        {
+          "code": 10010301000,
+          "name": "Monkey Blessing",
+          "name_vn": "Thần Hầu Ân Điển",
+          "desc_vn": "Hanuman trong chiến đấu, Công cá nhân+12%, ra trận nhận 30 Điện Năng"
+        }
+      ],
       "skins": {
         "wayward_fist": {
           "code": 5000101,
@@ -359,6 +379,26 @@
         10020201000,
         10020301000
       ],
+      "baseSkillRefs": [
+        {
+          "code": 10020101000,
+          "name": "Rotblade Curse",
+          "name_vn": "Chú Đao Cá Thối",
+          "desc_vn": "Gai Độc vung vuốt khiến địch gần nhất chịu ST bằng 100% Công"
+        },
+        {
+          "code": 10020201000,
+          "name": "Reaper Scythe",
+          "name_vn": "Liềm Thu Hoạch",
+          "desc_vn": "Gai Độc phóng đao trí mạng về phía địch gần nhất, địch trên đường chịu 2 lần ST bằng 100% Công, ST mục tiêu phải chịu trong 6s+25%"
+        },
+        {
+          "code": 10020301000,
+          "name": "Greed Mask",
+          "name_vn": "Tham Lam",
+          "desc_vn": "Mỗi khi sở hữu 100 Ngân Phiếu, ST bản thân gây ra+0.5%, tối đa+50%"
+        }
+      ],
       "skins": {
         "beach_party": {
           "code": 5000201,
@@ -700,6 +740,26 @@
         10030201000,
         10030301000
       ],
+      "baseSkillRefs": [
+        {
+          "code": 10030101000,
+          "name": "Healcraft",
+          "name_vn": "Thuật Chữa Trị",
+          "desc_vn": "Pháp Sư Sương dùng Thuật Chữa Trị, mỗi lần Công Thường sẽ giúp Cửa hồi 300 HP"
+        },
+        {
+          "code": 10030201000,
+          "name": "Demonbane",
+          "name_vn": "Thuật Sát Ma",
+          "desc_vn": "Pháp Sư Sương niệm chú, đơn vị xung quanh Cửa chịu ST bằng 140% Công, và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+        },
+        {
+          "code": 10030301000,
+          "name": "Wardcraft",
+          "name_vn": "Thuật Phòng Ngự",
+          "desc_vn": "Pháp Sư SươngTrong chiến đấu, HP đơn vị phe ta+15%"
+        }
+      ],
       "skins": {
         "azure_shore": {
           "code": 5000301,
@@ -976,6 +1036,26 @@
         10040201000,
         10040301000
       ],
+      "baseSkillRefs": [
+        {
+          "code": 10040101000,
+          "name": "Frostbolt",
+          "name_vn": "Đạn Băng",
+          "desc_vn": "Vua Pháp Sư phóng đạn băng về phái địch gần nhất gây ST bằng 75% Công và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+        },
+        {
+          "code": 10040201000,
+          "name": "Shadow Storm",
+          "name_vn": "Bão Bóng Tối",
+          "desc_vn": "Vua Pháp Sư khiến địch gần nhất chịu 4s Bão Tuyết, mỗi giây gây ST bằng 50% Công, trong thời gian này kèm <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+        },
+        {
+          "code": 10040301000,
+          "name": "Arcane Grid",
+          "name_vn": "Hệ Thống Bí Ẩn",
+          "desc_vn": "Vua Pháp Sư trong trận, Thủ Phép đơn vị phe ta+10%, mỗi giây tạo Ngân Phiếu+2"
+        }
+      ],
       "skins": {
         "elf_prince": {
           "code": 5000401,
@@ -1251,6 +1331,26 @@
         10050101000,
         10050201000,
         10050301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10050101000,
+          "name": "Bullet Storm",
+          "name_vn": "Mưa Đạn",
+          "desc_vn": "Pháo Loli cầm súng máy, phóng đạn khiến địch gần nhất chịu ST bằng 70% Công,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu </u></color>2 lần"
+        },
+        {
+          "code": 10050201000,
+          "name": "Death Barrage",
+          "name_vn": "Tên Lửa Tử Thần",
+          "desc_vn": "Pháo Loli tụ sức 5s phóng Tên Lửa Tử Thần về phía địch gần nhất, địch trên được chịu 1 lần ST bằng 400% Công"
+        },
+        {
+          "code": 10050301000,
+          "name": "Sin Rush",
+          "name_vn": "Khoái Cảm Tội Lỗi",
+          "desc_vn": "Pháo Loli trong trận, Tốc Công Anh Hùng phe ta+10%"
+        }
       ],
       "skins": {
         "trainee_nurse": {
@@ -1593,6 +1693,26 @@
         10060101000,
         10060201000,
         10060301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10060101000,
+          "name": "Rotten Apple",
+          "name_vn": "Táo Độc",
+          "desc_vn": "Khăn Đỏ ném táo độc khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10060201000,
+          "name": "Wolfbound",
+          "name_vn": "Cộng Sinh Với Sói",
+          "desc_vn": "Khăn Đỏ biến thành người sói, phóng tia lửa kéo dài 3s về phía địch gần nhất, mỗi giây gây ST bằng 70% Công và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 30% Công"
+        },
+        {
+          "code": 10060301000,
+          "name": "Granny's Gift",
+          "name_vn": "Quà Của Bà Ngoại",
+          "desc_vn": "Khăn Đỏ trong trận, thời gian <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> địch phải chịu+15%"
+        }
       ]
     },
     "sherlock": {
@@ -1604,6 +1724,26 @@
         10070101000,
         10070201000,
         10070301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10070101000,
+          "name": "Calm Pipe",
+          "name_vn": "Tẩu Thuốc Điềm Tĩnh",
+          "desc_vn": "Holmes ném tẩu thuốc, khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10070201000,
+          "name": "Ricochet Axe",
+          "name_vn": "Rìu Bật Nảy",
+          "desc_vn": "Holmes ném 1 cây rìu về phía địch gần nhất, gây ST bằng 200% Công, có thể phóng đạn 3 lần"
+        },
+        {
+          "code": 10070301000,
+          "name": "Truth Hunt",
+          "name_vn": "Truy Tìm Chân Tướng",
+          "desc_vn": "Holmes gây ST lên địch có HP trên 50%, ST+30%"
+        }
       ]
     },
     "metaman": {
@@ -1615,6 +1755,26 @@
         10080101000,
         10080201000,
         10080301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10080101000,
+          "name": "Wish Staff",
+          "name_vn": "Côn Pháp Như Ý",
+          "desc_vn": "Tôn Ngộ Không đập mạnh xuống đất, gây ST đường thẳng bằng 60% Công"
+        },
+        {
+          "code": 10080201000,
+          "name": "Realm King",
+          "name_vn": "Hình Thái Giới Vương",
+          "desc_vn": "Tôn Ngộ Không xoay tròn tạo thành bão 5s, khiến địch trên đường mỗi giây chịu 2 lần ST phạm vi bằng 50% Công, [Vô Địch] trong thời gian này và [Không Thể Chọn Trúng]"
+        },
+        {
+          "code": 10080301000,
+          "name": "Ultra Instinct",
+          "name_vn": "Tự Tại",
+          "desc_vn": "Tôn Ngộ Không<color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color>+30%,ST Bạo+30%"
+        }
       ],
       "skins": {
         "purgatory_lord": {
@@ -1898,6 +2058,26 @@
         10090101000,
         10090201000,
         10090301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10090101000,
+          "name": "Heaven Eye",
+          "name_vn": "Tia Thiên Nhãn",
+          "desc_vn": "Hiệp Sĩ Sấm Sét dùng pháo phóng laser khiến địch gần nhất chịu ST bằng 70% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 10% Công"
+        },
+        {
+          "code": 10090201000,
+          "name": "Doom Beam",
+          "name_vn": "Tia Laser Hủy Diệt",
+          "desc_vn": "Hiệp Sĩ Sấm Sét phóng laser khổng lồ 5s, khiến địch gần nhất mỗi giây chịu ST bằng 100% Công, trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 50% Công"
+        },
+        {
+          "code": 10090301000,
+          "name": "Ark Core",
+          "name_vn": "Lò Phản Ứng Ark",
+          "desc_vn": "Hiệp Sĩ Sấm Sét gây ST Trực Tiếp时, ST tiếp theo lên mục tiêu này+5%, duy trì 12s"
+        }
       ],
       "skins": {
         "steam_warrior": {
@@ -2246,6 +2426,26 @@
         10100101000,
         10100201000,
         10100301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10100101000,
+          "name": "Toxic Cloud",
+          "name_vn": "Khí Độc Chết Người",
+          "desc_vn": "Bác Sĩ Dịch Bệnh ném Bom Khí Độc khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10100201000,
+          "name": "Plague Bomb",
+          "name_vn": "Bom Dịch Hạch",
+          "desc_vn": "Bác Sĩ Dịch Bệnh ném bom khiến 3 địch ngẫu nhiên chịu ST bằng 155% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST bằng 20% Công"
+        },
+        {
+          "code": 10100301000,
+          "name": "Cleanse Mist",
+          "name_vn": "Hương Thơm Tẩy Uế",
+          "desc_vn": "Bác Sĩ Dịch Bệnh trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, Tốc Công-10%"
+        }
       ]
     },
     "evil_bane": {
@@ -2257,6 +2457,26 @@
         10110101000,
         10110201000,
         10110301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10110101000,
+          "name": "Wraith Crash",
+          "name_vn": "Xung Kích Oan Hồn",
+          "desc_vn": "Linh Đồng Tà Ác vung vuốt, khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10110201000,
+          "name": "Dark Buddy",
+          "name_vn": "Đồng Hành Bóng Tối",
+          "desc_vn": "Triệu hồi 1 Linh Hồn mạnh mẽ hỗ trợ chiến đấu, kế thừa 100% thuộc tính hiện tại của Linh Đồng Tà Ác, gây ST bằng 150% Công, sống sót 10s, tối đa cùng lúc tồn tại 2 Linh Hồn"
+        },
+        {
+          "code": 10110301000,
+          "name": "Trick Spirit",
+          "name_vn": "Tinh Quái",
+          "desc_vn": "Linh Đồng Tà Ác ra trận nhận 15 Điện Năng, mỗi khi có 10 Điện Năng, ST bản thân và Vật Triệu Hồi+0.5%, tối đa+20%"
+        }
       ]
     },
     "double_faces": {
@@ -2268,6 +2488,26 @@
         10120101000,
         10120201000,
         10120301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10120101000,
+          "name": "Flavor Tax",
+          "name_vn": "Thuế Thẩm Vị",
+          "desc_vn": "Kẻ Hai Mặt ném đồ ăn, khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10120201000,
+          "name": "Feast Rush",
+          "name_vn": "Bữa Tiệc Cuồng Nhiệt",
+          "desc_vn": "Kẻ Hai Mặt hất bàn tiệc, khiến địch gần nhất chịu ST phạm vi bằng 250% Công"
+        },
+        {
+          "code": 10120301000,
+          "name": "Gold Taste",
+          "name_vn": "Vị Giác Thiên Tài",
+          "desc_vn": "Kẻ Hai Mặt ra trận nhận 15 Ngân Phiếu, mỗi khi có 100 Ngân Phiếu, ST bản thân gây ra+0.5%, tối đa+20%"
+        }
       ]
     },
     "lu_bu": {
@@ -2279,6 +2519,26 @@
         10130101000,
         10130201000,
         10130301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10130101000,
+          "name": "Sundering Halberd",
+          "name_vn": "Ngọn Giáo Xuyên Thấu",
+          "desc_vn": "Hắc Lữ Bố vung ngọn giáo quỷ, khiến địch gần nhất chịu ST bằng 50% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>3 lần"
+        },
+        {
+          "code": 10130201000,
+          "name": "Bloodmoon Slash",
+          "name_vn": "Tam Trảm Huyết Nguyệt",
+          "desc_vn": "Hắc Lữ Bố khiến địch phía trước chịu 3 đợt tấn công, mỗi đợt chém ra 3 Đao, gây ST bằng 30% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>3 lần"
+        },
+        {
+          "code": 10130301000,
+          "name": "Ghoulish Hunger",
+          "name_vn": "Dị Quỷ Hút Hồn",
+          "desc_vn": "Hắc Lữ Bố diệt địch nhận 1 Linh Hồn, mỗi Linh Hồn giúp bản thân nhận Công+0.1%, tối đa+15%"
+        }
       ],
       "skins": {
         "ocean_master": {
@@ -2568,6 +2828,26 @@
         10140101000,
         10140201000,
         10140301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10140101000,
+          "name": "Dragon Breath",
+          "name_vn": "Hơi Thở Hỏa Long",
+          "desc_vn": "Rồng Máy phóng trụ lửa gây ST phạm vi nhỏ bằng 20% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 15% Công"
+        },
+        {
+          "code": 10140201000,
+          "name": "Hell Volley",
+          "name_vn": "Luyện Ngục Tề Xạ",
+          "desc_vn": "Rồng Máy triệu hồi tên lửa khiến địch ngẫu nhiên chịu 5 lần ST phạm vi nhỏ bằng 20% Công, mỗi lần kèm 6s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 10% Công"
+        },
+        {
+          "code": 10140301000,
+          "name": "Core Burst",
+          "name_vn": "Lõi Nổ Cảm Tử",
+          "desc_vn": "Rồng Máy trong trận, số tầng <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> của phe địch mỗi khi tăng 1 tầng, mọi ST <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> mục tiêu phải chịu tăng 5%, tối đa 50%"
+        }
       ],
       "skins": {
         "lotus_matix": {
@@ -2905,6 +3185,26 @@
         10150201000,
         10150301000
       ],
+      "baseSkillRefs": [
+        {
+          "code": 10150101000,
+          "name": "Sign Storm",
+          "name_vn": "Bão Biển Chỉ Dẫn",
+          "desc_vn": "Khổng Lồ Xanh ném biển báo khiến 2 địch gần nhất chịu ST bằng 25% Công và kèm 6s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 15% Công"
+        },
+        {
+          "code": 10150201000,
+          "name": "Bloodwheel",
+          "name_vn": "Lốp Xe Huyết Đao",
+          "desc_vn": "Khổng Lồ Xanh ném lốp xe về phía địch ngẫu nhiên,Công6s, mỗi giây gây ST bằng 25% Công, mỗi lần ST kèm 3s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 15% Công"
+        },
+        {
+          "code": 10150301000,
+          "name": "Hulk Rule",
+          "name_vn": "Định Luật Hulk",
+          "desc_vn": "Khổng Lồ Xanh trong trận, Cửa hoặc HP bản thân mỗi khi giảm 3%, ST bản thân gây ra+1%, tối đa 30%"
+        }
+      ],
       "skins": {
         "wrestling_champion": {
           "code": 5001501,
@@ -3181,6 +3481,26 @@
         10160101000,
         10160201000,
         10160301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10160101000,
+          "name": "Puppet Barrage",
+          "name_vn": "Đạn Múa Rối",
+          "desc_vn": "Pinocchio phóng mũi khiến địch gần nhất chịu ST bằng 70% Công,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>1 lần"
+        },
+        {
+          "code": 10160201000,
+          "name": "Heaven Bind",
+          "name_vn": "Giam Cầm Luật Tiên",
+          "desc_vn": "Pinocchio ném Hộp Tiên Nữ về phía 3 địch ngẫu nhiên, mỗi giây gây ST phạm vi nhỏ bằng 30% Công kèm <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>, duy trì 3s"
+        },
+        {
+          "code": 10160301000,
+          "name": "Lie Brand",
+          "name_vn": "Dấu Ấn Dối Trá",
+          "desc_vn": "Pinocchio trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color> chịu Công-10%"
+        }
       ]
     },
     "reaper": {
@@ -3191,6 +3511,20 @@
       "baseSkills": [
         10170101000,
         10170201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10170101000,
+          "name": "Soul Trial",
+          "name_vn": "Chất Vấn Linh Hồn",
+          "desc_vn": "Tử Thần thả Linh Hồn khiến địch gần nhất chịu ST bằng 90% Công,<color=#f57c00 click=\"onClicked\" param=\"11\">Xuyên thấu1 lần"
+        },
+        {
+          "code": 10170201000,
+          "name": "Final Call",
+          "name_vn": "Tuyên Án Tận Thế",
+          "desc_vn": "Bắn 3 Tuyên Phán Trảm khiến địch gần nhất chịu ST bằng 140% Công,<color=#f57c00 click=\"onClicked\" param=\"11\">Xuyên thấu1 lần"
+        }
       ]
     },
     "jinx": {
@@ -3201,6 +3535,20 @@
       "baseSkills": [
         10180101000,
         10180201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10180101000,
+          "name": "Quick Toss",
+          "name_vn": "Ném Khẩn Cấp",
+          "desc_vn": "Kẻ Xui Xẻo ném Đèn Pin khiến địch gần nhất chịu ST bằng 70% Công"
+        },
+        {
+          "code": 10180201000,
+          "name": "Backup Call",
+          "name_vn": "Hỗ Trợ Yêu Cầu",
+          "desc_vn": "Kẻ Xui Xẻo triệu hồi Đĩa Bay khiến địch gần nhất chịu ST phạm vi nhỏ bằng 140% Công kèm [Đẩy Lùi Nhỏ]"
+        }
       ]
     },
     "mad_alice": {
@@ -3212,6 +3560,26 @@
         10190101000,
         10190201000,
         10190301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10190101000,
+          "name": "Tea Invite",
+          "name_vn": "Lời Mời Trà Hội",
+          "desc_vn": "Alice ném dao khiến khiến địch ngẫu nhiên chịu đòn tấn công 5s, mỗi giây gây ST bằng 30% Công"
+        },
+        {
+          "code": 10190201000,
+          "name": "Mr. Bunny",
+          "name_vn": "Thỏ Tiên Sinh",
+          "desc_vn": "Alice triệu hồi Thỏ Tiên Sinh từ trên trời rơi xuống, đập xuống gây ST phạm vi vừa/ nhỏ bằng 140% Công và có 50% gây 1s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+        },
+        {
+          "code": 10190301000,
+          "name": "Temp Clause",
+          "name_vn": "Điều Khoản Tạm Thời",
+          "desc_vn": "Thỏ Tiên Sinh ban đầu kế thừa 80% thuộc tính hiện tại của Alice, Công Thường gây ST bằng 100% Công, triệu hồi trùng Thỏ Tiên Sinh, mỗi lần tăng 10% tỷ lệ thừa kế, tối đa 130%, Thỏ Tiên Sinh có thể sống sót 10s"
+        }
       ],
       "skins": {
         "idol_sweetheart": {
@@ -3469,6 +3837,20 @@
       "baseSkills": [
         10200101000,
         10200201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10200101000,
+          "name": "Diamond Drill",
+          "name_vn": "Khoan Xuyên",
+          "desc_vn": "Khoan Điện vung mũi khoan khiến địch gần nhất chịu ST bằng 70% Công"
+        },
+        {
+          "code": 10200201000,
+          "name": "Diamond Burst",
+          "name_vn": "Cú Khoan Nổ",
+          "desc_vn": "Khoan Điện ném mũi khoan khiến địch gần nhất chịu ST phạm vi nhỏ bằng 140% Công và gây 1s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+        }
       ]
     },
     "scarecrow": {
@@ -3480,6 +3862,26 @@
         10210101000,
         10210201000,
         10210301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10210101000,
+          "name": "Blood Reap",
+          "name_vn": "Thu Hoạch Đẫm Huyết",
+          "desc_vn": "Bù Nhìn vung lưỡi liềm 2 lần vào địch gần nhất, mỗi lần gây ST bằng 45% Công"
+        },
+        {
+          "code": 10210201000,
+          "name": "Crowstorm",
+          "name_vn": "Bão Quạ Đen",
+          "desc_vn": "Bù Nhìn tạo Lốc Quạ kéo dài 4s dưới chân địch ngẫu nhiên, mỗi giây gây ST bằng 20% Công kèm 4s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 20% Công"
+        },
+        {
+          "code": 10210301000,
+          "name": "River of Blood",
+          "name_vn": "Dòng Sông Linh Dị",
+          "desc_vn": "Trong trận, khiến địch trúng <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color> giảm 20% Trị Liệu"
+        }
       ]
     },
     "oni_samurai": {
@@ -3491,6 +3893,26 @@
         10220101000,
         10220201000,
         10220301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10220101000,
+          "name": "Demon Cleave",
+          "name_vn": "Trảm Quỷ Diệt Tận",
+          "desc_vn": "Hắc Võ Sĩ khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10220201000,
+          "name": "Raksha Gale",
+          "name_vn": "La Sát Song Lam",
+          "desc_vn": "Hắc Võ Sĩ bạo nộ! Công Thường gây thêm 1 lần ST, đồng thời bản thân nhận ST Bạo+50%, và miễn khống chế, duy trì 6s"
+        },
+        {
+          "code": 10220301000,
+          "name": "Bushido",
+          "name_vn": "Võ Sĩ Đạo",
+          "desc_vn": "Hắc Võ Sĩ mỗi lần tấn công tăng 0.4% <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color>, tối đa 40%"
+        }
       ]
     },
     "ghost_captain": {
@@ -3502,6 +3924,26 @@
         10230101000,
         10230201000,
         10230301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10230101000,
+          "name": "Rotblade Curse",
+          "name_vn": "Chú Đao Cá Thối",
+          "desc_vn": "Thuyền Trưởng U Ám chém địch gần nhất 2 lần gây ST phạm vi nhỏ bằng 20% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 20% Công"
+        },
+        {
+          "code": 10230201000,
+          "name": "Wailing Tide",
+          "name_vn": "Hồn Phách Sóng Gào",
+          "desc_vn": "Thuyền Trưởng U Ám bùng nổ! Khiến địch trong phạm vi hình quạt chịu ST bằng 100% Công, và có 50% gây 2s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+        },
+        {
+          "code": 10230301000,
+          "name": "Abyss Pressure",
+          "name_vn": "Uy Áp Biển Sâu",
+          "desc_vn": "Thuyền Trưởng U Ám trong trận: Khiến địch trong phạm vi lớn lân cận chịu Thủ V.Lý-15%"
+        }
       ],
       "skins": {
         "wild_vacation": {
@@ -3778,6 +4220,26 @@
         10240101000,
         10240201000,
         10240301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10240101000,
+          "name": "Savage Bite",
+          "name_vn": "Nanh Vuốt Sắc Nhọn",
+          "desc_vn": "Bá Tước Kì Bí khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10240201000,
+          "name": "Night Avatar",
+          "name_vn": "Hóa Thân Bóng Đêm",
+          "desc_vn": "Bá Tước Kì Bí triệu hồi đàn dơi xông về trước cửa, khiến địch trên đường chịu ST bằng 100% Công và có 20% gây 1s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+        },
+        {
+          "code": 10240301000,
+          "name": "Ancient Blood",
+          "name_vn": "Huyết Mạch Cổ Xưa",
+          "desc_vn": "Bá Tước Kì Bí trong trận, đơn vị phe ta nhận Thủ V.Lý+10%, Kháng Bạo+10%"
+        }
       ]
     },
     "young_mage": {
@@ -3788,6 +4250,20 @@
       "baseSkills": [
         10250101000,
         10250201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10250101000,
+          "name": "Lightning Orb",
+          "name_vn": "Cầu Điện",
+          "desc_vn": "Pháp Sư Nhí phóng cầu phép khiến địch gần nhất chịu ST bằng 50% Công, và gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 5% Công"
+        },
+        {
+          "code": 10250201000,
+          "name": "Power Burst",
+          "name_vn": "Nổ Tung Năng Lượng",
+          "desc_vn": "Pháp Sư Nhí triệu hồi ra 4s Sấm Sét khiến địch gần nhất mỗi giây chịu ST phạm vi nhỏ bằng 35% Công, trong thời gian này kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 20% Công"
+        }
       ]
     },
     "archangel": {
@@ -3799,6 +4275,26 @@
         10260101000,
         10260201000,
         10260301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10260101000,
+          "name": "Holy Orb",
+          "name_vn": "Cầu Ánh Sáng",
+          "desc_vn": "Thiên Sứ thành tâm cầu nguyện, thập tự giá tỏa hào quang khiến địch gần nhất chịu ST bằng 100% Công"
+        },
+        {
+          "code": 10260201000,
+          "name": "Divine Wrath",
+          "name_vn": "Thần Phạt Giáng Thế",
+          "desc_vn": "Thiên Sứ triệu hồi thập tự giá, khiến địch gần nhất chịu ST phạm vi vừa bằng 120% Công và khiến Anh Hùng phe ta trong 8s<color=#f57c00 click=\"onClicked\" param=\"9\"><u> nhận Bạo</u></color>+30% (không cộng dồn)"
+        },
+        {
+          "code": 10260301000,
+          "name": "Light Bless",
+          "name_vn": "Thánh Quang Che Chở",
+          "desc_vn": "Thiên Sứ trong trận, mỗi giây hồi tối đa 30 Nộ Anh Hùng, không bao gồm bản thân"
+        }
       ],
       "skins": {
         "celestial_presence": {
@@ -4083,6 +4579,26 @@
         10270101000,
         10270201000,
         10270301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10270101000,
+          "name": "Twin Fangs",
+          "name_vn": "Song Sinh Nanh Độc",
+          "desc_vn": "Người Đá ném Nanh Độc khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10270201000,
+          "name": "Serpent Gaze",
+          "name_vn": "Ánh Mắt Rắn Độc",
+          "desc_vn": "Người Đá ném Nanh Độc khiến 5 địch ngẫu nhiên chịu ST bằng 140% Công và có 50% kèm <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+        },
+        {
+          "code": 10270301000,
+          "name": "Stone Aura",
+          "name_vn": "Hào Quang Hóa Đá",
+          "desc_vn": "Trong trận, phe ta nhận Thủ Phép+10%,Kháng Bạo+10%"
+        }
       ]
     },
     "ruins_hunter": {
@@ -4094,6 +4610,26 @@
         10280101000,
         10280201000,
         10280301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10280101000,
+          "name": "Pierce Arrow",
+          "name_vn": "Mũi Tên Xuyên Phá",
+          "desc_vn": "Thợ Săn Phế Tíchphóng tên từ trên trời xuống, khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10280201000,
+          "name": "Hurricane Shot",
+          "name_vn": "Bão Táp Bắn Phá",
+          "desc_vn": "Thợ Săn Phế Tích lần lượt phóng 5 mũi tên nặng về phía trước, gây ST bằng 60% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu </u></color>3 lần"
+        },
+        {
+          "code": 10280301000,
+          "name": "Kill Time",
+          "name_vn": "Thời Khắc Săn Mồi",
+          "desc_vn": "Mỗi khi địch bị khống chế, phóng 1 mũi tên về phía mục tiêu, gây ST bằng 85% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> 2 lần, CD 1s"
+        }
       ]
     },
     "hellord": {
@@ -4105,6 +4641,26 @@
         10290101000,
         10290201000,
         10290301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10290101000,
+          "name": "Abyss Smash",
+          "name_vn": "Trọng Kích Vực Thẳm",
+          "desc_vn": "Hades vung nắm đấm, khiến địch gần nhất chịu ST bằng 85% Công"
+        },
+        {
+          "code": 10290201000,
+          "name": "Recoil Shield",
+          "name_vn": "Tường Lửa Phản Đòn",
+          "desc_vn": "Hades tạo khiên cho Cửa có 800 HP<color=#f57c00 click=\"onClicked\" param=\"12\"><u></u></color>, [Khiên] bị tấn công sẽ khiến người tấn công chịu ST bằng 140% Công"
+        },
+        {
+          "code": 10290301000,
+          "name": "Eternal Pact",
+          "name_vn": "Khế Ước Bất Tử",
+          "desc_vn": "Hades trong chiến đấu, HP+10%, HP Cửa phe ta+10%"
+        }
       ]
     },
     "bride_wraith": {
@@ -4116,6 +4672,26 @@
         10300101000,
         10300201000,
         10300301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10300101000,
+          "name": "Vengeflame Rose",
+          "name_vn": "Hoa Hồng Oán Hận",
+          "desc_vn": "Cô Dâu Linh Dị ném hoa hồng khiến địch gần nhất chịu ST phạm vi nhỏ bằng 30% Công, và kèm 4s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 15% Công"
+        },
+        {
+          "code": 10300201000,
+          "name": "Thorn Bind",
+          "name_vn": "Xiềng Xích Gai Nhọn",
+          "desc_vn": "Cô Dâu Linh Dị triệu hồi 4s bụi gai, mỗi giây gây ST phạm vi bằng 50% Công, trong thời gian này khiến địch trng phạm vi chịu <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color>"
+        },
+        {
+          "code": 10300301000,
+          "name": "Decay Field",
+          "name_vn": "凋零领域",
+          "desc_vn": "Trong trận: Địch lân cận chịu Thủ Phép-15%"
+        }
       ],
       "skins": {
         "modern_songstress": {
@@ -4399,6 +4975,26 @@
         10310101000,
         10310201000,
         10310301000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10310101000,
+          "name": "Deadly Joke",
+          "name_vn": "Trò Đùa Chết Người",
+          "desc_vn": "JOKER khiến địch gần nhất chịu ST phạm vi nhỏ bằng 70% Công"
+        },
+        {
+          "code": 10310201000,
+          "name": "Royal Flush",
+          "name_vn": "Thùng Phá Sảnh",
+          "desc_vn": "JOKER tung Thùng Phá Sảnh, trong 3s gây 3 lần ST phạm vi vừa/nhỏ bằng 50% Công và có 20% <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+        },
+        {
+          "code": 10310301000,
+          "name": "Final Surprise",
+          "name_vn": "Màn Kết Bất Ngờ",
+          "desc_vn": "JOKER trong trận, đơn vị phe ta nhận Thủ V.Lý+10%. Khi tăng cấp Cửa, khiến địch gần đó chịu 1 lần quét ngang, gây ST bằng 70% Công và    <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+        }
       ],
       "skins": {
         "master_magician": {
@@ -4735,6 +5331,26 @@
         10320201000,
         10320301000
       ],
+      "baseSkillRefs": [
+        {
+          "code": 10320101000,
+          "name": "Arc Toss",
+          "name_vn": "Hồ Quang Điện",
+          "desc_vn": "Lôi Thần Kiếm Quang vung kiếm ánh sáng, khiến địch gần nhất chịu ST <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> vô hạn bằng 35% Công"
+        },
+        {
+          "code": 10320201000,
+          "name": "Thunder Strike",
+          "name_vn": "Sấm Sét Đánh Gục",
+          "desc_vn": "Lôi Thần Kiếm Quang phóng sấm sét phẫn nộ, khiến địch gần nhất chịu ST phạm vi vừa/ nhỏ bằng 140% Công, và có 50% gây 2s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+        },
+        {
+          "code": 10320301000,
+          "name": "Thunder Guard",
+          "name_vn": "Tường Sét Phòng Thủ",
+          "desc_vn": "Khi Cửa trúng ST Trực Tiếp, có 15% khiến phe công <color=#f57c00 click=\"onClicked\" param=\"4\">[Choáng] </color>2s, CD 2s"
+        }
+      ],
       "skins": {
         "perfect_holiday": {
           "code": 5003201,
@@ -5016,6 +5632,20 @@
       "baseSkills": [
         10330101000,
         10330201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10330101000,
+          "name": "Rubber Revolver",
+          "name_vn": "Súng Cao Su",
+          "desc_vn": "Khiến địch gần nhất chịu ST phạm vi nhỏ bằng 35% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST bằng 5% Công"
+        },
+        {
+          "code": 10330201000,
+          "name": "Rubber Gatling",
+          "name_vn": "Gatling Cao Su",
+          "desc_vn": "Địch gần nhất chịu 5 lần ST phạm vi vừa bằng 20% Công, mỗi lần có 25% kèm 5s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST bằng 10% Công"
+        }
       ]
     },
     "twin_gunner": {
@@ -5026,6 +5656,20 @@
       "baseSkills": [
         10340101000,
         10340201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10340101000,
+          "name": "Suppress Shot",
+          "name_vn": "Bắn Chặn",
+          "desc_vn": "Nữ Cảnh Sát phóng đạn khiến địch gần nhất chịu ST bằng 55% Công và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+        },
+        {
+          "code": 10340201000,
+          "name": "Freeze Verdict",
+          "name_vn": "Phán Quyết Đóng Băng",
+          "desc_vn": "Nữ Cảnh Sát phóng đạn khiến địch gần nhất chịu ST bằng 170% Công và kèm 2s<color=#f57c00 click=\"onClicked\" param=\"6\"><u>Đóng Băng</u></color>"
+        }
       ]
     },
     "ghoul": {
@@ -5036,6 +5680,20 @@
       "baseSkills": [
         10350101000,
         10350201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10350101000,
+          "name": "Scaletail Pierce",
+          "name_vn": "Đuôi Vảy Đâm Lén",
+          "desc_vn": "Yêu Dị quẫy đuôi khiến địch gần nhất chịu 2 lần ST bằng 35% Công"
+        },
+        {
+          "code": 10350201000,
+          "name": "Earth Pierce",
+          "name_vn": "Đâm Xuyên Rẽ Đất",
+          "desc_vn": "Yêu Dị tụ sức vung đuôi quét đất, khiến địch gần nhất chịu ST phạm vi nhỏ bằng 80% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST bằng 35% Công"
+        }
       ]
     },
     "stapler_girl": {
@@ -5046,6 +5704,20 @@
       "baseSkills": [
         10360101000,
         10360201000
+      ],
+      "baseSkillRefs": [
+        {
+          "code": 10360101000,
+          "name": "Shuriken",
+          "name_vn": "Phi Tiêu",
+          "desc_vn": "Cô Gái Đóng Sách ném Kunai khiến địch gần nhất chịu ST bằng 70% Công"
+        },
+        {
+          "code": 10360201000,
+          "name": "Fuma Shuriken",
+          "name_vn": "Phi Tiêu Phong Ma",
+          "desc_vn": "Cô Gái Đóng Sách ném Kunai lớn khiến địch gần nhất chịu ST bằng 170% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>3 lần"
+        }
       ]
     }
   }

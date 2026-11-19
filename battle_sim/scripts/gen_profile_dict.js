@@ -174,6 +174,8 @@ async function main() {
       };
     }
     return [h.name, { code: h.code, name: h.name, name_vn: vn("HeroLO", h.code), color: RARITY[h.color] || h.color, baseSkills,
+      // Popover data for the Thần Khí tier skills: each tier desc names the hero skill it upgrades.
+      baseSkillRefs: baseSkills.map((id) => skillRef(id)),
       ...(own.length ? { skins } : {}), ...(avatarNodes.has(h.subType) ? { avatarNodes: avatarNodes.get(h.subType) } : {}) }];
   }));
 
@@ -432,7 +434,8 @@ async function main() {
   expect(rareCount === poolHero.size * Object.keys(A.RARE_SKILL).length, "rainbow entries per pool");
   const artifactSkills = Object.fromEntries([...artifactSkillCodes].sort((a, b) => a - b).map((code) => {
     if (!SkillBase.get(code)) throw new Error(`artifact skill ${code} missing from SkillBaseLO`);
-    return [code, skillRef(code)];
+    // type (MANUAL/PRIMARY/PASSIVE) is the game's skill tag, e.g. Bị Động / Chủ Động.
+    return [code, { ...skillRef(code), type: SkillBase.get(code).type }];
   }));
 
   const stamp = `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, vi: lang_vi, desc fallback: lang_en)`;
