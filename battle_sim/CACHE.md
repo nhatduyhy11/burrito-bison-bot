@@ -54,10 +54,17 @@ node battle_sim/serve.js
     `battleSkillRes`, `towerDefense`, `organ`, `hangup`, `summonCreature`, `hero` (config,
     script, import, native). Ba bundle cuối là UI ngoài trận nhưng UI battle vẫn load
     (`hero`: UI màn hero, không chứa model), nên mirror để không 404;
-  - bundle view trận theo mode: `guildPVP` (+ `worldBoss`, `climbTower` mà prefab tham chiếu chéo)
-    cho U Đô `battleType 21`, `worldBossMatch` cho Ác Mộng/World Boss tháng `battleType 43`
-    (`BattleTDWorldBossMatchView`). Thiếu bundle view thì trận đứng sau `StartGameP pushed`
-    (log 404 `assets/<bundle>/config.*.json`, "View加载失败"). Mode mới: thêm bundle vào `BUNDLES`;
+  - bundle view trận theo mode (`MODE_BUNDLES` trong `mirror.js`):
+
+    | `battleType` | Mode | Bundle |
+    |---|---|---|
+    | 21 | U Đô (GuildNavalWar) | `guildPVP` + `worldBoss`, `climbTower` (prefab tham chiếu chéo) |
+    | 43 | Ác Mộng / World Boss tháng | `worldBossMatch` |
+    | 47 | Blood Night (TeamExpedition16) | `teamExpeHigh` + `teamExpe` (tham chiếu chéo) |
+
+    `config.json` của bundle chỉ ghi `deps` là `resources`/`login`/`internal`, nên bundle mà
+    code hay prefab nạp lúc chạy **không tự lộ ra**: phải chạy sandbox mới thấy
+    (xem [Thiếu bundle](#thiếu-bundle-hoặc-asset-của-mode));
   - ext-res `model/` (bỏ biến thể vùng jp/kr/tw/us), `model_frame/`, `userProto/`, `data/`,
     và các thư mục icon UI battle `shuzhi/{head,icon,skillicon,TDBattle,shenbing,machine,half,build}/`
     (`machine` icon trap, `half` ảnh nửa người hero, `build` icon công trình).
@@ -68,6 +75,21 @@ node battle_sim/serve.js
 - `serve.js` serve mirror trên `127.0.0.1:8090`, mặc định **offline**: thiếu file thì trả
   404, in ra màn hình và ghi `misses.log`. Thêm `--fill` để tải bù file thiếu từ host công
   khai (chỉ bật khi cố ý).
+
+### Thiếu bundle hoặc asset của mode
+
+Dấu hiệu: trận đứng sau `StartGameP pushed`, hoặc chạy được nhưng sandbox báo `mirror 404s`
+(`misses.log`: 404 `assets/<bundle>/config.*.json` / `index.*.js`, "View加载失败",
+`ERROR 4928`). Cách xử lý:
+
+1. Lấy tên bundle trong đường dẫn 404. `node battle_sim/scripts/mirror.js bundles` liệt kê mọi
+   bundle của deploy (`*` = có trong `BUNDLES`, `+` = đã có trên đĩa).
+2. Thử nhanh: `node battle_sim/scripts/mirror.js fetch --bundle <tên>`.
+3. Chạy lại sandbox tới khi `mirror 404s: 0`, rồi thêm bundle vào dòng của mode trong
+   `MODE_BUNDLES` để lần mirror sau tự có.
+
+Chỉ fetch khi `ClientVer` live trùng mirror (dòng đầu của `plan`). Khi game vừa cập nhật thì chờ
+xác nhận rồi mới snapshot/mirror bản mới.
 
 ### Model hero trong trận
 

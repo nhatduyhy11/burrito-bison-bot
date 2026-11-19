@@ -2,6 +2,8 @@
 // Mirror the live deploy's battle assets to disk, same URL layout as the game host.
 //   node battle_sim/scripts/mirror.js plan      # list what would be fetched (counts per group)
 //   node battle_sim/scripts/mirror.js fetch     # download into .tmp/battle_sim/mirror/<ClientVer>/
+//   node battle_sim/scripts/mirror.js bundles   # every bundle of the deploy, marked mirrored or not
+//   add --bundle a,b to plan/fetch to include bundles not listed in MODE_BUNDLES yet
 // Public static files only (game host /, /assets, /ext-res), anonymous GETs, no login,
 // nothing sent to game servers. Already-present files are skipped, so re-running resumes.
 //
@@ -15,7 +17,21 @@ const cocos = require("../lib/cocos_bundle");
 const { GAME, liveDeploy } = require("../lib/deploy");
 const versions = require("../lib/versions");
 
-const BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ", "hangup", "summonCreature", "hero", "guildPVP", "climbTower", "worldBoss", "worldBossMatch"];
+// Bundles every battle loads (boot, engine, battle UI; hangup/summonCreature/hero are lobby UI
+// the battle view still pulls in).
+const CORE_BUNDLES = ["internal", "main", "resources", "login", "battle", "battleConfig", "battleSkillRes", "towerDefense", "organ", "hangup", "summonCreature", "hero"];
+// Per battle mode: its own view bundle plus bundles its prefabs/code load at runtime. A bundle's
+// config `deps` only lists resources/login/internal, so cross-refs are found from serve.js 404s
+// (`assets/<bundle>/config.*.json`): add them here. `mirror.js bundles` lists what the deploy has.
+const MODE_BUNDLES = {
+  21: ["guildPVP", "climbTower", "worldBoss"], // U Đô (GuildNavalWar)
+  43: ["worldBossMatch"], // Ác Mộng / World Boss tháng
+  47: ["teamExpeHigh", "teamExpe"], // Blood Night (TeamExpedition16); teamExpe = 404 seen in sandbox
+};
+// `--bundle a,b` adds bundles for a one-off fetch (e.g. trying a new mode before listing it above).
+const extraArg = process.argv.indexOf("--bundle");
+const EXTRA_BUNDLES = extraArg > 0 ? process.argv[extraArg + 1].split(",").filter(Boolean) : [];
+const BUNDLES = [...new Set([...CORE_BUNDLES, ...Object.values(MODE_BUNDLES).flat(), ...EXTRA_BUNDLES])];
 // ext-res: battle models + frames + data, plus the shuzhi/ image folders the battle UI loads
 // (portraits, half-body portraits, item, skill, artifact, trap and building icons). Region variants other than base/_sea are skipped.
 const EXT_RES_KEEP = /^(model\/|model_frame\/|userProto\/|data\/|shuzhi\/(head|icon|skillicon|TDBattle|shenbing|machine|half|build)\/)/;
@@ -185,8 +201,16 @@ async function main() {
     for (const [g, c] of Object.entries(groups)) console.log(`  ${g.padEnd(24)} files ${String(c.files).padStart(5)}  natives ${String(c.natives).padStart(5)}`);
   } else if (cmd === "fetch") {
     await fetchAll();
+  } else if (cmd === "bundles") {
+    const d = await liveDeploy();
+    const root = mirrorRoot(d.clientVer);
+    console.log(`ClientVer ${d.clientVer}: * = in BUNDLES, + = config on disk`);
+    for (const b of Object.keys(d.bundleVers).sort()) {
+      const onDisk = fs.existsSync(path.join(root, "assets", b, `config.${d.bundleVers[b]}.json`));
+      console.log(`  ${BUNDLES.includes(b) ? "*" : " "}${onDisk ? "+" : " "} ${b}`);
+    }
   } else {
-    throw new Error("usage: mirror.js plan|fetch");
+    throw new Error("usage: mirror.js plan|fetch|bundles [--bundle a,b]");
   }
 }
 
