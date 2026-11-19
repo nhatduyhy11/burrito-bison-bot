@@ -100,4 +100,4 @@ Vực, …, Song Sinh, Khế Ước Quỷ Vương). Tra lại bằng `TeamExpand
   `teamInfo.team.members`. Sandbox cần một đội giả cục bộ (đội trưởng = mình, thành viên lấy
   từ `playerInfos`). Đã thử bản đầu trong `web/battle/setup.js` `ensureTeamState()`: qua được
   bước vào trận, sau đó đứng vì thiếu bundle ở trên.
-- Setup UI chưa có mode này (`web/setup/capture.js` chỉ phân biệt campaign / capital).
+- Setup UI: mode Đêm Đỏ + Teams Master/Guest, thiết kế ở [blood_night_setup.md](blood_night_setup.md).

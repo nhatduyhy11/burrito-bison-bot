@@ -25,7 +25,7 @@ export function forRegion(profile, dict, { antiqueDict }) {
       .filter(([key]) => exists(antiqueDict.antiques, key)));
   }
 
-  for (const hero of [...(adjusted.heroes || []), adjusted.summonedJoker]) {
+  for (const hero of [...(adjusted.heroes || []), ...(adjusted.guestHeroes || []), adjusted.summonedJoker]) {
     if (!hero || typeof hero === "string") continue;
     const skins = dict.heroes[hero.name]?.skins || {};
     if (hero.skin && !exists(skins, hero.skin)) {

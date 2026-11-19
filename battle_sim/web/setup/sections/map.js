@@ -2,14 +2,16 @@
 // Capital: the room a boss shows up in never changes its stats, so the form only picks the boss and
 // which 3 creep types come with it (see battle_sim/docs/planning/capital.md).
 import { Accordion, html, NumberInput, PopHover, Select, SelectPop, optionText } from "../ui.js";
+import { BloodBody } from "./blood-map.js";
 
 const MODE_OPTIONS = [["campaign", "Campaign"], ["capital", "U Đô (Capital)"]];
+const BLOOD_OPTION = ["blood", "Đêm Đỏ"]; // only on a Đêm Đỏ capture (one with the team roster)
 
 export function MapSection({ ctx }) {
   const enabled = !!ctx.state.map;
   const onToggle = (on) => ctx.toggleWithPrefill("map", on);
   return html`
-    <${Accordion} title="Màn chơi" hint="Campaign / U Đô; tắt = màn của capture" override=${{ enabled, onToggle }}>
+    <${Accordion} title="Màn chơi" hint="Campaign / U Đô / Đêm Đỏ; tắt = màn của capture" override=${{ enabled, onToggle }}>
       ${enabled && html`<${MapBody} ctx=${ctx} />`}
     <//>
   `;
@@ -17,11 +19,20 @@ export function MapSection({ ctx }) {
 
 function MapBody({ ctx }) {
   const { state, update } = ctx;
-  const setMode = (mode) => update((s) => void (s.map.mode = mode));
-  const body = state.map.mode === "capital" ? html`<${CapitalBody} ctx=${ctx} />` : html`<${CampaignBody} ctx=${ctx} />`;
+  const blood = !!ctx.baseBattle?.team;
+  const setMode = (mode) => {
+    update((s) => {
+      s.map.mode = mode;
+      if (mode === "blood") s.map.level = ctx.bloodDict.levels[ctx.baseBattle.level] ? ctx.baseBattle.level : Number(Object.keys(ctx.bloodDict.levels)[0]);
+    });
+    if (mode === "blood") ctx.fillBloodTeams();
+  };
+  const body = state.map.mode === "capital" ? html`<${CapitalBody} ctx=${ctx} />`
+    : state.map.mode === "blood" ? html`<${BloodBody} ctx=${ctx} />` : html`<${CampaignBody} ctx=${ctx} />`;
+  const options = blood || state.map.mode === "blood" ? [...MODE_OPTIONS, BLOOD_OPTION] : MODE_OPTIONS;
   return html`
     <div class="row">
-      <label>Mode <${Select} options=${MODE_OPTIONS} value=${state.map.mode} onChange=${setMode} /></label>
+      <label>Mode <${Select} options=${options} value=${state.map.mode} onChange=${setMode} /></label>
     </div>
     ${body}
   `;
@@ -29,7 +40,7 @@ function MapBody({ ctx }) {
 
 // desc_vn is one "Điểm yếu: … · Kháng: … · Đặc điểm: …" string; one line per segment so the
 // weakness reads at a glance.
-const descLines = (c) => (c.desc_vn || c.desc || "").split(" · ").map((p) => html`<div class="pop-desc">${p}</div>`);
+export const descLines = (c) => (c.desc_vn || c.desc || "").split(" · ").map((p) => html`<div class="pop-desc">${p}</div>`);
 
 // Stage hover card for the Campaign label: "Stage N · <boss>" on top with its desc, a divider,
 // then each minion type with desc (campaign-dict stages reference creeps-dict's campaign section

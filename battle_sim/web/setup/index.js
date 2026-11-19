@@ -1,8 +1,8 @@
 // Setup page for local playtest profiles (served at /__sim/setup.html). Entry module.
 //
 // Builds the JSON that web/battle/profile.js reads (`sandbox --play --profile <file>`) from the
-// catalogs in hero-dict.json + support-dict.json, map-dict.json, boss-dict.json, creeps-dict.json
-// and antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
+// catalogs in hero-dict.json + support-dict.json, map-dict.json, boss-dict.json, creeps-dict.json,
+// blood-dict.json and antique-dict.json (scripts/gen_profile_dict.js). ES modules + Preact/htm from vendor/
 // (import map in setup.html, no build step): skin-rules.js (skin input rules), profile-io.js
 // (state <-> profile), ui.js (html`` + small components), sections/ (form sections), side.js (right
 // column), capture.js (capture prefill), and this file (app state and boot).
@@ -12,7 +12,7 @@
 import { render } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { html } from "./ui.js";
-import { capturedArtifact, prefill } from "./capture.js";
+import { bloodTeams, capturedArtifact, prefill } from "./capture.js";
 import { emptyState, fromProfile, normalize, toProfile } from "./profile-io.js";
 import { forRegion } from "./region.js";
 import { FormSections } from "./sections/index.js";
@@ -22,7 +22,7 @@ const STORE_KEY = "battleSimSetup";
 
 // ---------- app ----------
 
-function App({ dict, maps, bossDict, creepsDict, campaignDict, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, captureByRegion, changeRegion }) {
+function App({ dict, maps, bossDict, creepsDict, campaignDict, bloodDict, antiqueDict, relicLines, artifactDict, battles, initial, initialStatus, region, captureByRegion, changeRegion }) {
   const [state, setState] = useState(initial);
   const capturesForSetup = { ...captureByRegion, [region]: state.battle };
   const [switchingRegion, setSwitchingRegion] = useState(false);
@@ -46,9 +46,15 @@ function App({ dict, maps, bossDict, creepsDict, campaignDict, antiqueDict, reli
       normalize(next, dict);
       return next;
     });
+  // Đêm Đỏ: Teams splits into Master / Guest; filled from the capture's lineup by owner.
+  const fillBloodTeams = async () => {
+    const teams = await bloodTeams(dict, region, state.battle);
+    if (teams) update((s) => { s.heroes = [...teams.master, ...s.heroes.slice(teams.master.length)]; s.guestHeroes = teams.guest; });
+  };
   const toggleWithPrefill = async (group, on) => {
     const value = on ? await prefill(dict, maps, region, state.battle, group) : null;
     update((s) => void (s[group] = value));
+    if (group === "map" && value?.mode === "blood") await fillBloodTeams();
   };
   const profile = useMemo(() => toProfile(state, dict), [state]);
 
@@ -62,7 +68,8 @@ function App({ dict, maps, bossDict, creepsDict, campaignDict, antiqueDict, reli
 
   const capturedHeroArtifact = (heroCode) => capturedArtifact(region, state.battle, heroCode);
   const capturedSummonerGear = () => prefill(dict, maps, region, state.battle, "summonerGear");
-  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, bossDict, creepsDict, campaignDict, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact, capturedSummonerGear };
+  const baseBattle = battles.find((b) => b.uuid === state.battle) || null;
+  const ctx = { state, region, switchRegion, switchingRegion, dict, maps, bossDict, creepsDict, campaignDict, bloodDict, baseBattle, fillBloodTeams, antiqueDict, relicLines, artifactDict, update, toggleWithPrefill, capturedHeroArtifact, capturedSummonerGear };
   return html`
     <main id="form">
       ${regionError && html`<p class="err" role="alert">${regionError}</p>`}
@@ -113,8 +120,8 @@ function bindAccordionToggle(root) {
 
 async function showRegion(root, region, saved, switching = false) {
   const suffix = `?region=${region}`;
-  const [heroDict, supportDict, maps, bossDict, creepsDict, campaignDict, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
-    ...["hero", "support", "map", "boss", "creeps", "campaign", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
+  const [heroDict, supportDict, maps, bossDict, creepsDict, campaignDict, bloodDict, antiqueDict, relicDict, artifactDict, battles] = await Promise.all([
+    ...["hero", "support", "map", "boss", "creeps", "campaign", "blood", "antique", "relic", "artifact"].map((name) => getJson(`/__sim/dict/${name}-dict.json${suffix}`)),
     getJson(`/__sim/battles.json${suffix}`),
   ]);
   // One lookup table for both sides: hero-dict (heroes) + support-dict (the non-hero groups).
@@ -128,7 +135,7 @@ async function showRegion(root, region, saved, switching = false) {
   let profile = saved?.profile;
   if (profile) {
     try {
-      const catalogs = { maps, bossDict, antiqueDict, relicLines: relicDict.lines };
+      const catalogs = { maps, bossDict, bloodDict, antiqueDict, relicLines: relicDict.lines };
       const adjusted = forRegion(profile, dict, catalogs);
       profile = adjusted.profile;
       if (adjusted.removed.length) {
@@ -141,14 +148,22 @@ async function showRegion(root, region, saved, switching = false) {
       profile = null;
     }
   }
-  if (!profile?.heroes) state.heroes = await prefill(dict, maps, region, battle, "heroes");
+  if (!profile?.heroes) {
+    const teams = await bloodTeams(dict, region, battle);
+    if (teams) {
+      // A Đêm Đỏ capture opens in Đêm Đỏ mode with both sides filled.
+      state.map = await prefill(dict, maps, region, battle, "map");
+      state.heroes = [...teams.master, ...state.heroes.slice(teams.master.length)];
+      state.guestHeroes = teams.guest;
+    } else state.heroes = await prefill(dict, maps, region, battle, "heroes");
+  }
   normalize(state, dict);
   const changeRegion = (next, current) => showRegion(root, next, current, true);
   // First mount adopts nothing from #app, so preact leaves the html placeholder ("đang tải…")
   // alive next to the rendered tree — drop it just before mounting (region switch diffs instead).
   if (!switching) root.textContent = "";
   try {
-    render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} campaignDict=${campaignDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
+    render(html`<${App} key=${region} region=${region} captureByRegion=${captureByRegion} changeRegion=${changeRegion} dict=${dict} maps=${maps} bossDict=${bossDict} creepsDict=${creepsDict} campaignDict=${campaignDict} bloodDict=${bloodDict} antiqueDict=${antiqueDict} relicLines=${relicDict.lines} artifactDict=${artifactDict} battles=${battles} initial=${state} initialStatus=${initialStatus} />`, root);
   } catch (err) {
     // A render error leaves the old App already unmounted, so its regionError can't show: report here.
     console.error(err);

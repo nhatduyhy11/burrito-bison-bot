@@ -2,18 +2,22 @@
 // (owned, star, slots) and the Thần Khí editor (below the skin table, artifact.js).
 import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, StarSkillsLabel, plain, starsLabel, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
-import { heroSkins, newHero } from "../profile-state.js";
+import { heroSkins, isBlood, newHero } from "../profile-state.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { resolveRelic } from "../../relics.js";
 import { headerRow, nameOptions, requiresNote, without } from "./shared.js";
 import { ArtifactBody } from "./artifact.js";
+import { BloodTeams } from "./blood-teams.js";
 
 const HEADERS = ["Skin", "Màu", "Sở hữu", "Sao", "Slot"];
 
 export function HeroesSection({ ctx }) {
+  const blood = isBlood(ctx.state);
+  const hint = blood ? "Đêm Đỏ · 3 hero Master + 3 hero Guest · Joker ở slot 4 bên có Loli"
+    : "5 slot bắt buộc · Joker hỗ trợ chỉ hiện khi skin Loli kích hoạt";
   return html`
-    <${Accordion} title="Hero" hint="5 slot bắt buộc · Joker hỗ trợ chỉ hiện khi skin Loli kích hoạt">
-      <${HeroesBody} ctx=${ctx} />
+    <${Accordion} title="Hero" hint=${hint}>
+      ${blood ? html`<${BloodTeams} ctx=${ctx} />` : html`<${HeroesBody} ctx=${ctx} />`}
     <//>
   `;
 }
@@ -35,16 +39,18 @@ function HeroesBody({ ctx }) {
   `;
 }
 
-function HeroCard({ ctx, hero, index, summoned = false }) {
+// group = state list the card edits ("heroes" or Đêm Đỏ "guestHeroes"); slot = shown label;
+// chosen = names taken elsewhere in the lineup (disabled in the picker).
+export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes", slot = `#${index + 1}`, chosen }) {
   const { state, dict, artifactDict, update, capturedHeroArtifact } = ctx;
   const skins = heroSkins(dict, hero.name);
   const hasSkins = Object.keys(skins).length > 0;
   const nodes = dict.heroes[hero.name]?.avatarNodes || [];
   const heroCode = dict.heroes[hero.name]?.code;
   const pool = artifactDict.heroes[heroCode]?.pool;
-  const options = [["", "— Chọn hero —"], ...nameOptions(dict, "heroes", state.heroes.map((h) => h.name), hero.name)];
-  const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s.heroes[index]));
-  const setName = (v) => update((s) => void (s.heroes[index] = newHero(v)));
+  const options = [["", "— Chọn hero —"], ...nameOptions(dict, "heroes", chosen ?? state.heroes.map((h) => h.name), hero.name)];
+  const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s[group][index]));
+  const setName = (v) => update((s) => void (s[group][index] = newHero(v)));
   // "Tùy chỉnh" also owns the Thần Khí: tick fills it from the capture (Teams slots only — the
   // summoned Joker has none), untick returns to "theo capture".
   const setCustom = async (on) => {
@@ -69,10 +75,10 @@ function HeroCard({ ctx, hero, index, summoned = false }) {
   return html`
     <div class="card">
       <div class="row">
-        <strong>${`#${index + 1}`}</strong>
+        <strong>${slot}</strong>
         ${summoned
           ? html`<span>${label(dict.heroes[hero.name])}</span><span class="note">Hỗ trợ · Ra sân cùng Pháo Loli</span>`
-          : html`<${Select} aria-label=${`Hero slot ${index + 1}`} options=${options} value=${hero.name} onChange=${setName} />`}
+          : html`<${Select} aria-label=${`Hero ${group === "heroes" ? "" : "Guest "}slot ${index + 1}`} options=${options} value=${hero.name} onChange=${setName} />`}
         ${custom}
       </div>
       ${hero.name && html`<${RelicPicker} selection=${hero.relic} lines=${ctx.relicLines} edit=${edit} />`}

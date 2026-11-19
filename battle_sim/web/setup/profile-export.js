@@ -1,11 +1,12 @@
 // Setup page state -> profile JSON (the format web/battle/profile.js reads).
 import * as R from "./skin-rules.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../hero-lineup.js";
-import { BUILDINGS, heroSkins, buildSkins } from "./profile-state.js";
+import { BLOOD_SIDE, BUILDINGS, heroSkins, buildSkins, isBlood, lineupHeroes } from "./profile-state.js";
 
 export function toProfile(state, dict) {
   const profile = {};
   if (state.map?.mode === "capital") profile.map = { mode: "capital", boss: state.map.boss, level: state.map.level };
+  else if (isBlood(state)) profile.map = { mode: "blood", level: state.map.level };
   else if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
   if (state.heroes) {
     const heroProfile = (hero) => {
@@ -27,10 +28,14 @@ export function toProfile(state, dict) {
       ];
       return out;
     };
-    profile.heroes = state.heroes.filter((hero) => hero.name).map(heroProfile);
-    const loli = state.heroes.find(({ name }) => name === JOKER_SUMMON.hero);
+    const lineup = lineupHeroes(state);
+    if (isBlood(state)) {
+      profile.heroes = state.heroes.slice(0, BLOOD_SIDE).filter((hero) => hero.name).map(heroProfile);
+      profile.guestHeroes = state.guestHeroes.filter((hero) => hero.name).map(heroProfile);
+    } else profile.heroes = state.heroes.filter((hero) => hero.name).map(heroProfile);
+    const loli = lineup.find(({ name }) => name === JOKER_SUMMON.hero);
     if (state.summonedJoker && (state.summonedJoker.custom || state.summonedJoker.relic
-      || hasSummonedJoker(state.heroes, loli?.custom && loli.slots.includes(JOKER_SUMMON.skin)))) {
+      || hasSummonedJoker(lineup, loli?.custom && loli.slots.includes(JOKER_SUMMON.skin)))) {
       profile.summonedJoker = heroProfile(state.summonedJoker);
     }
   }

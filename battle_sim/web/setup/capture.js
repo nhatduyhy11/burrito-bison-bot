@@ -1,18 +1,37 @@
-import { LIMITS, artifactState, newHero } from "./profile-state.js";
+import { BLOOD_SIDE, LIMITS, artifactState, newHero } from "./profile-state.js";
 
-const captures = new Map(); // region:battle -> StartGameP
+const captures = new Map(); // region:battle -> { start: StartGameP, team? }
 
-async function capturedStart(region, battle) {
+async function capturedBattle(region, battle) {
   if (!battle) return null;
   const key = `${region}:${battle}`;
   if (!captures.has(key)) {
     const response = await fetch(`/__sim/battle/${battle}.json?region=${region}`);
-    captures.set(key, response.ok ? (await response.json()).start : null);
+    captures.set(key, response.ok ? await response.json() : null);
   }
   return captures.get(key);
 }
+const capturedStart = async (region, battle) => (await capturedBattle(region, battle))?.start ?? null;
 
 const listItems = (list) => Array.from({ length: list?._length || 0 }, (_, i) => list[String(i)]);
+export const BLOOD_BATTLE_TYPES = [47, 48]; // web/battle/blood-map.js
+
+// Đêm Đỏ capture: the lineup heroes split by owner (uuid in each member's roster, capture.team),
+// Master = leaderId. Returns { master: [hero state x3], guest: [hero state x3] }, null when the
+// capture has no team roster.
+export async function bloodTeams(dict, region, battle) {
+  const b = await capturedBattle(region, battle);
+  if (!b?.team) return null;
+  const lineup = listItems(listItems(b.start.playerInfos)[0]?.heros);
+  const side = (master) => {
+    const member = b.team.find((m) => (m.playerId === Number(b.start.leaderId)) === master);
+    const own = new Set(listItems(member?.heros).map((h) => h.uuid));
+    const names = lineup.filter((h) => own.has(h.uuid))
+      .map((h) => Object.keys(dict.heroes).find((key) => dict.heroes[key].code === h.code)).filter(Boolean);
+    return Array.from({ length: BLOOD_SIDE }, (_, i) => newHero(names[i] || ""));
+  };
+  return { master: side(true), guest: side(false) };
+}
 
 // Turning a section on fills it from the base capture. The map prefills as a safe fallback only:
 // a campaign capture fills its own stage, a capital capture opens the blank capital form (the
@@ -32,6 +51,7 @@ export async function prefill(dict, maps, region, battle, group) {
     return Object.keys(dict.summonerGear).filter((key) => codes.has(dict.summonerGear[key].code));
   }
   if (group === "map") {
+    if (BLOOD_BATTLE_TYPES.includes(start?.battleType)) return { mode: "blood", stage: maps.campaign.minStage, boss: null, level: start.level };
     if (start?.battleType === maps.capital.battleType) return { mode: "capital", stage: maps.campaign.minStage, boss: null, level: null };
     return { mode: "campaign", stage: start?.level || maps.campaign.minStage, boss: null, level: null };
   }

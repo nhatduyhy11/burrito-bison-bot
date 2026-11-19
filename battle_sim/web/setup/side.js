@@ -7,10 +7,20 @@ import { AccountSection } from "./sections/account.js";
 
 const NO_STATUS = { text: "", kind: "note" };
 
-function warnings(state, profile) {
+const heroNames = (list) => (list || []).map((hero) => (typeof hero === "string" ? hero : hero.name));
+
+function warnings(state, profile, baseBattle) {
   const out = [];
-  if (profile.heroes?.length !== 5) out.push("Cần chọn đủ 5 hero.");
-  if (new Set(profile.heroes?.map((hero) => typeof hero === "string" ? hero : hero.name)).size !== profile.heroes?.length) out.push("5 hero phải khác nhau.");
+  if (profile.map?.mode === "blood") {
+    const all = [...heroNames(profile.heroes), ...heroNames(profile.guestHeroes)];
+    if (profile.heroes?.length !== 3 || profile.guestHeroes?.length !== 3) out.push("Đêm Đỏ: cần đủ 3 hero Master và 3 hero Guest.");
+    if (new Set(all).size !== all.length) out.push("Đêm Đỏ: 6 hero phải khác nhau.");
+    if (!baseBattle?.team) out.push("Đêm Đỏ: trận gốc phải là capture Đêm Đỏ có roster 2 acc.");
+  } else {
+    if (profile.heroes?.length !== 5) out.push("Cần chọn đủ 5 hero.");
+    if (new Set(heroNames(profile.heroes)).size !== profile.heroes?.length) out.push("5 hero phải khác nhau.");
+    if (baseBattle?.team) out.push("Capture Đêm Đỏ: bật Màn chơi và chọn mode Đêm Đỏ.");
+  }
   if (!state.battle) out.push("Chưa có capture nào để làm trận gốc.");
   if (profile.map?.mode === "capital" && !profile.map.boss) out.push("U Đô: chưa chọn boss.");
   else if (profile.map?.mode === "capital" && !profile.map.level) out.push("U Đô: chưa chọn bộ quái đi kèm.");
@@ -30,7 +40,7 @@ export function Side({ ctx, battles, profile, initialStatus }) {
   const [status, setStatus] = useState(NO_STATUS);
   const [playing, setPlaying] = useState(false);
   const fileInput = useRef(null);
-  const problems = warnings(state, profile);
+  const problems = warnings(state, profile, ctx.baseBattle);
   const canPlay = typeof window.simPlay === "function";
   const json = () => JSON.stringify(toProfile(state, dict), null, 2);
 

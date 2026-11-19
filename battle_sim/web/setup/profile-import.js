@@ -5,20 +5,20 @@ import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkill
 import { antiqueSelections } from "../antiques.js";
 import { resolveRelic } from "../relics.js";
 import {
-  LIMITS, buildSkins, heroSkins, emptyState, newHero, newBuilding, normalize, artifactState,
+  LIMITS, BLOOD_SIDE, buildSkins, heroSkins, emptyState, newHero, newBuilding, normalize, artifactState,
 } from "./profile-state.js";
 
 // Lenient import of a profile JSON (as written by toProfile or by hand). Unknown names throw.
 // catalogs: { maps (map-dict.json), bossDict (boss-dict.json), antiqueDict (antique-dict.json) },
 // each needed only when the profile has that part.
-export function fromProfile(profile, base, dict, { maps, bossDict, antiqueDict, relicLines } = {}) {
+export function fromProfile(profile, base, dict, { maps, bossDict, bloodDict, antiqueDict, relicLines } = {}) {
   const next = { ...emptyState(dict, antiqueDict), battle: base.battle, seed: base.seed };
   const need = (group, name) => {
     if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong hero-dict.json / support-dict.json`);
     return name;
   };
   const entryOf = (item) => (typeof item === "string" ? { name: item } : item || {});
-  if (profile.map) next.map = readMap(profile.map, { maps, bossDict });
+  if (profile.map) next.map = readMap(profile.map, { maps, bossDict, bloodDict });
   const readHero = (item) => {
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
@@ -54,6 +54,7 @@ export function fromProfile(profile, base, dict, { maps, bossDict, antiqueDict, 
   if (Array.isArray(profile.heroes)) {
     next.heroes = profile.heroes.slice(0, LIMITS.heroes).map(readHero);
   }
+  if (Array.isArray(profile.guestHeroes)) next.guestHeroes = profile.guestHeroes.slice(0, BLOOD_SIDE).map(readHero);
   if (profile.mounts !== undefined) {
     const { owned, selected = null } = profile.mounts || {};
     if (!Array.isArray(owned) || new Set(owned).size !== owned.length) throw new Error("Mount sở hữu phải là danh sách không trùng");
@@ -131,9 +132,14 @@ export function fromProfile(profile, base, dict, { maps, bossDict, antiqueDict, 
   return next;
 }
 
-function readMap(map, { maps, bossDict }) {
+function readMap(map, { maps, bossDict, bloodDict }) {
   if (!maps) throw new Error("Thiếu map-dict.json");
   const stage = Number(map.stage) || maps.campaign.minStage;
+  if (map.mode === "blood") {
+    if (!bloodDict) throw new Error("Thiếu blood-dict.json");
+    if (!bloodDict.levels[map.level]) throw new Error(`Không có ải Đêm Đỏ ${map.level} trong blood-dict.json`);
+    return { mode: "blood", stage, boss: null, level: map.level };
+  }
   if (map.mode !== "capital") return { mode: "campaign", stage, boss: null, level: null };
   if (map.boss == null) return { mode: "capital", stage, boss: null, level: null };
   if (!bossDict) throw new Error("Thiếu boss-dict.json");

@@ -8,6 +8,11 @@ import { defaultAntiques } from "../antiques.js";
 import { MAX_STAGE, holeNum } from "../artifacts.js";
 
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2, summonerSkins: SUMMONER_SLOTS };
+// Đêm Đỏ (map mode "blood"): Teams shows heroes[0..2] as Master and guestHeroes as Guest
+// (docs/planning/blood_night_setup.md); heroes[3..4] stay in the state but are not exported.
+const BLOOD_SIDE = 3;
+const isBlood = (state) => state.map?.mode === "blood";
+const lineupHeroes = (state) => (isBlood(state) ? [...state.heroes.slice(0, BLOOD_SIDE), ...state.guestHeroes] : state.heroes);
 const BUILDINGS = [["door", "Cửa"], ["bed", "Giường"], ["generator", "Chuột (máy phát điện)"], ["cat", "Mèo (chiêu tài)"]];
 
 const heroSkins = (dict, name) => dict.heroes[name]?.skins || {};
@@ -17,6 +22,7 @@ const buildSkins = (dict, building) => dict.buildings[building].skins;
 function emptyState(dict, antiqueDict) {
   return {
     battle: "", seed: "", map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
+    guestHeroes: Array.from({ length: BLOOD_SIDE }, () => newHero("")),
     mounts: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null, summonerSkins: null,
     summonerWorn: null, summonerGear: null,
@@ -35,6 +41,7 @@ function newBuilding(dict, building) {
 
 function normalize(state, dict) {
   state.heroes = Array.from({ length: LIMITS.heroes }, (_, i) => state.heroes?.[i] || newHero(""));
+  state.guestHeroes = Array.from({ length: BLOOD_SIDE }, (_, i) => state.guestHeroes?.[i] || newHero(""));
   // Trap / Pet / Spell reserve fixed slots: the state pads with null placeholders; null stays null
   // so "tắt = giữ từ capture" still works.
   for (const group of ["traps", "pets", "spells"]) {
@@ -43,13 +50,13 @@ function normalize(state, dict) {
   if (state.mounts && !state.mounts.owned.includes(state.mounts.selected)) state.mounts.selected = null;
   // The worn Summoner skin is picked among the skins checked in the Summoner table.
   if (!state.summonerSkins?.some(({ name }) => name === state.summonerWorn)) state.summonerWorn = null;
-  for (const hero of [...state.heroes, state.summonedJoker].filter(Boolean)) {
+  for (const hero of [...state.heroes, ...state.guestHeroes, state.summonedJoker].filter(Boolean)) {
     // "Tùy chỉnh" customizes everything: a red hero's Dị Năng defaults to 0; untouched = as captured.
     if (!hero.custom || !dict.heroes[hero.name]?.avatarNodes) hero.avatar = null;
     else hero.avatar ??= 0;
   }
-  if (state.heroes) for (const hero of state.heroes) R.normalizeHero(hero, heroSkins(dict, hero.name));
-  for (const hero of state.heroes) normalizeArtifact(hero.artifact);
+  for (const hero of [...state.heroes, ...state.guestHeroes]) R.normalizeHero(hero, heroSkins(dict, hero.name));
+  for (const hero of [...state.heroes, ...state.guestHeroes]) normalizeArtifact(hero.artifact);
   state.summonedJoker ||= newHero(JOKER_SUMMON.summonedHero);
   R.normalizeHero(state.summonedJoker, heroSkins(dict, JOKER_SUMMON.summonedHero));
   for (const [building] of BUILDINGS) {
@@ -76,6 +83,9 @@ function normalizeArtifact(artifact) {
 
 export {
   LIMITS,
+  BLOOD_SIDE,
+  isBlood,
+  lineupHeroes,
   BUILDINGS,
   heroSkins,
   buildSkins,
