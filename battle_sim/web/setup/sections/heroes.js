@@ -83,7 +83,7 @@ export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes",
   const avatar = hero.custom && nodes.length ? html`<${AvatarPicker} hero=${hero} nodes=${nodes} edit=${editSkin} />` : null;
   const table = hero.custom && hasSkins ? html`<${HeroSkinTable} hero=${hero} skins=${skins} edit=${editSkin} />` : null;
   const artifact = !summoned && hero.custom && pool
-    ? html`<div class="subsection"><${ArtifactBody} artifact=${hero.artifact} heroCode=${heroCode} pool=${pool} artifactDict=${artifactDict} edit=${edit} /></div>`
+    ? html`<div class="subsection"><${ArtifactBody} artifact=${hero.artifact} heroCode=${heroCode} heroDict=${dict.heroes[hero.name]} pool=${pool} artifactDict=${artifactDict} edit=${edit} /></div>`
     : null;
   return html`
     <div class="card">

@@ -341,829 +341,967 @@
       "code": 10010701000,
       "name": "Monkey Thunderclap",
       "name_vn": "Lôi Âm Thần Hầu",
-      "desc_vn": "Thay thế Thần Khí 1: Địch trúng <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, ST phải chịu+30%"
+      "desc_vn": "Thay thế Thần Khí 1: Địch trúng <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, ST phải chịu+30%",
+      "type": "PASSIVE"
     },
     "10010702000": {
       "code": 10010702000,
       "name": "Thunder Wrath Strike",
       "name_vn": "Nộ Kích Thiên Lôi",
-      "desc_vn": "Thay thế Thần Khí 2: Công Thường [Dây Xích Sấm Sét] gây ST phạm vi nhỏ, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 2: Công Thường [Dây Xích Sấm Sét] gây ST phạm vi nhỏ, ST+20%",
+      "type": "PASSIVE"
     },
     "10010703000": {
       "code": 10010703000,
       "name": "Thunder God's Blessing",
       "name_vn": "Lôi Thần Chúc Phúc",
-      "desc_vn": "Thay thế Thần Khí 3: Mục tiêu Tuyệt Kỹ [Triệu Hồi Đám Mây]+2, ST+15%"
+      "desc_vn": "Thay thế Thần Khí 3: Mục tiêu Tuyệt Kỹ [Triệu Hồi Đám Mây]+2, ST+15%",
+      "type": "PASSIVE"
     },
     "10010704000": {
       "code": 10010704000,
       "name": "Lightning Barrage",
       "name_vn": "Liên Kích Tia Chớp",
-      "desc_vn": "Thay thế Thần Khí 4: Đạn Công Thường [Dây Xích Sấm Sét]+3, ST+40%"
+      "desc_vn": "Thay thế Thần Khí 4: Đạn Công Thường [Dây Xích Sấm Sét]+3, ST+40%",
+      "type": "PASSIVE"
     },
     "10010705000": {
       "code": 10010705000,
       "name": "Skyquake Hammer",
       "name_vn": "Chùy Lôi Chấn Thiên",
-      "desc_vn": "Thay thế Thần Khí 5: Mở rộng phạm vi ST Tuyệt Kỹ [Triệu Hồi Đám Mây], ST+30%"
+      "desc_vn": "Thay thế Thần Khí 5: Mở rộng phạm vi ST Tuyệt Kỹ [Triệu Hồi Đám Mây], ST+30%",
+      "type": "PASSIVE"
     },
     "10010706000": {
       "code": 10010706000,
       "name": "Wind God's Thundercall",
       "name_vn": "Phong Thần Hoán Lôi",
-      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ [Triệu Hồi Đám Mây] triệu hồi 8s Lôi Vân, mỗi giây phóng <color=#f57c00 click=\"onClicked\" param=\"28\"><u>[Chuỗi Tia Sét Thứ Cấp]</u></color>, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của bản thân+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ [Triệu Hồi Đám Mây] triệu hồi 8s Lôi Vân, mỗi giây phóng <color=#f57c00 click=\"onClicked\" param=\"28\"><u>[Chuỗi Tia Sét Thứ Cấp]</u></color>, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của bản thân+20%",
+      "type": "PASSIVE"
     },
     "10010707000": {
       "code": 10010707000,
       "name": "Thunder Monkey Possession",
       "name_vn": "Lôi Hầu Nhập Thân",
-      "desc_vn": "Khi Thần Khí trong trận Hanuman đạt Lv5, mỗi Máy Phát Điện mỗi cấp giúp Hanuman gây ST Tê Liệt +5%, tối đa 80%"
+      "desc_vn": "Khi Thần Khí trong trận Hanuman đạt Lv5, mỗi Máy Phát Điện mỗi cấp giúp Hanuman gây ST Tê Liệt +5%, tối đa 80%",
+      "type": "PASSIVE"
     },
     "10010708000": {
       "code": 10010708000,
       "name": "Monkey Thunder Fury",
       "name_vn": "Lôi Nộ Thần Hầu",
-      "desc_vn": "Hanuman trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Hanuman trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10020701000": {
       "code": 10020701000,
       "name": "Tentacle Strangler",
       "name_vn": "Xúc Tu Xé Xác",
-      "desc_vn": "Thay thế Thần Khí 1: Tuyệt Kỹ [Liềm Thu Hoạch] phóng to, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 1: Tuyệt Kỹ [Liềm Thu Hoạch] phóng to, ST+50%",
+      "type": "PASSIVE"
     },
     "10020702000": {
       "code": 10020702000,
       "name": "Gluttonous Fangs",
       "name_vn": "Nanh Hung Bạo",
-      "desc_vn": "Thay thế Thần Khí 2: Thi triển Tuyệt Kỹ [Liềm Thu Hoạch] khiến bản thân trong 5s có Tốc Công+100% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 2: Thi triển Tuyệt Kỹ [Liềm Thu Hoạch] khiến bản thân trong 5s có Tốc Công+100% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10020703000": {
       "code": 10020703000,
       "name": "Savage Claw",
       "name_vn": "Vuốt Đen Xé Rách",
-      "desc_vn": "Thay thế Thần Khí 3: Khi Công Thường [Nanh Vuốt Tàn Sát] có 15% phóng ngay Tuyệt Kỹ, không tiêu Nộ"
+      "desc_vn": "Thay thế Thần Khí 3: Khi Công Thường [Nanh Vuốt Tàn Sát] có 15% phóng ngay Tuyệt Kỹ, không tiêu Nộ",
+      "type": "PASSIVE"
     },
     "10020704000": {
       "code": 10020704000,
       "name": "Abyssal Devour",
       "name_vn": "Nuốt Chửng Vực Sâu",
-      "desc_vn": "Thay thế Thần Khí 4: Mục tiêu Công Thường [Nanh Vuốt Tàn Sát]+2, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 4: Mục tiêu Công Thường [Nanh Vuốt Tàn Sát]+2, ST+30%",
+      "type": "PASSIVE"
     },
     "10020705000": {
       "code": 10020705000,
       "name": "Symbiotic Rampage",
       "name_vn": "Cộng Sinh Cuồng Nộ",
-      "desc_vn": "Thay thế Thần Khí 5: ST từ Tuyệt Kỹ [Liềm Thu Hoạch] lên BOSS+100%"
+      "desc_vn": "Thay thế Thần Khí 5: ST từ Tuyệt Kỹ [Liềm Thu Hoạch] lên BOSS+100%",
+      "type": "PASSIVE"
     },
     "10020706000": {
       "code": 10020706000,
       "name": "Ultimate Riot",
       "name_vn": "Bạo Loạn Tột Cùng",
-      "desc_vn": "Thay thế Thức Tỉnh: Mục tiêu Tuyệt Kỹ [Liềm Thu Hoạch] +1, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Mục tiêu Tuyệt Kỹ [Liềm Thu Hoạch] +1, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%",
+      "type": "PASSIVE"
     },
     "10020707000": {
       "code": 10020707000,
       "name": "Symbiotic Boost",
       "name_vn": "Cường Hóa Cộng Sinh",
-      "desc_vn": "Khi Thần Khi trong trận Gai Độc đạt Lv4, mỗi lần bạo sẽ tăng 1% ST V.Lý cho bản thân, tối đa 60%"
+      "desc_vn": "Khi Thần Khi trong trận Gai Độc đạt Lv4, mỗi lần bạo sẽ tăng 1% ST V.Lý cho bản thân, tối đa 60%",
+      "type": "PASSIVE"
     },
     "10020708000": {
       "code": 10020708000,
       "name": "Hunting Instinct",
       "name_vn": "Bản Năng Săn Bắn",
-      "desc_vn": "Gai Độc trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Gai Độc trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10030701000": {
       "code": 10030701000,
       "name": "Healing Light",
       "name_vn": "Hồi Phục Linh Quang",
-      "desc_vn": "Thay thế Thần Khí 1: Công Thường [Thuật Chữa Trị] hồi HP+100%"
+      "desc_vn": "Thay thế Thần Khí 1: Công Thường [Thuật Chữa Trị] hồi HP+100%",
+      "type": "PASSIVE"
     },
     "10030702000": {
       "code": 10030702000,
       "name": "Homeward Guide",
       "name_vn": "Dẫn Hồn Trở Về",
-      "desc_vn": "Thay thế Thần Khí 2: Tuyệt Kỹ [Thuật Sát Ma] có 15% tỷ lệ gây <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+      "desc_vn": "Thay thế Thần Khí 2: Tuyệt Kỹ [Thuật Sát Ma] có 15% tỷ lệ gây <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>",
+      "type": "PASSIVE"
     },
     "10030703000": {
       "code": 10030703000,
       "name": "Cleansing Radiance",
       "name_vn": "Ánh Sáng Tẩy Tội",
-      "desc_vn": "Thay thế Thần Khí 3: Khi Chữa Trị có 50% khiến hiệu quả Chữa Trị lần này+120%"
+      "desc_vn": "Thay thế Thần Khí 3: Khi Chữa Trị có 50% khiến hiệu quả Chữa Trị lần này+120%",
+      "type": "PASSIVE"
     },
     "10030704000": {
       "code": 10030704000,
       "name": "Stygian Tide",
       "name_vn": "Sóng Dữ Minh Hà",
-      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Tuyệt Kỹ [Thuật Sát Ma], ST+50%"
+      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Tuyệt Kỹ [Thuật Sát Ma], ST+50%",
+      "type": "PASSIVE"
     },
     "10030705000": {
       "code": 10030705000,
       "name": "Holy Blessing",
       "name_vn": "Hộ Sư Thánh Huy",
-      "desc_vn": "Thay thế Thần Khí 5: Tuyệt Kỹ [Thuật Sát Ma] trong 5s khiến ST cửa phải chịu-25% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 5: Tuyệt Kỹ [Thuật Sát Ma] trong 5s khiến ST cửa phải chịu-25% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10030706000": {
       "code": 10030706000,
       "name": "Resting Sanctum",
       "name_vn": "Thánh Vực An Hồn",
-      "desc_vn": "Thay thế Thức Tỉnh: Sau mỗi lần phóng Tuyệt Kỹ, hồi 400 Nộ và tăng 20% Tốc Công, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%"
+      "desc_vn": "Thay thế Thức Tỉnh: Sau mỗi lần phóng Tuyệt Kỹ, hồi 400 Nộ và tăng 20% Tốc Công, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%",
+      "type": "PASSIVE"
     },
     "10030707000": {
       "code": 10030707000,
       "name": "Anima Guardian",
       "name_vn": "Bảo Hộ Minh Hồn",
-      "desc_vn": "Khi Thần Khi trong trận Pháp Sư Sương đạt Lv2, mỗi khi Cửa tích lũy nhận 1 tầng [Miễn Dịch], ST của tất cả Anh Hùng phe ta vĩnh viễn +5%, tối đa 100%"
+      "desc_vn": "Khi Thần Khi trong trận Pháp Sư Sương đạt Lv2, mỗi khi Cửa tích lũy nhận 1 tầng [Miễn Dịch], ST của tất cả Anh Hùng phe ta vĩnh viễn +5%, tối đa 100%",
+      "type": "PASSIVE"
     },
     "10030708000": {
       "code": 10030708000,
       "name": "Land of Peace",
       "name_vn": "Tịnh Thổ An Nghỉ",
-      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Pháp Sư Sương <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Pháp Sư Sương <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10040701000": {
       "code": 10040701000,
       "name": "Shadow Dominion",
       "name_vn": "Ngự Trị Bóng Đêm",
-      "desc_vn": "Thay thế Thần Khí 1: Tất cả hiệu quả Băng Sương phe ta+80%"
+      "desc_vn": "Thay thế Thần Khí 1: Tất cả hiệu quả Băng Sương phe ta+80%",
+      "type": "PASSIVE"
     },
     "10040702000": {
       "code": 10040702000,
       "name": "Frost Splinter",
       "name_vn": "Sương Giá Vỡ Nứt",
-      "desc_vn": "Thay thế Thần Khí 2: Công Thường [Đạn Băng]<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+3, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 2: Công Thường [Đạn Băng]<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+3, ST+30%",
+      "type": "PASSIVE"
     },
     "10040703000": {
       "code": 10040703000,
       "name": "Frigid Gale",
       "name_vn": "Xương Buốt Chí Mệnh",
-      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi Tuyệt Kỹ [Bão Bóng Tối], ST+30%"
+      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi Tuyệt Kỹ [Bão Bóng Tối], ST+30%",
+      "type": "PASSIVE"
     },
     "10040704000": {
       "code": 10040704000,
       "name": "Arctic Lord",
       "name_vn": "Chúa Tể Cực Hàn",
-      "desc_vn": "Thay thế Thần Khí 4: Công Thường [Đạn Băng]<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+3, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 4: Công Thường [Đạn Băng]<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+3, ST+30%",
+      "type": "PASSIVE"
     },
     "10040705000": {
       "code": 10040705000,
       "name": "Shadow Feast",
       "name_vn": "Yến Tiệc Bóng Đêm",
-      "desc_vn": "Thay thế Thần Khí 5: Thời gian duy trì Tuyệt Kỹ [Bão Bóng Tối] +2s, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 5: Thời gian duy trì Tuyệt Kỹ [Bão Bóng Tối] +2s, ST+50%",
+      "type": "PASSIVE"
     },
     "10040706000": {
       "code": 10040706000,
       "name": "Immortal Reign",
       "name_vn": "Vua Trị Vì Bất Tử",
-      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ [Bão Bóng Tối] có 50% tỷ lệ gây 2s <color=#f57c00 click=\"onClicked\" param=\"6\"><u>Đóng Băng</u></color>, ST+50%, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%"
+      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ [Bão Bóng Tối] có 50% tỷ lệ gây 2s <color=#f57c00 click=\"onClicked\" param=\"6\"><u>Đóng Băng</u></color>, ST+50%, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%",
+      "type": "PASSIVE"
     },
     "10040707000": {
       "code": 10040707000,
       "name": "Frost Armor",
       "name_vn": "Giáp Sương Giá",
-      "desc_vn": "Khi Thần Khi trong trận Vua Pháp Sư đạt Lv3, khi có mặt trên sân, khiến kẻ địch trong phạm vi tấn công chịu ảnh hưởng bởi hiệu quả [Băng Sương] +35% ST Phép (không cộng dồn)"
+      "desc_vn": "Khi Thần Khi trong trận Vua Pháp Sư đạt Lv3, khi có mặt trên sân, khiến kẻ địch trong phạm vi tấn công chịu ảnh hưởng bởi hiệu quả [Băng Sương] +35% ST Phép (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10040708000": {
       "code": 10040708000,
       "name": "Absolute Zero",
       "name_vn": "Vùng Giá Rét",
-      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Vua Pháp Sư <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Vua Pháp Sư <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10050701000": {
       "code": 10050701000,
       "name": "Salvo Blast",
       "name_vn": "Mưa Đạn Hỗn Loạn",
-      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+50%, Trị Liệu của mục tiêu trong 8s-50% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+50%, Trị Liệu của mục tiêu trong 8s-50% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10050702000": {
       "code": 10050702000,
       "name": "Chain Explosion",
       "name_vn": "Nổ Liên Hoàn",
-      "desc_vn": "Thay thế Thần Khí 2: Công Thường gây ST phạm vi nhỏ, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 2: Công Thường gây ST phạm vi nhỏ, ST+20%",
+      "type": "PASSIVE"
     },
     "10050703000": {
       "code": 10050703000,
       "name": "Firepower Overload",
       "name_vn": "Quá Tải Hỏa Lực",
-      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Tuyệt Kỹ, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Tuyệt Kỹ, ST+50%",
+      "type": "PASSIVE"
     },
     "10050704000": {
       "code": 10050704000,
       "name": "Chaos Domain",
       "name_vn": "Vùng Hỗn Lược",
-      "desc_vn": "Thay thế Thần Khí 4: Công Thường <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+5, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 4: Công Thường <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+5, ST+30%",
+      "type": "PASSIVE"
     },
     "10050705000": {
       "code": 10050705000,
       "name": "Scorched Earth",
       "name_vn": "Vùng Đất Cháy",
-      "desc_vn": "Thay thế Thần Khí 5: Mục tiêu Tuyệt Kỹ+2, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 5: Mục tiêu Tuyệt Kỹ+2, ST+30%",
+      "type": "PASSIVE"
     },
     "10050706000": {
       "code": 10050706000,
       "name": "Rampaging Core",
       "name_vn": "Lõi Cuồng Nộ",
-      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ sẽ tách thànhTên Lửa Thứ Cấp, gây ST bằng 420% Công,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>3 lần, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%"
+      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ sẽ tách thànhTên Lửa Thứ Cấp, gây ST bằng 420% Công,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>3 lần, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%",
+      "type": "PASSIVE"
     },
     "10050707000": {
       "code": 10050707000,
       "name": "Ammo Expansion",
       "name_vn": "Mở Rộng Đạn Dược",
-      "desc_vn": "Khi Thần Khi trong trận Pháo Loli đạt Lv3, bảng chỉ số Pháo Loli mỗi khi có 1% Bạo và 1% Tốc Công sẽ khiến tất cả Anh Hùng phe ta tăng 1% ST, tối đa 100%"
+      "desc_vn": "Khi Thần Khi trong trận Pháo Loli đạt Lv3, bảng chỉ số Pháo Loli mỗi khi có 1% Bạo và 1% Tốc Công sẽ khiến tất cả Anh Hùng phe ta tăng 1% ST, tối đa 100%",
+      "type": "PASSIVE"
     },
     "10050708000": {
       "code": 10050708000,
       "name": "Rapid Reload",
       "name_vn": "Nạp Đạn Tốc Độ",
-      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Pháo Loli <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Pháo Loli <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10080701000": {
       "code": 10080701000,
       "name": "Realm Breaker",
       "name_vn": "Côn Giới Vương",
-      "desc_vn": "Thay thế Thần Khí 1: Mở rộng phạm vi ST Công Thường, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 1: Mở rộng phạm vi ST Công Thường, ST+30%",
+      "type": "PASSIVE"
     },
     "10080702000": {
       "code": 10080702000,
       "name": "Blinking Thrust",
       "name_vn": "Đột Kích Tức Thời",
-      "desc_vn": "Thay thế Thần Khí 2: Khi kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color>, có 15% tỷ lệ kèm 0.5s <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+      "desc_vn": "Thay thế Thần Khí 2: Khi kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color>, có 15% tỷ lệ kèm 0.5s <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>",
+      "type": "PASSIVE"
     },
     "10080703000": {
       "code": 10080703000,
       "name": "Vitality Burst",
       "name_vn": "Bùng Nổ Nguyên Khí",
-      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Tuyệt Kỹ, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Tuyệt Kỹ, ST+30%",
+      "type": "PASSIVE"
     },
     "10080704000": {
       "code": 10080704000,
       "name": "Fortune Combo",
       "name_vn": "Liên Hoàn Như Ý",
-      "desc_vn": "Thay thế Thần Khí 4: Liên Kích Công Thường+1, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 4: Liên Kích Công Thường+1, ST+50%",
+      "type": "PASSIVE"
     },
     "10080705000": {
       "code": 10080705000,
       "name": "Savage Fury",
       "name_vn": "Cuồng Nộ Saiyan",
-      "desc_vn": "Thay thế Thần Khí 5: Thời gian duy trì Tuyệt Kỹ+4s, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 5: Thời gian duy trì Tuyệt Kỹ+4s, ST+50%",
+      "type": "PASSIVE"
     },
     "10080706000": {
       "code": 10080706000,
       "name": "Savage Divinity",
       "name_vn": "Thần Saiyan",
-      "desc_vn": "Thay thế Thức Tỉnh: Phân thân Tuyệt Kỹ+2, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của bản thân sau thức tỉnh+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Phân thân Tuyệt Kỹ+2, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của bản thân sau thức tỉnh+20%",
+      "type": "PASSIVE"
     },
     "10080707000": {
       "code": 10080707000,
       "name": "Burning Frenzy",
       "name_vn": "Ý Chiến Sôi Sục",
-      "desc_vn": "Khi Thần Khi trong trận Tôn Ngộ Không đạt Lv3, trong thời gian Tuyệt Kỹ sẽ gấp đôi ST do Bạo bản thân gây ra"
+      "desc_vn": "Khi Thần Khi trong trận Tôn Ngộ Không đạt Lv3, trong thời gian Tuyệt Kỹ sẽ gấp đôi ST do Bạo bản thân gây ra",
+      "type": "PASSIVE"
     },
     "10080708000": {
       "code": 10080708000,
       "name": "Vitality Bomb",
       "name_vn": "Đạn Nguyên Khí",
-      "desc_vn": "Tôn Ngộ Không trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tôn Ngộ Không trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10090701000": {
       "code": 10090701000,
       "name": "Nano Pulse",
       "name_vn": "Xung Nhịp Nano",
-      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường [Tia Sáng Tập Trung] +2, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường [Tia Sáng Tập Trung] +2, ST+30%",
+      "type": "PASSIVE"
     },
     "10090702000": {
       "code": 10090702000,
       "name": "Anti-Armor Beam",
       "name_vn": "Tia Xuyên Giáp",
-      "desc_vn": "Thay thế Thần Khí 2: Tuyệt Kỹ [Tia Laser Hủy Diệt] gây ST phạm vi nhỏ, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 2: Tuyệt Kỹ [Tia Laser Hủy Diệt] gây ST phạm vi nhỏ, ST+30%",
+      "type": "PASSIVE"
     },
     "10090703000": {
       "code": 10090703000,
       "name": "Armor Overload",
       "name_vn": "Quá Tải Giáp Chiến",
-      "desc_vn": "Thay thế Thần Khí 3: ST từ Tuyệt Kỹ [Tia Laser Hủy Diệt] lên Tinh Anh và BOSS+100%"
+      "desc_vn": "Thay thế Thần Khí 3: ST từ Tuyệt Kỹ [Tia Laser Hủy Diệt] lên Tinh Anh và BOSS+100%",
+      "type": "PASSIVE"
     },
     "10090704000": {
       "code": 10090704000,
       "name": "Laser Barrage",
       "name_vn": "Lưỡi Đao Ánh Sáng",
-      "desc_vn": "Thay thế Thần Khí 4: Thời gian duy trì Tuyệt Kỹ [Tia Laser Hủy Diệt] +4s, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 4: Thời gian duy trì Tuyệt Kỹ [Tia Laser Hủy Diệt] +4s, ST+50%",
+      "type": "PASSIVE"
     },
     "10090705000": {
       "code": 10090705000,
       "name": "Field Deflection",
       "name_vn": "Lệch Lực Trường",
-      "desc_vn": "Thay thế Thần Khí 5: Trong thời gian Hiệp Sĩ Sấm Sét phóng Tuyệt Kỹ, mỗi giây phóng tia laser nhỏ lên địch ngẫu nhiên, gây ST bằng 420% Công"
+      "desc_vn": "Thay thế Thần Khí 5: Trong thời gian Hiệp Sĩ Sấm Sét phóng Tuyệt Kỹ, mỗi giây phóng tia laser nhỏ lên địch ngẫu nhiên, gây ST bằng 420% Công",
+      "type": "PASSIVE"
     },
     "10090706000": {
       "code": 10090706000,
       "name": "Missile Salvo",
       "name_vn": "Tên Lửa Tề Xạ",
-      "desc_vn": "Thay thế Thức Tỉnh: Đạn Tuyệt Kỹ [Tia Laser Hủy Diệt] +2, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Đạn Tuyệt Kỹ [Tia Laser Hủy Diệt] +2, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%",
+      "type": "PASSIVE"
     },
     "10090707000": {
       "code": 10090707000,
       "name": "Antimatter Cannon",
       "name_vn": "Pháo Phản Vật Chất",
-      "desc_vn": "Khi Thần Khi trong trận Hiệp Sĩ Sấm Sét đạt Lv5, mỗi lần kèm [Định Thân], tăng vĩnh viễn 1.2% Công Hiệp Sĩ Sấm Sét, tối đa 120%"
+      "desc_vn": "Khi Thần Khi trong trận Hiệp Sĩ Sấm Sét đạt Lv5, mỗi lần kèm [Định Thân], tăng vĩnh viễn 1.2% Công Hiệp Sĩ Sấm Sét, tối đa 120%",
+      "type": "PASSIVE"
     },
     "10090708000": {
       "code": 10090708000,
       "name": "Tactical Scan",
       "name_vn": "Quét Chiến Thuật",
-      "desc_vn": "Hiệp Sĩ Sấm Sét trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Hiệp Sĩ Sấm Sét trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10130701000": {
       "code": 10130701000,
       "name": "Army Sweep",
       "name_vn": "Quét Sạch Thiên Quân",
-      "desc_vn": "Thay thế Thần Khí 1: Đường đạn Tuyệt Kỹ [Tam Trảm Huyết Nguyệt]+2, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 1: Đường đạn Tuyệt Kỹ [Tam Trảm Huyết Nguyệt]+2, ST+30%",
+      "type": "PASSIVE"
     },
     "10130702000": {
       "code": 10130702000,
       "name": "Eightfold Rout",
       "name_vn": "Phá Trận Bát Hoang",
-      "desc_vn": "Thay thế Thần Khí 2: Đường đạn Công Thường [Ngọn Giáo Xuyên Thấu]+2, ST+15%"
+      "desc_vn": "Thay thế Thần Khí 2: Đường đạn Công Thường [Ngọn Giáo Xuyên Thấu]+2, ST+15%",
+      "type": "PASSIVE"
     },
     "10130703000": {
       "code": 10130703000,
       "name": "Peerless Might",
       "name_vn": "Cái Thế Vô Song",
-      "desc_vn": "Thay thế Thần Khí 3: Tuyệt Kỹ [Tam Trảm Huyết Nguyệt] <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+4, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 3: Tuyệt Kỹ [Tam Trảm Huyết Nguyệt] <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+4, ST+20%",
+      "type": "PASSIVE"
     },
     "10130704000": {
       "code": 10130704000,
       "name": "Armor-Piercing Thrust",
       "name_vn": "Xuyên Giáp Trực Kích",
-      "desc_vn": "Thay thế Thần Khí 4: Công Thường [Ngọn Giáo Xuyên Thấu] <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+4, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 4: Công Thường [Ngọn Giáo Xuyên Thấu] <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+4, ST+20%",
+      "type": "PASSIVE"
     },
     "10130705000": {
       "code": 10130705000,
       "name": "Brutal Carnage",
       "name_vn": "Như Bẻ Cành Khô",
-      "desc_vn": "替换神器5:青龙风刃令有几率附加5秒<color=#f57c00 click=\"onClicked\" param=\"2\"><u>流血</u></color>"
+      "desc_vn": "替换神器5:青龙风刃令有几率附加5秒<color=#f57c00 click=\"onClicked\" param=\"2\"><u>流血</u></color>",
+      "type": "PASSIVE"
     },
     "10130706000": {
       "code": 10130706000,
       "name": "Demon's Dominion",
       "name_vn": "Ma Lâm Thiên Hạ",
-      "desc_vn": "Thay thế Thức Tỉnh: Lượt Tuyệt Kỹ [Tam Trảm Huyết Nguyệt] tấn công+3, ST+20%, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Lượt Tuyệt Kỹ [Tam Trảm Huyết Nguyệt] tấn công+3, ST+20%, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%",
+      "type": "PASSIVE"
     },
     "10130707000": {
       "code": 10130707000,
       "name": "Unyielding Spirit",
       "name_vn": "Chiến Ý Bất Khuất",
-      "desc_vn": "Khi Thần Khí trong trận Hắc Lữ Bố đạt Lv3, mỗi lần Hắc Lữ Bố gây ST Xuyên Thấu sẽ tăng vĩnh viễn ST Phép Trực Tiếp bản thân 0.5%, tối đa 100%"
+      "desc_vn": "Khi Thần Khí trong trận Hắc Lữ Bố đạt Lv3, mỗi lần Hắc Lữ Bố gây ST Xuyên Thấu sẽ tăng vĩnh viễn ST Phép Trực Tiếp bản thân 0.5%, tối đa 100%",
+      "type": "PASSIVE"
     },
     "10130708000": {
       "code": 10130708000,
       "name": "War God's Iron Body",
       "name_vn": "Võ Thần Bá Thể",
-      "desc_vn": "Hắc Lữ Bố trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Hắc Lữ Bố trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10140701000": {
       "code": 10140701000,
       "name": "Scorching Breath",
       "name_vn": "Hơi Thở Rồng Cháy",
-      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường+2, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường+2, ST+20%",
+      "type": "PASSIVE"
     },
     "10140702000": {
       "code": 10140702000,
       "name": "Blazing Punch",
       "name_vn": "Cú Đấm Bùng Lửa",
-      "desc_vn": "Thay thế Thần Khí 2: Mở rộng phạm vi ST Tuyệt Kỹ, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 2: Mở rộng phạm vi ST Tuyệt Kỹ, ST+50%",
+      "type": "PASSIVE"
     },
     "10140703000": {
       "code": 10140703000,
       "name": "Fusion Core Cannon",
       "name_vn": "Pháo Lớn Dung Hạch",
-      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Công Thường, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Công Thường, ST+50%",
+      "type": "PASSIVE"
     },
     "10140704000": {
       "code": 10140704000,
       "name": "Blazing Salvo",
       "name_vn": "Liên Xạ Viêm Quang",
-      "desc_vn": "Thay thế Thần Khí 4: Tuyệt Kỹ có 15% tỷ lệ gây 1s <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
+      "desc_vn": "Thay thế Thần Khí 4: Tuyệt Kỹ có 15% tỷ lệ gây 1s <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>",
+      "type": "PASSIVE"
     },
     "10140705000": {
       "code": 10140705000,
       "name": "Melting Barrier",
       "name_vn": "Kết Giới Xích Kim",
-      "desc_vn": "Thay thế Thần Khí 5: Lượt ST Tuyệt Kỹ+2, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 5: Lượt ST Tuyệt Kỹ+2, ST+50%",
+      "type": "PASSIVE"
     },
     "10140706000": {
       "code": 10140706000,
       "name": "Flameburst Charge",
       "name_vn": "Xông Pha Viêm Nổ",
-      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ sẽ để lại 5s Biển Lửa, mỗi giây gây ST phạm vi vừa bằng 540% Công, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ sẽ để lại 5s Biển Lửa, mỗi giây gây ST phạm vi vừa bằng 540% Công, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%",
+      "type": "PASSIVE"
     },
     "10140707000": {
       "code": 10140707000,
       "name": "Overclock Incineration",
       "name_vn": "Thiêu Đốt Siêu Tần",
-      "desc_vn": "Khi Thần Khi trong trận Rồng Máy đạt Lv5, Rồng Máy gây thêm 80% ST lên Tinh Anh và BOSS"
+      "desc_vn": "Khi Thần Khi trong trận Rồng Máy đạt Lv5, Rồng Máy gây thêm 80% ST lên Tinh Anh và BOSS",
+      "type": "PASSIVE"
     },
     "10140708000": {
       "code": 10140708000,
       "name": "Void of Cinders",
       "name_vn": "Hư Vô Tàn Diệt",
-      "desc_vn": "Rồng Máy trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Rồng Máy trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10150701000": {
       "code": 10150701000,
       "name": "Seismic Punch",
       "name_vn": "Cú Đấm Rung Đất",
-      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường [Bão Biển Chỉ Dẫn] +2, ST+35%"
+      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường [Bão Biển Chỉ Dẫn] +2, ST+35%",
+      "type": "PASSIVE"
     },
     "10150702000": {
       "code": 10150702000,
       "name": "Starfall Smite",
       "name_vn": "Trọng Kích Sao Rơi",
-      "desc_vn": "Thay thế Thần Khí 2: Tuyệt Kỹ [Lốp Xe Huyết Đao] phóng to, ST+50%"
+      "desc_vn": "Thay thế Thần Khí 2: Tuyệt Kỹ [Lốp Xe Huyết Đao] phóng to, ST+50%",
+      "type": "PASSIVE"
     },
     "10150703000": {
       "code": 10150703000,
       "name": "Electric Tremor",
       "name_vn": "Chấn Động Giận Dữ",
-      "desc_vn": "Thay thế Thần Khí 3: Tốc Độ Tuyệt Kỹ [Lốp Xe Huyết Đao] tăng 50%, tăng tần suất ST, ST+15%"
+      "desc_vn": "Thay thế Thần Khí 3: Tốc Độ Tuyệt Kỹ [Lốp Xe Huyết Đao] tăng 50%, tăng tần suất ST, ST+15%",
+      "type": "PASSIVE"
     },
     "10150704000": {
       "code": 10150704000,
       "name": "Firmament Fist",
       "name_vn": "Quyền Phá Trời Cao",
-      "desc_vn": "Thay thế Thần Khí 4: Công Thường [Bão Biển Chỉ Dẫn] bắn thêm 2 lần, ST+15%"
+      "desc_vn": "Thay thế Thần Khí 4: Công Thường [Bão Biển Chỉ Dẫn] bắn thêm 2 lần, ST+15%",
+      "type": "PASSIVE"
     },
     "10150705000": {
       "code": 10150705000,
       "name": "Primordial Wrath",
       "name_vn": "Giận Dữ Hồng Hoang",
-      "desc_vn": "Thay thế Thần Khí 5: Phát nổ khi Tuyệt Kỹ [Lốp Xe Huyết Đao] kết thúc và gây thêm ST phạm vi bằng 450% Công"
+      "desc_vn": "Thay thế Thần Khí 5: Phát nổ khi Tuyệt Kỹ [Lốp Xe Huyết Đao] kết thúc và gây thêm ST phạm vi bằng 450% Công",
+      "type": "PASSIVE"
     },
     "10150706000": {
       "code": 10150706000,
       "name": "Dimensional Collapse",
       "name_vn": "Sụp Đổ Không Gian",
-      "desc_vn": "Thay thế Thức Tỉnh: Mục tiêu Tuyệt Kỹ [Lốp Xe Huyết Đao] +2, ST+20%, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Mục tiêu Tuyệt Kỹ [Lốp Xe Huyết Đao] +2, ST+20%, sau khi thức tỉnh <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>+20%",
+      "type": "PASSIVE"
     },
     "10150707000": {
       "code": 10150707000,
       "name": "Bloodthirsty Surge",
       "name_vn": "Cơn Sóng Khát Máu",
-      "desc_vn": "Khi Thần Khi trong trận Khổng Lồ Xanh đạt Lv2, khi có bất kỳ đơn vị nào trong trận tử trận, ST và ST Mất HP do Khổng Lồ Xanh gây ra vĩnh viễn +2%, tối đa 120%"
+      "desc_vn": "Khi Thần Khi trong trận Khổng Lồ Xanh đạt Lv2, khi có bất kỳ đơn vị nào trong trận tử trận, ST và ST Mất HP do Khổng Lồ Xanh gây ra vĩnh viễn +2%, tối đa 120%",
+      "type": "PASSIVE"
     },
     "10150708000": {
       "code": 10150708000,
       "name": "Immortal Colossus",
       "name_vn": "Thân Thể Khổng Lồ",
-      "desc_vn": "Khổng Lồ Xanh trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Khổng Lồ Xanh trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10190701000": {
       "code": 10190701000,
       "name": "Mad Hatter's Trick",
       "name_vn": "Ảo Thuật Mũ Điên",
-      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường [Lời Mời Tiệc Trà] +50%, trong thời gian này Chính Xác của mục tiêu-20% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường [Lời Mời Tiệc Trà] +50%, trong thời gian này Chính Xác của mục tiêu-20% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10190702000": {
       "code": 10190702000,
       "name": "Judgment of Hearts",
       "name_vn": "Phán Quyết Tim Đỏ",
-      "desc_vn": "Thay thế Thần Khí 2: Mục tiêu Công Thường [Lời Mời Tiệc Trà] +2, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 2: Mục tiêu Công Thường [Lời Mời Tiệc Trà] +2, ST+20%",
+      "type": "PASSIVE"
     },
     "10190703000": {
       "code": 10190703000,
       "name": "Cheshire Phantom",
       "name_vn": "Ảo Ảnh Cheshire",
-      "desc_vn": "Thay thế Thần Khí 3: Mục tiêu Công Thường [Lời Mời Tiệc Trà] +2, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 3: Mục tiêu Công Thường [Lời Mời Tiệc Trà] +2, ST+20%",
+      "type": "PASSIVE"
     },
     "10190704000": {
       "code": 10190704000,
       "name": "White Rabbit Guide",
       "name_vn": "Thỏ Trắng Dẫn Đường",
-      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Tuyệt Kỹ [Thỏ Tiên Sinh], ST+50%"
+      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Tuyệt Kỹ [Thỏ Tiên Sinh], ST+50%",
+      "type": "PASSIVE"
     },
     "10190705000": {
       "code": 10190705000,
       "name": "Dream Erosion",
       "name_vn": "Xâm Lược Giấc Mơ",
-      "desc_vn": "Thay thế Thần Khí 5: Tuyệt Kỹ [Thỏ Tiên Sinh] sẽ triệu hồi 2 lần Thỏ Tiên Sinh"
+      "desc_vn": "Thay thế Thần Khí 5: Tuyệt Kỹ [Thỏ Tiên Sinh] sẽ triệu hồi 2 lần Thỏ Tiên Sinh",
+      "type": "PASSIVE"
     },
     "10190706000": {
       "code": 10190706000,
       "name": "Dream Master",
       "name_vn": "Chúa Tể Giấc Mơ",
-      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ [Thỏ Tiên Sinh] Thỏ Tiên Sinh biến lớn, mỗi giây khiến địch gần đó chịu ST bằng 40% Công, khi tấn công gây ST phạm vi nhỏ và ST+50%, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> sau thức tỉnh+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ [Thỏ Tiên Sinh] Thỏ Tiên Sinh biến lớn, mỗi giây khiến địch gần đó chịu ST bằng 40% Công, khi tấn công gây ST phạm vi nhỏ và ST+50%, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> sau thức tỉnh+20%",
+      "type": "PASSIVE"
     },
     "10190707000": {
       "code": 10190707000,
       "name": "Tea Party Frenzy",
       "name_vn": "Tiệc Trà Cuồng Nhiệt",
-      "desc_vn": "Khi Thần Khi trong trận Alice đạt Lv5, ST Bạo của Alice và Thỏ Tiên Sinh lên kẻ địch có [Choáng]+200%"
+      "desc_vn": "Khi Thần Khi trong trận Alice đạt Lv5, ST Bạo của Alice và Thỏ Tiên Sinh lên kẻ địch có [Choáng]+200%",
+      "type": "PASSIVE"
     },
     "10190708000": {
       "code": 10190708000,
       "name": "Blooming Miracle",
       "name_vn": "Kỳ Tích Nở Rộ",
-      "desc_vn": "Alice trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Alice trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10230701000": {
       "code": 10230701000,
       "name": "Stormbound Hook",
       "name_vn": "Móc Câu Sóng Dữ",
-      "desc_vn": "Thay thế Thần Khí 1: Lượt ST Công Thường+1, ST+70%"
+      "desc_vn": "Thay thế Thần Khí 1: Lượt ST Công Thường+1, ST+70%",
+      "type": "PASSIVE"
     },
     "10230702000": {
       "code": 10230702000,
       "name": "Misty Cruise",
       "name_vn": "Du Hành Sương Mù",
-      "desc_vn": "Thay thế Thần Khí 2: Sau khi phóng Tuyệt Kỹ, sản lượng cơ bản của Mèo Chiêu Tài trong 8s+100% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 2: Sau khi phóng Tuyệt Kỹ, sản lượng cơ bản của Mèo Chiêu Tài trong 8s+100% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10230703000": {
       "code": 10230703000,
       "name": "Storm Plunder",
       "name_vn": "Cướp Đoạt Bão Tố",
-      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Công Thường, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Công Thường, ST+30%",
+      "type": "PASSIVE"
     },
     "10230704000": {
       "code": 10230704000,
       "name": "Soul-Reaping Hook",
       "name_vn": "Móc Sắt Đoạt Hồn",
-      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Tuyệt Kỹ, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Tuyệt Kỹ, ST+30%",
+      "type": "PASSIVE"
     },
     "10230705000": {
       "code": 10230705000,
       "name": "Engulfing Billows",
       "name_vn": "Sóng Lớn Xâm Lược",
-      "desc_vn": "Thay thế Thần Khí 5: Tỷ lệ Tuyệt Kỹ <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>+30%, thời gian +1s"
+      "desc_vn": "Thay thế Thần Khí 5: Tỷ lệ Tuyệt Kỹ <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>+30%, thời gian +1s",
+      "type": "PASSIVE"
     },
     "10230706000": {
       "code": 10230706000,
       "name": "Ocean Menace",
       "name_vn": "Hải Hoàng Giáng Lâm",
-      "desc_vn": "Thay thế Thức Tỉnh: Sau khi phóng Tuyệt Kỹ, trong 5s Công Anh Hùng phe ta+40% (không cộng dồn), <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%"
+      "desc_vn": "Thay thế Thức Tỉnh: Sau khi phóng Tuyệt Kỹ, trong 5s Công Anh Hùng phe ta+40% (không cộng dồn), <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%",
+      "type": "PASSIVE"
     },
     "10230707000": {
       "code": 10230707000,
       "name": "Spirit Shelter",
       "name_vn": "Bảo Hộ Vong Hồn",
-      "desc_vn": "Khi Thần Khi trong trận Thuyền Trưởng U Ám đạt Lv3, cứ mỗi 1 cấp tạo Mèo Chiêu Tài, ST V.Lý toàn đội tăng 1%, tối đa 16%"
+      "desc_vn": "Khi Thần Khi trong trận Thuyền Trưởng U Ám đạt Lv3, cứ mỗi 1 cấp tạo Mèo Chiêu Tài, ST V.Lý toàn đội tăng 1%, tối đa 16%",
+      "type": "PASSIVE"
     },
     "10230708000": {
       "code": 10230708000,
       "name": "Ghostly Course",
       "name_vn": "Hành Trình Hồn Ma",
-      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*Thuyền Trưởng U Ámcấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*Thuyền Trưởng U Ámcấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10260701000": {
       "code": 10260701000,
       "name": "Wings of Wish",
       "name_vn": "Cánh Nguyện Ước",
-      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+50%, ST mục tiêu phải chịu trong 5s+20% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+50%, ST mục tiêu phải chịu trong 5s+20% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10260702000": {
       "code": 10260702000,
       "name": "Glory of Redemption",
       "name_vn": "Vinh Quang Cứu Rỗi",
-      "desc_vn": "Thay thế Thần Khí 2: Mục tiêu Công Thường+2, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 2: Mục tiêu Công Thường+2, ST+20%",
+      "type": "PASSIVE"
     },
     "10260703000": {
       "code": 10260703000,
       "name": "Shelter of Compassion",
       "name_vn": "Thành Lũy Xót Thương",
-      "desc_vn": "Thay thế Thần Khí 3: Tuyệt Kỹ khiến ST Bạo của Anh Hùng phe ta trong 5s+80% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 3: Tuyệt Kỹ khiến ST Bạo của Anh Hùng phe ta trong 5s+80% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10260704000": {
       "code": 10260704000,
       "name": "Venus Judgment",
       "name_vn": "Phán Quyết Sao Mai",
-      "desc_vn": "Thay thế Thần Khí 4: Mục tiêu Công Thường+2, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 4: Mục tiêu Công Thường+2, ST+20%",
+      "type": "PASSIVE"
     },
     "10260705000": {
       "code": 10260705000,
       "name": "Resplendent Ode",
       "name_vn": "Ca Khúc Tươi Sáng",
-      "desc_vn": "Thay thế Thần Khí 5: Mở rộng phạm vi ST Tuyệt Kỹ, ST địch phải chịu trong 5s+20% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 5: Mở rộng phạm vi ST Tuyệt Kỹ, ST địch phải chịu trong 5s+20% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10260706000": {
       "code": 10260706000,
       "name": "Pledged Oath",
       "name_vn": "Thệ Ước Giáng Trình",
-      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ khiến ST mục tiêu gây ra trong 10s-30% (không cộng dồn), <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%"
+      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ khiến ST mục tiêu gây ra trong 10s-30% (không cộng dồn), <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%",
+      "type": "PASSIVE"
     },
     "10260707000": {
       "code": 10260707000,
       "name": "Spotless Blessing",
       "name_vn": "Gia Hộ Tinh Khiết",
-      "desc_vn": "Khi Thần Khi trong trận Thiên Sứ đạt Lv4, khi kích hoạt Bạo, khiến mục tiêu trong 5s chịu thêm ST bằng x0.1 Bạo (không cộng dồn)"
+      "desc_vn": "Khi Thần Khi trong trận Thiên Sứ đạt Lv4, khi kích hoạt Bạo, khiến mục tiêu trong 5s chịu thêm ST bằng x0.1 Bạo (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10260708000": {
       "code": 10260708000,
       "name": "Boundless Grace",
       "name_vn": "Ân Trạch Bao La",
-      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Thiên Sứ <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Thiên Sứ <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10300701000": {
       "code": 10300701000,
       "name": "Withered Promise",
       "name_vn": "Hôn Ước Héo Úa",
-      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường+2, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 1: Mục tiêu Công Thường+2, ST+30%",
+      "type": "PASSIVE"
     },
     "10300702000": {
       "code": 10300702000,
       "name": "Veiled Hands",
       "name_vn": "Găng Lụa Rách",
-      "desc_vn": "Thay thế Thần Khí 2: Công Thường <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+3, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 2: Công Thường <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>+3, ST+20%",
+      "type": "PASSIVE"
     },
     "10300703000": {
       "code": 10300703000,
       "name": "Silent Elegy",
       "name_vn": "Khúc Ca Lặng Lẽ",
-      "desc_vn": "Thay thế Thần Khí 3: Thời gian duy trì Tuyệt Kỹ+2s, ST+40%"
+      "desc_vn": "Thay thế Thần Khí 3: Thời gian duy trì Tuyệt Kỹ+2s, ST+40%",
+      "type": "PASSIVE"
     },
     "10300704000": {
       "code": 10300704000,
       "name": "Cemetery Whispers",
       "name_vn": "Thì Thầm Nghĩa Trang",
-      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Công Thường, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 4: Mở rộng phạm vi ST Công Thường, ST+20%",
+      "type": "PASSIVE"
     },
     "10300705000": {
       "code": 10300705000,
       "name": "Kiss of Slumber",
       "name_vn": "Nụ Hôn Ngàn Thu",
-      "desc_vn": "Thay thế Thần Khí 5: Mở rộng phạm vi Tuyệt Kỹ, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 5: Mở rộng phạm vi Tuyệt Kỹ, ST+30%",
+      "type": "PASSIVE"
     },
     "10300706000": {
       "code": 10300706000,
       "name": "Eternal Funeral",
       "name_vn": "Nghi Thức An Táng",
-      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ di chuyển chậm, tăng hiệu quả Dẫn Dắt, ST+30%, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%"
+      "desc_vn": "Thay thế Thức Tỉnh: Tuyệt Kỹ di chuyển chậm, tăng hiệu quả Dẫn Dắt, ST+30%, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%",
+      "type": "PASSIVE"
     },
     "10300707000": {
       "code": 10300707000,
       "name": "Thorny Siege",
       "name_vn": "Gai Nhọn Vây Quanh",
-      "desc_vn": "Khi Thần Khi trong trận Cô Dâu Linh Dị đạt Lv5, ST Tuyệt Kỹ khiến ST Duy Trì mục tiêu phải chịu trong 5s+60% (không cộng dồn)"
+      "desc_vn": "Khi Thần Khi trong trận Cô Dâu Linh Dị đạt Lv5, ST Tuyệt Kỹ khiến ST Duy Trì mục tiêu phải chịu trong 5s+60% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10300708000": {
       "code": 10300708000,
       "name": "Spreading Decay",
       "name_vn": "Lan Rộng Mục Nát",
-      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Cô Dâu Linh Dị <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*cấp Thần Khí Cô Dâu Linh Dị <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10310701000": {
       "code": 10310701000,
       "name": "Laughter Bomb",
       "name_vn": "Bom Cười Cuồng Loạn",
-      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+60%, Thủ V.Lý của mục tiêu trong 5s-30% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+60%, Thủ V.Lý của mục tiêu trong 5s-30% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10310702000": {
       "code": 10310702000,
       "name": "Scattering Cards",
       "name_vn": "Thẻ Bài Tung Bay",
-      "desc_vn": "Thay thế Thần Khí 2: Mở rộng phạm vi ST Công Thường, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 2: Mở rộng phạm vi ST Công Thường, ST+30%",
+      "type": "PASSIVE"
     },
     "10310703000": {
       "code": 10310703000,
       "name": "Hallucinogenic Mist",
       "name_vn": "Sương Độc Ảo Giác",
-      "desc_vn": "Thay thế Thần Khí 3: Lượt ST Tuyệt Kỹ+3, ST+30%"
+      "desc_vn": "Thay thế Thần Khí 3: Lượt ST Tuyệt Kỹ+3, ST+30%",
+      "type": "PASSIVE"
     },
     "10310704000": {
       "code": 10310704000,
       "name": "Malicious Magnet",
       "name_vn": "Từ Trường Ác Ý",
-      "desc_vn": "Thay thế Thần Khí 4: Công Thường có 15% tỷ lệ <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+      "desc_vn": "Thay thế Thần Khí 4: Công Thường có 15% tỷ lệ <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>",
+      "type": "PASSIVE"
     },
     "10310705000": {
       "code": 10310705000,
       "name": "Prank Gift",
       "name_vn": "Quà Tặng Troll",
-      "desc_vn": "Thay thế Thần Khí 5: Cự ly Đẩy Lùi cá nhân+60%"
+      "desc_vn": "Thay thế Thần Khí 5: Cự ly Đẩy Lùi cá nhân+60%",
+      "type": "PASSIVE"
     },
     "10310706000": {
       "code": 10310706000,
       "name": "Comical Slaughter",
       "name_vn": "Tàn Sát Niềm Vui",
-      "desc_vn": "Thay thế Thức Tỉnh: Lá bài Poker bốc cháy dữ dội, mỗi lần xung kích kèm 3s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST bằng 60% Công, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> sau thức tỉnh+20%"
+      "desc_vn": "Thay thế Thức Tỉnh: Lá bài Poker bốc cháy dữ dội, mỗi lần xung kích kèm 3s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST bằng 60% Công, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> sau thức tỉnh+20%",
+      "type": "PASSIVE"
     },
     "10310707000": {
       "code": 10310707000,
       "name": "Clown Domain",
       "name_vn": "Vực Thẳm Hề",
-      "desc_vn": "Khi Thần Khi trong trận JOKER đạt Lv4, khiến Khăn Đỏ ở trong trận càng lâu thì ST càng cao, tối đa 180%"
+      "desc_vn": "Khi Thần Khi trong trận JOKER đạt Lv4, khiến Khăn Đỏ ở trong trận càng lâu thì ST càng cao, tối đa 180%",
+      "type": "PASSIVE"
     },
     "10310708000": {
       "code": 10310708000,
       "name": "Depraved Rave",
       "name_vn": "Cuồng Hoan Cực Ác",
-      "desc_vn": "JOKER trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "JOKER trong trận tăng 5%*cấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "10320701000": {
       "code": 10320701000,
       "name": "Tremendous Force",
       "name_vn": "Sức Mạnh Vạn Quân",
-      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+60%, Thủ Phép của mục tiêu trong 5s-30% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 1: ST Công Thường+60%, Thủ Phép của mục tiêu trong 5s-30% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10320702000": {
       "code": 10320702000,
       "name": "Superconducting Slash",
       "name_vn": "Cắt Gọt Siêu Dẫn",
-      "desc_vn": "Thay thế Thần Khí 2: Mục tiêu Công Thường+2, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 2: Mục tiêu Công Thường+2, ST+20%",
+      "type": "PASSIVE"
     },
     "10320703000": {
       "code": 10320703000,
       "name": "Plasma Storm",
       "name_vn": "Bão Tố Điện Từ",
-      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Tuyệt Kỹ, ST+20%"
+      "desc_vn": "Thay thế Thần Khí 3: Mở rộng phạm vi ST Tuyệt Kỹ, ST+20%",
+      "type": "PASSIVE"
     },
     "10320704000": {
       "code": 10320704000,
       "name": "Divinity Pierce",
       "name_vn": "Xuyên Thấu Thần Vực",
-      "desc_vn": "Thay thế Thần Khí 4: Thời gian duy trì Tuyệt Kỹ <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>+2.5s"
+      "desc_vn": "Thay thế Thần Khí 4: Thời gian duy trì Tuyệt Kỹ <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>+2.5s",
+      "type": "PASSIVE"
     },
     "10320705000": {
       "code": 10320705000,
       "name": "Pulse Strike",
       "name_vn": "Kích Xung Mạch",
-      "desc_vn": "Thay thế Thần Khí 5: <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color> phe ta khiến địch trong 8s Chính Xác-30% (không cộng dồn)"
+      "desc_vn": "Thay thế Thần Khí 5: <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color> phe ta khiến địch trong 8s Chính Xác-30% (không cộng dồn)",
+      "type": "PASSIVE"
     },
     "10320706000": {
       "code": 10320706000,
       "name": "Odin's Judgment",
       "name_vn": "Thánh Phán Odin",
-      "desc_vn": "Thay thế Thức Tỉnh: Sau khi phóng Tuyệt Kỹ, dưới chân mục tiêu xuất hiện 5s <color=#f57c00 click=\"onClicked\" param=\"42\"><u>Địa Chấn</u></color>, mỗi giây gây ST bằng 360% Công và giảm 25% Tốc Độ, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%"
+      "desc_vn": "Thay thế Thức Tỉnh: Sau khi phóng Tuyệt Kỹ, dưới chân mục tiêu xuất hiện 5s <color=#f57c00 click=\"onClicked\" param=\"42\"><u>Địa Chấn</u></color>, mỗi giây gây ST bằng 360% Công và giảm 25% Tốc Độ, <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color> của tất cả Anh Hùng phe ta sau thức tỉnh+5%",
+      "type": "PASSIVE"
     },
     "10320707000": {
       "code": 10320707000,
       "name": "Electric Burst",
       "name_vn": "Bùng Nổ Điện Năng",
-      "desc_vn": "Khi Thần Khi trong trận Lôi Thần Kiếm Quang đạt Lv3, sau khi gây [Choáng] thành công, ST Cuối của tất cả Anh Hùng phe ta tăng 1%, tối đa 35%"
+      "desc_vn": "Khi Thần Khi trong trận Lôi Thần Kiếm Quang đạt Lv3, sau khi gây [Choáng] thành công, ST Cuối của tất cả Anh Hùng phe ta tăng 1%, tối đa 35%",
+      "type": "PASSIVE"
     },
     "10320708000": {
       "code": 10320708000,
       "name": "Deflection Field",
       "name_vn": "Lực Trường Lệch",
-      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*Lôi Thần Kiếm Quangcấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>"
+      "desc_vn": "Tất cả Anh Hùng phe ta tăng 3.5%*Lôi Thần Kiếm Quangcấp Thần Khí <color=#f57c00 click=\"onClicked\" param=\"93\"><u>ST tất cả kỹ năng</u></color>",
+      "type": "PASSIVE"
     },
     "90100011000": {
       "code": 90100011000,
       "name": "Battle Team P.ATK (Unique)",
       "name_vn": "Công V.Lý Đội (Duy nhất)",
-      "desc_vn": "Tăng Công V.Lý của toàn đội trong chiến đấu"
+      "desc_vn": "Tăng Công V.Lý của toàn đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100021000": {
       "code": 90100021000,
       "name": "Battle Team Crit DMG (Unique)",
       "name_vn": "ST Bạo Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng ST Bạo Đội trong chiến đấu"
+      "desc_vn": "Tăng ST Bạo Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100031000": {
       "code": 90100031000,
       "name": "Battle Team M.DMG (Unique)",
       "name_vn": "ST Phép Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng ST Phép Đội trong chiến đấu"
+      "desc_vn": "Tăng ST Phép Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100041000": {
       "code": 90100041000,
       "name": "Battle Team P.DMG (Unique)",
       "name_vn": "ST V.Lý Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng ST V.Lý Đội trong chiến đấu"
+      "desc_vn": "Tăng ST V.Lý Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100051000": {
       "code": 90100051000,
       "name": "Battle Team Burn DMG (Unique)",
       "name_vn": "ST Thiêu Đốt Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng ST Thiêu Đốt Đội trong chiến đấu"
+      "desc_vn": "Tăng ST Thiêu Đốt Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100061000": {
       "code": 90100061000,
       "name": "Battle Team Paralysis DMG (Unique)",
       "name_vn": "ST Tê Liệt Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng ST Tê Liệt Đội trong chiến đấu"
+      "desc_vn": "Tăng ST Tê Liệt Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100071000": {
       "code": 90100071000,
       "name": "Battle Team Bleed DMG (Unique)",
       "name_vn": "ST Mất HP Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng ST Mất HP Đội trong chiến đấu"
+      "desc_vn": "Tăng ST Mất HP Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100081000": {
       "code": 90100081000,
       "name": "Battle Team DMG Boost (Unique)",
       "name_vn": "Tăng ST Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng Tăng ST Đội trong chiến đấu"
+      "desc_vn": "Tăng Tăng ST Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100091000": {
       "code": 90100091000,
       "name": "Battle Team ASPD (Unique)",
       "name_vn": "Tốc Công Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng Tốc Công Đội trong chiến đấu"
+      "desc_vn": "Tăng Tốc Công Đội trong chiến đấu",
+      "type": "PASSIVE"
     },
     "90100101000": {
       "code": 90100101000,
       "name": "Battle Team M.ATK (Unique)",
       "name_vn": "Công Phép Đội Chiến Đấu (Duy nhất)",
-      "desc_vn": "Tăng Công Phép Đội trong chiến đấu"
+      "desc_vn": "Tăng Công Phép Đội trong chiến đấu",
+      "type": "PASSIVE"
     }
   }
 }

@@ -1,10 +1,10 @@
 // Thần Khí (artifact) editor of one hero card: quality, stage and the rolled slots. Rendered inside
 // the hero card in heroes.js, below the skin table — "Tùy chỉnh" on the card customizes it too.
 // Item names and team buff descriptions are left out on purpose (look them up in game); only line
-// names are shown, plus a hover popover with the rainbow skill's description in the rainbow picker.
+// names are shown, plus hover popovers for tier skills and rainbow skill descriptions.
 // State shape: profile-state.js artifactState.
-import { html, label, plain, Select, SelectPop } from "../ui.js";
-import { MAX_STAGE, entryCode, parseEntryCode, rareSkill } from "../../artifacts.js";
+import { html, label, plain, Select, SelectPop, PopHover } from "../ui.js";
+import { MAX_STAGE, entryCode, parseEntryCode, rareSkill, stageSkill } from "../../artifacts.js";
 
 const QUALITIES = [[4, "Tím"], [5, "Cam"], [6, "Đỏ"], [7, "Vàng"]];
 const LINE_QUALITY = { 3: "Lam", 4: "Tím", 5: "Cam", 6: "Đỏ", 7: "Vàng" };
@@ -12,7 +12,35 @@ const KINDS = [["", "— Trống —"], ["buff", "Buff đội"], ["rare", "Skill
 const RAINBOW = [1, 2, 3];
 const RAINBOW_QUALITY = 8;
 
-export function ArtifactBody({ artifact, heroCode, pool, artifactDict, edit }) {
+// Hover summary for the Phẩm picker, in the shape of the Dị Năng popover: the hero's five Thần Khí
+// tier skills with the game's own desc ("Thay thế Thần Khí k: …", MANUAL rows get the "(Chủ Động)"
+// tag), then "→" the hero skill that desc upgrades (the name it brackets). ✅ marks the tiers open
+// at the artifact's stage (a phẩm caps how far stage can go).
+const BRACKET = /\[([^\]]+)\]|【([^】]+)】/;
+function phamPop(artifactDict, heroDict, artifact) {
+  const stage = artifact?.stage ?? 0;
+  const refs = heroDict?.baseSkillRefs ?? [];
+  const line = (_, i) => {
+    const skill = artifactDict.skills[stageSkill(heroDict?.code, i + 1)];
+    if (!skill) return null;
+    const desc = plain(skill.desc_vn);
+    const bracket = desc.match(BRACKET);
+    const target = bracket && refs.find((r) => r.name_vn === (bracket[1] ?? bracket[2]));
+    return html`
+      <div class="pop-line" key=${i}>
+        <span class="hint">${i < stage ? "✅ " : ""}Bậc ${i + 1}${skill.type === "MANUAL" ? " (Chủ Động)" : ""}</span>${skill.name_vn}
+        <div class="pop-desc">${desc}</div>
+        ${target && html`<div class="pop-desc">→ ${target.name_vn}: ${plain(target.desc_vn)}</div>`}
+      </div>
+    `;
+  };
+  return html`
+    <div class="pop-title">Thần Khí · 5 bậc skill</div>
+    ${Array.from({ length: 5 }, line)}
+  `;
+}
+
+export function ArtifactBody({ artifact, heroCode, heroDict, pool, artifactDict, edit }) {
   const qualityOptions = [["0", "Không đeo"], ...QUALITIES.map(([q, text]) => [String(q), text])];
   const setQuality = (value) => edit((h) => {
     const quality = Number(value);
@@ -20,8 +48,12 @@ export function ArtifactBody({ artifact, heroCode, pool, artifactDict, edit }) {
     else if (!h.artifact) h.artifact = { quality, stage: 1, slots: [] };
     else h.artifact.quality = quality;
   });
-  const quality = html`<label>Phẩm <${Select} aria-label="Phẩm" options=${qualityOptions}
-    value=${String(artifact?.quality ?? 0)} onChange=${setQuality} /></label>`;
+  // The phẩm Select sits inside a label, so the trigger word stays outside it (a nested pop-trigger
+  // inside the label would re-open the Select — bbb-qjk).
+  const quality = html`
+    <${PopHover} content=${phamPop(artifactDict, heroDict, artifact)}><span class="pop-trigger">Phẩm</span><//>
+    <label><${Select} aria-label="Phẩm" options=${qualityOptions}
+      value=${String(artifact?.quality ?? 0)} onChange=${setQuality} /></label>`;
   if (!artifact) {
     return html`
       <div class="row">${quality}</div>
