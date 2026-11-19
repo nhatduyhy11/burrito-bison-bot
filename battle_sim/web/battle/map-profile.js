@@ -4,9 +4,13 @@
 //   capital (U Đô, GuildNavalWar): { boss, level } of a preset in boss-dict capital. The game plays it
 //   solo (no robot teammates) and puts the 5 heroes on the field itself
 //   (GuildPVPBattleRoom.createInitHeroBuild). See docs/planning/capital.md.
+//   blood (Đêm Đỏ): { level } on a Đêm Đỏ capture, blood-map.js.
+import { applyBloodMap } from "./blood-map.js";
+
 const CAMPAIGN_BATTLE_TYPE = 3; // EBattleTypeHangUpSystem
 
 export async function applyMapProfile(start, map, rb, M, step) {
+  if (map.mode === "blood") return applyBloodMap(start, map, M, step);
   const [maps, bossDict] = await Promise.all(["map", "boss"].map(async (name) => {
     const response = await fetch(`/__sim/dict/${name}-dict.json`);
     if (!response.ok) throw new Error(`Could not load ${name}-dict: HTTP ${response.status}`);

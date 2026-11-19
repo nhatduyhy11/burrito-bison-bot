@@ -11,7 +11,8 @@ import { applyMapProfile } from "./map-profile.js";
 
 // Rewrites start (StartGameP) in place. Returns what the page stubs need beyond StartGameP:
 // { summonerDerma } = worn Summoner skin (read by stubs.js stubNetwork), 0 when unset.
-export async function applyProfile(start, rb, M, step) {
+// team = capture.team (Đêm Đỏ roster, lib/capture.js), undefined for other captures.
+export async function applyProfile(start, rb, M, step, team) {
   const read = async (name) => {
     const response = await fetch(`/__sim/${name}.json`);
     if (!response.ok) throw new Error(`Could not load ${name}: HTTP ${response.status}`);
@@ -44,10 +45,11 @@ export async function applyProfile(start, rb, M, step) {
     });
   };
   if (Object.hasOwn(profile, "heroes")) {
-    const hasRelicOverride = [...(Array.isArray(profile.heroes) ? profile.heroes : []), profile.summonedJoker]
+    const hasRelicOverride = [...(Array.isArray(profile.heroes) ? profile.heroes : []),
+      ...(Array.isArray(profile.guestHeroes) ? profile.guestHeroes : []), profile.summonedJoker]
       .some((hero) => hero?.relic !== undefined);
     const relicLines = hasRelicOverride ? (await read("dict/relic-dict")).lines : undefined;
-    await applyHeroSelection({ profile, player, catalog, relicLines, choices, asList, rb, M, step });
+    await applyHeroSelection({ profile, player, catalog, relicLines, choices, asList, rb, M, step, start, team });
   }
   if (Object.hasOwn(profile, "mounts")) {
     const mounts = catalog.mounts;
