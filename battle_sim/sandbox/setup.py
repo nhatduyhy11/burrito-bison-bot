@@ -10,16 +10,17 @@ UUID_RE = re.compile(r"^[0-9a-f]{24}$")
 
 
 class SetupPage:
-    def __init__(self, page, origin, profiles_dir, root, ensure_region):
+    def __init__(self, page, origin, profiles_dir, gat_profiles_dir, root, ensure_region):
         self.page, self.origin, self.profiles_dir, self.root = page, origin, profiles_dir, root
+        self.gat_profiles_dir = gat_profiles_dir
         self.ensure_region = ensure_region
         self._chosen = None  # future for the choose() call in progress
 
     @classmethod
-    async def install(cls, page, origin, profiles_dir, root, ensure_region):
+    async def install(cls, page, origin, profiles_dir, gat_profiles_dir, root, ensure_region):
         """Expose window.simPlay({region, battle, seed, profile}) for the "Chơi" button (once per page: it
         stays across navigations, so the page can come back to setup)."""
-        self = cls(page, origin, profiles_dir, root, ensure_region)
+        self = cls(page, origin, profiles_dir, gat_profiles_dir, root, ensure_region)
         await page.expose_function("simPlay", self._sim_play)
         return self
 
@@ -35,7 +36,7 @@ class SetupPage:
         if not isinstance(profile, dict):
             raise ValueError("profile must be an object")
         await self.ensure_region(region)
-        profiles = self.profiles_dir if region == "vn" else self.root / ".tmp" / "skin-research-cn" / "profiles"
+        profiles = self.profiles_dir if region == "vn" else self.gat_profiles_dir
         profiles.mkdir(parents=True, exist_ok=True)
         setup = {"region": region, "battle": battle, "seed": seed, "profile": profile}
         profile_path = profiles / "last.json"

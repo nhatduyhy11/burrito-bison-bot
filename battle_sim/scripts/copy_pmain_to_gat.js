@@ -7,12 +7,11 @@ const { randomBytes } = require("node:crypto");
 const { parseArgs } = require("node:util");
 const { CAPTURE_DIR, listItems, loadCapture } = require("../lib/capture");
 const { Sim } = require("../lib/sim");
-const { bundleVersion } = require("../lib/versions");
+const { gat: gatVersions } = require("../lib/versions");
 
-const gatDir = path.join(CAPTURE_DIR, "..", "skin-research-cn");
-const bundle = path.join(gatDir, "index.cda14.js");
-const configVersion = "trunk_66196";
-const mapVersion = "trunk_61645";
+// GAT template captures (recorded with the pcn profile) and the generated playtest
+// captures both live in the GAT cache; bundle/config/maps follow the template's versions.
+const gatDir = gatVersions.CACHE;
 
 function findBattle(dir, pattern, file, uuid, label) {
   const files = file ? [file] : fs.readdirSync(dir)
@@ -25,7 +24,7 @@ function findBattle(dir, pattern, file, uuid, label) {
   throw new Error(`No complete ${label} battle found`);
 }
 
-function main() {
+async function main() {
   const { values } = parseArgs({
     options: {
       vn: { type: "string" },
@@ -41,11 +40,10 @@ function main() {
   }
 
   const vn = findBattle(CAPTURE_DIR, /^events-pmain-.*\.jsonl$/, values.vn, values["vn-uuid"], "VN pmain");
-  const gat = findBattle(gatDir, /^events-pcn-(?!pmain-).*\.jsonl$/, values.gat, values["gat-uuid"], "GAT");
+  const gat = findBattle(gatDir, /^events-(?!.*pmain-).*\.jsonl$/, values.gat, values["gat-uuid"], "GAT");
   const start = structuredClone(gat.start);
-  if (!/^sea_/.test(vn.start.configVersion) || start.configVersion !== configVersion ||
-      start.mapVersion !== mapVersion || start.battleVersion !== bundleVersion(bundle)) {
-    throw new Error("Expected a SEA donor and a GAT template matching the cached GAT assets");
+  if (!/^sea_/.test(vn.start.configVersion) || /^sea_/.test(start.configVersion)) {
+    throw new Error("Expected a SEA donor and a GAT (non-SEA) template");
   }
 
   const player = start.playerInfos[0];
@@ -57,12 +55,7 @@ function main() {
     throw new Error("Use a GAT template without preplaced heroes");
   }
 
-  const sim = new Sim({
-    bundle,
-    config: path.join(gatDir, "config.66196.bin"),
-    preloadConfig: path.join(gatDir, "preload_config.66196.bin"),
-    mapsDir: path.join(gatDir, "maps", mapVersion),
-  });
+  const sim = new Sim(await gatVersions.resolveAssets(start));
   const { HeroLO } = sim.req("HeroLO");
   const { SkillBaseLO } = sim.req("SkillBaseLO");
   for (const hero of [...listItems(donor.heros), donor.support].filter((hero) => hero?.code)) {
@@ -94,9 +87,7 @@ function main() {
   console.log(`VN donor: ${path.basename(vn.file)} (${vn.start.uuid})`);
 }
 
-try {
-  main();
-} catch (error) {
+main().catch((error) => {
   console.error(error.message);
   process.exitCode = 1;
-}
+});

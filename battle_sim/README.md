@@ -68,10 +68,25 @@ uv run python battle_sim/sandbox --setup
 ```
 
 Chọn **GAT** trong dropdown **Vùng** ở mục **Account gốc**. VN là mặc định cho
-setup mới. Khi bấm **Chơi** với GAT, sandbox dùng port 8091, capture `events-pcn-*.jsonl`, config `trunk_66196` và cache
-riêng dưới `.tmp/skin-research-cn/`. Catalog dùng chung các dict VN rồi ghép
-`web/dict/gat-overrides.json` cho skin, pet, đồ cổ và asset theo vùng. Lần đầu chạy GAT cần mạng để tải config, pack `tw` và asset tĩnh còn thiếu.
-Capture cần có sẵn trong cache GAT. Xem [hero_gear.md](docs/planning/hero_gear.md) cho đối chiếu dữ liệu hero gear.
+setup mới. Khi bấm **Chơi** với GAT, sandbox dùng port 8091 và cache riêng
+`.tmp/battle_sim_gat/` (`versions.gat` trong `lib/versions.js`): capture `events-*.jsonl`,
+`bundles/`, `maps/`, `config/<configVersion>/`, `mirror/<ClientVer>/`, `profiles/`, `played/`.
+Bundle, config và map đi theo version trong `StartGameP` của capture. Catalog dùng chung các dict VN rồi ghép
+`web/dict/gat-overrides.json` cho skin, pet, đồ cổ và asset theo vùng. Lần đầu chạy GAT cần mạng để tải config, pack `tw` và asset tĩnh còn thiếu
+(mirror lấy theo deploy GAT đang live nếu chưa có). Xem [hero_gear.md](docs/planning/hero_gear.md) cho đối chiếu dữ liệu hero gear.
+
+Chuẩn bị cache GAT (khi GAT cập nhật thì làm lại cả hai bước):
+
+```bash
+node battle_sim/scripts/snapshot.js --gat
+```
+
+```bash
+uv run python .tmp/battle_research/launch_pmain.py .tmp/pcn .tmp/battle_sim_gat/events-pcn-<ngày>.jsonl https://hauntheroesweb.acenetgame.com/
+```
+
+Lệnh thứ hai mở GAT bằng profile `.tmp/pcn` với hook capture thụ động; chơi một trận
+đến hết để có `StartGameP` + `QuitRoom` làm khung xương.
 
 ### Dùng đội hình pmain trong playtest GAT
 

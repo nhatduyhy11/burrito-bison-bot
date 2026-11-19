@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 async def run(args) -> int:
     cache = ROOT / ".tmp" / "battle_sim"
-    gat_cache = ROOT / ".tmp" / "skin-research-cn"
+    gat_cache = ROOT / ".tmp" / "battle_sim_gat"  # = versions.gat.CACHE in battle_sim/lib/versions.js
     origins = {"vn": "http://127.0.0.1:8090", "gat": "http://127.0.0.1:8091"}
     cdp_port = 9334
     profiles = cache / "profiles"
@@ -71,7 +71,7 @@ async def run(args) -> int:
                     except SystemExit as err:
                         raise RuntimeError(str(err)) from err
 
-                setup = await SetupPage.install(page, origins["vn"], profiles, ROOT, ensure_region) if args.setup else None
+                setup = await SetupPage.install(page, origins["vn"], profiles, gat_cache / "profiles", ROOT, ensure_region) if args.setup else None
                 ok = True
                 while True:
                     region = "vn"

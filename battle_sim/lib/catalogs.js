@@ -15,10 +15,11 @@ function merge(base, overrides) {
   };
 }
 
-function readCatalog(name, configVersion) {
+// region "gat" merges web/dict/gat-overrides.json over the VN dicts.
+function readCatalog(name, region = "vn") {
   if (!DICTS.has(name)) throw new Error(`Unknown catalog: ${name}`);
   const base = JSON.parse(fs.readFileSync(path.join(DIR, `${name}-dict.json`), "utf8"));
-  const overrides = configVersion === "trunk_66196" && GAT_OVERRIDES[name];
+  const overrides = region === "gat" && GAT_OVERRIDES[name];
   return overrides ? merge(base, overrides) : base;
 }
 

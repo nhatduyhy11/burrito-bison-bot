@@ -2,17 +2,17 @@
 // Serve a mirror (scripts/mirror.js) on localhost with the game host's URL layout.
 //   node battle_sim/serve.js [--port 8090] [--ver <ClientVer>] [--fill]
 // The region follows the port, like in the sandbox: 8090 = VN (default), 8091 = GAT
-// (mirror 65985, config trunk_66196; always fills — the first GAT run downloads the
-// config, the tw pack and missing static assets).
+// (cache .tmp/battle_sim_gat/, newest cached mirror or the live GAT deploy, captures
+// events-*.jsonl in that folder; always fills missing static assets from the GAT host).
 // Offline by default: a missing file is a 404, printed and appended to misses.log, so the
 // gaps show up when the battle page runs. --fill instead downloads the missing file from
 // the public game host (same anonymous static GET the mirror uses) and caches it.
 const fs = require("fs");
 const http = require("http");
 const path = require("path");
-const { download, get } = require("./lib/http");
-const { GAME, liveDeploy } = require("./lib/deploy");
-const versions = require("./lib/versions");
+const { get } = require("./lib/http");
+const { liveDeploy } = require("./lib/deploy");
+const regions = require("./lib/versions");
 const capture = require("./lib/capture");
 const { readCatalog } = require("./lib/catalogs");
 
@@ -30,24 +30,22 @@ function arg(name, def) {
   return i >= 0 ? process.argv[i + 1] : def;
 }
 
-function latestMirror() {
-  const dir = path.join(versions.CACHE, "mirror");
+function latestMirror(cache) {
+  const dir = path.join(cache, "mirror");
   const vers = fs.existsSync(dir) ? fs.readdirSync(dir).filter((v) => /^\d+$/.test(v)).sort((a, b) => b - a) : [];
-  if (!vers.length) throw new Error("no mirror found; run `node battle_sim/scripts/mirror.js fetch` first");
-  return vers[0];
+  return vers[0] || null;
 }
 
 const port = Number(arg("--port", 8090));
 const gat = port === 8091;
-const gatRoot = path.join(versions.CACHE, "..", "skin-research-cn");
-const gatConfig = "trunk_66196";
-const gatConfigFiles = Object.fromEntries(["config", "preload_config", "lang_tw"]
-  .map((name) => [`__sim_config/${gatConfig}/${name}.bin`, `${name}.66196.bin`]));
-const ver = gat ? "65985" : arg("--ver", null) || latestMirror();
+const versions = gat ? regions.gat : regions.vn;
 const fill = process.argv.includes("--fill") || gat;
-const root = gat ? path.join(gatRoot, "mirror", ver) : path.join(versions.CACHE, "mirror", ver);
-const game = gat ? "https://hauntheroesweb.acenetgame.com/" : GAME;
-const missLog = path.join(root, "misses.log");
+const game = versions.GAME;
+// GAT: no mirror.js run; the first start writes the live deploy's boot files, the rest fills on demand.
+let ver = arg("--ver", null) || latestMirror(versions.CACHE);
+if (!ver && !gat) throw new Error("no mirror found; run `node battle_sim/scripts/mirror.js fetch` first");
+let root = ver && path.join(versions.CACHE, "mirror", ver);
+let missLog = root && path.join(root, "misses.log");
 
 // Extra local routes next to the mirror:
 //   /sim.html               battle_sim/web/boot.html (the isolated boot page)
@@ -64,14 +62,14 @@ const WEB = path.join(__dirname, "web");
 const CONFIG = path.join(versions.CACHE, "config");
 const LIB = path.join(__dirname, "lib");
 const BROWSER_LIB = new Set(["proto_rebuild.js"]);
-const PROFILES = path.join(gat ? gatRoot : versions.CACHE, "profiles");
+const PROFILES = path.join(versions.CACHE, "profiles");
 
+// GAT captures: .tmp/battle_sim_gat/events-*.jsonl (recorded with the pcn profile).
 function loadBattles(useGat) {
   if (!useGat) return capture.loadAll();
-  if (!fs.existsSync(gatRoot)) return [];
-  const files = fs.readdirSync(gatRoot).filter((file) => /^events-pcn-.*\.jsonl$/.test(file));
-  return capture.loadAll(files.map((file) => path.join(gatRoot, file)))
-    .filter(({ start }) => start.configVersion === gatConfig);
+  const dir = regions.gat.CACHE;
+  const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((file) => /^events-.*\.jsonl$/.test(file)) : [];
+  return capture.loadAll(files.map((file) => path.join(dir, file)));
 }
 
 function sendJson(res, obj) {
@@ -105,11 +103,8 @@ function resolve(urlPath) {
   if (rel === "sim.html") abs = path.join(WEB, "boot.html");
   else if (rel === "__sim/deploy.json") abs = path.join(root, "deploy.json");
   else if (rel.startsWith("__sim/")) abs = within(WEB, rel.slice(6));
-  else if (rel.startsWith("__sim_config/")) {
-    if (gat) {
-      abs = Object.hasOwn(gatConfigFiles, rel) ? path.join(gatRoot, gatConfigFiles[rel]) : null;
-    } else abs = within(CONFIG, rel.slice(13));
-  } else if (rel.startsWith("__sim_lib/")) abs = BROWSER_LIB.has(rel.slice(10)) ? path.join(LIB, rel.slice(10)) : null;
+  else if (rel.startsWith("__sim_config/")) abs = within(CONFIG, rel.slice(13));
+  else if (rel.startsWith("__sim_lib/")) abs = BROWSER_LIB.has(rel.slice(10)) ? path.join(LIB, rel.slice(10)) : null;
   else abs = within(root, rel);
   if (!abs) return null;
   return { rel: rel.split(path.sep).join("/"), abs, local: rel.startsWith("__sim") || rel === "sim.html" };
@@ -139,12 +134,12 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (useGatCatalog && req.method === "GET" && dict) {
-    sendJson(res, readCatalog(dict[1], gatConfig));
+    sendJson(res, readCatalog(dict[1], "gat"));
     return;
   }
   if (urlPath === "/__sim/configs.json") {
-    if (gat) { sendJson(res, [gatConfig]); return; }
     const list = fs.existsSync(CONFIG) ? fs.readdirSync(CONFIG).filter((v) => fs.existsSync(path.join(CONFIG, v, "config.bin"))) : [];
+    if (gat) for (const b of loadBattles(true)) if (!list.includes(b.start.configVersion)) list.push(b.start.configVersion);
     list.sort((a, b) => Number(b.split("_").pop()) - Number(a.split("_").pop()));
     sendJson(res, list);
     return;
@@ -162,11 +157,10 @@ const server = http.createServer(async (req, res) => {
   }
   const r = resolve(req.url);
   if (!r || req.method !== "GET") {
-    const missingGatConfig = !r && gat && urlPath.startsWith("/__sim_config/");
-    res.writeHead(missingGatConfig ? 404 : 400).end();
+    res.writeHead(400).end();
     return;
   }
-  if (!gat && r.local && !fs.existsSync(r.abs)) await fetchConfig(r.rel);
+  if (r.local && !fs.existsSync(r.abs)) await fetchConfig(r.rel);
   if (r.local && !fs.existsSync(r.abs)) { console.log("404", r.rel); res.writeHead(404).end(); return; }
   let body = null;
   if (fs.existsSync(r.abs) && fs.statSync(r.abs).isFile()) {
@@ -198,19 +192,14 @@ const server = http.createServer(async (req, res) => {
 });
 
 async function main() {
-  const deployFile = path.join(root, "deploy.json");
-  if (gat && !fs.existsSync(deployFile)) {
+  if (gat && !ver) {
     const { clientVer, settingsFile, bundleVers, html } = await liveDeploy(game);
-    if (clientVer !== ver || bundleVers.main !== "cda14") {
-      throw new Error("Live GAT deploy differs from the GAT capture and catalog. Use the matching cached mirror.");
-    }
+    ver = clientVer;
+    root = path.join(versions.CACHE, "mirror", ver);
+    missLog = path.join(root, "misses.log");
     fs.mkdirSync(root, { recursive: true });
     fs.writeFileSync(path.join(root, "index.html"), html);
-    fs.writeFileSync(deployFile, JSON.stringify({ clientVer, settingsFile, bundleVers }));
-  }
-  if (gat) {
-    await Promise.all(Object.values(gatConfigFiles).map((file) =>
-      download(`https://cdnres.bighost.games/gat/remoteConfig/trunk/${file}`, path.join(gatRoot, file))));
+    fs.writeFileSync(path.join(root, "deploy.json"), JSON.stringify({ clientVer, settingsFile, bundleVers }));
   }
   server.listen(port, "127.0.0.1", () => {
     console.log(`serving mirror ${ver} on http://127.0.0.1:${port}/ (${fill ? "FILL from game host on miss" : "offline, misses -> misses.log"})`);

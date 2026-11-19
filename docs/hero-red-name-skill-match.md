@@ -65,6 +65,6 @@ Engine (đọc từ src bundle, cả yg lẫn GAT cùng cơ chế): khi `addonTy
 
 ---
 
-Script: `.tmp-scratch/hero-red-compare.js` → `.tmp-scratch/hero-red-compare.json` (GAT vs VN); `.tmp-scratch/hero-red-yg-compare.js` → `.tmp-scratch/hero-red-yg-compare.json` (yg vs GAT). Nguồn config: GAT `.tmp/skin-research-cn/config.66196.bin` + `lang_tw`; VN `.tmp/battle_sim/config/sea_65553/config.bin` + `lang_vi`/`lang_en`; yg `.tmp/ygkksy-research/config21.bin` (không có lang pack, tên giản thể gốc trong config).
+Script: `.tmp-scratch/hero-red-compare.js` → `.tmp-scratch/hero-red-compare.json` (GAT vs VN); `.tmp-scratch/hero-red-yg-compare.js` → `.tmp-scratch/hero-red-yg-compare.json` (yg vs GAT). Nguồn config: GAT `config.66196.bin` + `lang_tw` (lúc đó ở `.tmp/skin-research-cn/`, nay cache GAT là `.tmp/battle_sim_gat/config/<configVersion>/`); VN `.tmp/battle_sim/config/sea_65553/config.bin` + `lang_vi`/`lang_en`; yg `.tmp/ygkksy-research/config21.bin` (không có lang pack, tên giản thể gốc trong config).
 
 Nguồn gốc các bản (yg = private server, 妖怪金手指 = tên CN official…): [docs/versions/GAME_VERSIONS.md](versions/GAME_VERSIONS.md).
