@@ -1,7 +1,7 @@
 "use strict";
 // Serve a mirror (scripts/mirror.js) on localhost with the game host's URL layout.
 //   node battle_sim/serve.js [--port 8090] [--ver <ClientVer>] [--fill]
-// The region follows the port, like in the sandbox: 8090 = VN (default), 8091 = GAT
+// The region follows the port (lib/serve_region.js): 8090 = VN (default), 8091 = GAT
 // (cache .tmp/battle_sim_gat/, newest cached mirror or the live GAT deploy, captures
 // events-*.jsonl in that folder; always fills missing static assets from the GAT host).
 // Offline by default: a missing file is a 404, printed and appended to misses.log, so the
@@ -12,7 +12,7 @@ const http = require("http");
 const path = require("path");
 const { get } = require("./lib/http");
 const { liveDeploy } = require("./lib/deploy");
-const regions = require("./lib/versions");
+const { resolveRegion, requestRegion } = require("./lib/serve_region");
 const capture = require("./lib/capture");
 const { readCatalog } = require("./lib/catalogs");
 
@@ -37,14 +37,13 @@ function latestMirror(cache) {
 }
 
 const port = Number(arg("--port", 8090));
-const gat = port === 8091;
-const versions = gat ? regions.gat : regions.vn;
-const fill = process.argv.includes("--fill") || gat;
-const game = versions.GAME;
-// GAT: no mirror.js run; the first start writes the live deploy's boot files, the rest fills on demand.
-let ver = arg("--ver", null) || latestMirror(versions.CACHE);
-if (!ver && !gat) throw new Error("no mirror found; run `node battle_sim/scripts/mirror.js fetch` first");
-let root = ver && path.join(versions.CACHE, "mirror", ver);
+const region = resolveRegion(port);
+const { versions } = region;
+const fill = process.argv.includes("--fill") || region.alwaysFill;
+// Live-boot region (GAT): no mirror.js run; the first start writes the live deploy's boot files.
+let ver = arg("--ver", null) || latestMirror(region.cache);
+if (!ver && !region.liveBoot) throw new Error("no mirror found; run `node battle_sim/scripts/mirror.js fetch` first");
+let root = ver && path.join(region.cache, "mirror", ver);
 let missLog = root && path.join(root, "misses.log");
 
 // Extra local routes next to the mirror:
@@ -59,27 +58,19 @@ let missLog = root && path.join(root, "misses.log");
 //   /__sim/setup.html       battle_sim/web/setup.html (profile setup page)
 //   /__sim/last-setup.json  last setup saved by `sandbox --setup` (.tmp/battle_sim/profiles/), null if none
 const WEB = path.join(__dirname, "web");
-const CONFIG = path.join(versions.CACHE, "config");
+const CONFIG = region.configDir;
 const LIB = path.join(__dirname, "lib");
 const BROWSER_LIB = new Set(["proto_rebuild.js"]);
-const PROFILES = path.join(versions.CACHE, "profiles");
-
-// GAT captures: .tmp/battle_sim_gat/events-*.jsonl (recorded with the pcn profile).
-function loadBattles(useGat) {
-  if (!useGat) return capture.loadAll();
-  const dir = regions.gat.CACHE;
-  const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((file) => /^events-.*\.jsonl$/.test(file)) : [];
-  return capture.loadAll(files.map((file) => path.join(dir, file)));
-}
+const PROFILES = region.profilesDir;
 
 function sendJson(res, obj) {
   res.writeHead(200, { "Content-Type": TYPES[".json"], "Cache-Control": "no-cache" }).end(JSON.stringify(obj));
 }
 
 // Captured battles, read fresh on each request (captures are small).
-function battleRoute(urlPath, useGat) {
+function battleRoute(urlPath, reqRegion) {
   if (urlPath === "/__sim/battles.json") {
-    return loadBattles(useGat).map((b) => {
+    return reqRegion.loadBattles().map((b) => {
       const extra = JSON.parse(b.quit.extra || "{}");
       return { uuid: b.start.uuid, level: b.start.level, battleType: b.start.battleType, result: extra.result,
         ops: capture.listItems(b.quit.operations).length, file: path.basename(b.file) };
@@ -87,7 +78,7 @@ function battleRoute(urlPath, useGat) {
   }
   const m = /^\/__sim\/battle\/([0-9a-f]{24})\.json$/.exec(urlPath);
   if (!m) return undefined;
-  const b = loadBattles(useGat).find((x) => x.start.uuid === m[1]);
+  const b = reqRegion.loadBattles().find((x) => x.start.uuid === m[1]);
   return b ? { start: b.start, quit: b.quit } : null;
 }
 
@@ -127,19 +118,20 @@ async function fetchConfig(rel) {
 
 const server = http.createServer(async (req, res) => {
   const [urlPath, query] = req.url.split("?", 2);
-  const useGatCatalog = gat || new URLSearchParams(query).get("region") === "gat";
+  const reqRegion = requestRegion(region, query);
   const dict = /^\/__sim\/dict\/(hero|support|map|boss|creeps|campaign|antique|relic|artifact)-dict\.json$/.exec(urlPath);
-  if (gat && req.method === "GET" && urlPath === "/__sim/deploy.json") {
-    sendJson(res, { ...JSON.parse(fs.readFileSync(path.join(root, "deploy.json"), "utf8")), locale: "tw" });
+  if (region.locale && req.method === "GET" && urlPath === "/__sim/deploy.json") {
+    sendJson(res, { ...JSON.parse(fs.readFileSync(path.join(root, "deploy.json"), "utf8")), locale: region.locale });
     return;
   }
-  if (useGatCatalog && req.method === "GET" && dict) {
-    sendJson(res, readCatalog(dict[1], "gat"));
+  if (reqRegion.name !== "vn" && req.method === "GET" && dict) {
+    sendJson(res, readCatalog(dict[1], reqRegion.name));
     return;
   }
   if (urlPath === "/__sim/configs.json") {
     const list = fs.existsSync(CONFIG) ? fs.readdirSync(CONFIG).filter((v) => fs.existsSync(path.join(CONFIG, v, "config.bin"))) : [];
-    if (gat) for (const b of loadBattles(true)) if (!list.includes(b.start.configVersion)) list.push(b.start.configVersion);
+    // Captures made on configs not cached yet (fetched on demand by fetchConfig).
+    if (region.liveBoot) for (const b of region.loadBattles()) if (!list.includes(b.start.configVersion)) list.push(b.start.configVersion);
     list.sort((a, b) => Number(b.split("_").pop()) - Number(a.split("_").pop()));
     sendJson(res, list);
     return;
@@ -149,7 +141,7 @@ const server = http.createServer(async (req, res) => {
     sendJson(res, fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : null);
     return;
   }
-  const battle = battleRoute(urlPath, useGatCatalog);
+  const battle = battleRoute(urlPath, reqRegion);
   if (battle !== undefined) {
     if (battle === null) { console.log("404", req.url); res.writeHead(404).end(); return; }
     sendJson(res, battle);
@@ -167,7 +159,7 @@ const server = http.createServer(async (req, res) => {
     body = fs.readFileSync(r.abs);
   } else if (fill) {
     try {
-      body = await get(game + (gat && r.rel === "index.html" ? "" : r.rel));
+      body = await get(region.upstream(r.rel));
       fs.mkdirSync(path.dirname(r.abs), { recursive: true });
       fs.writeFileSync(r.abs, body);
       console.log("fill", r.rel, body.length);
@@ -192,10 +184,10 @@ const server = http.createServer(async (req, res) => {
 });
 
 async function main() {
-  if (gat && !ver) {
-    const { clientVer, settingsFile, bundleVers, html } = await liveDeploy(game);
+  if (region.liveBoot && !ver) {
+    const { clientVer, settingsFile, bundleVers, html } = await liveDeploy(region.game);
     ver = clientVer;
-    root = path.join(versions.CACHE, "mirror", ver);
+    root = path.join(region.cache, "mirror", ver);
     missLog = path.join(root, "misses.log");
     fs.mkdirSync(root, { recursive: true });
     fs.writeFileSync(path.join(root, "index.html"), html);
