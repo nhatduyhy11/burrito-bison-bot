@@ -2,7 +2,7 @@
 // (owned, star, slots) and the Thần Khí editor (below the skin table, artifact.js).
 import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, StarSkillsLabel, plain, starsLabel, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
-import { heroSkins, newHero } from "../profile-io.js";
+import { heroSkins, newHero } from "../profile-state.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { resolveRelic } from "../../relics.js";
 import { headerRow, nameOptions, requiresNote, without } from "./shared.js";

@@ -1,4 +1,4 @@
-import { LIMITS, artifactState, newHero } from "./profile-io.js";
+import { LIMITS, artifactState, newHero } from "./profile-state.js";
 
 const captures = new Map(); // region:battle -> StartGameP
 

@@ -1,7 +1,7 @@
 // Thần Khí (artifact) editor of one hero card: quality, stage and the rolled slots. Rendered inside
 // the hero card in heroes.js, below the skin table — "Tùy chỉnh" on the card customizes it too.
 // Item names and every description are left out on purpose (look them up in game); only line names
-// (team buff, rainbow skill) are shown. State shape: profile-io.js artifactState.
+// (team buff, rainbow skill) are shown. State shape: profile-state.js artifactState.
 import { html, Select } from "../ui.js";
 import { MAX_STAGE, entryCode, parseEntryCode, rareSkill } from "../../artifacts.js";
 

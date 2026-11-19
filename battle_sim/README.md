@@ -115,7 +115,8 @@ Capture tạo ra dành cho chế độ **Chơi** offline và có danh sách thao
   htm, ES module gốc của browser (không build; import map trong `setup.html` trỏ `preact`,
   `preact/hooks`, `htm` về `web/vendor/`): `index.js` (entry: state một nguồn qua `update()` →
   `normalize`, prefill từ capture, boot), `skin-rules.js` (rule skin của input, không DOM, import
-  được trong Node), `profile-io.js` (state ↔ profile JSON), `ui.js` (`html`, component nhỏ:
+  được trong Node), `profile-io.js` (state ↔ profile JSON; re-export `profile-state.js` = state shape +
+  `normalize`, `profile-export.js` = `toProfile`, `profile-import.js` = `fromProfile`), `ui.js` (`html`, component nhỏ:
   Accordion, Section "Ghi đè", Select, NumberInput, Checkbox), `sections/` (mỗi khung form một file: `map`,
   `heroes`, `mounts`, `summoner`, `lists` cho trap/pet/spell, `buildings`, `golden`, `shared`), `side.js` (khung bên
   phải). Quy ước: handler đặt tên ở trên, template `html\`\`` không chứa hàm inline; `return html\``

@@ -1,6 +1,6 @@
 // Trap / Pet / Spell lists: name, level (traps, pets), star.
 import { Accordion, html, label, NumberInput, plain, SelectPop, starsLabel } from "../ui.js";
-import { LIMITS } from "../profile-io.js";
+import { LIMITS } from "../profile-state.js";
 import { nameOptions } from "./shared.js";
 
 const LIST_TITLES = { traps: "Trap", pets: "Pet", spells: "Spell (thần)" };
