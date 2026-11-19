@@ -304,12 +304,22 @@ async function main() {
 
   // The engine looks up effects and level limits in AntiqueHaloLO by rank code.
   const haloRows = rows(M("AntiqueHaloLO"));
-  // Per-star halo skill (AntiqueHaloLO._skillCode; 5 antiques have none).
+  // Per-star halo skill (AntiqueHaloLO._skillCode; 5 antiques have none). The desc is the one the
+  // in-game antique detail view shows (AntiqueDetailView reads AntiqueHaloShowLO.text, rows only at
+  // the tier stars 1/4/8/12/15), not the SkillBaseLO desc: those differ, e.g. Càn Long's skill desc
+  // says "ST mà Anh Hùng…" while the game shows the hero-skin-star scaling. The live "(Hiện tại +X%)"
+  // suffix needs the account's haloLevel and is left out.
+  const haloShowText = (antiqueCode, star) => {
+    const show = rows(V("AntiqueHaloShowLO")).filter((s) => s.antiqueCode === antiqueCode && s.star <= star && s.text)
+      .sort((a, b) => b.star - a.star)[0];
+    return show?.text?.trim();
+  };
   const haloStarSkills = new Map();
   for (const r of haloRows) {
     if (!r.skillCode) continue;
     const list = haloStarSkills.get(r.antiqueCode) || [];
-    list.push([r.star, skillRef(r.skillCode)]);
+    const ref = skillRef(r.skillCode);
+    list.push([r.star, { ...ref, desc_vn: haloShowText(r.antiqueCode, r.star) || ref.desc_vn }]);
     haloStarSkills.set(r.antiqueCode, list);
   }
   const antiques = keyed(rows(M("AntiqueLO")).map((row) => {

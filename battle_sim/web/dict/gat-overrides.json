@@ -107,6 +107,63 @@
           704913,
           704914,
           704915
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3
+            ],
+            "code": 60700401000,
+            "name": "Gold 4",
+            "name_vn": "Vàng 4",
+            "desc_vn": "Mỗi Dị Thú trong trận tăng 40% ST cho toàn bộ Anh Hùng phe ta."
+          },
+          {
+            "stars": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "code": 60700402000,
+            "name": "Gold 4",
+            "name_vn": "Vàng 4",
+            "desc_vn": "Mỗi Dị Thú trong trận tăng 55% ST cho toàn bộ Anh Hùng phe ta."
+          },
+          {
+            "stars": [
+              8,
+              9,
+              10,
+              11
+            ],
+            "code": 60700403000,
+            "name": "Gold 4",
+            "name_vn": "Vàng 4",
+            "desc_vn": "Mỗi Dị Thú trong trận tăng 70% ST cho toàn bộ Anh Hùng phe ta."
+          },
+          {
+            "stars": [
+              12,
+              13,
+              14
+            ],
+            "code": 60700404000,
+            "name": "Gold 4",
+            "name_vn": "Vàng 4",
+            "desc_vn": "Mỗi Dị Thú trong trận tăng 85% ST cho toàn bộ Anh Hùng phe ta."
+          },
+          {
+            "stars": [
+              15
+            ],
+            "code": 60700405000,
+            "name": "Gold 4",
+            "name_vn": "Vàng 4",
+            "desc_vn": "Mỗi Dị Thú trong trận tăng 100% ST cho toàn bộ Anh Hùng phe ta."
+          }
         ]
       }
     }
