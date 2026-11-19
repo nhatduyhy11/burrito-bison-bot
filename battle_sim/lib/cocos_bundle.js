@@ -16,8 +16,11 @@ function decodeUuid(u) {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
-async function loadBundleConfig(bundle, hash) {
-  return getJson(`${ASSET_HOST}${bundle}/config.${hash}.json`);
+// `host` = <game>/assets/ of the region (VN by default). The config remembers it for importUrls.
+async function loadBundleConfig(bundle, hash, host = ASSET_HOST) {
+  const cfg = await getJson(`${host}${bundle}/config.${hash}.json`);
+  Object.defineProperty(cfg, "host", { value: host });
+  return cfg;
 }
 
 // URL of every import file (single asset or pack) listed by the config.
@@ -28,7 +31,7 @@ function importUrls(bundle, cfg) {
   for (let i = 0; i < imp.length; i += 2) {
     const key = imp[i];
     const name = typeof key === "number" ? uuids[key] : key; // pack ids are strings
-    out.push({ name, url: `${ASSET_HOST}${bundle}/import/${name.slice(0, 2)}/${name}.${imp[i + 1]}.json` });
+    out.push({ name, url: `${cfg.host || ASSET_HOST}${bundle}/import/${name.slice(0, 2)}/${name}.${imp[i + 1]}.json` });
   }
   return out;
 }

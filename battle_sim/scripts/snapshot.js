@@ -1,6 +1,7 @@
 "use strict";
 // Cache the currently live deploy (code bundle + battle maps) for battle_sim.
-//   node battle_sim/scripts/snapshot.js
+//   node battle_sim/scripts/snapshot.js [--gat]
+// --gat caches the live GAT deploy (hauntheroesweb) under .tmp/battle_sim_gat/ instead of VN.
 // Plain HTTP, no browser: index.html (ClientVer) -> manifest.<ver>.js -> src/settings.<h>.js
 // (bundleVers: main, battle, resources). Old deploys disappear from the host, so run this
 // whenever the game updates, before capturing battles you want to replay.
@@ -8,17 +9,19 @@ const fs = require("fs");
 const path = require("path");
 const { getJson, download } = require("../lib/http");
 const cocos = require("../lib/cocos_bundle");
-const versions = require("../lib/versions");
 const { liveDeploy } = require("../lib/deploy");
+const regions = require("../lib/versions");
+const { bundleVersion } = regions;
+const versions = regions[process.argv.includes("--gat") ? "gat" : "vn"];
 
 async function fetchMainBundle(hash) {
   const dest = path.join(versions.CACHE, "bundles", `index.${hash}.js`);
-  const fresh = await download(`${cocos.ASSET_HOST}main/index.${hash}.js`, dest);
-  return { file: dest, fresh, battleVersion: versions.bundleVersion(dest) };
+  const fresh = await download(`${versions.ASSET_HOST}main/index.${hash}.js`, dest);
+  return { file: dest, fresh, battleVersion: bundleVersion(dest) };
 }
 
 async function fetchMapVersion(resourcesHash) {
-  const cfg = await cocos.loadBundleConfig("resources", resourcesHash);
+  const cfg = await cocos.loadBundleConfig("resources", resourcesHash, versions.ASSET_HOST);
   const hit = Object.entries(cfg.paths).find(([, v]) => v[0] === "tiledBgVersion");
   if (!hit) throw new Error("resources/tiledBgVersion not in resources bundle");
   for (const f of cocos.importUrlsFor("resources", cfg, Number(hit[0]))) {
@@ -32,7 +35,7 @@ async function fetchMapVersion(resourcesHash) {
 // Every Tiled map (layers+tilesets) and tileset (tiles) in the battle bundle.
 // Duplicate names (brush/_empty/brush_xx vs brush/xx/brush_xx): most tiles wins.
 async function fetchMaps(battleHash, outDir) {
-  const cfg = await cocos.loadBundleConfig("battle", battleHash);
+  const cfg = await cocos.loadBundleConfig("battle", battleHash, versions.ASSET_HOST);
   const found = {};
   for (const f of cocos.importUrls("battle", cfg)) {
     for (const { name, payload } of cocos.jsonAssets(await getJson(f.url))) {
@@ -62,9 +65,9 @@ async function fetchMaps(battleHash, outDir) {
 }
 
 async function main() {
-  const d = await liveDeploy();
+  const d = await liveDeploy(versions.GAME);
   const { main: mainHash, battle, resources } = d.bundleVers;
-  console.log(`live: ClientVer ${d.clientVer}, ${d.settingsFile}, main ${mainHash}, battle ${battle}, resources ${resources}`);
+  console.log(`live ${versions.name}: ClientVer ${d.clientVer}, ${d.settingsFile}, main ${mainHash}, battle ${battle}, resources ${resources}`);
 
   const b = await fetchMainBundle(mainHash);
   console.log(`bundle ${b.fresh ? "downloaded" : "cached"}: ${path.relative(process.cwd(), b.file)} -> battleVersion ${b.battleVersion}`);
