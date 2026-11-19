@@ -23,7 +23,8 @@ async function replayBattle(battle) {
   out(`battle ${start.uuid} level ${start.level}: ${ops.length} ops, game result ${extra.result} ${extra.resultReason} endFrame ${battle.quit.endFrame}`);
 
   const t0 = Date.now();
-  const assets = await versions.resolveAssets(start);
+  // SEA config = VN cache; any other branch (trunk_) = GAT cache (.tmp/battle_sim_gat/).
+  const assets = await versions[/^sea_/.test(start.configVersion) ? "vn" : "gat"].resolveAssets(start);
   const sim = new Sim(assets);
   // Versions the sim really runs with must equal the ones the game reported.
   const loaded = versions.loadedVersions(sim);
