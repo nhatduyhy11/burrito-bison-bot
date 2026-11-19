@@ -135,6 +135,8 @@ bd prime                # Refresh Beads context
   The hooks in `.beads/hooks/` are committed, but `core.hooksPath` is per-clone git config and `bd bootstrap` does not set it — without this step no beads hook runs.
 - Check hooks with `bd hooks list` (expect 5/5 installed). `bd doctor` is not supported in embedded mode, so it will not catch missing hooks.
 - `.gitattributes` pins `.beads/hooks/*` to LF; this repo uses `core.autocrlf=true`, and CRLF breaks the sh hooks.
+- Hide Dolt's marker branch from `git fetch`: `git config --add remote.origin.fetch "^refs/heads/__dolt_remote_info__"` (git 2.29+), then `git update-ref -d refs/remotes/origin/__dolt_remote_info__` if it was already fetched.
+  Dolt's git remote force-pushes this branch (one `DOLT_REMOTE.md`) under `refs/heads/` on every `bd dolt push`; nothing reads it, so deleting it on GitHub is harmless but it comes back. `bd dolt pull`/`push` use Dolt's own cache repo under `.beads/embeddeddolt/`, so this exclude does not affect issue sync. Never delete `refs/dolt/data` — it holds the issue database.
 
 ## Beads Issue Sizing
 
