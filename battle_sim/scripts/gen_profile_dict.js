@@ -135,6 +135,12 @@ async function main() {
   // SkillReplaceLO level of the skill it replaces); the client never reads it, the server does.
   // `skillInfo` / `replacesInfo` carry name + desc for the hover popover. Attribute nodes are left
   // out (server-side attr, not modelled). See docs/planning/hero_gear.md.
+  // `showInfo` is the row the in-game Dị Năng screen actually displays (HeroModule
+  // .getOrginAwakeSkillCpde returns AvatarUpGradeLO.ShowSkillCode, never skillcode): a display-only
+  // SkillBaseLO row whose desc is the upgrade summary ("Công Thường【skill được nâng】hiệu ứng…"),
+  // not the battle skill's own desc. All 80 show rows are type PASSIVE — the game labels every
+  // node "Bị động", so no active/passive marker is stored (the granted battle skill may still be
+  // MANUAL 必杀; its type is not part of this dict).
   const avatarRows = new Map();
   for (const row of rows(M("AvatarUpGradeLO"))) {
     if (!row.skillcode) continue;
@@ -143,6 +149,7 @@ async function main() {
     const minBreakThrough = jsonField(row.skillUnlock)[1];
     list.push({ chapter: point.chapter, node: { replaces: row.oldSkillCode || null, skill: row.skillcode,
       skillInfo: skillRef(row.skillcode),
+      ...(row.ShowSkillCode ? { showInfo: skillRef(row.ShowSkillCode) } : {}),
       ...(row.oldSkillCode ? { replacesInfo: skillRef(row.oldSkillCode) } : {}),
       ...(minBreakThrough ? { minBreakThrough } : {}) } });
     avatarRows.set(point.subType, list);

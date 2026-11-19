@@ -244,6 +244,12 @@
             "name_vn": "Dây Xích Sấm Sét",
             "desc_vn": "Hanuman phóng Chuỗi Tia Sét lên địch gần nhất gây ST bằng 30% Công, phóng 3 lần, và gây 4s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 100% Công"
           },
+          "showInfo": {
+            "code": 10010501000,
+            "name": "Vajra Thunderquake",
+            "name_vn": "Kim Cang Lôi Chấn",
+            "desc_vn": "Công Thường【Dây Xích Sấm Sét】ST Tê Liệt tăng đến 5 lần, Lượt nảy+1"
+          },
           "replacesInfo": {
             "code": 10010101000,
             "name": "Thunderous Chain",
@@ -260,6 +266,12 @@
             "name_vn": "Triệu Hồi Đám Mây",
             "desc_vn": "Hanuman triệu hồi sấm sét khiến địch gần nhất chịu ST bằng 50% Công, tạo Hồ Quang Điện khiến địch lân cận chịu ST phạm vi bằng 50% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 250% Công"
           },
+          "showInfo": {
+            "code": 10010502000,
+            "name": "Mighty Thunderbolt",
+            "name_vn": "Vạn Quân Lôi Đình",
+            "desc_vn": "Tuyệt Kỹ【Triệu Hồi Đám Mây】ST Tê Liệt tăng đến 5 lần"
+          },
           "replacesInfo": {
             "code": 10010201000,
             "name": "Storm Descent",
@@ -275,6 +287,12 @@
             "name": "Monkey Blessing",
             "name_vn": "Thần Hầu Ân Điển",
             "desc_vn": "Bị động Hanuman [Thần Hầu Ân Điển] biến thành Công+40%"
+          },
+          "showInfo": {
+            "code": 10010503000,
+            "name": "Karmic Thunder Punishment",
+            "name_vn": "Nhân Quả Lôi Phạt",
+            "desc_vn": "Đột phá 6【Thần Hầu Ân Điển】biến thành Công+40% (Đột phá Lv6 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10010303000,
@@ -293,6 +311,12 @@
             "name_vn": "Thần Hầu Ân Điển",
             "desc_vn": "Hanuman mỗi 3s, khiến địch ngẫu nhiên chịu 1 lần Chuỗi Tia Sét Thứ Cấp, địch gần nhất chịu ST bằng 30% Công, phóng4 lần, và gây 4s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST bằng 100% Công"
           },
+          "showInfo": {
+            "code": 10010504000,
+            "name": "Thunder Cycle of the Six Paths",
+            "name_vn": "Lục Đạo Lôi Chuyển",
+            "desc_vn": "Đột phá 9【Thần Hầu Ân Điển】ST Tê Liệt tăng đến 5 lần, Lượt nảy+1 (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10010603000,
             "name": "Monkey Blessing",
@@ -309,6 +333,12 @@
             "name": "Storm Descent",
             "name_vn": "Triệu Hồi Đám Mây",
             "desc_vn": "Hanuman triệu hồi sấm sét khiến địch gần nhất chịu ST bằng 25% Công, tạo Hồ Quang Điện khiến địch lân cận chịu ST phạm vi bằng 25% Công, gây 5s<color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 125% Công"
+          },
+          "showInfo": {
+            "code": 10010505000,
+            "name": "Karmic Reckoning",
+            "name_vn": "Thanh Toán Tội Nghiệp",
+            "desc_vn": "Tuyệt Kỹ【Triệu Hồi Đám Mây】mỗi lần thi triển đều sẽ phóng liên tiếp 2 lần, nhưng ST giảm một nửa"
           },
           "replacesInfo": {
             "code": 10010602000,
@@ -562,6 +592,12 @@
             "name_vn": "Chú Đao Cá Thối",
             "desc_vn": "Gai Độc vung vuốt khiến địch gần nhất chịu ST bằng 600% Công"
           },
+          "showInfo": {
+            "code": 10020501000,
+            "name": "Sanguine Ravage",
+            "name_vn": "Mục Rữa Cào Xé",
+            "desc_vn": "Công Thường【Chú Đao Cá Thối】ST tăng 5 lần"
+          },
           "replacesInfo": {
             "code": 10020101000,
             "name": "Rotblade Curse",
@@ -577,6 +613,12 @@
             "name": "Reaper Scythe",
             "name_vn": "Liềm Thu Hoạch",
             "desc_vn": "Gai Độc phóng đao trí mạng về phía địch gần nhất, địch trên đường chịu 2 lần ST bằng 600% Công, ST mục tiêu phải chịu trong 6s+25%"
+          },
+          "showInfo": {
+            "code": 10020502000,
+            "name": "Nether Slay",
+            "name_vn": "Nhát Đao Diệt Hồn",
+            "desc_vn": "Tuyệt Kỹ【Liềm Thu Hoạch】ST tăng 5 lần"
           },
           "replacesInfo": {
             "code": 10020201000,
@@ -594,6 +636,12 @@
             "name_vn": "Tiền Tài Tối Thượng",
             "desc_vn": "Bị động Gai Độc【Tiền Tài Tối Thượng】biến thành mỗi khi có 100 Ngân Phiếu, ST bản thân gây ra+1%, tối đa+300%"
           },
+          "showInfo": {
+            "code": 10020503000,
+            "name": "Crimson Pursuit",
+            "name_vn": "Kẻ Đòi Nợ",
+            "desc_vn": "Đột phá 6【Tiền Tài Tối Thượng】biến thành mỗi khi có 100 Ngân Phiếu, ST bản thân gây ra+1%, tối đa+300% (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10020303000,
             "name": "Greed Mask",
@@ -610,6 +658,12 @@
             "name": "Blood Rite",
             "name_vn": "Huyết Quỷ Thuật",
             "desc_vn": "ST do Gai Độc gây lên Tinh Anh và BOSS+50%"
+          },
+          "showInfo": {
+            "code": 10020504000,
+            "name": "Reaper of Death",
+            "name_vn": "Gặt Hái Tử Thần",
+            "desc_vn": "ST do Gai Độc gây lên Tinh Anh và BOSS+50%"
           }
         },
         {
@@ -620,6 +674,12 @@
             "name": "Rotblade Curse",
             "name_vn": "Chú Đao Cá Thối",
             "desc_vn": "Gai Độc vung Liềm gây ST bằng 600% Công lên địch gần nhất"
+          },
+          "showInfo": {
+            "code": 10020505000,
+            "name": "Circle of Calamity",
+            "name_vn": "Vòng Chém Ngàn Kiếp",
+            "desc_vn": "Công Thường【Chú Đao Cá Thối】mỗi lần thi triển đều sẽ phóng liên tiếp 2 lần"
           },
           "replacesInfo": {
             "code": 10020601000,
@@ -814,6 +874,12 @@
             "name_vn": "Thuật Sát Ma",
             "desc_vn": "Pháp Sư Sương phóng Thuật Chữa Trị, Cửa sẽ hồi 2% Giới Hạn HP, đơn vị xung quanh Cửa chịu ST bằng 140% Công, và kèm 3s <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
           },
+          "showInfo": {
+            "code": 10030501000,
+            "name": "Fountain of Life",
+            "name_vn": "Suối Nguồn Tươi Trẻ",
+            "desc_vn": "Khi Pháp Sư Sương phóng Tuyệt Kỹ, Cửa sẽ hồi 2% Giới Hạn HP"
+          },
           "replacesInfo": {
             "code": 10030201000,
             "name": "Demonbane",
@@ -830,6 +896,12 @@
             "name_vn": "Thuật Sát Ma",
             "desc_vn": "Pháp Sư Sương phóng Thuật Chữa Trị, Cửa sẽ hồi 2% Giới Hạn HP, đơn vị xung quanh Cửa chịu ST bằng 700% Công, và kèm 3s <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>, và tăng vĩnh viễn 20% ST mục tiêu phải chịu (Không thể cộng dồn)"
           },
+          "showInfo": {
+            "code": 10030502000,
+            "name": "Icestar Deicide",
+            "name_vn": "Sao Băng Diệt Thần",
+            "desc_vn": "Tuyệt Kỹ【Thuật Sát Ma】ST tăng đến 5 lần, và khi gây ST sẽ tăng vĩnh viễn 20% ST mục tiêu phải chịu (Không thể cộng dồn)"
+          },
           "replacesInfo": {
             "code": 10030601000,
             "name": "Demonbane",
@@ -845,6 +917,12 @@
             "name": "Immunity",
             "name_vn": "Miễn Dịch",
             "desc_vn": "Mỗi khi thi triển Công Thường, có 5% tỷ lệ thêm 1 tầng【Miễn Dịch】"
+          },
+          "showInfo": {
+            "code": 10030503000,
+            "name": "Frostheal Grace",
+            "name_vn": "Sương Phép Cứu Rỗi",
+            "desc_vn": "Công Thường【Thuật Chữa Trị】có 5% tỷ lệ thêm 1 tầng【Miễn Dịch】"
           }
         },
         {
@@ -855,6 +933,12 @@
             "name": "DMG Boost",
             "name_vn": "Tăng ST",
             "desc_vn": "Mỗi khi thi triển Công Thường, khiến tất cả Anh Hùng tăng 1% ST, tối đa 100%"
+          },
+          "showInfo": {
+            "code": 10030504000,
+            "name": "Arctic Shelter",
+            "name_vn": "Che Chở Đại Hàn",
+            "desc_vn": "Công Thường【Thuật Chữa Trị】mỗi lần chữa trị sẽ khiến tất cả Anh Hùng tăng 1% ST, tối đa 100%"
           }
         },
         {
@@ -865,6 +949,12 @@
             "name": "Wardcraft",
             "name_vn": "Thuật Phòng Ngự",
             "desc_vn": "Khi Pháp Sư Sương trong trận, tỷ lệ HP đơn vị phe ta dưới 20%, nhận ngay 9 tầng [Miễn Dịch], CD 60s"
+          },
+          "showInfo": {
+            "code": 10030505000,
+            "name": "Snow of Eternality",
+            "name_vn": "Cõi Tuyết Vĩnh Sinh",
+            "desc_vn": "Đột phá 9【Thuật Phòng Ngự】biến thành nhận ngay 9 tầng【Miễn Dịch】 (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10030303000,
@@ -1060,6 +1150,12 @@
             "name_vn": "Đạn Băng",
             "desc_vn": "Vua Pháp Sư phóng đạn băng về phái địch gần nhất gây ST bằng 450% Công và kèm 3s<color=#f57c00 click=\"onClicked\" param=\"7\"><u> Băng Sương</u></color>,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>1 lần"
           },
+          "showInfo": {
+            "code": 10040501000,
+            "name": "Arctic Crystal",
+            "name_vn": "Tinh Thể Cực Hàn",
+            "desc_vn": "Công thường ST【Đạn Băng】tăng x5, đồng thời <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>1 lần"
+          },
           "replacesInfo": {
             "code": 10040101000,
             "name": "Frostbolt",
@@ -1075,6 +1171,12 @@
             "name": "Arcane Grid",
             "name_vn": "Hệ Thống Bí Ẩn",
             "desc_vn": "Tỷ lệ Đóng Băng của Vua Pháp Sư tăng 30%, khi kết thúc Đóng Băng gây ST bằng 1080% Công"
+          },
+          "showInfo": {
+            "code": 10040502000,
+            "name": "Frostbane Core",
+            "name_vn": "Lõi Ngục Sương",
+            "desc_vn": "Tỷ lệ tấn công gây Đóng Băng đổi thành 30%, kết thúc Đóng Băng gây ST tăng x5 (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10040303000,
@@ -1092,6 +1194,12 @@
             "name": "Paramount Reign",
             "name_vn": "Quyền Lực Tối Cao",
             "desc_vn": "Sau mỗi lần triệu hồi hoàn 15% Ngân Phiếu tiêu hao"
+          },
+          "showInfo": {
+            "code": 10040503000,
+            "name": "Paramount Reign",
+            "name_vn": "Quyền Lực Tối Cao",
+            "desc_vn": "Khi Vua Pháp Sư trong trận mỗi lần triệu hồi xong sẽ hoàn trả 15% Ngân Phiếu tiêu hao"
           }
         },
         {
@@ -1102,6 +1210,12 @@
             "name": "Shadow Storm",
             "name_vn": "Bão Bóng Tối",
             "desc_vn": "Vua Pháp Sư khiến địch gần nhất chịu 6s Bão Tuyết, mỗi giây gây ST bằng 300% Công, trong thời gian này kèm <color=#f57c00 click=\"onClicked\" param=\"7\"><u>Băng Sương</u></color>"
+          },
+          "showInfo": {
+            "code": 10040504000,
+            "name": "Blizzard Judgment",
+            "name_vn": "Phán Quyết Bão Băng",
+            "desc_vn": "ST của Tuyệt Kỹ【Cực Hàn Phong Bạo】tăng x5, thời gian duy trì đổi thành 6s"
           },
           "replacesInfo": {
             "code": 10040201000,
@@ -1118,6 +1232,12 @@
             "name": "Glacier Brand",
             "name_vn": "Dấu Ấn Băng Giá",
             "desc_vn": "Sau mỗi lần Đóng Băng thành công, vĩnh viễn tăng 5% ST Phép Trực Tiếp mục tiêu phải chịu, tối đa 30%"
+          },
+          "showInfo": {
+            "code": 10040505000,
+            "name": "Glacier Brand",
+            "name_vn": "Dấu Ấn Băng Giá",
+            "desc_vn": "Vua Pháp Sư sau mỗi lần Đóng Băng thành công, vĩnh viễn tăng 5% ST Phép Trực Tiếp mục tiêu phải chịu, tối đa 30%"
           }
         }
       ]
@@ -1365,6 +1485,12 @@
             "name_vn": "Mưa Đạn",
             "desc_vn": "Pháo Loli cầm súng máy, phóng đạn khiến địch gần nhất chịu ST bằng 350% Công,<color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu </u></color>3 lần"
           },
+          "showInfo": {
+            "code": 10050501000,
+            "name": "Heavy Metal Blast",
+            "name_vn": "Lễ Hội Heavy Metal",
+            "desc_vn": "Công thường ST【Mưa Đạn】tăng đến x5, đồng thời lượt <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> +1"
+          },
           "replacesInfo": {
             "code": 10050101000,
             "name": "Bullet Storm",
@@ -1380,6 +1506,12 @@
             "name": "Whirlwind Dance",
             "name_vn": "Vũ Điệu Lốc Xoáy",
             "desc_vn": "Mỗi khi có 15 Điện Năng ST bản thân gây ra+2.5%, tối đa+250%"
+          },
+          "showInfo": {
+            "code": 10050502000,
+            "name": "Dynamite Bullet",
+            "name_vn": "Nòng Súng Bạo Liệt",
+            "desc_vn": "Đột phá 6【Vũ Điệu Lốc Xoáy】biến thành cứ có 15 Điện Năng ST bản thân gây ra +2.5%, giới hạn +250% (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10050303000,
@@ -1398,6 +1530,12 @@
             "name_vn": "Vũ Điệu Lốc Xoáy",
             "desc_vn": "Pháo Loli phóng Tuyệt Kỹ trong 6s khiến Tốc Công Anh Hùng phe ta+40% (không cộng dồn)"
           },
+          "showInfo": {
+            "code": 10050503000,
+            "name": "Vicious Craze",
+            "name_vn": "Lễ Hội Tội Ác",
+            "desc_vn": "Đột phá 9【Vũ Điệu Lốc Xoáy】biến thành thi triển Tuyệt Kỹ trong 6s khiến Anh Hùng phe ta Tốc Công +40% (không thể cộng dồn) (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10050602000,
             "name": "Whirlwind Dance",
@@ -1415,6 +1553,12 @@
             "name_vn": "Tên Lửa Tử Thần",
             "desc_vn": "Pháo Loli bắn Tên Lửa Tử Thần về hướng địch gần nhất, gây 1 lần ST bằng 2000% Công lên địch trên đường"
           },
+          "showInfo": {
+            "code": 10050504000,
+            "name": "Wild Barrage",
+            "name_vn": "Tên Lửa Cuồng Loạn",
+            "desc_vn": "Tuyệt Kỹ【Tên Lửa Tử Thần】tăng đến x5, đồng thời xóa thời gian tích lực"
+          },
           "replacesInfo": {
             "code": 10050201000,
             "name": "Death Barrage",
@@ -1429,6 +1573,12 @@
             "code": 10050605000,
             "name": "Raging Tempest",
             "name_vn": "Mắt Bão Cuồng Bạo",
+            "desc_vn": "Thi Triển Tuyệt Kỹ vẫn trong 6s khiến ST Bạo Anh Hùng phe ta+100% (Không cộng dồn)"
+          },
+          "showInfo": {
+            "code": 10050505000,
+            "name": "All Hail Rock 'n' Roll",
+            "name_vn": "Rock&Roll Tối Thượng",
             "desc_vn": "Thi Triển Tuyệt Kỹ vẫn trong 6s khiến ST Bạo Anh Hùng phe ta+100% (Không cộng dồn)"
           }
         }
@@ -1640,6 +1790,12 @@
             "name_vn": "Hình Thái Giới Vương",
             "desc_vn": "Tôn Ngộ Không xoay tròn tạo thành bão 5s, khiến địch trên đường mỗi giây chịu 3 lần ST phạm vi nhỏ/vừa bằng 300% Công,【Vô Địch】trong thời gian này và【Không Thể Chọn Trúng】"
           },
+          "showInfo": {
+            "code": 10080501000,
+            "name": "Wave of Strife",
+            "name_vn": "Sóng Dữ Chiến Đấu",
+            "desc_vn": "Tuyệt Kỹ [Hình Thái Giới Vương] ST tăng 5 lần, và tần suất ST trở thành mỗi giây gây 3 lần ST"
+          },
           "replacesInfo": {
             "code": 10080201000,
             "name": "Realm King",
@@ -1655,6 +1811,12 @@
             "name": "Wayward Staff",
             "name_vn": "Gậy Như Ý",
             "desc_vn": "Bị động Tôn Ngộ Không [Tự Tại] biến thành Bạo+70%, ST Bạo+350% (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "showInfo": {
+            "code": 10080502000,
+            "name": "Wukong Staff",
+            "name_vn": "Gậy Pháp Đại Thánh",
+            "desc_vn": "Bị Động【Gậy Như Ý】Trở thành tăng 70% Bạo, 350% ST Bạo (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10080303000,
@@ -1673,6 +1835,12 @@
             "name_vn": "Gậy Như Ý",
             "desc_vn": "Tôn Ngộ Không kích hoạt <color=#f57c00 click=\"onClicked\" param=\"9\"><u>Bạo</u></color> có 35% kèm ST phạm vi nhỏ bằng 360% Công (ST này sau khi Bạo sẽ không thể kích hoạt lại kỹ năng này, đột phá Lv9 sẽ hiệu lực)"
           },
+          "showInfo": {
+            "code": 10080503000,
+            "name": "Rifting Blow",
+            "name_vn": "Gậy Lớn Chấn Địa",
+            "desc_vn": "Đột phá 9 kích hoạt ST thêm gây ra, trở thành ST phạm vi nhỏ, tỷ lệ kích hoạt tăng đến 35% và ST tăng 5 lần (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10080602000,
             "name": "Wayward Staff",
@@ -1689,6 +1857,12 @@
             "name": "Force of Strife",
             "name_vn": "Sức Mạnh Chiến Đấu",
             "desc_vn": "Trong chiến đấu, tăng thêm ST gây ra bằng 1 lần tỷ lệ Bạo trên bảng chỉ số của bản thân"
+          },
+          "showInfo": {
+            "code": 10080504000,
+            "name": "Wukong's Awakening",
+            "name_vn": "Đại Thánh Xuất Hiện",
+            "desc_vn": "Trong chiến đấu, tăng thêm ST gây ra bằng 1 lần tỷ lệ Bạo trên bảng chỉ số của bản thân"
           }
         },
         {
@@ -1699,6 +1873,12 @@
             "name": "Realm King",
             "name_vn": "Hình Thái Giới Vương",
             "desc_vn": "Tôn Ngộ Không xoay tròn tạo 2 cơn bão 5s, khiến địch trên đường mỗi giây chịu 5 lần ST phạm vi nhỏ/vừa bằng 300% Công,【Vô Địch】trong thời gian này và【Không Thể Chọn Trúng】"
+          },
+          "showInfo": {
+            "code": 10080505000,
+            "name": "Monkey Doppleganger",
+            "name_vn": "Bóng Khỉ Phân Thân",
+            "desc_vn": "Tuyệt Kỹ [Hình Thái Giới Vương] Phân thân ban đầu+1, và tần suất ST trở thành mỗi giây gây 5 lần ST"
           },
           "replacesInfo": {
             "code": 10080601000,
@@ -1952,6 +2132,12 @@
             "name_vn": "Tia Laser Hủy Diệt",
             "desc_vn": "Hiệp Sĩ Sấm Sét dùng pháo phóng laser5s, mỗi giây gây ST bằng 600% Công lên địch gần nhất, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công"
           },
+          "showInfo": {
+            "code": 10090501000,
+            "name": "Death Beam",
+            "name_vn": "Tia Sáng Hủy Diệt",
+            "desc_vn": "Tuyệt Kỹ【Tia Laser Hủy Diệt】ST tăng 5 lần"
+          },
           "replacesInfo": {
             "code": 10090201000,
             "name": "Doom Beam",
@@ -1967,6 +2153,12 @@
             "name": "Ark Core",
             "name_vn": "Lò Phản Ứng Ark",
             "desc_vn": "Hiệp Sĩ Sấm Sét gây ST Trực Tiếp时, ST tiếp theo lên mục tiêu này+8%, duy trì 12s"
+          },
+          "showInfo": {
+            "code": 10090502000,
+            "name": "Antimatter Core",
+            "name_vn": "Lõi Phản Vật Chất",
+            "desc_vn": "Bị Động【Lò Phản Ứng Ark】Hiệu quả Tăng ST gây ra biến thành 8% (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10090303000,
@@ -1985,6 +2177,12 @@
             "name_vn": "Tia Laser Hủy Diệt",
             "desc_vn": "Hiệp Sĩ Sấm Sét phóng laser khổng lồ 5s,mỗi 0.5s gây ST bằng 600% Công lên địch gần nhất, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công"
           },
+          "showInfo": {
+            "code": 10090503000,
+            "name": "Final Deathlight",
+            "name_vn": "Tử Quang Tận Thế",
+            "desc_vn": "Tuyệt Kỹ【Tia Laser Hủy Diệt】Khoảng cách giữa các lần ST biến thành 0.5s"
+          },
           "replacesInfo": {
             "code": 10090601000,
             "name": "Doom Beam",
@@ -2000,6 +2198,12 @@
             "name": "Ark Core",
             "name_vn": "Lò Phản Ứng Ark",
             "desc_vn": "Khi thi triển Tuyệt Kỹ, ST do Dương Tiễn gây ra+150%, và gây 3s <color=#f57c00 click=\"onClicked\" param=\"27\"><u>【Định Thân】</u></color> lên mục tiêu đầu tiên có Tuyệt Kỹ gây ST"
+          },
+          "showInfo": {
+            "code": 10090504000,
+            "name": "Alien Deathlight",
+            "name_vn": "Tử Quang Dị Tinh",
+            "desc_vn": "Đột phá 9【Lò Phản Ứng Ark】Trong thời gian Tuyệt Kỹ, ST gây ra biến thành+150%, và thời gian định thân biến thành 3s (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10090602000,
@@ -2017,6 +2221,12 @@
             "name": "Doom Beam",
             "name_vn": "Tia Laser Hủy Diệt",
             "desc_vn": "Hiệp Sĩ Sấm Sét phóng laser khổng lồ 5s, mỗi 0.5s gây ST bằng 600% Công lên địch gần nhất, nảy 1 lần, và trong thời gian tấn công kèm <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 300% Công, và khi tấn công Nộ bản thân mỗi giây+30"
+          },
+          "showInfo": {
+            "code": 10090505000,
+            "name": "Doom Aurora",
+            "name_vn": "Cực Quang Tận Thế",
+            "desc_vn": "Tuyệt Kỹ【Tia Laser Hủy Diệt】nảy+1, trong thời gian thi triển Tuyệt Kỹ, Nộ bản thân mỗi giây+30"
           },
           "replacesInfo": {
             "code": 10090603000,
@@ -2244,6 +2454,12 @@
             "name_vn": "Ngọn Giáo Xuyên Thấu",
             "desc_vn": "Hắc Lữ Bố vung ngọn giáo quỷ, khiến địch gần nhất chịu ST bằng 250% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>4 lần"
           },
+          "showInfo": {
+            "code": 10130501000,
+            "name": "Sundering Halberd Massacre",
+            "name_vn": "Ngọn Giáo Xuyên Thấu Tàn Sát",
+            "desc_vn": "Công Thường【Ngọn Giáo Xuyên Thấu】ST tăng đến 5 lần, Lượt Xuyên Qua+1"
+          },
           "replacesInfo": {
             "code": 10130101000,
             "name": "Sundering Halberd",
@@ -2260,6 +2476,12 @@
             "name_vn": "Ngọn Giáo Xuyên Thấu",
             "desc_vn": "Hắc Lữ Bố phóng 3 Đao gây ST bằng 250% Công lên địch gần nhất, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>4 lần"
           },
+          "showInfo": {
+            "code": 10130502000,
+            "name": "Unparalleled Malice",
+            "name_vn": "Sát Khí Vô Song",
+            "desc_vn": "Đường đạn Công Thường【Ngọn Giáo Xuyên Thấu】+2"
+          },
           "replacesInfo": {
             "code": 10130601000,
             "name": "Sundering Halberd",
@@ -2275,6 +2497,12 @@
             "name": "Bloodmoon Slash",
             "name_vn": "Tam Trảm Huyết Nguyệt",
             "desc_vn": "Đao mỗi lần trúng địch có 10% tách thành 4 Hồn Trảm Thứ Cấp, mỗi Hồn Trảm gây ST bằng 100% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u> </color>2 lần"
+          },
+          "showInfo": {
+            "code": 10130503000,
+            "name": "Purgatory Charge",
+            "name_vn": "Luyện Ngục Xung Phong",
+            "desc_vn": "Đột phá 6【Xác Quỷ Hút Hồn】có ST Hồn Trảm Thứ Cấp tăng đến 5 lần, Lượt Xuyên Qua+1 (Đột phá Lv6 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10130202000,
@@ -2293,6 +2521,12 @@
             "name_vn": "Dị Quỷ Hút Hồn",
             "desc_vn": "Bị động Hắc Lữ Bố [Dị Quỷ Hút Hồn] biến thành mỗi Linh Hồn giúp bản thân nhận Công+0.5%, tối đa 50%"
           },
+          "showInfo": {
+            "code": 10130504000,
+            "name": "Bloodthirsty Asura",
+            "name_vn": "Tu La Khát Máu",
+            "desc_vn": "Đột phá 9【Xác Quỷ Hút Hồn】biến thành mỗi Linh Hồn giúp bản thân nhận Công+0.5%, tối đa 50% (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10130302000,
             "name": "Ghoulish Hunger",
@@ -2309,6 +2543,12 @@
             "name": "Bloodmoon Slash",
             "name_vn": "Tam Trảm Huyết Nguyệt",
             "desc_vn": "Hắc Lữ Bố khiến địch phía trước chịu 3 lần tấn công, mỗi lần phóng 3 Đao, gây ST bằng 150% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>3 lần, trong 10s ST do bản thân gây ra trực tiếp tăng 20% (Không thể cộng dồn)"
+          },
+          "showInfo": {
+            "code": 10130505000,
+            "name": "True Form of the Demon God",
+            "name_vn": "Chân Thân Ma Thần",
+            "desc_vn": "Tuyệt Kỹ【Tam Trảm Huyết Nguyệt】ST tăng đến 5 lần, sau khi tung Tuyệt Kỹ trong 10s ST do bản thân gây ra trực tiếp tăng 20% (Không thể cộng dồn)"
           },
           "replacesInfo": {
             "code": 10130603000,
@@ -2562,6 +2802,12 @@
             "name_vn": "Luyện Ngục Tề Xạ",
             "desc_vn": "Rồng Máy triệu hồi tên lửa khiến địch ngẫu nhiên chịu 5 lần ST phạm vi nhỏ bằng 20% Công, mỗi lần kèm 8s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 20% Công"
           },
+          "showInfo": {
+            "code": 10140501000,
+            "name": "Infernal Trials",
+            "name_vn": "Liệt Diễm Thiên Kiếp",
+            "desc_vn": "Tuyệt Kỹ【Luyện Ngục Tề Xạ】ST Thiêu Đốt tăng đến 2 lần, thời gian Thiêu Đốt kéo dài đến 8s"
+          },
           "replacesInfo": {
             "code": 10140201000,
             "name": "Hell Volley",
@@ -2577,6 +2823,12 @@
             "name": "Core Burst",
             "name_vn": "Lõi Nổ Cảm Tử",
             "desc_vn": "Rồng Máy trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> tử trận sẽ bùng nổ, gây ST phạm vi nhỏ bằng 20% Công và có 50% kèm 4s<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST bằng 75% Công (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "showInfo": {
+            "code": 10140502000,
+            "name": "Flames of Doom",
+            "name_vn": "Vạn Thế Xích Diễm",
+            "desc_vn": "Đột phá 6【Lõi Nổ Cảm Tử】tử trận phát nổ gây ST Thiêu Đốt tăng đến 5 lần (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10140303000,
@@ -2594,6 +2846,12 @@
             "name": "Core Burst",
             "name_vn": "Lõi Nổ Cảm Tử",
             "desc_vn": "Mỗi lần tung Tuyệt Kỹ trong 10s sẽ tăng 20% ST do bản thân gây ra"
+          },
+          "showInfo": {
+            "code": 10140503000,
+            "name": "Skyblaze Blast",
+            "name_vn": "Thiên Phần Đạn",
+            "desc_vn": "Mỗi lần tung Tuyệt Kỹ trong 10s sẽ tăng 20% ST do bản thân gây ra"
           }
         },
         {
@@ -2604,6 +2862,12 @@
             "name": "Core Burst",
             "name_vn": "Lõi Nổ Cảm Tử",
             "desc_vn": "Bị động Rồng Máy【Lõi Nổ Cảm Tử】biến thành mỗi khi tăng 1 tầng, mọi ST <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color> địch phải chịu tăng 30%, tối đa 300% (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "showInfo": {
+            "code": 10140504000,
+            "name": "Atomic Explosion",
+            "name_vn": "Vụ Nổ Vĩnh Hằng",
+            "desc_vn": "Bị Động【Lõi Nổ Cảm Tử】biến thành mỗi tầng【Thiêu Đốt】tăng 30%, tối đa 300% (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10140602000,
@@ -2621,6 +2885,12 @@
             "name": "Storm Burst",
             "name_vn": "Lửa Trời Bùng Cháy",
             "desc_vn": "<color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> của Rồng Máy trở thành <color=#f57c00 click=\"onClicked\" param=\"45\"><u>Lửa Trời Bùng Cháy</u></color>"
+          },
+          "showInfo": {
+            "code": 10140505000,
+            "name": "Storm Burst",
+            "name_vn": "Lửa Trời Bùng Cháy",
+            "desc_vn": "Hiệu quả <color=#f57c00 click=\"onClicked\" param=\"17\"><u>Bùng Cháy</u></color> của Rồng Máy trở thành hiệu quả <color=#f57c00 click=\"onClicked\" param=\"45\"><u>Lửa Trời Bùng Cháy</u></color>"
           }
         }
       ]
@@ -2809,6 +3079,12 @@
             "name_vn": "Định Luật Hulk",
             "desc_vn": "Khổng Lồ Xanh trong trận, địch trúng <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color> tử trận sẽ bùng nổ, gây ST phạm vi nhỏ bằng 240% Công"
           },
+          "showInfo": {
+            "code": 10150501000,
+            "name": "Savage Split",
+            "name_vn": "Cuồng Bạo Hủy Diệt",
+            "desc_vn": "Khi Khổng Lồ Xanh trong trận, ST nổ của địch tử trận tăng đến x5 (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10150303000,
             "name": "Hulk Rule",
@@ -2826,6 +3102,12 @@
             "name_vn": "Lốp Xe Huyết Đao",
             "desc_vn": "Khổng Lồ Xanh ném lốp xe về phía địch ngẫu nhiên,Công6s, mỗi giây gây ST bằng 25% Công, mỗi lần ST kèm 3s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 75% Công"
           },
+          "showInfo": {
+            "code": 10150502000,
+            "name": "Colossal Blade",
+            "name_vn": "Lưỡi Đao Khổng Lồ",
+            "desc_vn": "Tuyệt Kỹ【Lốp Xe Huyết Đao】ST Mất HP gây ra tăng đến x5"
+          },
           "replacesInfo": {
             "code": 10150201000,
             "name": "Bloodwheel",
@@ -2841,6 +3123,12 @@
             "name": "Hulk Rule",
             "name_vn": "Định Luật Hulk",
             "desc_vn": "Khổng Lồ Xanh trong trận, Cửa hoặc HP bản thân mỗi khi giảm 3%, ST bản thân gây ra+2%, tối đa 60%"
+          },
+          "showInfo": {
+            "code": 10150503000,
+            "name": "Boiling Wrath",
+            "name_vn": "Cuồng Nộ Huyết Mạch",
+            "desc_vn": "Bị Động【Định Luật Hulk】biến thành Cửa hoặc bản thân cứ giảm 3% HP, ST do bản thân gây ra+2%, tối đa 60% (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10150601000,
@@ -2858,6 +3146,12 @@
             "name": "Loss of Blood",
             "name_vn": "Mất huyết Quá Nhiều",
             "desc_vn": "Khi Khổng Lồ Xanh trong trận, HP địch cứ giảm 3%, ST Mất HP phải chịu +2%, tối đa 60%"
+          },
+          "showInfo": {
+            "code": 10150504000,
+            "name": "Terminal Slaughter",
+            "name_vn": "Trảm Sát Kết Liễu",
+            "desc_vn": "Khi Khổng Lồ Xanh trong trận, HP địch cứ giảm 3%, ST Mất HP phải chịu +2%, tối đa 60%"
           }
         },
         {
@@ -2868,6 +3162,12 @@
             "name": "Ultimate Blow",
             "name_vn": "Thi Triển Tuyệt Kỹ",
             "desc_vn": "Cứ 30s sẽ tung 1 lần Tuyệt Kỹ không tiêu hao"
+          },
+          "showInfo": {
+            "code": 10150505000,
+            "name": "Beastly Hurl",
+            "name_vn": "Cự Thú Cuồng Bạo",
+            "desc_vn": "Khổng Lồ Xanh cứ 30s sẽ tung 1 lần Tuyệt Kỹ không tiêu hao"
           }
         }
       ]
@@ -3086,6 +3386,12 @@
             "name": "Tea Invite",
             "name_vn": "Lời Mời Trà Hội",
             "desc_vn": "Khi Vật Triệu Hồi của Alice tấn công mục tiêu có dao, ST gây ra lần này tăng 30%"
+          },
+          "showInfo": {
+            "code": 10190501000,
+            "name": "Tea Party Frenzy",
+            "name_vn": "Tiệc Trà Điên Cuồng",
+            "desc_vn": "Khi Thỏ Tiên Sinh của Alice tấn mục tiêu có dao, ST gây ra lần này tăng 30%"
           }
         },
         {
@@ -3097,6 +3403,12 @@
             "name_vn": "Sát Thương Choáng",
             "desc_vn": "Khi Thỏ Tiên Sinh kèm Choáng thành công sẽ gây thêm 1 lần ST bằng 40% Công lên mục tiêu"
           },
+          "showInfo": {
+            "code": 10190502000,
+            "name": "Obliteration",
+            "name_vn": "Cú Đánh Chí Mạng",
+            "desc_vn": "Khi Thỏ Tiên Sinh kèm Choáng thành công sẽ gây thêm 1 lần ST bằng 40% Công lên mục tiêu (Đột phá Lv6 sẽ hiệu lực)"
+          },
           "minBreakThrough": 6
         },
         {
@@ -3106,6 +3418,12 @@
             "code": 10190603000,
             "name": "Sundering Punch",
             "name_vn": "Thiên Quyền Rạn Vỡ",
+            "desc_vn": "Tuyệt Kỹ【Thỏ Tiên Sinh】ST do Thỏ Tiên Sinh gây ra sẽ bỏ qua 50% Thủ địch"
+          },
+          "showInfo": {
+            "code": 10190503000,
+            "name": "Sacrificial Force",
+            "name_vn": "Sức Mạnh Hiến Tế",
             "desc_vn": "Tuyệt Kỹ【Thỏ Tiên Sinh】ST do Thỏ Tiên Sinh gây ra sẽ bỏ qua 50% Thủ địch"
           }
         },
@@ -3117,6 +3435,12 @@
             "name": "Rage Regen Upon Death",
             "name_vn": "Tử Vong Hồi Nộ",
             "desc_vn": "Khi Thỏ Tiên Sinh tử trận, Alice hồi 40 Nộ"
+          },
+          "showInfo": {
+            "code": 10190504000,
+            "name": "Fairytale Return",
+            "name_vn": "Trở Về Thần Thoại",
+            "desc_vn": "Khi Thỏ Tiên Sinh tử trận, Alice hồi 40 Nộ"
           }
         },
         {
@@ -3126,6 +3450,12 @@
             "code": 10190605000,
             "name": "Ultimate Summon",
             "name_vn": "Triệu Hồi Tối Thượng",
+            "desc_vn": "Khi Alice tấn công, có 13% tỷ lệ <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>Thỏ Tiên Sinh ở trước Cửa"
+          },
+          "showInfo": {
+            "code": 10190505000,
+            "name": "Lepus Legion",
+            "name_vn": "Quân Đoàn Thỏ",
             "desc_vn": "Khi Alice tấn công, có 13% tỷ lệ <color=#f57c00 click=\"onClicked\" param=\"39\"><u>triệu hồi </u></color>Thỏ Tiên Sinh ở trước Cửa"
           }
         }
@@ -3347,6 +3677,12 @@
             "name_vn": "Hồn Phách Sóng Gào",
             "desc_vn": "Thuyền Trưởng U Ám bùng nổ! Khiến địch trong phạm vi hình quạt chịu ST bằng 600% Công, và có 100% gây 3s<color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
           },
+          "showInfo": {
+            "code": 10230501000,
+            "name": "Boneshattering Storm",
+            "name_vn": "Cuồng Lan Toái Cốt Trảm",
+            "desc_vn": "Tuyệt Kỹ【Hồn Phách Sóng Gào】ST tăng 5 lần, tỷ lệ Choáng tăng đến 100%, thời gian Choáng cơ bản+1s"
+          },
           "replacesInfo": {
             "code": 10230201000,
             "name": "Wailing Tide",
@@ -3362,6 +3698,12 @@
             "name": "Rotblade Curse",
             "name_vn": "Chú Đao Cá Thối",
             "desc_vn": "Thuyền Trưởng U Ám chém địch gần nhất 2 lần gây ST phạm vi nhỏ bằng 20% Công, và kèm 5s<color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>, mỗi giây gây ST Mất HP bằng 100% Công"
+          },
+          "showInfo": {
+            "code": 10230502000,
+            "name": "Cursed Scimitar",
+            "name_vn": "Minh Đao Nguyền Rủa",
+            "desc_vn": "Công Thường【Chú Đao Cá Thối】ST Mất HPtăng đến x5, kéo dài khoảng cách tấn công"
           },
           "replacesInfo": {
             "code": 10230101000,
@@ -3379,6 +3721,12 @@
             "name_vn": "Uy Áp Biển Sâu",
             "desc_vn": "Thuyền Trưởng U Ám trong trận: Khiến địch trong phạm vi lớn lân cận chịu Thủ V.Lý-45%"
           },
+          "showInfo": {
+            "code": 10230503000,
+            "name": "Lament for the Drowned",
+            "name_vn": "Bi Ca Vực Thẳm",
+            "desc_vn": "Khi Bị Động【Uy Áp Biển Sâu】kích hoạt: Khiến Thủ V.Lý của địch trong phạm vi lớn xung quanh-45% (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10230303000,
             "name": "Abyss Pressure",
@@ -3395,6 +3743,12 @@
             "name": "Spectral Guard",
             "name_vn": "Trận Thủ Hộ Vong Linh",
             "desc_vn": "Mỗi cấp Cửa đều nhận Khiên bằng 20% HP tối đa<color=#f57c00 click=\"onClicked\" param=\"12\"><u></u></color>, tối đa cộng dồn 3 tầng"
+          },
+          "showInfo": {
+            "code": 10230504000,
+            "name": "Spectral Guard",
+            "name_vn": "Trận Thủ Hộ Vong Linh",
+            "desc_vn": "Mỗi cấp Cửa đều nhận Khiên bằng 20% HP tối đa<color=#f57c00 click=\"onClicked\" param=\"12\"><u></u></color>, tối đa cộng dồn 3 tầng"
           }
         },
         {
@@ -3402,6 +3756,12 @@
           "skill": 10230605000,
           "skillInfo": {
             "code": 10230605000,
+            "name": "Abyssal Dominator",
+            "name_vn": "Chúa Tể Minh Uyên",
+            "desc_vn": "Khi Cửa đạt Lv10, ST do tất cả Anh Hùng phe ta gây ra tăng 50%"
+          },
+          "showInfo": {
+            "code": 10230505000,
             "name": "Abyssal Dominator",
             "name_vn": "Chúa Tể Minh Uyên",
             "desc_vn": "Khi Cửa đạt Lv10, ST do tất cả Anh Hùng phe ta gây ra tăng 50%"
@@ -3614,6 +3974,12 @@
             "name_vn": "Thánh Quang Che Chở",
             "desc_vn": "Đột phá 6【Thánh Quang Che Chở】trở thành Anh Hùng có Nộ cao nhất tăng 45% Công, không bao gồm bản thân (Đột phá Lv9 sẽ hiệu lực)"
           },
+          "showInfo": {
+            "code": 10260501000,
+            "name": "Sanctuary Grace",
+            "name_vn": "Cõi Thánh Hiện Thế",
+            "desc_vn": "Đột phá 6【Thánh Quang Che Chở】trở thành Anh Hùng có Nộ cao nhất tăng 45% Công, không bao gồm bản thân (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10260303000,
             "name": "Light Bless",
@@ -3631,6 +3997,12 @@
             "name_vn": "Thánh Quang Che Chở",
             "desc_vn": "Khi Thiên Sứ phóng Tuyệt Kỹ, tất cả Anh Hùng phe ta hồi 200 Nộ, không bao gồm bản thân, ngoài ra trong 10s khiến tất cả Anh Hùng tăng 30% ST gây ra (Đột phá Lv9 sẽ hiệu lực)"
           },
+          "showInfo": {
+            "code": 10260502000,
+            "name": "Apocalyptic Revival",
+            "name_vn": "Sự Sống Trở Lại",
+            "desc_vn": "Đột phá 9【Thánh Quang Che Chở】sau khi dùng toàn đội hội Nô, ngoài ra trong 10s khiến tất cả Anh Hùng tăng 30% ST gây ra (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10260601000,
             "name": "Light Bless",
@@ -3646,6 +4018,12 @@
             "code": 10260603000,
             "name": "Light Bless",
             "name_vn": "Thánh Quang Che Chở",
+            "desc_vn": "Bị Động【Thánh Quang Che Chở】Hồi Nộ và số mục tiêu tăng Công+1 (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "showInfo": {
+            "code": 10260503000,
+            "name": "Wings of Divinity",
+            "name_vn": "Cánh Bảo Vệ",
             "desc_vn": "Bị Động【Thánh Quang Che Chở】Hồi Nộ và số mục tiêu tăng Công+1 (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
@@ -3665,6 +4043,12 @@
             "name_vn": "Thần Phạt Giáng Thế",
             "desc_vn": "Thiên Sứ triệu hồi thập tự giá, khiến địch gần nhất chịu ST phạm vi vừa bằng 720% Công và khiến Anh Hùng phe ta trong 8s <color=#f57c00 click=\"onClicked\" param=\"9\"><u> nhận Bạo</u></color>+30%, ST Bạo+100% (Không thể cộng dồn)"
           },
+          "showInfo": {
+            "code": 10260504000,
+            "name": "Judgment Day",
+            "name_vn": "Ngày Trời Phán Xét",
+            "desc_vn": "Tuyệt Kỹ [Thần Phạt Giáng Thế] ST tăng 5 lần, và khiến Tuyệt Kỹ trong 8s ST Bạo Đội+100%"
+          },
           "replacesInfo": {
             "code": 10260201000,
             "name": "Divine Wrath",
@@ -3679,6 +4063,12 @@
             "code": 10260605000,
             "name": "Divine Wrath",
             "name_vn": "Thần Phạt Giáng Thế",
+            "desc_vn": "Trong chiến đấu, Thiên Sứ cứ 1% Tăng ST Cuối đều sẽ chia cho Anh Hùng khác 0.25% Tăng ST Cuối"
+          },
+          "showInfo": {
+            "code": 10260505000,
+            "name": "Glorious Savior",
+            "name_vn": "Thần Cứu Thế",
             "desc_vn": "Trong chiến đấu, Thiên Sứ cứ 1% Tăng ST Cuối đều sẽ chia cho Anh Hùng khác 0.25% Tăng ST Cuối"
           }
         }
@@ -3901,6 +4291,12 @@
             "name_vn": "Hoa Hồng Oán Hận",
             "desc_vn": "Cô Dâu Linh Dị ném hoa hồng khiến địch gần nhất chịu ST phạm vi nhỏ bằng 150% Công, <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> 1 lần, và kèm 4s <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, mỗi giây gây ST Thiêu Đốt bằng 75% Công"
           },
+          "showInfo": {
+            "code": 10300501000,
+            "name": "Netherland Bloom",
+            "name_vn": "Hoa U Minh",
+            "desc_vn": "Công Thường【Hoa Hồng Oán Hận】ST tăng đến 5 lần, và <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color>1 lần"
+          },
           "replacesInfo": {
             "code": 10300101000,
             "name": "Vengeflame Rose",
@@ -3916,6 +4312,12 @@
             "name": "Decay Field",
             "name_vn": "凋零领域",
             "desc_vn": "Trong trận: Địch lân cận chịu Thủ Phép-45%"
+          },
+          "showInfo": {
+            "code": 10300502000,
+            "name": "City of Tears",
+            "name_vn": "Thành Lệ Thủy",
+            "desc_vn": "Đột phá 6【Vùng Điêu Linh】biến thành Thủ Phép-45% (Đột phá Lv6 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10300303000,
@@ -3933,6 +4335,12 @@
             "name": "Burn DMG Boost",
             "name_vn": "Tăng ST Thiêu Đốt",
             "desc_vn": "Công Thường【Hoa Hồng Oán Hận】Khi gây ST trong 5s giảm 50% Kháng Thiêu Đốt của mục tiêu (Không cộng dồn)"
+          },
+          "showInfo": {
+            "code": 10300503000,
+            "name": "Wilting Requiem",
+            "name_vn": "Táng Ca Tàn Lụi",
+            "desc_vn": "Công Thường【Hoa Hồng Oán Hận】Khi gây ST trong 5s giảm 50% Kháng Thiêu Đốt của mục tiêu (Không cộng dồn)"
           }
         },
         {
@@ -3943,6 +4351,12 @@
             "name": "Thorn Bind",
             "name_vn": "Xiềng Xích Gai Nhọn",
             "desc_vn": "Cô Dâu Linh Dị triệu hồi 4s Xiềng Xích Gai Nhọn,mỗi giây gây ST phạm vi bằng 300% Công, trong thời gian này khiến địch trng phạm vi chịu <color=#f57c00 click=\"onClicked\" param=\"10\"><u>Dẫn Dắt</u></color> và kèm Ngăn Chặn"
+          },
+          "showInfo": {
+            "code": 10300504000,
+            "name": "Vengeful Thorns",
+            "name_vn": "Gai Nhọn Báo Thù",
+            "desc_vn": "Tuyệt Kỹ【Xiềng Xích Gai Nhọn】ST tăng 5 lần, và khi gây Dẫn Dắt có tỷ lệ gây【Ngăn Chặn】"
           },
           "replacesInfo": {
             "code": 10300201000,
@@ -3959,6 +4373,12 @@
             "name": "Decay Field",
             "name_vn": "凋零领域",
             "desc_vn": "Trong trận: Kéo dài 100% thời gian <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>"
+          },
+          "showInfo": {
+            "code": 10300505000,
+            "name": "Infinite Embrace",
+            "name_vn": "Vòng Tay Vô Tận",
+            "desc_vn": "Khi Đột Phá 9【Vùng Điêu Linh】kích hoạt: Kéo dài thời gian 100%<color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color> (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10300602000,
@@ -4213,6 +4633,12 @@
             "name_vn": "Trò Đùa Chết Người",
             "desc_vn": "JOKER khiến địch gần nhất chịu ST phạm vi nhỏ bằng 350% Công"
           },
+          "showInfo": {
+            "code": 10310501000,
+            "name": "Gambler's Hell",
+            "name_vn": "Lá Bài Vong Mệnh",
+            "desc_vn": "Công Thường【Trò Đùa Chết Người】ST tăng đến 5 lần và tăng khoảng cách tấn công"
+          },
           "replacesInfo": {
             "code": 10310101000,
             "name": "Deadly Joke",
@@ -4228,6 +4654,12 @@
             "name": "Royal Flush",
             "name_vn": "Thùng Phá Sảnh",
             "desc_vn": "JOKER tung Thùng Phá Sảnh, trong 3s gây 3 lần ST phạm vi vừa/nhỏ bằng 250% Công và có 30% <color=#f57c00 click=\"onClicked\" param=\"5\"><u>Đẩy Lùi</u></color>"
+          },
+          "showInfo": {
+            "code": 10310502000,
+            "name": "Hunting Order",
+            "name_vn": "Lệnh Truy Sát Ace",
+            "desc_vn": "Tuyệt Kỹ【Thùng Phá Sảnh】ST tăng đến 5 lần và tỷ lệ Đẩy Lùi tăng đến 30%"
           },
           "replacesInfo": {
             "code": 10310201000,
@@ -4245,6 +4677,12 @@
             "name_vn": "Màn Kết Bất Ngờ",
             "desc_vn": "Sau khi gây [Đẩy Lùi], ST mục tiêu phải chịu+80%, duy trì 10s"
           },
+          "showInfo": {
+            "code": 10310503000,
+            "name": "Terminal Closure",
+            "name_vn": "Hạ Màn Cuối Cùng",
+            "desc_vn": "Sau khi đột phá 6【Màn Kết Bất Ngờ】gây【Đẩy Lùi】, khiến ST mà mục tiêu phải chịu +80%, duy trì 10s (Đột phá Lv9 sẽ hiệu lực)"
+          },
           "replacesInfo": {
             "code": 10310303000,
             "name": "Final Surprise",
@@ -4261,6 +4699,12 @@
             "name": "Sinful Capital",
             "name_vn": "Thành Phố Tội Lỗi",
             "desc_vn": "Mỗi lần gây Đẩy Lùi sẽ tăng 2% ST của tất cả Anh Hùng, tối đa 120%"
+          },
+          "showInfo": {
+            "code": 10310504000,
+            "name": "Sinful Capital",
+            "name_vn": "Thành Phố Tội Lỗi",
+            "desc_vn": "Mỗi lần gây Đẩy Lùi sẽ tăng 2% ST của tất cả Anh Hùng, tối đa 120%"
           }
         },
         {
@@ -4268,6 +4712,12 @@
           "skill": 10310605000,
           "skillInfo": {
             "code": 10310605000,
+            "name": "Ultimate Prank",
+            "name_vn": "Trò Đùa Cuối Cùng",
+            "desc_vn": "Trong chiến đấu, khiến ST do JOKER gây ra tăng 300%"
+          },
+          "showInfo": {
+            "code": 10310505000,
             "name": "Ultimate Prank",
             "name_vn": "Trò Đùa Cuối Cùng",
             "desc_vn": "Trong chiến đấu, khiến ST do JOKER gây ra tăng 300%"
@@ -4459,6 +4909,12 @@
             "name_vn": "Hồ Quang Điện",
             "desc_vn": "Lôi Thần Kiếm Quang vung kiếm ánh sáng, khiến địch gần nhất chịu ST <color=#f57c00 click=\"onClicked\" param=\"11\"><u>Xuyên Thấu</u></color> vô hạn bằng 175% Công"
           },
+          "showInfo": {
+            "code": 10320501000,
+            "name": "Thunderous Tribulation",
+            "name_vn": "Đòn Phạt Thần Sấm",
+            "desc_vn": "Công Thường【Hồ Quang Điện】ST tăng đến 5 lần"
+          },
           "replacesInfo": {
             "code": 10320101000,
             "name": "Arc Toss",
@@ -4474,6 +4930,12 @@
             "name": "Thunder Guard",
             "name_vn": "Tường Sét Phòng Thủ",
             "desc_vn": "Mỗi 4s, khiến địch ngẫu nhiên chịu ST đường thẳng bằng 175% Công"
+          },
+          "showInfo": {
+            "code": 10320502000,
+            "name": "Plasma Rupture",
+            "name_vn": "Điện Từ Phá Thế",
+            "desc_vn": "Đột phá 6【Tường Sét Phòng Thủ】ST tăng đến 5 lần"
           },
           "replacesInfo": {
             "code": 10320303000,
@@ -4492,6 +4954,12 @@
             "name_vn": "Sấm Sét Đánh Gục",
             "desc_vn": "Lôi Thần Kiếm Quang phóng sấm sét phẫn nộ, khiến địch gần nhất chịu ST phạm vi vừa/nhỏ bằng 700% Công, và có 50% gây 2.5s <color=#f57c00 click=\"onClicked\" param=\"4\"><u>Choáng</u></color>"
           },
+          "showInfo": {
+            "code": 10320503000,
+            "name": "Thunder of Void",
+            "name_vn": "Sấm Thần Xé Trời",
+            "desc_vn": "Tuyệt Kỹ【Sấm Sét Đánh Gục】ST tăng 5 lần, thời gian Choáng cơ bản+0.5s"
+          },
           "replacesInfo": {
             "code": 10320201000,
             "name": "Thunder Strike",
@@ -4507,6 +4975,12 @@
             "name": "Thunder Guard",
             "name_vn": "Tường Sét Phòng Thủ",
             "desc_vn": "Khi Cửa trúng ST Trực Tiếp, có 25% khiến phe công <color=#f57c00 click=\"onClicked\" param=\"4\"> 【Choáng】</color>3s, CD 1s (Đột phá Lv9 sẽ hiệu lực)"
+          },
+          "showInfo": {
+            "code": 10320504000,
+            "name": "Electric Tremor",
+            "name_vn": "Đao Sét Rung Chuyển",
+            "desc_vn": "Bị Động【Tường Sét Phòng Thủ】có tỷ lệ tăng đến 25%, thời gian giữa các lần Choáng giảm còn 1s, thời gian Choáng cơ bản+1S (Đột phá Lv9 sẽ hiệu lực)"
           },
           "replacesInfo": {
             "code": 10320602000,
@@ -4524,6 +4998,12 @@
             "name": "Buddhist Grace",
             "name_vn": "Phật Quang Phổ Chiếu",
             "desc_vn": "Trong chiến đấu, Lôi Thần Kiếm Quang cứ 1% thời gian Choáng sẽ tăng thêm 0.25% ST do đội gây ra"
+          },
+          "showInfo": {
+            "code": 10320505000,
+            "name": "Empyrean Dominion",
+            "name_vn": "Trấn Hồn Lôi",
+            "desc_vn": "Trong chiến đấu, Lôi Thần Kiếm Quang cứ tăng 1% thời gian Choáng sẽ tăng thêm 0.25% ST do đội gây ra"
           }
         }
       ]

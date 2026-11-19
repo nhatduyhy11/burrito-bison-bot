@@ -89,18 +89,23 @@ export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes",
   `;
 }
 
-// Hover summary for the Dị Năng skill nodes in chapter order: the new skill, what it replaces (the
-// hero's base skill or an earlier node's skill) and the break-through gate. ✅ marks open nodes.
+// Hover summary for the Dị Năng skill nodes in chapter order. Each node shows the text the game
+// itself displays (showInfo = AvatarUpGradeLO.ShowSkillCode, an upgrade summary like
+// "Công Thường【skill được nâng】…" — the game labels all of them "Bị động"), then "→" the granted
+// battle skill's full effect (skillInfo), then what it replaces and the break-through gate.
+// ✅ marks open nodes.
 function avatarPop(nodes, level) {
   const node = (n, i) => {
     const prev = nodes.findIndex((m) => m.skill === n.replaces);
     const replaces = prev >= 0 ? `nâng cấp mốc ${prev + 1}` : n.replacesInfo && html`thay ${label(n.replacesInfo)}`;
+    const desc = plain((n.showInfo ?? n.skillInfo)?.desc_vn);
     return html`
       <div class="pop-line" key=${n.skill}>
-        <span class="hint">${i < level ? "✅ " : ""}Mốc ${i + 1}</span> ${label(n.skillInfo)}
+        <span class="hint">${i < level ? "✅ " : ""}Mốc ${i + 1}</span> ${label(n.showInfo ?? n.skillInfo)}
+        <div class="pop-desc">${desc}</div>
+        ${n.showInfo && html`<div class="pop-desc">→ ${label(n.skillInfo)}: ${plain(n.skillInfo?.desc_vn)}</div>`}
         ${(replaces || n.minBreakThrough) && html`
           <div class="hint">${replaces}${replaces && n.minBreakThrough ? " · " : ""}${n.minBreakThrough ? `cần đột phá ≥ ${n.minBreakThrough}` : ""}</div>`}
-        <div class="pop-desc">${plain(n.skillInfo?.desc_vn)}</div>
       </div>
     `;
   };
