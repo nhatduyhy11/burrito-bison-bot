@@ -41,9 +41,28 @@ Bead: `bbb-w0t` (epic), `bbb-x5u` (research này), `bbb-47c` (UI sandbox + test)
   `setReady` ngay. Không gửi op nào.
 - Khi đội trưởng chọn phòng (`SetRoomId`), mọi người có `roomId 0` vào **cùng phòng**: đây
   là "giường đôi" (`moduleConfig.isDoubleBed`). Log: "阵营:2 躺下" rồi "阵营:1 躺下" cùng frame.
-- Trong capture, `playerInfos[1]` là bản sao đội hình đội trưởng (cùng hero/organ/antique,
-  cùng `support.uuid`), chỉ khác `attr` của hero và `playerId`. Vì người xem không xây gì nên
-  dữ liệu này không ảnh hưởng trận.
+- Server **không** gửi attr riêng từng người. Hai `playerInfos` giống hệt nhau (chỉ khác
+  `playerId`) và cùng chứa **đội hình chung của team** (`teamInfo.team.heroFormation`: 6 hero
+  theo `uuid`, chọn từ hero của cả 2 thành viên). Mỗi hero mang `attr` của **chủ sở hữu**.
+  Capture: đội trưởng Espada (fightCap 22.9M) + người giúp 弒神 (122.6M); 3 hero
+  `50000001/03/13` là của 弒神 (atk ~1.5–1.66M), 3 hero `50000004/26/30` là của Espada
+  (atk ~440–470k). `formationPlayerId`/`buildSkinPlayerId` = người giúp.
+- Mỗi hero là object đầy đủ của chủ (`skills` gồm cả Thánh Khí/Dị Vật/Dị Năng, `avatarCodes`,
+  `relic`, `artifact`, `attr` 34–41 key), **giống hệt** bản trong `refreshMemberInfosR` của chủ,
+  chỉ khác `attr[6]` 100 → 0 và thêm `attr[10162] = 0`. Không có bước gộp/nhân attr theo đội:
+  server chỉ chọn object hero đã gộp sẵn (gear, Thánh Khí, trang bị… như campaign).
+- Phần không phải hero lấy từ ai (so với `refreshMemberInfosR` và campaign 11-18 của Espada):
+  - Từ acc giúp (`formationPlayerId`): `support` (hero 50000031), `summonerInfos` (3 derma
+    `dermaFormation` 20208/20210/20218, level theo `dermaList` của acc giúp; chỉ có
+    `{code, level}`, không attr), `organs`, `daoists`, `summonCreatures`, `skinInfos`
+    (`buildSkinPlayerId`).
+  - Từ đội trưởng: `trainingInfos`, `mounts`/`mountCode`, `goldenSkinsCount`, `antiques` (khớp
+    campaign trừ vài món đã nâng cấp sau đó).
+  - `builds[].skills` theo `teamInfo.team.equipSkills` (cài đặt của đội), có cả 3 skill trang bị
+    `9000x00000`. `builds[type 1].attr` khác campaign (HP 25665 vs 23991), chưa rõ nguồn.
+- Vì chỉ đội trưởng chơi, sức mạnh của acc giúp vào trận qua các hero của nó trong đội hình đội
+  trưởng. Replay từ `StartGameP` đã có đủ attr; setup UI muốn sửa thì phải biết hero nào của ai
+  (lấy từ `refreshMemberInfosR.members[].moduleDatas.heros`).
 
 ## Luật riêng của mode
 
@@ -73,9 +92,10 @@ Vực, …, Song Sinh, Khế Ước Quỷ Vương). Tra lại bằng `TeamExpand
 
 ## Việc cho sandbox (bbb-47c)
 
-- Mirror thiếu bundle view `teamExpeHigh` (404 `assets/teamExpeHigh/{config,index}.0ba3f.js`)
-  → thêm vào `BUNDLES` của `scripts/mirror.js` như `guildPVP`/`worldBossMatch`. Bundle có thể
-  tham chiếu chéo bundle khác.
+- Mirror: đã thêm `teamExpeHigh` + `teamExpe` (tham chiếu chéo) vào `MODE_BUNDLES[47]` của
+  `scripts/mirror.js`. Replay có hình hết 404 và khớp `QuitRoom`.
+- Còn lỗi `p.speed is not a function` trong `_popAMsg` (~giây 66) sau `SetSpeed` trên
+  `GameRoomSocket` (stub). Trận vẫn chạy tới cuối và khớp.
 - `TeamExpeHighModule.battleRecived` chỉ vào trận nếu `amILeader()`, và đọc
   `teamInfo.team.members`. Sandbox cần một đội giả cục bộ (đội trưởng = mình, thành viên lấy
   từ `playerInfos`). Đã thử bản đầu trong `web/battle/setup.js` `ensureTeamState()`: qua được

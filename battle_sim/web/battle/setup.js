@@ -70,6 +70,20 @@ const BATTLE_CONFIGS = {
   },
 };
 
+// Team expedition (battleType 47): TeamExpeHighModule.battleRecived only starts the battle for
+// the team leader and reads the member ids from the lobby team info, which the sandbox never
+// loads. Local stand-in: we lead a team made of the capture's players.
+const TEAM_EXPE16 = 47;
+export function ensureTeamState({ M, rb, step, start, myPid }) {
+  if (start.battleType !== TEAM_EXPE16) return;
+  const mod = M("TeamExpeHighModule").Ins;
+  const members = rb.listItems(start.playerInfos).map((p) => ({ baseInfo: { playerId: Number(p.playerId) } }));
+  const teamInfo = { leaderPlayerId: myPid, team: { id: 1, members } };
+  Object.defineProperty(mod, "teamInfo", { get: () => teamInfo, configurable: true });
+  mod.amILeader = () => true;
+  step("team stand-in", { battleType: start.battleType, members: members.map((m) => m.baseInfo.playerId) });
+}
+
 export function ensureBattleConfig({ M, R, report, step, battleType }) {
   const TDModule = M("TDModule").Ins;
   if (!TDModule.RoBotWaitTimeAndMoveSpeed) {

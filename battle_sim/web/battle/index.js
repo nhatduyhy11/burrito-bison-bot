@@ -7,7 +7,7 @@
 // ?play: no op log. The player uses the battle UI; ops take the game's own Local path.
 // ?seed=random|<uuid> changes the RNG seed.
 import { compareQuit, installReplay } from "./replay.js";
-import { ensureBattleConfig, initModules, setupMain } from "./setup.js";
+import { ensureBattleConfig, ensureTeamState, initModules, setupMain } from "./setup.js";
 import { captureErrors, leaveOnResultClose, stubNetwork, stubPause, stubQuitRoom, unlockMonthCards } from "./stubs.js";
 
 export async function runBattle({ sim, step, R }) {
@@ -47,6 +47,7 @@ export async function runBattle({ sim, step, R }) {
   if (play) leaveOnResultClose(ctx);
   installReplay({ ...ctx, ops, play, myPid, start });
   ensureBattleConfig({ ...ctx, battleType: start.battleType });
+  ensureTeamState({ ...ctx, rb, start, myPid });
 
   // --- Enter the battle exactly like the room socket's StartGameP push ---
   let done = false;
