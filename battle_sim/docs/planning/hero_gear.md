@@ -182,8 +182,12 @@ Nguồn: capture pmain 2026-11-18 (`.tmp/battle_research/events-pmain-20261118.j
 - **Bậc N**: `BeautyBagSuitLO._isSkill` = 1 ở level 1/5/10 cho cả 10 bộ, nên bộ: 1–4 → N1, 5–9 → N2,
   10–15 → N3. Món vàng chỉ có sao 1–10, `_suitSkill` ghi sẵn N theo sao: 1–4 → N1, 5–9 → N2, 10 → N3.
   Nếu tính theo luật client, N của món vàng = N của min(sao vàng, sao bộ).
-- **Client không đọc `_suitSkill`** và không có bảng nối suit → mã skill. Server tự chọn mã. Capture
-  chỉ có N1 (`60000200100`…`60000900100`), chưa có N2/N3, chưa có `6000TT10N00`.
+- **Client không đọc `_suitSkill`** và không có bảng nối suit → mã skill. Server tự chọn mã: skill
+  vàng lấy từ `_suitSkill`, skill bộ theo quy luật `6000TT00N00`.
+- **Capture xác nhận** (`events-pmain-20261119.jsonl`, rednight): Hanuman có `60000500200` (bộ Tê Liệt
+  N2) + `60000510100` (vàng Tê Liệt N1); Pháp Sư Sương có `60000900200` + `60000910100`; Hắc Lữ Bố có
+  `60000200200`. Skill bộ và skill vàng nằm riêng trên `index 0`, bậc N2 xuất hiện đúng mã. 5 bộ trên
+  acc user (sao bộ < 5) đều ra N1 (user xác nhận 2026-11-19). N3 chưa thấy, suy theo cùng quy luật.
 - `dressNum` (theo sao: 1→1, 4→2, 6→3, 8→4, ≥10→9999) là số hero dùng chung được một món
   (`heroUUIDList`). Capture khớp: món sao 7 có 3 hero.
 - `BeautyBagLappingLO` (nâng cấp cấp tài khoản) có skill `19010301000` từ mốc 0.6. Mã này không có trong
@@ -221,9 +225,6 @@ Nguồn: capture pmain 2026-11-18 (`.tmp/battle_research/events-pmain-20261118.j
 
 ## Còn mở
 
-- Dị vật (bbb-4g0.3): bảng và code client đã chốt luật (mục "Bộ đỏ và món vàng"). Còn thiếu capture
-  để xác nhận phía server: (a) bộ sao ≥ 5 cho ra `6000TT00200`; (b) món vàng ở ô 7 cho ra
-  `6000TT10N00` trên `index 0` cạnh skill bộ; (c) món vàng khác hệ hoặc bộ thiếu món thì không có skill.
 - Tra bảng trên `sea_65553`. Capture là `sea_66328`, chưa đối chiếu lại bảng trên bản mới.
 - Skill `8004…` ở `index 5–9` là skill skin (đã xử lý trong `hero/skin.js`).
 - Công thức server cộng attr của Thánh Khí/Dị Năng: cần so `hero.attr` giữa 2 capture khác nhau
