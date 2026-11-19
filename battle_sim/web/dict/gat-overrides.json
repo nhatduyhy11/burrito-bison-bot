@@ -74,7 +74,98 @@
         "name": "冰雪女皇",
         "color": "gold",
         "maxLevel": 50,
-        "maxStar": 5
+        "maxStar": 5,
+        "name_vn": "Băng Tuyết Nữ Hoàng",
+        "skills": [
+          {
+            "type": 140001,
+            "starSkills": [
+              {
+                "stars": [
+                  1
+                ],
+                "code": 40314201000,
+                "name": "玄冰穿刺",
+                "name_vn": "Huyền Băng Xuyên Thích",
+                "desc_vn": "Băng Tuyết Nữ Hoàng phóng gai băng cực hàn dưới chân địch, gây ST phạm vi bằng 16000% Công"
+              },
+              {
+                "stars": [
+                  2
+                ],
+                "code": 40314202000,
+                "name": "玄冰穿刺",
+                "name_vn": "Huyền Băng Xuyên Thích",
+                "desc_vn": "ST gây ra trở thành 20000%"
+              }
+            ]
+          },
+          {
+            "type": 140002,
+            "starSkills": [
+              {
+                "stars": [
+                  3
+                ],
+                "code": 40314401000,
+                "name": "降世冰恩",
+                "name_vn": "Giáng Thế Băng Ân",
+                "desc_vn": "【Băng Linh Thần Tứ】 ST tăng lên 12000%, kèm hiệu ứng 【Sương Hàn】 6s"
+              },
+              {
+                "stars": [
+                  4
+                ],
+                "code": 40314402000,
+                "name": "降世冰恩",
+                "name_vn": "Giáng Thế Băng Ân",
+                "desc_vn": "【Băng Linh Thần Tứ】 ST gây ra trở thành 16000%, số lần triệu hồi miễn phí thành 3 lần"
+              }
+            ]
+          },
+          {
+            "type": 140003,
+            "starSkills": [
+              {
+                "stars": [
+                  1
+                ],
+                "code": 40314301000,
+                "name": "冰靈神賜",
+                "name_vn": "Băng Linh Thần Tứ",
+                "desc_vn": "Khi Băng Tuyết Nữ Hoàng vào trận, gây ST bằng 8000% Công đội lên toàn bộ địch và nhận 1 lần triệu hồi miễn phí; lần này bỏ qua giới hạn số triệu hồi trên sân, có thể ra trận cùng bất kỳ Dị Thú nào"
+              }
+            ]
+          },
+          {
+            "type": 140004,
+            "starSkills": [
+              {
+                "stars": [
+                  2
+                ],
+                "code": 40314501000,
+                "name": "霜獄冰牢",
+                "name_vn": "Sương Ngục Băng Lao",
+                "desc_vn": "Khi Băng Tuyết Nữ Hoàng rời trận, gây ST bằng 8000% Công đội lên toàn bộ địch và 【Đóng Băng】 toàn bộ địch 6s"
+              }
+            ]
+          },
+          {
+            "type": 140005,
+            "starSkills": [
+              {
+                "stars": [
+                  5
+                ],
+                "code": 40314601000,
+                "name": "凜冬寒壓",
+                "name_vn": "Lẫm Đông Hàn Áp",
+                "desc_vn": "Trong lúc Băng Tuyết Nữ Hoàng trên sân, toàn bộ địch chịu ST tăng 150%"
+              }
+            ]
+          }
+        ]
       }
     },
     "mounts": {
