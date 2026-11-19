@@ -3,6 +3,7 @@
 // - web/dict/map-dict.json: what can be played: campaign stage range, capital (U Đô) battleType + boss ids;
 // - web/dict/boss-dict.json: capital bosses with their preset variants (the 3 companion creeps, by id);
 // - web/dict/creeps-dict.json: the companion creeps the boss presets reference, deduped;
+// - web/dict/blood-dict.json: Blood Night (battleType 47) levels with their boss, mini bosses and creeps in one dict;
 // - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
 // - web/dict/artifact-dict.json: Thần Khí per hero (names, slot) + shared team buffs; rules in web/artifacts.js;
@@ -30,7 +31,8 @@ const MAP_OUT = path.join(__dirname, "..", "web", "dict", "map-dict.json");
 const BOSS_OUT = path.join(__dirname, "..", "web", "dict", "boss-dict.json");
 const CREEPS_OUT = path.join(__dirname, "..", "web", "dict", "creeps-dict.json");
 const CAMPAIGN_OUT = path.join(__dirname, "..", "web", "dict", "campaign-dict.json");
-const ANTIQUE_OUT = path.join(__dirname, "..", "web", "dict", "antique-dict.json");
+const BLOOD_OUT = path.join(__dirname, "..", "web", "dict", "blood-dict.json");
+const ANTIQUE_OUT =path.join(__dirname, "..", "web", "dict", "antique-dict.json");
 const RELIC_OUT = path.join(__dirname, "..", "web", "dict", "relic-dict.json");
 const ARTIFACT_OUT = path.join(__dirname, "..", "web", "dict", "artifact-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
@@ -261,6 +263,7 @@ async function main() {
     .sort((a, b) => a - b);
   const capital = capitalCatalogs(M, V);
   const campaign = campaignCatalogs(M, V);
+  const blood = bloodNightCatalogs(M, V);
   const maps = { campaign: { minStage: stages[0], maxStage: stages[stages.length - 1], stages: stages.length },
     capital: { battleType: capital.battleType, bosses: Object.keys(capital.bosses) } };
 
@@ -433,6 +436,7 @@ async function main() {
   write(BOSS_OUT, { bosses: capital.bosses });
   write(CAMPAIGN_OUT, { stages: campaign.stages });
   write(CREEPS_OUT, { creeps: capital.creeps, campaign: campaign.creeps });
+  write(BLOOD_OUT, blood);
   write(ANTIQUE_OUT, { antiques });
   write(RELIC_OUT, relics);
   write(ARTIFACT_OUT, { heroes: artifactHeroes, buffs, skills: artifactSkills });
@@ -446,6 +450,9 @@ async function main() {
     `${Object.values(capital.bosses).reduce((n, b) => n + b.presets.length, 0)} presets`);
   console.log(`wrote ${path.relative(process.cwd(), CREEPS_OUT)}: ${count(capital.creeps)} creeps, ${count(campaign.creeps)} campaign creeps`);
   console.log(`wrote ${path.relative(process.cwd(), CAMPAIGN_OUT)}: ${count(campaign.stages)} campaign stages`);
+  const kinds = Object.values(blood.monsters).reduce((n, m) => ({ ...n, [m.kind]: (n[m.kind] || 0) + 1 }), {});
+  console.log(`wrote ${path.relative(process.cwd(), BLOOD_OUT)}: ${count(blood.levels)} Blood Night levels, ` +
+    Object.entries(kinds).map(([k, n]) => `${n} ${k}`).join(", "));
   console.log(`wrote ${path.relative(process.cwd(), ANTIQUE_OUT)}: ${count(antiques)} antiques`);
   console.log(`wrote ${path.relative(process.cwd(), HERO_OUT)}: ${count(heroes)} heroes`);
   console.log(`wrote ${path.relative(process.cwd(), SUPPORT_OUT)}: ${count(traps)} traps, ` +
@@ -526,6 +533,62 @@ function campaignCatalogs(M, V) {
     stages[stage] = { boss, minions: [...minions].sort((a, b) => a - b) };
   }
   return { stages, creeps };
+}
+
+// Blood Night (组队副本血夜, TeamExpedition16, battleType 47; solo 48 uses the same tables). Battle
+// level = TeamExpandLO id (1001-1080 = "Ải 1"-"Ải 80"). Each level's _round list references
+// TeamExpandRoundLO rows whose id prefix (id / 1e6) gives the role: 1 = trash waves (the 3 creep
+// types of _showCreep), 4 = the 3 mini bosses (the xx02 variant of each creep family, 40/90/140s),
+// 3 = the final boss (_showBoss, 190s). _roundType does not tell them apart (some mini-boss rows
+// are type 1), so the prefix is the rule; showBoss/showCreep are checked against it. The map has
+// few monster types, so boss, mini bosses and creeps share one dict: `monsters` (kind + the level
+// ids each appears on) and `levels` (per level: boss, timed mini bosses, creeps, by monster key).
+// See battle_sim/docs/planning/blood_night.md.
+function bloodNightCatalogs(M, V) {
+  const ROLE = { 1: "creep", 3: "boss", 4: "mini_boss" };
+  const found = new Map(); // code -> { kind, levels: Set }
+  const note = (code, kind, level) => {
+    const m = found.get(code) ?? { kind, levels: new Set() };
+    if (m.kind !== kind) throw new Error(`blood night creep ${code}: both ${m.kind} and ${kind}`);
+    m.levels.add(level);
+    found.set(code, m);
+  };
+  const raw = [];
+  for (const row of rows(M("TeamExpandLO")).sort((a, b) => a.id - b.id)) {
+    const byRole = { creep: new Set(), boss: [], mini_boss: [] };
+    for (const id of JSON.parse(row._round)) {
+      const round = M("TeamExpandRoundLO").get(id);
+      if (!round) throw new Error(`blood night level ${row.id}: round ${id} missing`);
+      const role = ROLE[Math.floor(id / 1e6)];
+      if (!role) throw new Error(`blood night level ${row.id}: round ${id} has unknown prefix`);
+      for (const code of JSON.parse(round._creep)) {
+        note(code, role, row.id);
+        if (role === "creep") byRole.creep.add(code);
+        else byRole[role].push({ code, time: round._roundTime });
+      }
+    }
+    const creeps = [...byRole.creep].sort((a, b) => a - b);
+    const shown = JSON.parse(row._showCreep).sort((a, b) => a - b);
+    if (byRole.boss.length !== 1 || byRole.boss[0].code !== row._showBoss) throw new Error(`blood night level ${row.id}: boss != showBoss`);
+    if (JSON.stringify(creeps) !== JSON.stringify(shown)) throw new Error(`blood night level ${row.id}: creeps != showCreep`);
+    raw.push({ id: row.id, level: row._showlevel, battleGroundCode: row._battleGroundCode,
+      boss: byRole.boss[0], miniBosses: byRole.mini_boss.sort((a, b) => a.time - b.time), creeps });
+  }
+  // Mini bosses share the name of their creep family, so they key as "<name> mini".
+  const monsters = keyed([...found].sort(([a], [b]) => a - b).map(([code, { kind, levels }]) => {
+    const row = M("CreepLO").get(code);
+    if (!row) throw new Error(`blood night creep ${code} missing from CreepLO`);
+    const vi = V("CreepLO").get(code);
+    return [kind === "mini_boss" ? `${row.name} mini` : row.name, { code, name: row.name, name_vn: vi?.name, kind,
+      avatar: row.avatar, desc: strip(row.simpleDesc), desc_vn: strip(vi?.simpleDesc) || strip(row.simpleDesc),
+      levels: [...levels].sort((a, b) => a - b) }];
+  }));
+  const key = new Map(Object.entries(monsters).map(([k, m]) => [m.code, k]));
+  const levels = Object.fromEntries(raw.map((l) => [l.id, { level: l.level, battleGroundCode: l.battleGroundCode,
+    boss: { monster: key.get(l.boss.code), time: l.boss.time },
+    miniBosses: l.miniBosses.map((m) => ({ monster: key.get(m.code), time: m.time })),
+    creeps: l.creeps.map((c) => key.get(c)) }]));
+  return { battleType: 47, levels, monsters };
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

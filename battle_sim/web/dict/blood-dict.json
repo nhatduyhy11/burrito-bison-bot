@@ -1,0 +1,3740 @@
+{
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
+  "battleType": 47,
+  "levels": {
+    "1001": {
+      "level": 1,
+      "battleGroundCode": 31001,
+      "boss": {
+        "monster": "cursed_botchling",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "antenna_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "armored_drake_mini",
+          "time": 90
+        },
+        {
+          "monster": "zombie_bloom_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "antenna_zombie",
+        "zombie_bloom",
+        "armored_drake"
+      ]
+    },
+    "1002": {
+      "level": 2,
+      "battleGroundCode": 31002,
+      "boss": {
+        "monster": "rotten_butcher",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "gorilla_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "zombie_bloom_mini",
+          "time": 90
+        },
+        {
+          "monster": "thief_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "thief_zombie",
+        "gorilla_zombie",
+        "zombie_bloom"
+      ]
+    },
+    "1003": {
+      "level": 3,
+      "battleGroundCode": 31003,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "resentful_teen_mini",
+          "time": 40
+        },
+        {
+          "monster": "zombie_bloom_mini",
+          "time": 90
+        },
+        {
+          "monster": "clumsy_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "clumsy_zombie",
+        "zombie_bloom",
+        "resentful_teen"
+      ]
+    },
+    "1004": {
+      "level": 4,
+      "battleGroundCode": 31004,
+      "boss": {
+        "monster": "nether_boggart",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "resentful_teen_mini",
+          "time": 90
+        },
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "ancient_ghoul",
+        "resentful_teen"
+      ]
+    },
+    "1005": {
+      "level": 5,
+      "battleGroundCode": 31005,
+      "boss": {
+        "monster": "mummy_pharaoh",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "bronze_colossus_mini",
+          "time": 90
+        },
+        {
+          "monster": "deathbringer_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "deathbringer",
+        "bronze_colossus"
+      ]
+    },
+    "1006": {
+      "level": 6,
+      "battleGroundCode": 31006,
+      "boss": {
+        "monster": "nether_boggart",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ghost_bird_mini",
+          "time": 40
+        },
+        {
+          "monster": "bronze_colossus_mini",
+          "time": 90
+        },
+        {
+          "monster": "soul_clown_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ghost_bird",
+        "soul_clown",
+        "bronze_colossus"
+      ]
+    },
+    "1007": {
+      "level": 7,
+      "battleGroundCode": 31007,
+      "boss": {
+        "monster": "xenoqueen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "deathbringer_mini",
+          "time": 40
+        },
+        {
+          "monster": "flame_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "xenom_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "flame_zombie",
+        "xenom_zombie",
+        "deathbringer"
+      ]
+    },
+    "1008": {
+      "level": 8,
+      "battleGroundCode": 31008,
+      "boss": {
+        "monster": "grudge_cauldron",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "resentful_teen_mini",
+          "time": 40
+        },
+        {
+          "monster": "antenna_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "clumsy_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "antenna_zombie",
+        "clumsy_zombie",
+        "resentful_teen"
+      ]
+    },
+    "1009": {
+      "level": 9,
+      "battleGroundCode": 31009,
+      "boss": {
+        "monster": "faceless_chomper",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ghost_bird_mini",
+          "time": 40
+        },
+        {
+          "monster": "demon_nun_mini",
+          "time": 90
+        },
+        {
+          "monster": "gorilla_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ghost_bird",
+        "gorilla_zombie",
+        "demon_nun"
+      ]
+    },
+    "1010": {
+      "level": 10,
+      "battleGroundCode": 31010,
+      "boss": {
+        "monster": "overtime_hex",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "explosive_spider_mini",
+          "time": 90
+        },
+        {
+          "monster": "bronze_colossus_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "ancient_ghoul",
+        "bronze_colossus"
+      ]
+    },
+    "1011": {
+      "level": 11,
+      "battleGroundCode": 31011,
+      "boss": {
+        "monster": "doom_doll",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "witching_ghost_mini",
+          "time": 40
+        },
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "soul_clown_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "soul_clown",
+        "witching_ghost"
+      ]
+    },
+    "1012": {
+      "level": 12,
+      "battleGroundCode": 31012,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "deathbringer_mini",
+          "time": 90
+        },
+        {
+          "monster": "resentful_teen_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "deathbringer",
+        "ancient_ghoul",
+        "resentful_teen"
+      ]
+    },
+    "1013": {
+      "level": 13,
+      "battleGroundCode": 31013,
+      "boss": {
+        "monster": "rotten_butcher",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ghost_bird_mini",
+          "time": 40
+        },
+        {
+          "monster": "deathbringer_mini",
+          "time": 90
+        },
+        {
+          "monster": "demon_nun_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ghost_bird",
+        "deathbringer",
+        "demon_nun"
+      ]
+    },
+    "1014": {
+      "level": 14,
+      "battleGroundCode": 31014,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "yeti_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "yeti_zombie",
+        "coffin_zombie",
+        "ancient_ghoul"
+      ]
+    },
+    "1015": {
+      "level": 15,
+      "battleGroundCode": 31015,
+      "boss": {
+        "monster": "ghost_train",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "bronze_colossus_mini",
+          "time": 90
+        },
+        {
+          "monster": "stone_lion_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "stone_lion",
+        "bronze_colossus",
+        "rotten_zombie"
+      ]
+    },
+    "1016": {
+      "level": 16,
+      "battleGroundCode": 31016,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "soul_clown_mini",
+          "time": 40
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 90
+        },
+        {
+          "monster": "armored_drake_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "armored_drake",
+        "soul_clown",
+        "gong_ghost"
+      ]
+    },
+    "1017": {
+      "level": 17,
+      "battleGroundCode": 31017,
+      "boss": {
+        "monster": "headless_knight",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "soul_clown_mini",
+          "time": 40
+        },
+        {
+          "monster": "armored_drake_mini",
+          "time": 90
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "armored_drake",
+        "ancient_ghoul",
+        "soul_clown"
+      ]
+    },
+    "1018": {
+      "level": 18,
+      "battleGroundCode": 31018,
+      "boss": {
+        "monster": "xenoqueen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "explosive_spider_mini",
+          "time": 40
+        },
+        {
+          "monster": "deathbringer_mini",
+          "time": 90
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "deathbringer",
+        "gong_ghost"
+      ]
+    },
+    "1019": {
+      "level": 19,
+      "battleGroundCode": 31019,
+      "boss": {
+        "monster": "overtime_hex",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "yeti_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "yeti_zombie",
+        "ancient_ghoul",
+        "rotten_zombie"
+      ]
+    },
+    "1020": {
+      "level": 20,
+      "battleGroundCode": 31020,
+      "boss": {
+        "monster": "drum_monkey",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "soul_clown_mini",
+          "time": 40
+        },
+        {
+          "monster": "thunder_rhino_mini",
+          "time": 90
+        },
+        {
+          "monster": "smile_butcher_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "soul_clown",
+        "smile_butcher",
+        "thunder_rhino"
+      ]
+    },
+    "1021": {
+      "level": 21,
+      "battleGroundCode": 31021,
+      "boss": {
+        "monster": "faceless_chomper",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "witching_ghost_mini",
+          "time": 40
+        },
+        {
+          "monster": "explosive_spider_mini",
+          "time": 90
+        },
+        {
+          "monster": "demon_nun_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "demon_nun",
+        "witching_ghost"
+      ]
+    },
+    "1022": {
+      "level": 22,
+      "battleGroundCode": 31022,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 40
+        },
+        {
+          "monster": "shield_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "ghost_bird_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ghost_bird",
+        "shield_zombie",
+        "toxic_beetle"
+      ]
+    },
+    "1023": {
+      "level": 23,
+      "battleGroundCode": 31023,
+      "boss": {
+        "monster": "clawman",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "thunder_rhino_mini",
+          "time": 40
+        },
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "thunder_rhino",
+        "alien_presence"
+      ]
+    },
+    "1024": {
+      "level": 24,
+      "battleGroundCode": 31024,
+      "boss": {
+        "monster": "ghost_train",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "tongue_thief_mini",
+          "time": 40
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "hundred_eyed_zombie",
+        "tongue_thief",
+        "profane_saiyo"
+      ]
+    },
+    "1025": {
+      "level": 25,
+      "battleGroundCode": 31025,
+      "boss": {
+        "monster": "ghost_in_white",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "one_eyed_spirit_mini",
+          "time": 40
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 90
+        },
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "rotten_zombie",
+        "one_eyed_spirit",
+        "gong_ghost"
+      ]
+    },
+    "1026": {
+      "level": 26,
+      "battleGroundCode": 31026,
+      "boss": {
+        "monster": "xenoqueen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "flame_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "yeti_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "flame_zombie",
+        "yeti_zombie",
+        "toxic_beetle"
+      ]
+    },
+    "1027": {
+      "level": 27,
+      "battleGroundCode": 31027,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "xenom_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "antenna_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "xenom_zombie",
+        "antenna_zombie",
+        "coffin_zombie"
+      ]
+    },
+    "1028": {
+      "level": 28,
+      "battleGroundCode": 31028,
+      "boss": {
+        "monster": "clawman",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "flame_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "resentful_teen_mini",
+          "time": 90
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "flame_zombie",
+        "hundred_eyed_zombie",
+        "resentful_teen"
+      ]
+    },
+    "1029": {
+      "level": 29,
+      "battleGroundCode": 31029,
+      "boss": {
+        "monster": "rotten_butcher",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ghost_bird_mini",
+          "time": 40
+        },
+        {
+          "monster": "bronze_colossus_mini",
+          "time": 90
+        },
+        {
+          "monster": "gorilla_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ghost_bird",
+        "gorilla_zombie",
+        "bronze_colossus"
+      ]
+    },
+    "1030": {
+      "level": 30,
+      "battleGroundCode": 31030,
+      "boss": {
+        "monster": "olden_lord",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "soul_clown_mini",
+          "time": 40
+        },
+        {
+          "monster": "armored_drake_mini",
+          "time": 90
+        },
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "armored_drake",
+        "soul_clown",
+        "toxic_beetle"
+      ]
+    },
+    "1031": {
+      "level": 31,
+      "battleGroundCode": 31031,
+      "boss": {
+        "monster": "drum_monkey",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 90
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "ancient_ghoul",
+        "alien_presence"
+      ]
+    },
+    "1032": {
+      "level": 32,
+      "battleGroundCode": 31032,
+      "boss": {
+        "monster": "rotten_butcher",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "stone_lion_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "stone_lion",
+        "hundred_eyed_zombie"
+      ]
+    },
+    "1033": {
+      "level": 33,
+      "battleGroundCode": 31033,
+      "boss": {
+        "monster": "ghost_in_white",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "clumsy_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "yeti_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "yeti_zombie",
+        "clumsy_zombie",
+        "profane_saiyo"
+      ]
+    },
+    "1034": {
+      "level": 34,
+      "battleGroundCode": 31034,
+      "boss": {
+        "monster": "xenoqueen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "explosive_spider_mini",
+          "time": 90
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "ancient_ghoul",
+        "hundred_eyed_zombie"
+      ]
+    },
+    "1035": {
+      "level": 35,
+      "battleGroundCode": 31035,
+      "boss": {
+        "monster": "drum_monkey",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "demon_nun_mini",
+          "time": 40
+        },
+        {
+          "monster": "soul_clown_mini",
+          "time": 90
+        },
+        {
+          "monster": "resentful_teen_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "resentful_teen",
+        "demon_nun",
+        "soul_clown"
+      ]
+    },
+    "1036": {
+      "level": 36,
+      "battleGroundCode": 31036,
+      "boss": {
+        "monster": "skeleton_eye",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "alien_presence_mini",
+          "time": 40
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 90
+        },
+        {
+          "monster": "xenom_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "xenom_zombie",
+        "profane_saiyo",
+        "alien_presence"
+      ]
+    },
+    "1037": {
+      "level": 37,
+      "battleGroundCode": 31037,
+      "boss": {
+        "monster": "mummy_pharaoh",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "xenom_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 90
+        },
+        {
+          "monster": "deathbringer_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "xenom_zombie",
+        "deathbringer",
+        "ancient_ghoul"
+      ]
+    },
+    "1038": {
+      "level": 38,
+      "battleGroundCode": 31038,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "smile_butcher_mini",
+          "time": 90
+        },
+        {
+          "monster": "resentful_teen_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "hundred_eyed_zombie",
+        "resentful_teen",
+        "smile_butcher"
+      ]
+    },
+    "1039": {
+      "level": 39,
+      "battleGroundCode": 31039,
+      "boss": {
+        "monster": "ghost_train",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "alien_presence_mini",
+          "time": 40
+        },
+        {
+          "monster": "antenna_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "tongue_thief_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "antenna_zombie",
+        "tongue_thief",
+        "alien_presence"
+      ]
+    },
+    "1040": {
+      "level": 40,
+      "battleGroundCode": 31040,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "one_eyed_spirit_mini",
+          "time": 40
+        },
+        {
+          "monster": "smile_butcher_mini",
+          "time": 90
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "smile_butcher",
+        "one_eyed_spirit",
+        "profane_saiyo"
+      ]
+    },
+    "1041": {
+      "level": 41,
+      "battleGroundCode": 31041,
+      "boss": {
+        "monster": "ghost_in_white",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 90
+        },
+        {
+          "monster": "demon_nun_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "ancient_ghoul",
+        "demon_nun"
+      ]
+    },
+    "1042": {
+      "level": 42,
+      "battleGroundCode": 31042,
+      "boss": {
+        "monster": "xenoqueen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "xenom_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "explosive_spider_mini",
+          "time": 90
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "xenom_zombie",
+        "explosive_spider",
+        "gong_ghost"
+      ]
+    },
+    "1043": {
+      "level": 43,
+      "battleGroundCode": 31043,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "armored_drake_mini",
+          "time": 90
+        },
+        {
+          "monster": "antenna_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "antenna_zombie",
+        "armored_drake",
+        "rotten_zombie"
+      ]
+    },
+    "1044": {
+      "level": 44,
+      "battleGroundCode": 31044,
+      "boss": {
+        "monster": "ghost_train",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "hundred_eyed_zombie",
+        "rotten_zombie",
+        "profane_saiyo"
+      ]
+    },
+    "1045": {
+      "level": 45,
+      "battleGroundCode": 31045,
+      "boss": {
+        "monster": "overtime_hex",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "bell_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "smile_butcher_mini",
+          "time": 90
+        },
+        {
+          "monster": "one_eyed_spirit_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "bell_zombie",
+        "smile_butcher",
+        "one_eyed_spirit"
+      ]
+    },
+    "1046": {
+      "level": 46,
+      "battleGroundCode": 31046,
+      "boss": {
+        "monster": "ghost_in_white",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "demon_nun_mini",
+          "time": 40
+        },
+        {
+          "monster": "witching_ghost_mini",
+          "time": 90
+        },
+        {
+          "monster": "shield_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "shield_zombie",
+        "demon_nun",
+        "witching_ghost"
+      ]
+    },
+    "1047": {
+      "level": 47,
+      "battleGroundCode": 31047,
+      "boss": {
+        "monster": "drum_monkey",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "explosive_spider_mini",
+          "time": 40
+        },
+        {
+          "monster": "demon_nun_mini",
+          "time": 90
+        },
+        {
+          "monster": "thunder_rhino_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "demon_nun",
+        "thunder_rhino"
+      ]
+    },
+    "1048": {
+      "level": 48,
+      "battleGroundCode": 31048,
+      "boss": {
+        "monster": "xenoqueen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "deathbringer_mini",
+          "time": 40
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "flame_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "flame_zombie",
+        "deathbringer",
+        "hundred_eyed_zombie"
+      ]
+    },
+    "1049": {
+      "level": 49,
+      "battleGroundCode": 31049,
+      "boss": {
+        "monster": "rotten_butcher",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "tongue_thief_mini",
+          "time": 40
+        },
+        {
+          "monster": "ghost_bird_mini",
+          "time": 90
+        },
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ghost_bird",
+        "rotten_zombie",
+        "tongue_thief"
+      ]
+    },
+    "1050": {
+      "level": 50,
+      "battleGroundCode": 31050,
+      "boss": {
+        "monster": "scorpion_queen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 40
+        },
+        {
+          "monster": "stone_lion_mini",
+          "time": 90
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "stone_lion",
+        "alien_presence",
+        "toxic_beetle"
+      ]
+    },
+    "1051": {
+      "level": 51,
+      "battleGroundCode": 31051,
+      "boss": {
+        "monster": "cursed_botchling",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "yeti_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "smile_butcher_mini",
+          "time": 90
+        },
+        {
+          "monster": "bell_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "yeti_zombie",
+        "bell_zombie",
+        "smile_butcher"
+      ]
+    },
+    "1052": {
+      "level": 52,
+      "battleGroundCode": 31052,
+      "boss": {
+        "monster": "clawman",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "xenom_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "deathbringer_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "xenom_zombie",
+        "deathbringer",
+        "ancient_ghoul"
+      ]
+    },
+    "1053": {
+      "level": 53,
+      "battleGroundCode": 31053,
+      "boss": {
+        "monster": "ghost_train",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 40
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 90
+        },
+        {
+          "monster": "tongue_thief_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "tongue_thief",
+        "gong_ghost",
+        "toxic_beetle"
+      ]
+    },
+    "1054": {
+      "level": 54,
+      "battleGroundCode": 31054,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 40
+        },
+        {
+          "monster": "resentful_teen_mini",
+          "time": 90
+        },
+        {
+          "monster": "shield_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "shield_zombie",
+        "resentful_teen",
+        "profane_saiyo"
+      ]
+    },
+    "1055": {
+      "level": 55,
+      "battleGroundCode": 31055,
+      "boss": {
+        "monster": "olden_lord",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "soul_clown_mini",
+          "time": 40
+        },
+        {
+          "monster": "armored_drake_mini",
+          "time": 90
+        },
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "armored_drake",
+        "soul_clown",
+        "toxic_beetle"
+      ]
+    },
+    "1056": {
+      "level": 56,
+      "battleGroundCode": 31056,
+      "boss": {
+        "monster": "headless_knight",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "bronze_colossus_mini",
+          "time": 40
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 90
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ancient_ghoul",
+        "bronze_colossus",
+        "alien_presence"
+      ]
+    },
+    "1057": {
+      "level": 57,
+      "battleGroundCode": 31057,
+      "boss": {
+        "monster": "olden_lord",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ghost_bird_mini",
+          "time": 40
+        },
+        {
+          "monster": "yeti_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ghost_bird",
+        "yeti_zombie",
+        "profane_saiyo"
+      ]
+    },
+    "1058": {
+      "level": 58,
+      "battleGroundCode": 31058,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "deathbringer_mini",
+          "time": 40
+        },
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 90
+        },
+        {
+          "monster": "explosive_spider_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "deathbringer",
+        "toxic_beetle"
+      ]
+    },
+    "1059": {
+      "level": 59,
+      "battleGroundCode": 31059,
+      "boss": {
+        "monster": "ghost_in_white",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "coffin_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "coffin_zombie",
+        "ancient_ghoul",
+        "hundred_eyed_zombie"
+      ]
+    },
+    "1060": {
+      "level": 60,
+      "battleGroundCode": 31060,
+      "boss": {
+        "monster": "banded_curselord",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "smile_butcher_mini",
+          "time": 40
+        },
+        {
+          "monster": "forbidden_book_mini",
+          "time": 90
+        },
+        {
+          "monster": "soul_clown_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "soul_clown",
+        "smile_butcher",
+        "forbidden_book"
+      ]
+    },
+    "1061": {
+      "level": 61,
+      "battleGroundCode": 31061,
+      "boss": {
+        "monster": "drum_monkey",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "tongue_thief_mini",
+          "time": 40
+        },
+        {
+          "monster": "stone_lion_mini",
+          "time": 90
+        },
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "stone_lion",
+        "rotten_zombie",
+        "tongue_thief"
+      ]
+    },
+    "1062": {
+      "level": 62,
+      "battleGroundCode": 31062,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "one_eyed_spirit_mini",
+          "time": 40
+        },
+        {
+          "monster": "deathbringer_mini",
+          "time": 90
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "deathbringer",
+        "one_eyed_spirit",
+        "gong_ghost"
+      ]
+    },
+    "1063": {
+      "level": 63,
+      "battleGroundCode": 31063,
+      "boss": {
+        "monster": "olden_lord",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "smile_butcher_mini",
+          "time": 90
+        },
+        {
+          "monster": "shield_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "shield_zombie",
+        "ancient_ghoul",
+        "smile_butcher"
+      ]
+    },
+    "1064": {
+      "level": 64,
+      "battleGroundCode": 31064,
+      "boss": {
+        "monster": "rotten_butcher",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 90
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "hundred_eyed_zombie",
+        "profane_saiyo",
+        "alien_presence"
+      ]
+    },
+    "1065": {
+      "level": 65,
+      "battleGroundCode": 31065,
+      "boss": {
+        "monster": "drum_monkey",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "bronze_colossus_mini",
+          "time": 90
+        },
+        {
+          "monster": "thunder_rhino_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "bronze_colossus",
+        "rotten_zombie",
+        "thunder_rhino"
+      ]
+    },
+    "1066": {
+      "level": 66,
+      "battleGroundCode": 31066,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 40
+        },
+        {
+          "monster": "witching_ghost_mini",
+          "time": 90
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ancient_ghoul",
+        "witching_ghost",
+        "toxic_beetle"
+      ]
+    },
+    "1067": {
+      "level": 67,
+      "battleGroundCode": 31067,
+      "boss": {
+        "monster": "drum_monkey",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "explosive_spider_mini",
+          "time": 40
+        },
+        {
+          "monster": "soul_clown_mini",
+          "time": 90
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "soul_clown",
+        "alien_presence"
+      ]
+    },
+    "1068": {
+      "level": 68,
+      "battleGroundCode": 31068,
+      "boss": {
+        "monster": "ghost_in_white",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "shield_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "demon_nun_mini",
+          "time": 90
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "shield_zombie",
+        "ancient_ghoul",
+        "demon_nun"
+      ]
+    },
+    "1069": {
+      "level": 69,
+      "battleGroundCode": 31069,
+      "boss": {
+        "monster": "abyss_flytrap",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "gong_ghost_mini",
+          "time": 40
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 90
+        },
+        {
+          "monster": "resentful_teen_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ancient_ghoul",
+        "resentful_teen",
+        "gong_ghost"
+      ]
+    },
+    "1070": {
+      "level": 70,
+      "battleGroundCode": 31070,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "alien_presence_mini",
+          "time": 40
+        },
+        {
+          "monster": "one_eyed_spirit_mini",
+          "time": 90
+        },
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ancient_ghoul",
+        "one_eyed_spirit",
+        "alien_presence"
+      ]
+    },
+    "1071": {
+      "level": 71,
+      "battleGroundCode": 31071,
+      "boss": {
+        "monster": "headless_reaper",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 40
+        },
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 90
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "rotten_zombie",
+        "profane_saiyo",
+        "alien_presence"
+      ]
+    },
+    "1072": {
+      "level": 72,
+      "battleGroundCode": 31072,
+      "boss": {
+        "monster": "scorpion_queen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "ancient_ghoul_mini",
+          "time": 40
+        },
+        {
+          "monster": "alien_presence_mini",
+          "time": 90
+        },
+        {
+          "monster": "stone_lion_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "ancient_ghoul",
+        "stone_lion",
+        "alien_presence"
+      ]
+    },
+    "1073": {
+      "level": 73,
+      "battleGroundCode": 31073,
+      "boss": {
+        "monster": "nether_boggart",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "stone_lion_mini",
+          "time": 40
+        },
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 90
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "stone_lion",
+        "gong_ghost",
+        "toxic_beetle"
+      ]
+    },
+    "1074": {
+      "level": 74,
+      "battleGroundCode": 31074,
+      "boss": {
+        "monster": "clawman",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "gong_ghost_mini",
+          "time": 40
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 90
+        },
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "gong_ghost",
+        "profane_saiyo",
+        "toxic_beetle"
+      ]
+    },
+    "1075": {
+      "level": 75,
+      "battleGroundCode": 31075,
+      "boss": {
+        "monster": "shining_twins",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "antenna_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "bomb_ghoul_mini",
+          "time": 90
+        },
+        {
+          "monster": "cursed_nurse_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "antenna_zombie",
+        "bomb_ghoul",
+        "cursed_nurse"
+      ]
+    },
+    "1076": {
+      "level": 76,
+      "battleGroundCode": 31076,
+      "boss": {
+        "monster": "xenoqueen",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "rotten_zombie_mini",
+          "time": 40
+        },
+        {
+          "monster": "bomb_ghoul_mini",
+          "time": 90
+        },
+        {
+          "monster": "stone_lion_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "stone_lion",
+        "rotten_zombie",
+        "bomb_ghoul"
+      ]
+    },
+    "1077": {
+      "level": 77,
+      "battleGroundCode": 31077,
+      "boss": {
+        "monster": "skeleton_eye",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "thunder_rhino_mini",
+          "time": 40
+        },
+        {
+          "monster": "bomb_ghoul_mini",
+          "time": 90
+        },
+        {
+          "monster": "gong_ghost_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "bomb_ghoul",
+        "gong_ghost",
+        "thunder_rhino"
+      ]
+    },
+    "1078": {
+      "level": 78,
+      "battleGroundCode": 31078,
+      "boss": {
+        "monster": "chainsaw_lynx",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "toxic_beetle_mini",
+          "time": 40
+        },
+        {
+          "monster": "explosive_spider_mini",
+          "time": 90
+        },
+        {
+          "monster": "hundred_eyed_zombie_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "explosive_spider",
+        "hundred_eyed_zombie",
+        "toxic_beetle"
+      ]
+    },
+    "1079": {
+      "level": 79,
+      "battleGroundCode": 31079,
+      "boss": {
+        "monster": "olden_lord",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "soul_clown_mini",
+          "time": 40
+        },
+        {
+          "monster": "profane_saiyo_mini",
+          "time": 90
+        },
+        {
+          "monster": "witching_ghost_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "soul_clown",
+        "witching_ghost",
+        "profane_saiyo"
+      ]
+    },
+    "1080": {
+      "level": 80,
+      "battleGroundCode": 31080,
+      "boss": {
+        "monster": "banded_curselord",
+        "time": 190
+      },
+      "miniBosses": [
+        {
+          "monster": "one_eyed_spirit_mini",
+          "time": 40
+        },
+        {
+          "monster": "armored_drake_mini",
+          "time": 90
+        },
+        {
+          "monster": "smile_butcher_mini",
+          "time": 140
+        }
+      ],
+      "creeps": [
+        "armored_drake",
+        "smile_butcher",
+        "one_eyed_spirit"
+      ]
+    }
+  },
+  "monsters": {
+    "cursed_botchling": {
+      "code": 61070101,
+      "name": "Cursed Botchling",
+      "name_vn": "U Linh Nhi",
+      "kind": "boss",
+      "avatar": "head/head_boss_001",
+      "desc": "Weakness: None · Resistance: None · Trait: Enters Rage mode at low HP, massively increases ASPD",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Khi HP dưới mức nhất định sẽ vào trạng thái Cuồng Bạo, tăng mạnh Tốc Công",
+      "levels": [
+        1001,
+        1051
+      ]
+    },
+    "rotten_butcher": {
+      "code": 61070701,
+      "name": "Rotten Butcher",
+      "name_vn": "Tàn Đao Giả",
+      "kind": "boss",
+      "avatar": "head/head_boss_011",
+      "desc": "Weakness: Bleed · Resistance: Burn, Knockback, Stun · Trait: Restores HP per second when taking Burn DMG",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt mỗi giây hồi HP",
+      "levels": [
+        1002,
+        1013,
+        1029,
+        1032,
+        1049,
+        1064
+      ]
+    },
+    "doom_doll": {
+      "code": 61070801,
+      "name": "Doom Doll",
+      "name_vn": "Búp Bê Diệt Phạt",
+      "kind": "boss",
+      "avatar": "head/head_boss_012",
+      "desc": "Weakness: Paralysis · Resistance: Bleed, Frost, Frozen, Pull, Knockback · Trait: Increases DMG Immunity by 50% when taking Knockback, lasts 10s",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi khiến bản thân tăng 50% Giảm ST, duy trì 10s",
+      "levels": [
+        1011
+      ]
+    },
+    "abyss_flytrap": {
+      "code": 61070901,
+      "name": "Abyss Flytrap",
+      "name_vn": "Liên Hoa Hắc Vực",
+      "kind": "boss",
+      "avatar": "head/head_boss_013",
+      "desc": "Weak: Burn · Resistance: Paralysis, Knockback, Bleed, Stun · Trait: Deals more DMG the more the Door loses HP",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Mất HP Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao",
+      "levels": [
+        1003,
+        1012,
+        1016,
+        1038,
+        1043,
+        1054,
+        1058,
+        1069
+      ]
+    },
+    "mummy_pharaoh": {
+      "code": 61071001,
+      "name": "Mummy Pharaoh",
+      "name_vn": "Cổ Thi",
+      "kind": "boss",
+      "avatar": "head/head_boss_014",
+      "desc": "Weakness: P.DMG · Resistance: Burn, Pull, Frost · Trait: Gains 6s of DMG Immunity when taking M.DMG",
+      "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Thiêu Đốt Dẫn Dắt Băng Sương · Đặc điểm: Khi chịu ST Phép, bản thân nhận 6s Miễn ST",
+      "levels": [
+        1005,
+        1037
+      ]
+    },
+    "nether_boggart": {
+      "code": 61071101,
+      "name": "Nether Boggart",
+      "name_vn": "U Ảnh Phu Nhân",
+      "kind": "boss",
+      "avatar": "head/head_boss_015",
+      "desc": "Weakness: None · Resistance: Knockback, Pull, Frost, Stun · Trait: Generates a Shield that blocks 15 instances of DMG at intervals",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Dẫn Dắt Băng Sương Choáng · Đặc điểm: Cứ cách một khoảng thời gian sẽ tạo 1 khiên ngăn 15 lần ST cho bản thân",
+      "levels": [
+        1004,
+        1006,
+        1073
+      ]
+    },
+    "xenoqueen": {
+      "code": 61071201,
+      "name": "Xenoqueen",
+      "name_vn": "Nữ Hoàng Alien",
+      "kind": "boss",
+      "avatar": "head/head_boss_008",
+      "desc": "Weakness: Paralysis · Resistance: Bleed, Burn, Stun, Pull · Trait: Blocks projectiles; summons 5 small snakes behind at intervals",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Chặn đường đạn bắn, cứ cách một khoảng thời gian triệu hồi 5 rắn nhỏ phía sau",
+      "levels": [
+        1007,
+        1018,
+        1026,
+        1034,
+        1042,
+        1048,
+        1076
+      ]
+    },
+    "grudge_cauldron": {
+      "code": 61071301,
+      "name": "Grudge Cauldron",
+      "name_vn": "Oán Khí Chi Oa",
+      "kind": "boss",
+      "avatar": "head/head_boss_009",
+      "desc": "Weakness: Bleed · Resistance: Burn, Paralysis, Knockback, Frost · Trait: Restores own HP when nearby monsters die",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Tê Liệt Đẩy Lùi Băng Sương · Đặc điểm: Dị Thú xung quanh tử trận sẽ hồi HP bản thân",
+      "levels": [
+        1008
+      ]
+    },
+    "faceless_chomper": {
+      "code": 61071401,
+      "name": "Faceless Chomper",
+      "name_vn": "Vô Diện Giả",
+      "kind": "boss",
+      "avatar": "head/head_boss_010",
+      "desc": "Weak: Burn · Resistance: Paralysis, Bleed, Frost, Frozen, Pull, Knockback · Trait: Charges an ATK every 10s, and Stuns all Heroes",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Cứ cách 10s tích lực tấn công 1 lần, làm Choáng toàn bộ Anh hùng",
+      "levels": [
+        1009,
+        1021
+      ]
+    },
+    "headless_knight": {
+      "code": 61071501,
+      "name": "Headless Knight",
+      "name_vn": "Ẩn Diện Kỵ Sĩ",
+      "kind": "boss",
+      "avatar": "head/head_boss_017",
+      "desc": "Weakness: None · Resistance: Frost, Frozen, Pull · Trait: Immune to M.DMG and DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Dẫn Dắt · Đặc điểm: Miễn ST Phép và ST Duy Trì",
+      "levels": [
+        1017,
+        1056
+      ]
+    },
+    "chainsaw_lynx": {
+      "code": 61071601,
+      "name": "Chainsaw Lynx",
+      "name_vn": "Hắc Linh Cưa Giả",
+      "kind": "boss",
+      "avatar": "head/head_boss_019",
+      "desc": "Weakness: None · Resistance: Knockback, Stun · Trait: Immune to P.DMG and DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng · Đặc điểm: Miễn ST V.Lý và ST Duy Trì",
+      "levels": [
+        1014,
+        1022,
+        1027,
+        1040,
+        1062,
+        1066,
+        1070,
+        1078
+      ]
+    },
+    "skeleton_eye": {
+      "code": 61071701,
+      "name": "Skeleton Eye",
+      "name_vn": "Hắc Nhãn Vương",
+      "kind": "boss",
+      "avatar": "head/head_boss_020",
+      "desc": "Weakness: None · Resistance: Knockback, Stun, Frost, Frozen, Pull · Trait: Low Move SPD and ASPD, but high DMG per hit, and higher HP",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng Băng Sương Đóng Băng Dẫn Dắt · Đặc điểm: Di chuyển và tấn công chậm hơn nhưng mỗi lần gây ST cao và tăng HP",
+      "levels": [
+        1036,
+        1077
+      ]
+    },
+    "olden_lord": {
+      "code": 61071801,
+      "name": "Olden Lord",
+      "name_vn": "Cổ Thần",
+      "kind": "boss",
+      "avatar": "head/head_boss_021",
+      "desc": "Weakness: DoT · Resistance: Direct DMG, Frozen, Knockback · Trait: Fires 9 bullets per attack, but reduces ACC by 35%",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đóng Băng Đẩy Lùi · Đặc điểm: Mỗi lần tấn công bắn 9 viên đạn nhưng Chính Xác bản thân giảm 35%",
+      "levels": [
+        1030,
+        1055,
+        1057,
+        1063,
+        1079
+      ]
+    },
+    "ghost_train": {
+      "code": 61071901,
+      "name": "Ghost Train",
+      "name_vn": "Hắc Hạm",
+      "kind": "boss",
+      "avatar": "head/head_boss_023",
+      "desc": "Weakness: None · Resistance: Stun, Pull · Trait: Recovers 5% Max HP per second while under DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Choáng Dẫn Dắt · Đặc điểm: Khi bản thân chịu ST Duy Trì, mỗi giây hồi 5% HP tối đa",
+      "levels": [
+        1015,
+        1024,
+        1039,
+        1044,
+        1053
+      ]
+    },
+    "overtime_hex": {
+      "code": 61072001,
+      "name": "Overtime Hex",
+      "name_vn": "Hắc Nữ Tăng Ca",
+      "kind": "boss",
+      "avatar": "head/head_boss_024",
+      "desc": "Weakness: None · Resistance: Frost, Frozen, Knockback · Trait: Taking P.DMG grants 5s of Invincible and 70% increased ATK. Cooldown: 10s",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Đẩy Lùi · Đặc điểm: Khi chịu ST V.Lý vô địch 5s, Công tăng 70% khi Vô Địch, CD 10s",
+      "levels": [
+        1010,
+        1019,
+        1045
+      ]
+    },
+    "clawman": {
+      "code": 61072101,
+      "name": "Clawman",
+      "name_vn": "Hắc Trảo",
+      "kind": "boss",
+      "avatar": "head/head_boss_025",
+      "desc": "Weakness: None · Resistance: Paralysis DMG, Burn DMG, Stun, Pull · Trait: Devours Summons or Minions every 10s, restores HP, and summons monsters when taking Paralysis or Burn DMG",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt ST Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Mỗi 10s nuốt chửng Vật Triệu Hồi hoặc Quái Nhỏ, hồi HP, khi chịu ST Tê Liệt hoặc Thiêu Đốt sẽ triệu hồi Dị Thú",
+      "levels": [
+        1023,
+        1028,
+        1052,
+        1074
+      ]
+    },
+    "drum_monkey": {
+      "code": 61072201,
+      "name": "Drum Monkey",
+      "name_vn": "Khỉ Điên Đánh Trống",
+      "kind": "boss",
+      "avatar": "head/head_boss_029",
+      "desc": "Weakness: None · Resistance: Melee DMG Pull Knockback · Trait: Corrupts all Doors on the field, dealing DMG to the Door once every 8s",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến Dẫn Dắt Đẩy Lùi · Đặc điểm: Cửa gây mục nát toàn bộ, mỗi 8s gây 1 lần ST lên cửa",
+      "levels": [
+        1020,
+        1031,
+        1035,
+        1047,
+        1061,
+        1065,
+        1067
+      ]
+    },
+    "ghost_in_white": {
+      "code": 61072301,
+      "name": "Ghost in White",
+      "name_vn": "Bạch Y Nữ",
+      "kind": "boss",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: None · Resistance: All CC Trait: Seals all Doors after Boss Invasion; sealed Doors cannot be upgraded",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Tất cả Khống ChếĐặc điểm: Khi BOSS tập kích sẽ phong ấn tất cả Cửa trong trận, không thể tăng cấp Cửa bị phong ấn",
+      "levels": [
+        1025,
+        1033,
+        1041,
+        1046,
+        1059,
+        1068
+      ]
+    },
+    "headless_reaper": {
+      "code": 61072401,
+      "name": "Headless Reaper",
+      "name_vn": "Vô Diện Tử Thần",
+      "kind": "boss",
+      "avatar": "head/head_boss_026",
+      "desc": "Weakness: None · Resistance: Burn · Trait: Extremely long ATK range; summons 1 Gong Ghosts every 5s",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Thiêu Đốt · Đặc điểm: Tầm tấn công cực xa, cứ 5s sẽ triệu hồi 1 Quỷ Canh Ba",
+      "levels": [
+        1071
+      ]
+    },
+    "scorpion_queen": {
+      "code": 61072801,
+      "name": "Scorpion Queen",
+      "name_vn": "Bọ Cạp Hoàng Tuyền",
+      "kind": "boss",
+      "avatar": "head/head_boss_034",
+      "desc": "Weakness: Summon DMG · Resistance: Non-summon DMG, Frost, Frozen, Pull, Knockback · Trait: Summons 5 Scorpions at 80% and 40% HP, and burrows underground. Respawns after all Scorpions die",
+      "desc_vn": "Điểm yếu: ST Vật Triệu Hồi · Kháng: ST ngoài Vật Triệu Hồi Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi HP dưới 80% và 40%, sẽ triệu hồi 5 con bọ cạp nhỏ và chui xuống lòng đất, tất cả bọ cạp nhỏ sẽ xuất hiện lại sau khi tử trận",
+      "levels": [
+        1050,
+        1072
+      ]
+    },
+    "banded_curselord": {
+      "code": 61072901,
+      "name": "Banded Curselord",
+      "name_vn": "Khế Ước Quỷ Vương",
+      "kind": "boss",
+      "avatar": "head/head_boss_031",
+      "desc": "Weakness: Bleed DMG, Paralysis DMG · Resistance: Crit, Knockback, Frozen · Trait: DMG converts to 0 when taking Crit. Restores Boss HP when player heals the Door",
+      "desc_vn": "Điểm yếu: ST Mất HP ST Tê Liệt · Kháng: Bạo Đẩy Lùi Đóng Băng · Đặc điểm: Khi chịu Bạo, ST trở thành 0. Khi người hồi HP cho cửa, Yêu Vương tự hồi HP",
+      "levels": [
+        1060,
+        1080
+      ]
+    },
+    "shining_twins": {
+      "code": 61073001,
+      "name": "Shining Twins",
+      "name_vn": "Song Sinh",
+      "kind": "boss",
+      "avatar": "head/head_boss_018",
+      "desc": "Weakness: None · Resistance: Melee DMG, M.DMG, CC · Trait: Periodically summons a Patchwork Rabbit",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến ST Phép hiệu quả Khống Chế · Đặc điểm: Cứ cách một khoảng thời gian sẽ triệu hồi Thỏ Hung Dữ",
+      "levels": [
+        1075
+      ]
+    },
+    "ghost_bird": {
+      "code": 61080501,
+      "name": "Ghost Bird",
+      "name_vn": "Chim Mặt Quỷ",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Ranged, Flying",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Tầm Xa Đơn vị Bay",
+      "levels": [
+        1006,
+        1009,
+        1013,
+        1022,
+        1029,
+        1049,
+        1057
+      ]
+    },
+    "ghost_bird_mini": {
+      "code": 61080502,
+      "name": "Ghost Bird",
+      "name_vn": "Chim Mặt Quỷ",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Ranged, Flying",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Tầm Xa Đơn vị Bay",
+      "levels": [
+        1006,
+        1009,
+        1013,
+        1022,
+        1029,
+        1049,
+        1057
+      ]
+    },
+    "thief_zombie": {
+      "code": 61080601,
+      "name": "Thief Zombie",
+      "name_vn": "Zombie Trộm",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: P.DMG · Resistance: None · Trait: Steals Banknotes on attack",
+      "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Trống · Đặc điểm: Khi tấn công sẽ hút tiền",
+      "levels": [
+        1002
+      ]
+    },
+    "thief_zombie_mini": {
+      "code": 61080602,
+      "name": "Thief Zombie",
+      "name_vn": "Zombie Trộm",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: P.DMG · Resistance: None · Trait: Steals Banknotes on attack",
+      "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Trống · Đặc điểm: Khi tấn công sẽ hút tiền",
+      "levels": [
+        1002
+      ]
+    },
+    "flame_zombie": {
+      "code": 61080801,
+      "name": "Flame Zombie",
+      "name_vn": "Zombie Lửa",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: Paralysis, Frost · Resistance: Burn, Stun, Pull · Trait: None",
+      "desc_vn": "Điểm yếu: Tê Liệt Sương Giá · Kháng: Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Trống",
+      "levels": [
+        1007,
+        1026,
+        1028,
+        1048
+      ]
+    },
+    "flame_zombie_mini": {
+      "code": 61080802,
+      "name": "Flame Zombie",
+      "name_vn": "Zombie Lửa",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: Paralysis, Frost · Resistance: Burn, Stun, Pull · Trait: None",
+      "desc_vn": "Điểm yếu: Tê Liệt Sương Giá · Kháng: Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Trống",
+      "levels": [
+        1007,
+        1026,
+        1028,
+        1048
+      ]
+    },
+    "gorilla_zombie": {
+      "code": 61080901,
+      "name": "Gorilla Zombie",
+      "name_vn": "Zombie Khỉ Đột",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Paralysis · Resistance: P.DMG, Knockback, Stun · Trait: None",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: ST V.Lý Đẩy Lùi Choáng · Đặc điểm: Trống",
+      "levels": [
+        1002,
+        1009,
+        1029
+      ]
+    },
+    "gorilla_zombie_mini": {
+      "code": 61080902,
+      "name": "Gorilla Zombie",
+      "name_vn": "Zombie Khỉ Đột",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Paralysis · Resistance: P.DMG, Knockback, Stun · Trait: None",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: ST V.Lý Đẩy Lùi Choáng · Đặc điểm: Trống",
+      "levels": [
+        1002,
+        1009,
+        1029
+      ]
+    },
+    "xenom_zombie": {
+      "code": 61081001,
+      "name": "Xenom Zombie",
+      "name_vn": "Zombie Biến Dị",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed · Resistance: M.DMG, Paralysis, Pull · Trait: Ranged",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Tê Liệt Dẫn Dắt · Đặc điểm: Tầm Xa",
+      "levels": [
+        1007,
+        1027,
+        1036,
+        1037,
+        1042,
+        1052
+      ]
+    },
+    "xenom_zombie_mini": {
+      "code": 61081002,
+      "name": "Xenom Zombie",
+      "name_vn": "Zombie Biến Dị",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed · Resistance: M.DMG, Paralysis, Pull · Trait: Ranged",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Tê Liệt Dẫn Dắt · Đặc điểm: Tầm Xa",
+      "levels": [
+        1007,
+        1027,
+        1036,
+        1037,
+        1042,
+        1052
+      ]
+    },
+    "yeti_zombie": {
+      "code": 61081101,
+      "name": "Yeti Zombie",
+      "name_vn": "Zombie Người Tuyết",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weak: Burn · Resistance: Frost, Bleed, Paralysis · Trait: None",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Băng Sương Mất HP Tê Liệt · Đặc điểm: Trống",
+      "levels": [
+        1014,
+        1019,
+        1026,
+        1033,
+        1051,
+        1057
+      ]
+    },
+    "yeti_zombie_mini": {
+      "code": 61081102,
+      "name": "Yeti Zombie",
+      "name_vn": "Zombie Người Tuyết",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weak: Burn · Resistance: Frost, Bleed, Paralysis · Trait: None",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Băng Sương Mất HP Tê Liệt · Đặc điểm: Trống",
+      "levels": [
+        1014,
+        1019,
+        1026,
+        1033,
+        1051,
+        1057
+      ]
+    },
+    "antenna_zombie": {
+      "code": 61081201,
+      "name": "Antenna Zombie",
+      "name_vn": "Zombie Ăng-ten",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weak: Burn · Resistance:Paralysis · Trait: Ranged, steals Sparks on attack",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt · Đặc điểm: Tầm Xa Khi tấn công sẽ hút điện",
+      "levels": [
+        1001,
+        1008,
+        1027,
+        1039,
+        1043,
+        1075
+      ]
+    },
+    "antenna_zombie_mini": {
+      "code": 61081202,
+      "name": "Antenna Zombie",
+      "name_vn": "Zombie Ăng-ten",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weak: Burn · Resistance:Paralysis · Trait: Ranged, steals Sparks on attack",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt · Đặc điểm: Tầm Xa Khi tấn công sẽ hút điện",
+      "levels": [
+        1001,
+        1008,
+        1027,
+        1039,
+        1043,
+        1075
+      ]
+    },
+    "explosive_spider": {
+      "code": 61081301,
+      "name": "Explosive Spider",
+      "name_vn": "Nhện Nổ",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Physical · Resistance: Burn, Bleed · Trait: Moves faster at low HP, self-destructs",
+      "desc_vn": "Điểm yếu: V.Lý · Kháng: Thiêu Đốt Mất HP · Đặc điểm: Khi HP thấp sẽ tăng Vận Tốc và tự phát nổ",
+      "levels": [
+        1010,
+        1018,
+        1021,
+        1034,
+        1042,
+        1047,
+        1058,
+        1067,
+        1078
+      ]
+    },
+    "explosive_spider_mini": {
+      "code": 61081302,
+      "name": "Explosive Spider",
+      "name_vn": "Nhện Nổ",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Physical · Resistance: Burn, Bleed · Trait: Moves faster at low HP, self-destructs",
+      "desc_vn": "Điểm yếu: V.Lý · Kháng: Thiêu Đốt Mất HP · Đặc điểm: Khi HP thấp sẽ tăng Vận Tốc và tự phát nổ",
+      "levels": [
+        1010,
+        1018,
+        1021,
+        1034,
+        1042,
+        1047,
+        1058,
+        1067,
+        1078
+      ]
+    },
+    "clumsy_zombie": {
+      "code": 61081401,
+      "name": "Clumsy Zombie",
+      "name_vn": "Zombie Nặng Nề",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed · Resistance: Knockback, Frost · Trait: Ranged",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: Đẩy Lùi Băng Sương · Đặc điểm: Tầm Xa",
+      "levels": [
+        1003,
+        1008,
+        1033
+      ]
+    },
+    "clumsy_zombie_mini": {
+      "code": 61081402,
+      "name": "Clumsy Zombie",
+      "name_vn": "Zombie Nặng Nề",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed · Resistance: Knockback, Frost · Trait: Ranged",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: Đẩy Lùi Băng Sương · Đặc điểm: Tầm Xa",
+      "levels": [
+        1003,
+        1008,
+        1033
+      ]
+    },
+    "zombie_bloom": {
+      "code": 61081501,
+      "name": "Zombie Bloom",
+      "name_vn": "Minh Hoa Hoán Thi",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: M.DMG · Resistance: Bleed, Paralysis, Stun · Trait: Ranged, periodically spawns mini Zombies",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: Mất HP Tê Liệt Choáng · Đặc điểm: Tầm Xa Cứ cách một khoảng thời gian sẽ ấp nở Zombie nhỏ",
+      "levels": [
+        1001,
+        1002,
+        1003
+      ]
+    },
+    "zombie_bloom_mini": {
+      "code": 61081502,
+      "name": "Zombie Bloom",
+      "name_vn": "Minh Hoa Hoán Thi",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: M.DMG · Resistance: Bleed, Paralysis, Stun · Trait: Ranged, periodically spawns mini Zombies",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: Mất HP Tê Liệt Choáng · Đặc điểm: Tầm Xa Cứ cách một khoảng thời gian sẽ ấp nở Zombie nhỏ",
+      "levels": [
+        1001,
+        1002,
+        1003
+      ]
+    },
+    "shield_zombie": {
+      "code": 61081601,
+      "name": "Shield Zombie",
+      "name_vn": "Zombie Khiên",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weak: Burn · Resistance: Interrupt, Knockback · Trait: Blocks projectiles with shield",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Ngăn Chặn Đẩy Lùi · Đặc điểm: Sẽ dùng Khiên chặn đường đạn bắn",
+      "levels": [
+        1022,
+        1046,
+        1054,
+        1063,
+        1068
+      ]
+    },
+    "shield_zombie_mini": {
+      "code": 61081602,
+      "name": "Shield Zombie",
+      "name_vn": "Zombie Khiên",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weak: Burn · Resistance: Interrupt, Knockback · Trait: Blocks projectiles with shield",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Ngăn Chặn Đẩy Lùi · Đặc điểm: Sẽ dùng Khiên chặn đường đạn bắn",
+      "levels": [
+        1022,
+        1046,
+        1054,
+        1063,
+        1068
+      ]
+    },
+    "coffin_zombie": {
+      "code": 61081701,
+      "name": "Coffin Zombie",
+      "name_vn": "Zombie Quan Tài",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Immune to 10 hits and debuffs",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Sẽ miễn 10 lần ST và hiệu quả DEBUFF",
+      "levels": [
+        1004,
+        1005,
+        1011,
+        1014,
+        1023,
+        1027,
+        1031,
+        1032,
+        1041,
+        1059
+      ]
+    },
+    "coffin_zombie_mini": {
+      "code": 61081702,
+      "name": "Coffin Zombie",
+      "name_vn": "Zombie Quan Tài",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: M.DMG · Resistance: P.DMG · Trait: Immune to 10 hits and debuffs",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Sẽ miễn 10 lần ST và hiệu quả DEBUFF",
+      "levels": [
+        1004,
+        1005,
+        1011,
+        1014,
+        1023,
+        1027,
+        1031,
+        1032,
+        1041,
+        1059
+      ]
+    },
+    "bell_zombie": {
+      "code": 61081801,
+      "name": "Bell Zombie",
+      "name_vn": "Zombie Chuông Lớn",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: Paralysis · Resistance: Bleed, Knockback, Frost · Trait: Blocks piercing bullets",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Đẩy Lùi Băng Sương · Đặc điểm: Sẽ chặn đạn xuyên thấu",
+      "levels": [
+        1045,
+        1051
+      ]
+    },
+    "bell_zombie_mini": {
+      "code": 61081802,
+      "name": "Bell Zombie",
+      "name_vn": "Zombie Chuông Lớn",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: Paralysis · Resistance: Bleed, Knockback, Frost · Trait: Blocks piercing bullets, gains 70% DMG Immunity when hit by Pierce",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Đẩy Lùi Băng Sương · Đặc điểm: Sẽ chặn đạn xuyên thấu, khi chịu ST Xuyên sẽ tăng 70% Giảm ST bản thân",
+      "levels": [
+        1045,
+        1051
+      ]
+    },
+    "deathbringer": {
+      "code": 61081901,
+      "name": "Deathbringer",
+      "name_vn": "Quỷ Sai",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Bleed, Physical · Resistance: Pull · Trait: Reduces production if more than 8 present",
+      "desc_vn": "Điểm yếu: Mất HP V.Lý · Kháng: Dẫn Dắt · Đặc điểm: Số lượng trong trận trên 8 giờ sẽ giảm hiệu suất sản xuất",
+      "levels": [
+        1005,
+        1007,
+        1012,
+        1013,
+        1018,
+        1037,
+        1048,
+        1052,
+        1058,
+        1062
+      ]
+    },
+    "deathbringer_mini": {
+      "code": 61081902,
+      "name": "Deathbringer",
+      "name_vn": "Quỷ Sai",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Bleed, Physical · Resistance: Pull · Trait: Reduces production if more than 8 present",
+      "desc_vn": "Điểm yếu: Mất HP V.Lý · Kháng: Dẫn Dắt · Đặc điểm: Số lượng trong trận trên 8 giờ sẽ giảm hiệu suất sản xuất",
+      "levels": [
+        1005,
+        1007,
+        1012,
+        1013,
+        1018,
+        1037,
+        1048,
+        1052,
+        1058,
+        1062
+      ]
+    },
+    "armored_drake": {
+      "code": 61082001,
+      "name": "Armored Drake",
+      "name_vn": "Thể Rồng Giáp",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed · Resistance: M.DMG, Burn, Pull, Frozen · Trait: There is a chance to dodge M.DMG",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Thiêu Đốt Dẫn Dắt Đóng Băng · Đặc điểm: Có tỷ lệ né ST Phép",
+      "levels": [
+        1001,
+        1016,
+        1017,
+        1030,
+        1043,
+        1055,
+        1080
+      ]
+    },
+    "armored_drake_mini": {
+      "code": 61082002,
+      "name": "Armored Drake",
+      "name_vn": "Thể Rồng Giáp",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed · Resistance: M.DMG, Burn, Pull, Frozen · Trait: There is a chance to dodge M.DMG",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Thiêu Đốt Dẫn Dắt Đóng Băng · Đặc điểm: Có tỷ lệ né ST Phép",
+      "levels": [
+        1001,
+        1016,
+        1017,
+        1030,
+        1043,
+        1055,
+        1080
+      ]
+    },
+    "ancient_ghoul": {
+      "code": 61082101,
+      "name": "Ancient Ghoul",
+      "name_vn": "Dị Quỷ Ngàn Năm",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weak: Burn · Resistance: Paralysis, Bleed · Trait: Increases own Crit RES by 100%",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP · Đặc điểm: Sẽ tăng 100% Kháng Bạo bản thân",
+      "levels": [
+        1004,
+        1010,
+        1012,
+        1014,
+        1017,
+        1019,
+        1031,
+        1034,
+        1037,
+        1041,
+        1052,
+        1056,
+        1059,
+        1063,
+        1066,
+        1068,
+        1069,
+        1070,
+        1072
+      ]
+    },
+    "ancient_ghoul_mini": {
+      "code": 61082102,
+      "name": "Ancient Ghoul",
+      "name_vn": "Dị Quỷ Ngàn Năm",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weak: Burn · Resistance: Paralysis, Bleed · Trait: Immune to Crit",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP · Đặc điểm: Không thể bị Bạo",
+      "levels": [
+        1004,
+        1010,
+        1012,
+        1014,
+        1017,
+        1019,
+        1031,
+        1034,
+        1037,
+        1041,
+        1052,
+        1056,
+        1059,
+        1063,
+        1066,
+        1068,
+        1069,
+        1070,
+        1072
+      ]
+    },
+    "stone_lion": {
+      "code": 61082201,
+      "name": "Stone Lion",
+      "name_vn": "Quỷ Sư Tử Đá",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Direct DMG · Resistance: Burn, Paralysis, Bleed, Interrupt, Knockback, Stun, Frost · Trait: None",
+      "desc_vn": "Điểm yếu: ST Trực Tiếp · Kháng: Thiêu Đốt Tê Liệt Mất HP Ngăn Chặn Đẩy Lùi Choáng Băng Sương · Đặc điểm: Trống",
+      "levels": [
+        1015,
+        1032,
+        1050,
+        1061,
+        1072,
+        1073,
+        1076
+      ]
+    },
+    "stone_lion_mini": {
+      "code": 61082202,
+      "name": "Stone Lion",
+      "name_vn": "Quỷ Sư Tử Đá",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Direct DMG · Resistance: Burn, Paralysis, Bleed, Interrupt, Knockback, Stun, Frost · Trait: None",
+      "desc_vn": "Điểm yếu: ST Trực Tiếp · Kháng: Thiêu Đốt Tê Liệt Mất HP Ngăn Chặn Đẩy Lùi Choáng Băng Sương · Đặc điểm: Trống",
+      "levels": [
+        1015,
+        1032,
+        1050,
+        1061,
+        1072,
+        1073,
+        1076
+      ]
+    },
+    "hundred_eyed_zombie": {
+      "code": 61082301,
+      "name": "Hundred-Eyed Zombie",
+      "name_vn": "Cuồng Thi Trăm Mắt",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Bleed, Interrupt, Stun · Trait: Gains ASPD & Move SPD when HP is low",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Ngăn Chặn Choáng · Đặc điểm: Tăng Tốc Công và Tốc Độ khi HP bản thân thấp",
+      "levels": [
+        1024,
+        1028,
+        1032,
+        1034,
+        1038,
+        1044,
+        1048,
+        1059,
+        1064,
+        1078
+      ]
+    },
+    "hundred_eyed_zombie_mini": {
+      "code": 61082302,
+      "name": "Hundred-Eyed Zombie",
+      "name_vn": "Cuồng Thi Trăm Mắt",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Bleed, Interrupt, Stun · Trait: Gains ASPD & Move SPD when HP is low",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Ngăn Chặn Choáng · Đặc điểm: Tăng Tốc Công và Tốc Độ khi HP bản thân thấp",
+      "levels": [
+        1024,
+        1028,
+        1032,
+        1034,
+        1038,
+        1044,
+        1048,
+        1059,
+        1064,
+        1078
+      ]
+    },
+    "resentful_teen": {
+      "code": 61082401,
+      "name": "Resentful Teen",
+      "name_vn": "Oan Hồn Nữ Sinh",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Bleed, Stun · Trait: Gains Rage when taking Bleed DMG",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Choáng · Đặc điểm: Khi chịu ST Mất HP sẽ Cuồng Bạo",
+      "levels": [
+        1003,
+        1004,
+        1008,
+        1012,
+        1028,
+        1035,
+        1038,
+        1054,
+        1069
+      ]
+    },
+    "resentful_teen_mini": {
+      "code": 61082402,
+      "name": "Resentful Teen",
+      "name_vn": "Oan Hồn Nữ Sinh",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Bleed, Stun · Trait: Gains Rage when taking Bleed DMG",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Choáng · Đặc điểm: Khi chịu ST Mất HP sẽ Cuồng Bạo",
+      "levels": [
+        1003,
+        1004,
+        1008,
+        1012,
+        1028,
+        1035,
+        1038,
+        1054,
+        1069
+      ]
+    },
+    "demon_nun": {
+      "code": 61082501,
+      "name": "Demon Nun",
+      "name_vn": "Nữ Tu Ác Quỷ",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance:Paralysis, Knockback · Trait: There is a chance to stun Heroes on death while paralyzed",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Tê Liệt Đẩy Lùi · Đặc điểm: Tử trận trong trạng thái Tê Liệt có tỷ lệ làm Choáng Anh hùng",
+      "levels": [
+        1009,
+        1013,
+        1021,
+        1035,
+        1041,
+        1046,
+        1047,
+        1068
+      ]
+    },
+    "demon_nun_mini": {
+      "code": 61082502,
+      "name": "Demon Nun",
+      "name_vn": "Nữ Tu Ác Quỷ",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance:Paralysis, Knockback · Trait: Must Stuns Heroes on death while paralyzed",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Tê Liệt Đẩy Lùi · Đặc điểm: Khi tử trận trong trạng thái Tê Liệt chắc chắn làm Choáng Anh hùng",
+      "levels": [
+        1009,
+        1013,
+        1021,
+        1035,
+        1041,
+        1046,
+        1047,
+        1068
+      ]
+    },
+    "soul_clown": {
+      "code": 61082601,
+      "name": "Soul Clown",
+      "name_vn": "Gã Hề Hút Hồn",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Burn, Pull · Trait: Heals per second after taking Burn DMG",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Thiêu Đốt Dẫn Dắt · Đặc điểm: Khi chịu ST Thiêu Đốt, mỗi giây hồi HP",
+      "levels": [
+        1006,
+        1011,
+        1016,
+        1017,
+        1020,
+        1030,
+        1035,
+        1055,
+        1060,
+        1067,
+        1079
+      ]
+    },
+    "soul_clown_mini": {
+      "code": 61082602,
+      "name": "Soul Clown",
+      "name_vn": "Gã Hề Hút Hồn",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Burn, Pull · Trait: Heals per second after taking Burn DMG",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Thiêu Đốt Dẫn Dắt · Đặc điểm: Khi chịu ST Thiêu Đốt, mỗi giây hồi HP",
+      "levels": [
+        1006,
+        1011,
+        1016,
+        1017,
+        1020,
+        1030,
+        1035,
+        1055,
+        1060,
+        1067,
+        1079
+      ]
+    },
+    "bronze_colossus": {
+      "code": 61082701,
+      "name": "Bronze Colossus",
+      "name_vn": "Ma Thể Đồng",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weak: Melee Hero DMG · Resistance: Ranged Hero DMG, Frost, Pull · Trait: Leaves corpse for 4s on death, blocks projectiles",
+      "desc_vn": "Điểm yếu: ST Anh hùng Cận Chiến · Kháng: ST Anh hùng Tầm Xa Băng Sương Dẫn Dắt · Đặc điểm: Khi tử trận, dị thể tồn tại 4s và có thể chặn đường đạn bắn",
+      "levels": [
+        1005,
+        1006,
+        1010,
+        1015,
+        1029,
+        1056,
+        1065
+      ]
+    },
+    "bronze_colossus_mini": {
+      "code": 61082702,
+      "name": "Bronze Colossus",
+      "name_vn": "Ma Thể Đồng",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weak: Melee Hero DMG · Resistance: Ranged Hero DMG, Frost, Pull · Trait: Leaves corpse for 20s on death, blocks projectiles",
+      "desc_vn": "Điểm yếu: ST Anh hùng Cận Chiến · Kháng: ST Anh hùng Tầm Xa Băng Sương Dẫn Dắt · Đặc điểm: Khi tử trận, dị thể tồn tại 20s và có thể chặn đường đạn bắn",
+      "levels": [
+        1005,
+        1006,
+        1010,
+        1015,
+        1029,
+        1056,
+        1065
+      ]
+    },
+    "smile_butcher": {
+      "code": 61082801,
+      "name": "Smile Butcher",
+      "name_vn": "Đồ Tể Mặt Cười",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: DoT · Resistance: Direct DMG, Knockback · Trait: Huge ASPD boost after first attack",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi · Đặc điểm: Sau lần đầu tấn công, tăng mạnh Tốc Công bản thân",
+      "levels": [
+        1020,
+        1038,
+        1040,
+        1045,
+        1051,
+        1060,
+        1063,
+        1080
+      ]
+    },
+    "smile_butcher_mini": {
+      "code": 61082802,
+      "name": "Smile Butcher",
+      "name_vn": "Đồ Tể Mặt Cười",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: DoT · Resistance: Direct DMG, Knockback · Trait: Huge ASPD & DMG Immunity boost after first hit",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi · Đặc điểm: Sau lần đầu tấn công, tăng mạnh Tốc Công và Giảm ST bản thân",
+      "levels": [
+        1020,
+        1038,
+        1040,
+        1045,
+        1051,
+        1060,
+        1063,
+        1080
+      ]
+    },
+    "rotten_zombie": {
+      "code": 61082901,
+      "name": "Rotten Zombie",
+      "name_vn": "Dị Thể Suy Tàn",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: None · Resistance: DoT, Stun, Frozen · Trait: Move SPD increase",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Choáng Đóng Băng · Đặc điểm: Tăng Tốc Độ",
+      "levels": [
+        1015,
+        1019,
+        1025,
+        1043,
+        1044,
+        1049,
+        1061,
+        1065,
+        1071,
+        1076
+      ]
+    },
+    "rotten_zombie_mini": {
+      "code": 61082902,
+      "name": "Rotten Zombie",
+      "name_vn": "Dị Thể Suy Tàn",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: None · Resistance: DoT, Stun, Frozen · Trait: Boosts own & nearby small-area monsters' Move SPD",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Choáng Đóng Băng · Đặc điểm: Tăng Tốc Độ bản thân và Dị Thú phạm vi nhỏ xung quanh",
+      "levels": [
+        1015,
+        1019,
+        1025,
+        1043,
+        1044,
+        1049,
+        1061,
+        1065,
+        1071,
+        1076
+      ]
+    },
+    "bomb_ghoul": {
+      "code": 61083001,
+      "name": "Bomb Ghoul",
+      "name_vn": "Thi Ma Pháo",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: M.DMG · After being affected by Pull or Frozen, permanently becomes immune to all CC effects and increases ATK",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép · Đặc điểm: Khi chịu Dẫn Dắt hoặc Đóng Băng, miễn vĩnh viễn tất cả hiệu quả Khống Chế và tăng Công",
+      "levels": [
+        1075,
+        1076,
+        1077
+      ]
+    },
+    "bomb_ghoul_mini": {
+      "code": 61083002,
+      "name": "Bomb Ghoul",
+      "name_vn": "Thi Ma Pháo",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: M.DMG · After being affected by Pull or Frozen, permanently becomes immune to all CC effects and increases ATK",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép · Đặc điểm: Khi chịu Dẫn Dắt hoặc Đóng Băng, miễn vĩnh viễn tất cả hiệu quả Khống Chế và tăng Công",
+      "levels": [
+        1075,
+        1076,
+        1077
+      ]
+    },
+    "one_eyed_spirit": {
+      "code": 61083101,
+      "name": "One-Eyed Spirit",
+      "name_vn": "Quái Đền Một Mắt",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: M.DMG · Resistance: P.DMG, Pull, Knockback · Trait: On death, grants 6 layers of Armor to nearby monsters",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý Dẫn Dắt Đẩy Lùi · Đặc điểm: Sau khi tử trận thêm 6 tầng Giáp cho Dị Thú xung quanh",
+      "levels": [
+        1025,
+        1040,
+        1045,
+        1062,
+        1070,
+        1080
+      ]
+    },
+    "one_eyed_spirit_mini": {
+      "code": 61083102,
+      "name": "One-Eyed Spirit",
+      "name_vn": "Quái Đền Một Mắt",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: M.DMG · Resistance: P.DMG, Pull, Knockback · Trait: Every 10s grants 6 layers of Armor to nearby monsters, also grants 18 layers Armor on death",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý Dẫn Dắt Đẩy Lùi · Đặc điểm: Cứ cách 10s sẽ thêm 6 tầng Giáp cho Dị Thú xung quanh. Sau khi tử trận sẽ thêm 18 tầng Giáp cho Dị Thú xung quanh",
+      "levels": [
+        1025,
+        1040,
+        1045,
+        1062,
+        1070,
+        1080
+      ]
+    },
+    "tongue_thief": {
+      "code": 61083201,
+      "name": "Tongue Thief",
+      "name_vn": "Quỷ Lưỡi Dài",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Paralysis DMG, Frost, Frozen · Trait: Special movement, steals Banknotes on attack, teleports to Door when Stunned",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Băng Sương Đóng Băng · Đặc điểm: Cách di chuyển đặc biệt, tấn công sẽ trộm Ngân Phiếu, bị làm Choáng sẽ tốc biến đến trước cửa",
+      "levels": [
+        1024,
+        1039,
+        1049,
+        1053,
+        1061
+      ]
+    },
+    "tongue_thief_mini": {
+      "code": 61083202,
+      "name": "Tongue Thief",
+      "name_vn": "Quỷ Lưỡi Dài",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Paralysis DMG, Frost, Frozen · Trait: Special movement, steals Banknotes on attack, teleports to Door when Stunned",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Băng Sương Đóng Băng · Đặc điểm: Cách di chuyển đặc biệt, tấn công sẽ trộm Ngân Phiếu, bị làm Choáng sẽ tốc biến đến trước cửa",
+      "levels": [
+        1024,
+        1039,
+        1049,
+        1053,
+        1061
+      ]
+    },
+    "witching_ghost": {
+      "code": 61083301,
+      "name": "Witching Ghost",
+      "name_vn": "Quỷ Kịch",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Crit DMG · Resistance: Knockback, Frozen · Trait: Immune to all non-Crit DMG; when more than 12 present, all Heroes' Rage Regen is reduced by 25%",
+      "desc_vn": "Điểm yếu: ST Bạo · Kháng: Đẩy Lùi Đóng Băng · Đặc điểm: Miễn tất cả ST không Bạo, khi trong trận có trên 12 cái, hiệu quả Hồi Nộ của tất cả Anh Hùng giảm 25%",
+      "levels": [
+        1011,
+        1021,
+        1046,
+        1066,
+        1079
+      ]
+    },
+    "witching_ghost_mini": {
+      "code": 61083302,
+      "name": "Witching Ghost",
+      "name_vn": "Quỷ Kịch",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Crit DMG · Resistance: Knockback, Frozen · Trait: Immune to all non-Crit DMG; when more than 12 present, all Heroes' Rage Regen is reduced by 25%",
+      "desc_vn": "Điểm yếu: ST Bạo · Kháng: Đẩy Lùi Đóng Băng · Đặc điểm: Miễn tất cả ST không Bạo, khi trong trận có trên 12 cái, hiệu quả Hồi Nộ của tất cả Anh Hùng giảm 25%",
+      "levels": [
+        1011,
+        1021,
+        1046,
+        1066,
+        1079
+      ]
+    },
+    "gong_ghost": {
+      "code": 61083401,
+      "name": "Gong Ghost",
+      "name_vn": "Quỷ Canh Ba",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Burn DMG, Stun, Frost · Trait: Heals nearby monsters on death",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Thiêu Đốt Choáng Băng Sương · Đặc điểm: Sau khi tử trận sẽ hồi HP cho Dị Thú xung quanh",
+      "levels": [
+        1016,
+        1018,
+        1025,
+        1042,
+        1053,
+        1062,
+        1069,
+        1073,
+        1074,
+        1077
+      ]
+    },
+    "gong_ghost_mini": {
+      "code": 61083402,
+      "name": "Gong Ghost",
+      "name_vn": "Quỷ Canh Ba",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None · Resistance: Burn DMG, Stun, Frost · Trait: Heals nearby monsters on death",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Thiêu Đốt Choáng Băng Sương · Đặc điểm: Sau khi tử trận sẽ hồi HP cho Dị Thú xung quanh",
+      "levels": [
+        1016,
+        1018,
+        1025,
+        1042,
+        1053,
+        1062,
+        1069,
+        1073,
+        1074,
+        1077
+      ]
+    },
+    "profane_saiyo": {
+      "code": 61083501,
+      "name": "Profane Saiyo",
+      "name_vn": "La Hán Thô Tục",
+      "kind": "creep",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: DoT · Resistance: None · Trait: Immune to all CC effects after 20s from spawn",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: Trống · Đặc điểm: Sau 20s xuất hiện, miễn tất cả hiệu quả Khống Chế",
+      "levels": [
+        1024,
+        1033,
+        1036,
+        1040,
+        1044,
+        1054,
+        1057,
+        1064,
+        1071,
+        1074,
+        1079
+      ]
+    },
+    "profane_saiyo_mini": {
+      "code": 61083502,
+      "name": "Profane Saiyo",
+      "name_vn": "La Hán Thô Tục",
+      "kind": "mini_boss",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: DoT · Resistance: None · Trait: Immune to all CC effects after 30s from spawn",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: Trống · Đặc điểm: Sau 30s xuất hiện, miễn tất cả hiệu quả Khống Chế",
+      "levels": [
+        1024,
+        1033,
+        1036,
+        1040,
+        1044,
+        1054,
+        1057,
+        1064,
+        1071,
+        1074,
+        1079
+      ]
+    },
+    "thunder_rhino": {
+      "code": 61083601,
+      "name": "Thunder Rhino",
+      "name_vn": "Tê Giác Sấm Sét",
+      "kind": "creep",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: None · Resistance: Paralysis DMG, Pull, Knockback · Trait: Charges lightning attacks, stops if Interrupted by CC",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Dẫn Dắt Đẩy Lùi · Đặc điểm: Sẽ tích lực để tích lũy Sấm Sét tấn công, bị khống chế làm gián đoạn sẽ dừng tích lực",
+      "levels": [
+        1020,
+        1023,
+        1047,
+        1065,
+        1077
+      ]
+    },
+    "thunder_rhino_mini": {
+      "code": 61083602,
+      "name": "Thunder Rhino",
+      "name_vn": "Tê Giác Sấm Sét",
+      "kind": "mini_boss",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: None · Resistance: Paralysis DMG, Pull, Knockback · Trait: Charges lightning attacks, stops if Interrupted by CC, and takes 50% less DMG while charging",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt Dẫn Dắt Đẩy Lùi · Đặc điểm: Sẽ tích lực để tích lũy Sấm Sét tấn công, bị khống chế làm gián đoạn sẽ dừng tích lực. Khi tích lực, ST phải chịu giảm 50%",
+      "levels": [
+        1020,
+        1023,
+        1047,
+        1065,
+        1077
+      ]
+    },
+    "alien_presence": {
+      "code": 61083701,
+      "name": "Alien Presence",
+      "name_vn": "Tà Linh Ngoại Lai",
+      "kind": "creep",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: None · Resistance: DoT, Frost · Trait: Long-range attack",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Băng Sương · Đặc điểm: Tấn công tầm xa",
+      "levels": [
+        1023,
+        1031,
+        1036,
+        1039,
+        1050,
+        1056,
+        1064,
+        1067,
+        1070,
+        1071,
+        1072
+      ]
+    },
+    "alien_presence_mini": {
+      "code": 61083702,
+      "name": "Alien Presence",
+      "name_vn": "Tà Linh Ngoại Lai",
+      "kind": "mini_boss",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: None · Resistance: DoT, Frost · Trait: Long-range attack",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Duy Trì Băng Sương · Đặc điểm: Tấn công tầm xa",
+      "levels": [
+        1023,
+        1031,
+        1036,
+        1039,
+        1050,
+        1056,
+        1064,
+        1067,
+        1070,
+        1071,
+        1072
+      ]
+    },
+    "toxic_beetle": {
+      "code": 61083801,
+      "name": "Toxic Beetle",
+      "name_vn": "Sâu Độc",
+      "kind": "creep",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: None · Resistance: M.DMG, Stun, Frost · Trait: Leaves behind a pool of poison after death, dealing DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép Choáng Băng Sương · Đặc điểm: Để lại một vũng độc khi tử trận, duy trì gây ST",
+      "levels": [
+        1022,
+        1026,
+        1030,
+        1050,
+        1053,
+        1055,
+        1058,
+        1066,
+        1073,
+        1074,
+        1078
+      ]
+    },
+    "toxic_beetle_mini": {
+      "code": 61083802,
+      "name": "Toxic Beetle",
+      "name_vn": "Sâu Độc",
+      "kind": "mini_boss",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: None · Resistance: M.DMG, Stun, Frost · Trait: Leaves behind a pool of poison upon death, dealing DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Phép Choáng Băng Sương · Đặc điểm: Để lại một vũng độc khi tử trận, duy trì gây ST",
+      "levels": [
+        1022,
+        1026,
+        1030,
+        1050,
+        1053,
+        1055,
+        1058,
+        1066,
+        1073,
+        1074,
+        1078
+      ]
+    },
+    "forbidden_book": {
+      "code": 61083901,
+      "name": "Forbidden Book",
+      "name_vn": "Cấm Thư Cổ",
+      "kind": "creep",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: DoT · Resistance: Direct Damage, Knockback, Stun · Trait: Long-range attack",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi Choáng · Đặc điểm: Tấn công tầm xa",
+      "levels": [
+        1060
+      ]
+    },
+    "forbidden_book_mini": {
+      "code": 61083902,
+      "name": "Forbidden Book",
+      "name_vn": "Cấm Thư Cổ",
+      "kind": "mini_boss",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: DoT · Resistance: Direct Damage, Knockback, Stun · Trait: Long-range attack",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đẩy Lùi Choáng · Đặc điểm: Tấn công tầm xa",
+      "levels": [
+        1060
+      ]
+    },
+    "cursed_nurse": {
+      "code": 61084001,
+      "name": "Cursed Nurse",
+      "name_vn": "Y Tá Bị Nguyền",
+      "kind": "creep",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: Bleed DMG · Resistance: Burn DMG, Paralysis DMG, Pull, Frost, Frozen · Trait: Increases Max HP every second, restores HP when low",
+      "desc_vn": "Điểm yếu: ST Mất HP · Kháng: ST Thiêu Đốt ST Tê Liệt Dẫn Dắt Băng Sương Đóng Băng · Đặc điểm: Mỗi giây tăng giới hạn HP, hồi HP khi HP thấp",
+      "levels": [
+        1075
+      ]
+    },
+    "cursed_nurse_mini": {
+      "code": 61084002,
+      "name": "Cursed Nurse",
+      "name_vn": "Y Tá Bị Nguyền",
+      "kind": "mini_boss",
+      "avatar": "head/head_boss_016",
+      "desc": "Weakness: Bleed DMG · Resistance: Burn DMG, Paralysis DMG, Pull, Frost, Frozen · Trait: Increases Max HP every second, restores HP when low",
+      "desc_vn": "Điểm yếu: ST Mất HP · Kháng: ST Thiêu Đốt ST Tê Liệt Dẫn Dắt Băng Sương Đóng Băng · Đặc điểm: Mỗi giây tăng giới hạn HP, hồi HP khi HP thấp",
+      "levels": [
+        1075
+      ]
+    }
+  }
+}
