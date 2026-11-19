@@ -157,7 +157,37 @@ Nguồn: capture pmain 2026-11-18 (`.tmp/battle_research/events-pmain-20261118.j
   suit → mã skill do server làm, client không có bảng nối.
 - **Skill món đặc biệt → `6000TT10N00`**: 10 món màu 7, `_subType` 701–710 (`suitType` 201–210,
   vd "Chén Tụ Hồn" 702), có `_suitSkill` theo level (N = 1–3, giá trị bằng nửa skill bộ). Chưa thấy
-  trong capture nào.
+  trong capture nào. Quan hệ với bộ: xem mục "Bộ đỏ và món vàng" bên dưới.
+
+### Bộ đỏ và món vàng (bbb-4g0.3, phân tích tĩnh `sea_66328` + bundle 1377a/7125c)
+
+- **Màu**: `BeautyBagColorLO` 3 Thường, 4 Quý, 5 Hiếm, 6 Thần (đỏ), 7 Phẩm Thánh (vàng, `Epic`).
+  Mỗi hệ (type 1–10) có đúng 1 món cho mỗi màu: màu 3–6 thuộc `suitType` 10T, màu 7 thuộc 20T.
+- **Ô**: hero có 8 ô (`BeautyBagUnlockLO`). Ô 1–6 chỉ nhận món màu < 7, ô 7–8 chỉ nhận món màu 7
+  (`BeautyBagHeroEquipPanel`: `_curSelPos > 6` lọc `color >= Epic`). Ô 7 mở khi `beautyBagLevel` 500,
+  ô 8 khi 1500 (kèm điều kiện unlock loại 3 = 60, chưa tra loại 3 là gì).
+- **Bộ đỏ** = bộ 4 món thường (`BeautyBagUtil.getBeautyBagSuitTypeDataByList`). Chỉ đếm món màu < 7.
+  Bộ kích hoạt khi đủ `_requireNum` 4 món cùng `suitType`, tức đủ 4 màu 3/4/5/6 của một hệ. Sao bộ là
+  sao **thấp nhất** trong các món đó. 6 ô chỉ chứa được 1 bộ.
+- **Món vàng không phải bộ độc lập**, nó là "cường hoá" của bộ đỏ cùng hệ:
+  `BeautyBagSuitLO._enhanceSubType` 10T → 70T, và `suitUnlock` của món vàng là `[10T, sao]`
+  ("Bộ cần đạt N sao"). Client coi món vàng có hiệu lực khi hero đang kích hoạt đúng bộ đó
+  (`checkBeautyBagEnhanceActive`). Từng mốc sao của món vàng chỉ có hiệu lực khi sao bộ ≥ mốc đó
+  (`BeautyBagSuitTypeEnhanceItem`). Đeo món vàng mà không có bộ cùng hệ thì UI không bật hiệu lực.
+- **Trong trận là 2 skill riêng, cộng dồn**: `6000TT10N00` là skill đầy đủ trong `SkillBaseLO`, có action
+  và buff riêng (vd `60000210100`: buff `Making_Credit_CondsTargetBloodPercent_Improvise` [50, LESS_THAN]
+  giống `60000200100`, khác id, `group_id` None, `exclusionGroup` 0). Engine không gộp hai buff này.
+  "Lượng Tăng ST Bộ +30%" nghĩa là cộng thêm cùng hiệu ứng với nửa giá trị (bộ +60% → tổng +90%).
+  Ngoại lệ: `60001000N00` (Khúc Ca) có 2 action, bản vàng `60001010N00` chỉ có 1.
+- **Bậc N**: `BeautyBagSuitLO._isSkill` = 1 ở level 1/5/10 cho cả 10 bộ, nên bộ: 1–4 → N1, 5–9 → N2,
+  10–15 → N3. Món vàng chỉ có sao 1–10, `_suitSkill` ghi sẵn N theo sao: 1–4 → N1, 5–9 → N2, 10 → N3.
+  Nếu tính theo luật client, N của món vàng = N của min(sao vàng, sao bộ).
+- **Client không đọc `_suitSkill`** và không có bảng nối suit → mã skill. Server tự chọn mã. Capture
+  chỉ có N1 (`60000200100`…`60000900100`), chưa có N2/N3, chưa có `6000TT10N00`.
+- `dressNum` (theo sao: 1→1, 4→2, 6→3, 8→4, ≥10→9999) là số hero dùng chung được một món
+  (`heroUUIDList`). Capture khớp: món sao 7 có 3 hero.
+- `BeautyBagLappingLO` (nâng cấp cấp tài khoản) có skill `19010301000` từ mốc 0.6. Mã này không có trong
+  `SkillBaseLO` và chưa thấy trong capture. Không thuộc phạm vi bộ/món vàng.
 - Capture xác nhận: hero 50000026 sau khi đổi dị vật ô 1/5/6 có thêm `60000200100` ("Tăng ST HP
   Thấp", bộ Phép bậc 1) ở `index 0`, trước đó không có. Các hero khác giữ nguyên.
 
@@ -191,8 +221,9 @@ Nguồn: capture pmain 2026-11-18 (`.tmp/battle_research/events-pmain-20261118.j
 
 ## Còn mở
 
-- Dị vật: chưa có capture của món đặc biệt (`6000TT10N00`) và chưa kiểm cách server chọn bậc N
-  theo level bộ (giả định level 1–4 → N1, 5–9 → N2, 10–15 → N3 theo `_isSkill`).
+- Dị vật (bbb-4g0.3): bảng và code client đã chốt luật (mục "Bộ đỏ và món vàng"). Còn thiếu capture
+  để xác nhận phía server: (a) bộ sao ≥ 5 cho ra `6000TT00200`; (b) món vàng ở ô 7 cho ra
+  `6000TT10N00` trên `index 0` cạnh skill bộ; (c) món vàng khác hệ hoặc bộ thiếu món thì không có skill.
 - Tra bảng trên `sea_65553`. Capture là `sea_66328`, chưa đối chiếu lại bảng trên bản mới.
 - Skill `8004…` ở `index 5–9` là skill skin (đã xử lý trong `hero/skin.js`).
 - Công thức server cộng attr của Thánh Khí/Dị Năng: cần so `hero.attr` giữa 2 capture khác nhau
