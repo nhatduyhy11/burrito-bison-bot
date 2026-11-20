@@ -122,6 +122,29 @@ export function unlockMonthCards({ M, R, step }) {
   });
 }
 
+// Play mode, this page only: spin re-roll (TDRouletteWheel "Refresh 1/1"). The button is a
+// CommonAdsButtonComponent for HangUpRouletteWheel: shown only with that module's advertise info
+// (leftTimes > 0, sent by the lobby, absent here) and checkAdsUnLock. Pressing it plays an ad; here
+// the ad is skipped as FREE, then the wheel resends LotteryElite. The game allows it once per battle
+// (TDServer.wheelWatchAds), so a fixed leftTimes 1 is enough.
+export function unlockWheelRefresh({ M, R, step }) {
+  const id = R("CommonProto").MODULE_Common_Enum.HangUpRouletteWheel;
+  const { FREE } = R("ISDKInterface").ADS_STATUS;
+  const common = M("CommonModule").Ins;
+  const info = { id, leftTimes: 1, lastTime: 0 };
+  const getInfo = common.getAdvertiseInfo;
+  common.getAdvertiseInfo = function (m) { return m === id ? info : getInfo.apply(this, arguments); };
+  const unlocked = common.checkAdsUnLock;
+  common.checkAdsUnLock = function (m) { return m === id || unlocked.apply(this, arguments); };
+  const show = common.showAdvertise;
+  common.showAdvertise = function (key, scene, cb) {
+    if (key !== M("AdsLO").get(id)?.key) return show.apply(this, arguments);
+    step("wheel refresh: ad skipped (local)");
+    cb(FREE);
+  };
+  step("wheel refresh (local)", { module: id });
+}
+
 // Pause button (TDBattleFrame._onClickClose): TDServerProxy.pauseBattle sends SetPause and opens
 // TDBattlePausePanel only from SetPauseR. Answer locally (no reward preview). The open panel is a
 // blocking view, so the director pauses the battle; Continue sends SetPause 0 and the director

@@ -33,7 +33,9 @@
    (MagicCard/ActiveSkill → ActiveSkill op; HeroFinal → HeroFinalSkill; còn lại `_selectConfig`),
    `_refreshEliteIndex++`.
 7. Nút Refresh (1/1) = **xem quảng cáo** (`HangUpRouletteWheel`) → random lại 8 ô, giữ số ô trúng
-   = số gift cũ.
+   = số gift cũ. Giới hạn 1 lần / **trận** (`TDServer.wheelWatchAds[battleType]`), không phải / spin;
+   nút chỉ hiện khi có advertise info từ lobby (`leftTimes > 0`). Sandbox `--play` giả lập phần
+   này (`unlockWheelRefresh` trong `web/battle/stubs.js`, bỏ qua quảng cáo).
 
 ## Quan sát runtime
 

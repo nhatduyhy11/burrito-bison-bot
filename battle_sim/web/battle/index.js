@@ -8,7 +8,7 @@
 // ?seed=random|<uuid> changes the RNG seed.
 import { compareQuit, installReplay } from "./replay.js";
 import { ensureBattleConfig, ensureTeamState, initModules, setupMain } from "./setup.js";
-import { captureErrors, leaveOnResultClose, stubNetwork, stubPause, stubQuitRoom, unlockMonthCards } from "./stubs.js";
+import { captureErrors, leaveOnResultClose, stubNetwork, stubPause, stubQuitRoom, unlockMonthCards, unlockWheelRefresh } from "./stubs.js";
 
 export async function runBattle({ sim, step, R }) {
   const M = (name) => R(name)[name];
@@ -42,6 +42,7 @@ export async function runBattle({ sim, step, R }) {
   stubNetwork({ ...ctx, myPid, summonerDerma });
   initModules(ctx);
   if (play) unlockMonthCards(ctx);
+  if (play) unlockWheelRefresh(ctx);
   stubQuitRoom({ ...ctx, rb, play, onQuit: finish });
   stubPause(ctx);
   if (play) leaveOnResultClose(ctx);
