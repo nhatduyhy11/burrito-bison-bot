@@ -5,7 +5,7 @@ import * as R from "./skin-rules.js";
 import { JOKER_SUMMON } from "../hero-lineup.js";
 import { SUMMONER_SLOTS } from "../summoner-skills.js";
 import { defaultAntiques } from "../antiques.js";
-import { MAX_STAGE, holeNum } from "../artifacts.js";
+import { MAX_STAGE, WEAPON_LEVEL_MAX, holeNum } from "../artifacts.js";
 
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2, summonerSkins: SUMMONER_SLOTS };
 // Đêm Đỏ (map mode "blood"): Teams shows heroes[0..2] as Master and guestHeroes as Guest
@@ -65,18 +65,21 @@ function normalize(state, dict) {
 }
 
 // Thần Khí (hero card in Teams, artifact.js). State: undefined = as captured, null = none,
-// { quality, stage, slots } with one slot per rolled hole (holeNum), each null (empty) or { code, value }.
-// The profile keeps only the filled slots as `entries` (profile-export.js); battle/hero/artifact.js checks them.
+// { quality, stage, slots, level } with one slot per rolled hole (holeNum), each null (empty) or
+// { code, value }; level = Cấp Thần Khí 0-5 (stamps the marker skill, artifacts.js). The profile
+// keeps only the filled slots as `entries` (profile-export.js); battle/hero/artifact.js checks them.
 export function artifactState(artifact) {
   if (!artifact) return artifact;
-  const { quality, stage, entries = [] } = artifact;
-  return { quality, stage, slots: entries.map(({ code, value = 0 }) => ({ code, value })) };
+  const { quality, stage, entries = [], level = 0 } = artifact;
+  return { quality, stage, slots: entries.map(({ code, value = 0 }) => ({ code, value })), level };
 }
 
-// Stage within the quality's range; slots cut or padded to the holes open at that quality + stage.
+// Stage within the quality's range; slots cut or padded to the holes open at that quality + stage;
+// level clamped to 0-WEAPON_LEVEL_MAX (cap pending a real capture, artifacts.js).
 function normalizeArtifact(artifact) {
   if (!artifact || !MAX_STAGE[artifact.quality]) return;
   artifact.stage = Math.min(Math.max(artifact.stage || 1, 1), MAX_STAGE[artifact.quality]);
+  artifact.level = Math.min(Math.max(artifact.level || 0, 0), WEAPON_LEVEL_MAX);
   const holes = holeNum(artifact.quality, artifact.stage);
   artifact.slots = Array.from({ length: holes }, (_, i) => artifact.slots[i] || null);
 }

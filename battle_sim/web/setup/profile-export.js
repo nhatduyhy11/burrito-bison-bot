@@ -77,6 +77,8 @@ export function toProfile(state, dict) {
 
 function artifactProfile(artifact) {
   if (artifact === null) return null;
-  const { quality, stage, slots } = artifact;
-  return { quality, stage, entries: slots.filter(Boolean).map(({ code, value }) => ({ code, value })) };
+  const { quality, stage, slots, level = 0 } = artifact;
+  const out = { quality, stage, entries: slots.filter(Boolean).map(({ code, value }) => ({ code, value })) };
+  if (level > 0) out.level = level; // Cấp Thần Khí; 0 = the capture as-is (no stamps)
+  return out;
 }

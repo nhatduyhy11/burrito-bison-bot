@@ -252,8 +252,10 @@ test('Thần Khí: battle builds hero.artifact from quality/stage/entries; null 
   entries[80001905] = { entryType: 1, minValue: 0, maxValue: 9999 };
   const tables = { ArtifactLO: items, ArtifactEntryLO: entries };
   const Mx = (name) => (tables[name] ? { store: tables[name], get: (k) => tables[name][k] } : { get: () => ({}) });
+  const rb = { listItems: (l) => (Array.isArray(l) ? l : l && typeof l === 'object'
+    ? Array.from({ length: l._length ?? 0 }, (_, i) => l[i]) : []) };
   const lb = { code: 50000013, artifact: { code: 10806003, uuid: 'cap', battleEntryInfos: { 0: { value: 704, code: 80003005 }, _length: 1 } } };
-  const run = (sel) => applyArtifact(lb, sel, Mx, () => {});
+  const run = (sel) => applyArtifact(lb, sel, rb, Mx, () => {});
 
   // Rebuilding the captured item gives the same snapshot (uuid kept).
   assert.deepEqual(run({ quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }] }).artifact, lb.artifact);
@@ -262,7 +264,7 @@ test('Thần Khí: battle builds hero.artifact from quality/stage/entries; null 
   assert.equal(run({ quality: 7, stage: 5, entries: [{ code: 80000208 }] }).artifact.battleEntryInfos[0].value, 0);
   assert.equal('artifact' in run(null), false);
   // A hero without an artifact gets a generated uuid.
-  assert.equal(applyArtifact({ code: 50000013 }, { quality: 6, stage: 1 }, Mx, () => {}).artifact.uuid.length, 24);
+  assert.equal(applyArtifact({ code: 50000013 }, { quality: 6, stage: 1 }, rb, Mx, () => {}).artifact.uuid.length, 24);
 
   for (const bad of [
     { quality: 8, stage: 1 }, { quality: 4, stage: 4 }, { quality: 6, stage: 0 },
@@ -271,8 +273,10 @@ test('Thần Khí: battle builds hero.artifact from quality/stage/entries; null 
     { quality: 6, stage: 3, entries: [{ code: 10003005, value: 704 }] }, // other hero's pool
     { quality: 6, stage: 3, entries: [{ code: 80001905, value: 586 }] }, // stat line (entryType 1)
     { quality: 6, stage: 3, entries: [{ code: 80000208, value: 1 }] }, // rainbow must be 0
+    { quality: 6, stage: 3, level: 6 }, { quality: 6, stage: 3, level: -1 }, // cấp Thần Khí 0-5
+    { quality: 6, stage: 3, level: 1.5 },
   ]) assert.throws(() => run(bad), undefined, JSON.stringify(bad));
-  assert.throws(() => applyArtifact({ code: 50000099 }, { quality: 6, stage: 1 }, Mx, () => {}));
+  assert.throws(() => applyArtifact({ code: 50000099 }, { quality: 6, stage: 1 }, rb, Mx, () => {}));
 });
 
 test('Thần Khí: setup import/export passes artifact through unchanged', () => {
@@ -297,6 +301,55 @@ test('Thần Khí: slots follow quality/stage; empty slots are left out of the p
   Object.assign(state.heroes[0].artifact, { quality: 4, stage: 1 });
   normalize(state, dict);
   assert.deepEqual(toProfile(state, dict).heroes[0].artifact, { quality: 4, stage: 1, entries: [] });
+});
+
+test('Thần Khí: Cấp Thần Khí round trips; 0 omitted from the profile; normalize clamps 0-5', () => {
+  const artifact = { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }], level: 3 };
+  const state = fromProfile({ heroes: [{ name: 'lu_bu', artifact }] }, base, dict);
+  assert.equal(state.heroes[0].artifact.level, 3);
+  assert.equal(toProfile(state, dict).heroes[0].artifact.level, 3);
+  state.heroes[0].artifact.level = 9;
+  normalize(state, dict);
+  assert.equal(state.heroes[0].artifact.level, 5);
+  const plain = fromProfile({ heroes: [{ name: 'lu_bu', artifact: { quality: 4, stage: 1, entries: [] } }] }, base, dict);
+  assert.deepEqual(toProfile(plain, dict).heroes[0].artifact, { quality: 4, stage: 1, entries: [] });
+});
+
+test('Thần Khí: Cấp Thần Khí stamps 3301000 ×N at the end of hero.skills; missing stamps warn', async () => {
+  const A = await import('../web/artifacts.js');
+  const { applyArtifact, warnMissingStamps } = await import('../web/battle/hero/artifact.js');
+  const list = (items) => ({ ...Object.fromEntries(items.map((item, i) => [i, item])), _length: items.length });
+  const rb = { listItems: (l) => (Array.isArray(l) ? l : l && typeof l === 'object'
+    ? Array.from({ length: l._length ?? 0 }, (_, i) => l[i]) : []) };
+  const Mx = (name) => (name === 'ArtifactLO'
+    ? { store: { 10806003: { hero: 50000013 } }, get: (k) => (k === 10806003 ? { hero: 50000013 } : undefined) }
+    : { get: () => ({}) });
+  const skills = list([{ code: 10130110000, index: 1, isShow: false }, { code: 10130708000, index: 2, isShow: true }]);
+  const run = (sel) => applyArtifact({ code: 50000013, skills }, sel, rb, Mx, () => {});
+
+  // level 3 appends three hidden stamp entries after the captured skills; the rainbow rides along.
+  const stamped = run({ quality: 6, stage: 3, entries: [], level: 3 });
+  assert.equal(stamped.skills.length, 5);
+  assert.deepEqual(stamped.skills.slice(2), [
+    { code: A.WEAPON_STAMP, index: 3, isShow: false },
+    { code: A.WEAPON_STAMP, index: 4, isShow: false },
+    { code: A.WEAPON_STAMP, index: 5, isShow: false },
+  ]);
+  assert.equal(stamped.artifact.code, 10806003);
+  // level 0 keeps the capture's skill list object as-is.
+  assert.equal(run({ quality: 6, stage: 3, entries: [] }).skills, skills);
+
+  // A 07/08 rainbow without stamps warns exactly once; stamps or the 06-only rainbow stay silent.
+  const warns = [];
+  const original = console.warn;
+  console.warn = (msg) => warns.push(msg);
+  try {
+    warnMissingStamps({ code: 50000013, skills }, rb);
+    warnMissingStamps({ code: 50000013, skills: list([{ code: 10130708000, index: 1, isShow: true }, { code: A.WEAPON_STAMP, index: 2, isShow: false }]) }, rb);
+    warnMissingStamps({ code: 50000013, skills: [{ code: 10130706000 }] }, rb);
+  } finally { console.warn = original; }
+  assert.equal(warns.length, 1);
+  assert.match(warns[0], /3301000/);
 });
 
 test('campaign stage map: full stage range, boss + minions all resolvable in the creeps dict', () => {

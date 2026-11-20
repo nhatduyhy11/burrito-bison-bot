@@ -4,7 +4,7 @@
 // Đêm Đỏ (map mode "blood") has a 3 + 3 team lineup instead: blood-team.js.
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { buildProfileHero } from "./build.js";
-import { applyArtifact } from "./artifact.js";
+import { applyArtifact, warnMissingStamps } from "./artifact.js";
 import { applyAvatar } from "./avatar.js";
 import { applyRelic } from "./relic.js";
 import { applySkin } from "./skin.js";
@@ -34,7 +34,8 @@ export function heroBuilder({ relicLines, rb, M, step }) {
       });
     }
     if (selection.relic !== undefined) hero = applyRelic(hero, selection.relic, relicLines, rb, M, step);
-    if (selection.artifact !== undefined) hero = applyArtifact(hero, selection.artifact, M, step);
+    if (selection.artifact !== undefined) hero = applyArtifact(hero, selection.artifact, rb, M, step);
+    warnMissingStamps(hero, rb);
     return hero;
   };
   return { build, state };

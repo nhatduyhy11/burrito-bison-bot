@@ -2,8 +2,8 @@
 // the hero card in heroes.js, below the skin table — "Tùy chỉnh" on the card customizes it too.
 // Item names and every description are left out on purpose (look them up in game); only line names
 // (team buff, rainbow skill) are shown. State shape: profile-state.js artifactState.
-import { html, Select, PopHover, plain } from "../ui.js";
-import { MAX_STAGE, entryCode, parseEntryCode, rareSkill, stageSkill } from "../../artifacts.js";
+import { html, NumberInput, Select, PopHover, plain } from "../ui.js";
+import { MAX_STAGE, WEAPON_LEVEL_MAX, WEAPON_STAMP, entryCode, isWeaponSelf, isWeaponTeam, parseEntryCode, rareSkill, stageSkill, weaponGate } from "../../artifacts.js";
 
 const QUALITIES = [[4, "Tím"], [5, "Cam"], [6, "Đỏ"], [7, "Vàng"]];
 const LINE_QUALITY = { 3: "Lam", 4: "Tím", 5: "Cam", 6: "Đỏ", 7: "Vàng" };
@@ -39,6 +39,27 @@ function phamPop(artifactDict, heroDict, artifact) {
   `;
 }
 
+// One note line for the level input: what the equipped rainbows do at the chosen level — 07's gate
+// ("yêu cầu cấp N") and 08 as "+5%×N = X%" (self) / "+3.5%×N = Y%" (team).
+function levelHint(heroCode, slots, level) {
+  const families = new Set(slots.filter(Boolean)
+    .map(({ code }) => parseEntryCode(code))
+    .filter(({ quality }) => quality === RAINBOW_QUALITY)
+    .map(({ family }) => family));
+  const parts = [];
+  if (families.has(1)) {
+    const gate = weaponGate(heroCode);
+    if (gate) parts.push(`07 yêu cầu cấp ${gate}${level >= gate ? " ✅" : ` (đang ${level})`}`);
+  }
+  if (families.has(3)) {
+    const gains = [];
+    if (isWeaponSelf(heroCode)) gains.push(`+5%×${level} = ${5 * level}% bản thân`);
+    if (isWeaponTeam(heroCode)) gains.push(`+3.5%×${level} = ${(3.5 * level).toFixed(1)}% đội`);
+    parts.push(`08 ${gains.join(" · ") || "không có hiệu số theo cấp"}`);
+  }
+  return parts.join(" · ");
+}
+
 export function ArtifactBody({ artifact, heroCode, heroDict, pool, artifactDict, edit }) {
   const qualityOptions = [["0", "Không đeo"], ...QUALITIES.map(([q, text]) => [String(q), text])];
   const setQuality = (value) => edit((h) => {
@@ -60,6 +81,8 @@ export function ArtifactBody({ artifact, heroCode, heroDict, pool, artifactDict,
   }
   const stageOptions = Array.from({ length: MAX_STAGE[artifact.quality] }, (_, i) => [String(i + 1), String(i + 1)]);
   const setStage = (value) => edit((h) => { h.artifact.stage = Number(value); });
+  const setLevel = (value) => edit((h) => { h.artifact.level = value; });
+  const hint = levelHint(heroCode, artifact.slots, artifact.level ?? 0);
   const slots = artifact.slots.map((slot, i) => html`
     <${SlotRow} key=${i} index=${i} slot=${slot} slots=${artifact.slots} heroCode=${heroCode} pool=${pool} artifactDict=${artifactDict} edit=${edit} />
   `);
@@ -68,6 +91,11 @@ export function ArtifactBody({ artifact, heroCode, heroDict, pool, artifactDict,
       ${quality}
       <label>Stage <${Select} aria-label="Stage" options=${stageOptions} value=${String(artifact.stage)} onChange=${setStage} /></label>
       <span class="note">${`${artifact.slots.length} ô roll`}</span>
+    </div>
+    <div class="row">
+      <label>Cấp Thần Khí <${NumberInput} value=${artifact.level ?? 0} min=${0} max=${WEAPON_LEVEL_MAX} onChange=${setLevel} /></label>
+      <span class="note">${`mỗi cấp đóng dấu skill ${WEAPON_STAMP} · cap 0-${WEAPON_LEVEL_MAX} chờ capture thật xác nhận`}</span>
+      ${hint && html`<span class="note">${hint}</span>`}
     </div>
     ${slots}
   `;

@@ -31,3 +31,26 @@ export const rareSkill = (heroCode, family) => Number(`10${nn(heroCode)}07${Stri
 
 export const artifactName = (hero, quality, lang = "vn") =>
   quality === 7 ? (lang === "vn" ? hero.name7_vn : hero.name7) : (lang === "vn" ? hero.name_vn : hero.name);
+
+// ---------- Cấp Thần Khí (神器等级, the CommonWeaponLevel battle record) ----------
+// The engine reads the record for rainbow eff 07 (family 1: gate "Khi Thần Khí trong trận đạt
+// LvN") and eff 08 (family 3: % per level). Nothing writes it mid-battle: the server stamps the
+// marker skill 3301000 (武将升神兵打点) into hero.skills at battle load — one entry per level
+// (buff overlay_limit 0, duration 1 tick, roster retains). Captures have no stamp, so without
+// one the two effs contribute exactly 0% in the sim; the profile's artifact.level injects them
+// (web/battle/hero/artifact.js). Cap 0-5 pending a real capture with a level (bbb-b05).
+export const WEAPON_LEVEL_MAX = 5;
+export const WEAPON_STAMP = 3301000;
+// Rainbow skills that scale with the level; family 2 (…0706000) only swaps the Thức Tỉnh card.
+export const WEAPON_RAINBOW = /^10\d{2}07(?:07|08)000$/;
+
+// Keyed by the hero's slot nn (heroCode % 100 — the NN in skill ids 10NN07RR000; bundle 7125c
+// sea_65553): eff 07 gate level (SkillBuffLO presetParams ["CommonWeaponLevel",1,N]) and the eff
+// 08 composition — self +5%/level (Add_Attr_By_Self_Target_Level) and/or team +3.5%/level
+// (Halo_Effect_Once_ExcludeSummoner; 31 chains it via 10NN07{08100,08200}).
+export const WEAPON_GATE = { 1: 5, 2: 4, 3: 2, 4: 3, 5: 3, 8: 3, 9: 5, 13: 3, 14: 5, 15: 2, 19: 5, 23: 3, 26: 4, 30: 5, 31: 4, 32: 3 };
+export const WEAPON_SELF = new Set([1, 2, 8, 9, 13, 14, 15, 19, 31]);
+export const WEAPON_TEAM = new Set([3, 4, 5, 23, 26, 30, 31, 32]);
+export const weaponGate = (heroCode) => WEAPON_GATE[heroCode % 100];
+export const isWeaponSelf = (heroCode) => WEAPON_SELF.has(heroCode % 100);
+export const isWeaponTeam = (heroCode) => WEAPON_TEAM.has(heroCode % 100);

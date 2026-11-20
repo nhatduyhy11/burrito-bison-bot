@@ -161,11 +161,47 @@ Hệ quả từng nhóm:
   thứ tự hero trong profile), dù giá trị nhỏ hơn. Khác family thì cộng dồn bình thường (mỗi family
   một `skillCode` riêng). Ràng buộc này áp cả giữa hai hero khác nhau; cần một trận thật để chốt.
 
+### Cấp Thần Khí (神器等级, `CommonWeaponLevel`) — SIM GAP
+
+Record custom `CommonWeaponLevel` là cấp Thần Khí *của trận*: eff 07 đọc nó để mở ngưỡng,
+eff 08 tính `5%/3.5%×cấp`. Cấp là tiến trình lobby (神器等级/exp, server đóng dấu vào data trận);
+trong trận không có code path nào ghi thêm. Nguồn ghi duy nhất là marker skill `3301000`
+(武将升神兵打点) nằm trong `hero.skills` lúc nạp trận — mỗi entry +1 cấp (buff `overlay_limit=0`,
+`duration_limit=1`, roster giữ lại; preset `God_Weapon_Level_Record`).
+
+**SIM GAP**: mọi capture hiện có đều không chứa dấu `3301000` → skill cầu vồng 07/08 có mặt nhưng
+đóng góp đúng **0%** trong sim (07 không bao giờ mở ngưỡng). 06 không ảnh hưởng (chỉ đổi thẻ Thức
+Tỉnh qua unlock + trigger apex `901000`, không đọc record). maxFactor không được engine client
+enforce.
+
+Ngưỡng 07 theo hero slot nn (`heroCode % 100`, nguồn: `SkillBuffLO` presetParams
+`["CommonWeaponLevel",1,N]`, bundle 7125c sea_65553):
+
+| Ngưỡng | Hero (nn) |
+|---:|---|
+| 5 | 1, 9, 14, 19, 30 |
+| 4 | 2, 26, 31 |
+| 3 | 4, 5, 8, 13, 23, 32 |
+| 2 | 3, 15 |
+
+eff 08: 9 hero tự thân +5%/cấp (`Add_Attr_By_Self_Target_Level`: nn 1, 2, 8, 9, 13, 14, 15, 19, 31),
+8 hero đồng đội +3,5%/cấp (`Halo_Effect_Once_ExcludeSummoner`: nn 3, 4, 5, 23, 26, 30, 32; nn 31
+có cả hai — team nối chain `10NN07{08100,08200}`) — đọc cấp của caster, không phải cấp đồng đội.
+
+Sim bơm cấp bằng profile (`artifact.level` 0-5, field tùy chọn): cấp N>0 → battle-side
+([web/battle/hero/artifact.js](../../web/battle/hero/artifact.js)) thêm N entry
+`{code: 3301000, index, isShow: false}` vào cuối `hero.skills`, engine gốc tự chạy phần còn lại
+(fidelity — không tự tay tính %). Cấp 0 giữ nguyên capture. **Assumption format**: lặp entry thường
+×N — chưa có capture thật nào chứa dấu để đối chiếu; nếu capture từ account có Thần Khí cấp ≥1 cho
+thấy format khác (vd entry kèm level field) thì revisit bead. Hero có rainbow 07/08 trong trận
+nhưng không dấu nào → warn một lần khi chơi (`warnMissingStamps`), không tự mode cấp vào replay.
+
 ## Hướng sim
 
 Profile, cùng cách với `relic`:
 ```js
-artifact: { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }, { code: 80000208, value: 0 }] }
+artifact: { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }, { code: 80000208, value: 0 }], level: 3 }
+// level = Cấp Thần Khí 0-5, tùy chọn (bỏ = 0); xem mục Cấp Thần Khí ở trên
 // null = tháo, bỏ field = giữ món trong capture
 ```
 - Đã làm phần profile → trận: [web/battle/hero/artifact.js](../../web/battle/hero/artifact.js). Pool lấy
@@ -199,6 +235,9 @@ artifact: { quality: 6, stage: 3, entries: [{ code: 80003005, value: 704 }, { co
     không cộng dồn cùng family — xem mục Cộng dồn skill rainbow). Bật loại thì tự chọn family/​
     rainbow còn free đầu tiên thay vì luôn phần tử đầu.
 - Đổi stage hoặc phẩm làm giảm số ô thì bỏ các ô cuối, không thông báo.
+- Ô **Cấp Thần Khí** (0-5, mặc định 0; cap chờ capture thật xác nhận) cạnh hàng Stage: mỗi cấp
+  bơm một dấu `3301000` vào trận (mục SIM GAP ở trên). Dòng note bên cạnh diễn giải theo rainbow
+  đang đeo: 07 hiện "yêu cầu cấp N", 08 hiện "+5%×N = X%" / "+3.5%×N = Y% đội".
 
 Thứ tự làm:
 1. ~~Profile + `applyArtifact`~~ (xong). Đã kiểm trên trận thật:
@@ -208,6 +247,8 @@ Thứ tự làm:
      thẻ Thức Tỉnh `700005013` thay `700004013`.
 2. ~~UI editor Thần Khí trong card hero (Teams)~~ (xong).
 3. Kiểm bằng hình các rainbow passive (`80000108`, `80000308`) trong trận.
+4. ~~Cấp Thần Khí (stamp `3301000`)~~ (xong): ô input 0-5 + hint ngưỡng, `artifact.level`
+   vào profile, battle-side bơm dấu vào cuối `hero.skills`, warn khi thiếu dấu (bbb-b05).
 
 ## Còn mở
 

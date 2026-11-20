@@ -23,14 +23,17 @@ export async function runBattle({ sim, step, R }) {
   const start = { ...sim.capture.start, uuid: pickSeed(params.get("seed"), sim.capture.start.uuid) };
   const rb = window.makeRebuilder(R);
   let summonerDerma = 0;
-  if (play && params.has("profile")) {
+  // Profile works in replay mode too (?battle&profile): the op log replays the captured player's
+  // decisions against the profiled team — deterministic comparison runs a play battle can't give
+  // headless (the wheel pause needs a human to answer it).
+  if (params.has("profile")) {
     const { applyProfile } = await import("./profile.js");
     ({ summonerDerma } = await applyProfile(start, rb, M, step, sim.capture.team));
   }
   const s2c = rb.build("StartGameP_BuildRoom_S2C", start);
   const ops = play ? [] : rb.listItems(quit.operations).slice().sort((a, b) => a.operFrame - b.operFrame || a.index - b.index);
   const myPid = rb.listItems(start.playerInfos)[0].playerId;
-  if (play) window.__simPlayedStart = start; // sandbox saves it with the QuitRoom (not polled: ~24KB)
+  if (play || params.has("profile")) window.__simPlayedStart = start; // sandbox saves it with the QuitRoom (not polled: ~24KB)
   const report = (sim.battle = {
     mode: play ? "play" : "replay", uuid: start.uuid, capturedUuid: sim.capture.start.uuid, myPid,
     ops: ops.length, applied: 0, failed: [], dropped: [], foreignOps: 0, netCalls: [], tick: 0, quit: null,

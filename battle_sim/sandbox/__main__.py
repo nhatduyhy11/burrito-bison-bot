@@ -93,8 +93,10 @@ async def run(args) -> int:
                         url += ("&" if "?" in url else "?") + "battle=" + args.battle
                     if args.play:
                         url += "&play=1" + (f"&seed={args.seed}" if args.seed else "")
-                        if profile_data is not None:
-                            url += "&profile=1"
+                    # Profile works with --play and with a plain --battle replay (?battle&profile):
+                    # the op log replays the captured decisions against the profiled team.
+                    if profile_data is not None:
+                        url += "&profile=1"
                     await page.goto(url, wait_until="domcontentloaded")
                     sim = None
                     deadline = time.time() + args.timeout
@@ -114,7 +116,7 @@ async def run(args) -> int:
                         await asyncio.sleep(0.5)
 
                     print_summary(sim, cap, misses, origin, log_path.relative_to(ROOT))
-                    if args.play and sim and (sim.get("battle") or {}).get("quit"):
+                    if (args.play or profile_data is not None) and sim and (sim.get("battle") or {}).get("quit"):
                         await save_played(page, sim["battle"], played, ROOT)
 
                     # Play mode: closing the result view sets window.__simLeave (web/battle/stubs.js),
@@ -135,6 +137,10 @@ async def run(args) -> int:
                     battle = (sim or {}).get("battle") or {}
                     if args.play:
                         ok = bool(sim) and sim.get("state") == "done" and not cap.blocked
+                    elif args.battle and profile_data is not None:
+                        # Replay + profile: the battle intentionally diverges from the capture
+                        # (profiled team), so the QuitRoom compare cannot match — judge by ending.
+                        ok = bool(sim) and sim.get("state") == "done" and battle.get("quit") and not cap.blocked
                     elif args.battle:
                         ok = bool(sim) and sim.get("state") == "done" and (battle.get("compare") or {}).get("ok") and not cap.blocked
                     else:
@@ -156,7 +162,7 @@ def main() -> int:
     ap.add_argument("--play", action="store_true",
                     help="with --battle: play that battle's StartGameP yourself instead of replaying (implies --keep)")
     ap.add_argument("--seed", help="with --play: battle uuid / RNG seed ('random' = new battle; default = captured)")
-    ap.add_argument("--profile", type=Path, help="with --play: JSON file with local formation overrides")
+    ap.add_argument("--profile", type=Path, help="with --play or --battle: JSON file with local formation overrides")
     ap.add_argument("--setup", action="store_true",
                     help="open the profile setup page first; its Play button starts --play with the chosen battle and profile")
     ap.add_argument("--keep", action="store_true", help="keep the window open after the run")
@@ -172,8 +178,6 @@ def main() -> int:
         if args.profile or args.battle:
             ap.error("--setup picks the battle and profile on the page (no --battle / --profile)")
         args.play = True
-    if args.profile and not args.play:
-        ap.error("--profile requires --play")
     if not args.size:
         args.size = "720x1280" if args.headless else "640x720"
     if args.play:
