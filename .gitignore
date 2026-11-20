@@ -19,3 +19,6 @@ env.*
 .beads/proxieddb/
 *.gate.lock*
 .beads/issues.jsonl
+
+# scripts/loc.py reports
+scripts/loc_*.*.txt
