@@ -217,12 +217,14 @@ function HeroSkinTable({ hero, skins, edit }) {
         <label class="skin-picker">Đang mặc <${Select} options=${wornOptions} value=${hero.worn || ""} onChange=${setWorn} /></label>
         <span class="note">${slotNote}</span>
       </div>
-      <table>
-        <tbody>
-          ${headerRow(HEADERS)}
-          ${rows}
-        </tbody>
-      </table>
+      <div class="table-scroll">
+        <table>
+          <tbody>
+            ${headerRow(HEADERS)}
+            ${rows}
+          </tbody>
+        </table>
+      </div>
     </div>
   `;
 }

@@ -168,8 +168,17 @@ export function SelectPop({ options, value, onChange, ...attrs }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [pop, setPop] = useState(null);
+  const [up, setUp] = useState(false);
   const root = useRef(null);
-  const reset = () => { setOpen(false); setActive(-1); setPop(null); };
+  const list = useRef(null);
+  const reset = () => { setOpen(false); setActive(-1); setPop(null); setUp(false); };
+  // Open upward when the list would run past the viewport bottom and there is more room above.
+  useLayoutEffect(() => {
+    if (!open || !list.current) return;
+    const btn = root.current.getBoundingClientRect();
+    const below = window.innerHeight - btn.bottom;
+    setUp(list.current.offsetHeight + 8 > below && btn.top > below);
+  }, [open]);
   const hidePop = () => setPop(null);
   const hover = (opt, target) => (opt[2] ? popAt(target, setPop, opt[2]) : hidePop());
   const pick = (key) => { reset(); if (key !== value) onChange(key); };
@@ -202,7 +211,7 @@ export function SelectPop({ options, value, onChange, ...attrs }) {
         <span class="dd-caret" />
       </button>
       ${open && html`
-        <div class="dd-list" role="listbox" onMouseLeave=${hidePop}>
+        <div class=${up ? "dd-list up" : "dd-list"} ref=${list} role="listbox" onMouseLeave=${hidePop}>
           ${options.map((opt, i) => html`
             ${opt[4] && opt[4] !== options[i - 1]?.[4] && html`<div class="dd-group" key=${`g-${opt[4]}`}>${opt[4]}</div>`}
             <${PopOption} key=${opt[0]} opt=${opt} selected=${opt[0] === value} active=${i === active}

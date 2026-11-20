@@ -92,7 +92,7 @@ function SummonerSkills({ ctx }) {
     return html`
       <div class="card" key=${color}>
         <strong>${title}</strong>
-        <table><tbody>${headerRow(["Skin", "Skill", "Sao", "Slot"])}${rows}</tbody></table>
+        <div class="table-scroll"><table><tbody>${headerRow(["Skin", "Skill", "Sao", "Slot"])}${rows}</tbody></table></div>
       </div>
     `;
   });

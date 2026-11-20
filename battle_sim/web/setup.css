@@ -47,7 +47,10 @@ strong { font-weight: 600; }
 .skin-picker select { min-width: 0; width: 260px; }
 .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
 .building-skin-table { overflow-x: auto; }
-.card { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; margin: 6px 0; overflow-x: auto; }
+/* No overflow on the card: overflow-x:auto would also make overflow-y auto, giving each hero card its
+   own vertical scrollbar and clipping open .dd-list menus. Only wide tables scroll sideways (.table-scroll). */
+.card { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; margin: 6px 0; }
+.table-scroll { overflow-x: auto; }
 label { display: inline-flex; align-items: center; gap: 4px; }
 select, input[type=number] { background: #111318; color: var(--text); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; font: inherit; }
 input[type=number] { width: 58px; }
@@ -95,6 +98,7 @@ button.primary { background: var(--accent); color: #0b1220; border-color: var(--
 .dd-list { position: absolute; z-index: 40; top: calc(100% + 4px); left: 0; min-width: max(100%, 180px); max-width: min(320px, 48vw);
   max-height: min(280px, 50vh); overflow-y: auto; background: #1e2128; color: var(--text); border: 1px solid var(--line);
   border-radius: 6px; padding: 4px; box-shadow: 0 8px 24px #0006; }
+.dd-list.up { top: auto; bottom: calc(100% + 4px); }
 .dd-opt { padding: 6px 8px; border-radius: 3px; white-space: normal; overflow-wrap: anywhere; cursor: pointer; }
 .dd-opt:hover, .dd-opt.active { background: #323743; }
 .dd-opt.selected { background: #283d55; }
