@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "deny": [
+      "Bash(git push)",
+      "Bash(git push:*)",
+      "Bash(bd dolt push)",
+      "Bash(bd dolt push:*)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {

@@ -61,6 +61,15 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 
 This repo opts into **team-maintainer** (`agent.profile` in `.beads/config.yaml`), not the Conservative default described above.
 
+## No Push (overrides team-maintainer)
+
+Agents must **never push** in this repo. This is an explicit "do not push" instruction and wins over the team-maintainer profile, `bd prime`, and the Session Completion steps above.
+
+- Do not run `git push` (any form: branches, tags, `--force`) or `bd dolt push`.
+- Commits stay allowed as the profile says; pushing is the user's job.
+- At session close, skip the push steps and tell the user it is ready, with the exact commands, e.g. `git push` and `bd dolt push`.
+- Enforced for Claude Code by `permissions.deny` in `.claude/settings.json`. Do not remove or work around that rule.
+
 ## Beads Setup (per clone)
 
 Repo-specific notes kept outside the managed Beads block so `bd` updates don't overwrite them.
