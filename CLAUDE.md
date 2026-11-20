@@ -57,20 +57,9 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 - If a required sync or push is blocked, stop and report the exact command and error.
 <!-- END BEADS INTEGRATION -->
 
+## Active Beads Profile
 
-## Build & Test
-
-_Add your build and test commands here_
-
-```bash
-# Example:
-# npm install
-# npm test
-```
-
-## Architecture Overview
-
-_Add a brief overview of your project architecture_
+This repo opts into **team-maintainer** (`agent.profile` in `.beads/config.yaml`), not the Conservative default described above.
 
 ## Beads Setup (per clone)
 

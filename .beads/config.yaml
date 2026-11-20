@@ -75,3 +75,5 @@ sync:
     remote: "git+ssh://git@github.com/nhatduyhy11/burrito-bison-bot.git"
 agent:
     profile: team-maintainer
+export:
+    auto: true
