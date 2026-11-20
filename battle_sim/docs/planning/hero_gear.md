@@ -141,6 +141,9 @@ Nguồn: capture pmain 2026-11-18 (`.tmp/battle_research/events-pmain-20261118.j
 `sea_66328`, có `PutOnEquip` ×4, `PutOnBeautyBag` ×3 trước trận, bỏ trận sau 24s). So với
 `startgamep-6af56b66…` (11-12). Bảng tra trên config `sea_65553` (bản đã cache).
 
+Catalog: [web/dict/beautybag-dict.json](../../web/dict/beautybag-dict.json) (10 hệ, mỗi hệ có bộ đỏ + món vàng, mã skill
+theo sao), sinh bằng `gen_profile_dict.js`. Generator kiểm tra mốc bậc 1/5/10, 4 món màu 3–6 và `_suitSkill` của món vàng.
+
 ### Dị Vật = `BeautyBag`, không phải `RelicLO` type 1
 
 - Icon của `BeautyBagLO` là `yiwu/…` (遗物). Request là `PutOnBeautyBag {uuid, heroUUID, pos}`:

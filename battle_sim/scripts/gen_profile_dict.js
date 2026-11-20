@@ -6,6 +6,7 @@
 // - web/dict/blood-dict.json: Blood Night (battleType 47) levels with their boss, mini bosses and creeps in one dict;
 // - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
+// - web/dict/beautybag-dict.json: Dị Vật (BeautyBag): per type the red 4-piece suit and its gold item, skill codes per star;
 // - web/dict/artifact-dict.json: Thần Khí per hero (names, slot) + shared team buffs; rules in web/artifacts.js;
 // - web/dict/hero-dict.json: the hero side: heroes with their skins and Dị Năng (avatar) nodes;
 // - web/dict/support-dict.json: the non-hero side: Summoner skins, traps, pets, spells (daoists),
@@ -34,6 +35,7 @@ const CAMPAIGN_OUT = path.join(__dirname, "..", "web", "dict", "campaign-dict.js
 const BLOOD_OUT = path.join(__dirname, "..", "web", "dict", "blood-dict.json");
 const ANTIQUE_OUT =path.join(__dirname, "..", "web", "dict", "antique-dict.json");
 const RELIC_OUT = path.join(__dirname, "..", "web", "dict", "relic-dict.json");
+const BEAUTYBAG_OUT = path.join(__dirname, "..", "web", "dict", "beautybag-dict.json");
 const ARTIFACT_OUT = path.join(__dirname, "..", "web", "dict", "artifact-dict.json");
 const BUILDINGS = { door: 1, bed: 2, generator: 3, cat: 4 }; // EBuildType: Door, Bed, WoodenFish, GoldenToad
 const SKIN_COLOR = { 4: "default", 6: "red", 7: "gold", 8: "colorful" };
@@ -376,6 +378,46 @@ async function main() {
     lines: relicLines,
   };
 
+  // Dị Vật (遗物 = BeautyBag). One entry per type (1-10): the red 4-piece suit (suitType 10T, colors
+  // 3-6) and its gold item (color 7, subType 70T), which only enhances that suit. In battle they are
+  // two separate index-0 skills the server picks: suit = 6000TT00N00 by suit star (BeautyBagSuitLO
+  // _isSkill levels 1/5/10 -> N1-3), gold = BeautyBagLO._suitSkill (6000TT10N00, stars 1-10). The gold
+  // skill only counts while that suit is on, at N <= the suit's N (client rule). Attrs are left out
+  // (server-merged into hero.attr). See battle_sim/docs/planning/hero_gear.md, Dị Vật.
+  const bbExpect = (ok, what) => { if (!ok) throw new Error(`beautybag rule broken: ${what}`); };
+  const bbSuits = rows(M("BeautyBagSuitLO"));
+  const bbItems = rows(M("BeautyBagLO"));
+  const bbSkill = (code) => { bbExpect(SkillBase.get(code), `skill ${code} missing from SkillBaseLO`); return skillRef(code); };
+  const beautyBags = keyed(rows(M("BeautyBagTypeLO")).sort((a, b) => a.type - b.type).map((t) => {
+    const TT = String(t.type).padStart(2, "0");
+    const suitRows = bbSuits.filter((s) => s.suitType === t.suitType).sort((a, b) => a.level - b.level);
+    const tierStarts = suitRows.filter((s) => s.isSkill).map((s) => s.level);
+    bbExpect(JSON.stringify(tierStarts) === "[1,5,10]", `suit ${t.suitType} tier levels ${tierStarts}`);
+    const enhance = new Set(suitRows.map((s) => s.enhanceSubType));
+    bbExpect(enhance.size === 1, `suit ${t.suitType} enhanceSubType`);
+    const goldSub = [...enhance][0];
+    const tierOf = (star) => tierStarts.filter((l) => star >= l).length;
+    const suitTiers = starSkillsOf(suitRows.map((s) => [s.level, bbSkill(Number(`6000${TT}00${tierOf(s.level)}00`))]));
+    const pieces = bbItems.filter((b) => b.type === t.type && b.suitType === t.suitType && b.level === 1).sort((a, b) => a.color - b.color);
+    bbExpect(JSON.stringify(pieces.map((b) => b.color)) === "[3,4,5,6]", `suit ${t.suitType} pieces`);
+    const goldRows = bbItems.filter((b) => b.subType === goldSub && b.level > 0).sort((a, b) => a.level - b.level);
+    bbExpect(goldRows.length && goldRows.every((b) => b.color === 7 && b.type === t.type), `gold ${goldSub} rows`);
+    const goldTiers = starSkillsOf(goldRows.map((b) => {
+      bbExpect(b.suitSkill === Number(`6000${TT}10${tierOf(b.level)}00`), `gold ${b.code} suitSkill ${b.suitSkill}`);
+      bbExpect(jsonField(b.suitUnlock)[0] === t.suitType, `gold ${b.code} suitUnlock`);
+      return [b.level, bbSkill(b.suitSkill)];
+    }));
+    const gold = goldRows[0];
+    return [t.name, {
+      type: t.type, suitType: t.suitType, name: t.name, name_vn: vn("BeautyBagTypeLO", t.type),
+      suit: { name: suitRows[0].name, name_vn: vn("BeautyBagSuitLO", suitRows[0].code), requireNum: suitRows[0].requireNum,
+        maxStar: suitRows.at(-1).level, pieces: pieces.map((b) => ({ color: RARITY[b.color] ?? b.color, name: b.name, name_vn: vn("BeautyBagLO", b.code) })),
+        starSkills: suitTiers },
+      gold: { subType: goldSub, suitType: gold.suitType, name: gold.name, name_vn: vn("BeautyBagLO", gold.code),
+        maxStar: goldRows.at(-1).level, starSkills: goldTiers },
+    }];
+  }));
+
   // Thần Khí (神器). Item code, stage skills, holes and entry codes follow web/artifacts.js; every
   // config row is checked against it, so the dict keeps one record per hero and one shared buff
   // table. Stats (ArtifactLO.attr, entryType 1) are left out: the battle gets them in hero.attr.
@@ -439,11 +481,13 @@ async function main() {
   write(BLOOD_OUT, blood);
   write(ANTIQUE_OUT, { antiques });
   write(RELIC_OUT, relics);
+  write(BEAUTYBAG_OUT, { types: beautyBags });
   write(ARTIFACT_OUT, { heroes: artifactHeroes, buffs, skills: artifactSkills });
   const count = (o) => Object.keys(o).length;
   console.log(`wrote ${path.relative(process.cwd(), ARTIFACT_OUT)}: ${count(artifactHeroes)} heroes (${artifactRows.length} variants checked), ` +
     `${count(buffs)} team buffs, ${rareCount} rainbow entries checked`);
   console.log(`wrote ${path.relative(process.cwd(), RELIC_OUT)}: ${count(relics.lines)} relic lines`);
+  console.log(`wrote ${path.relative(process.cwd(), BEAUTYBAG_OUT)}: ${count(beautyBags)} Dị Vật types (suit + gold)`);
   console.log(`wrote ${path.relative(process.cwd(), MAP_OUT)}: campaign stages ${maps.campaign.minStage}-${maps.campaign.maxStage}, ` +
     `${maps.capital.bosses.length} capital boss ids`);
   console.log(`wrote ${path.relative(process.cwd(), BOSS_OUT)}: ${count(capital.bosses)} capital bosses, ` +

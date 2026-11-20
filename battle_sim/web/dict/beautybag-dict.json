@@ -1,0 +1,1185 @@
+{
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
+  "types": {
+    "physical": {
+      "type": 1,
+      "suitType": 101,
+      "name": "Physical",
+      "name_vn": "V.Lý",
+      "suit": {
+        "name": "Force of Nature",
+        "name_vn": "Thế Như Chẻ Tre",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Bone Drill",
+            "name_vn": "Mũi Khoan Xương"
+          },
+          {
+            "color": "purple",
+            "name": "Cannibal Shelf",
+            "name_vn": "Khung Xương Quỷ"
+          },
+          {
+            "color": "orange",
+            "name": "Carnivore Stapler",
+            "name_vn": "Máy Dập Ghim Thịt"
+          },
+          {
+            "color": "red",
+            "name": "Maniac Bonesaw",
+            "name_vn": "Cưa Bá Vương"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000100100,
+            "name": "High-HP DMG Boost",
+            "name_vn": "Tăng ST HP Cao",
+            "desc_vn": "ST lên kẻ địch có HP cao hơn 50%+60%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000100200,
+            "name": "High-HP DMG Boost",
+            "name_vn": "Tăng ST HP Cao",
+            "desc_vn": "ST lên kẻ địch có HP cao hơn 50%+120%"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000100300,
+            "name": "High-HP DMG Boost",
+            "name_vn": "Tăng ST HP Cao",
+            "desc_vn": "ST lên kẻ địch có HP cao hơn 50%+240%"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 701,
+        "suitType": 201,
+        "name": "Banewing Drill",
+        "name_vn": "Mũi Khoan Phá Giáp",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000110100,
+            "name": "High-HP DMG Boost",
+            "name_vn": "Tăng ST HP Cao",
+            "desc_vn": "ST lên kẻ địch có HP cao hơn 50%+30%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000110200,
+            "name": "High-HP DMG Boost",
+            "name_vn": "Tăng ST HP Cao",
+            "desc_vn": "ST lên kẻ địch có HP cao hơn 50%+60%"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000110300,
+            "name": "High-HP DMG Boost",
+            "name_vn": "Tăng ST HP Cao",
+            "desc_vn": "ST lên kẻ địch có HP cao hơn 50%+120%"
+          }
+        ]
+      }
+    },
+    "magic": {
+      "type": 2,
+      "suitType": 102,
+      "name": "Magic",
+      "name_vn": "Phép",
+      "suit": {
+        "name": "Total Annihilation",
+        "name_vn": "Diệt Tận Gốc",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Evil-Eye Bracelet",
+            "name_vn": "Vòng Tà Nhãn"
+          },
+          {
+            "color": "purple",
+            "name": "Skeleton Pendant",
+            "name_vn": "Mặt Dây Vua Xương"
+          },
+          {
+            "color": "orange",
+            "name": "Necropedia",
+            "name_vn": "Sách Tử Linh"
+          },
+          {
+            "color": "red",
+            "name": "Stygian Oujia",
+            "name_vn": "Đĩa Thông Linh"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000200100,
+            "name": "Low-HP DMG Boost",
+            "name_vn": "Tăng ST HP Thấp",
+            "desc_vn": "ST lên kẻ địch có HP thấp hơn 50%+60%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000200200,
+            "name": "Low-HP DMG Boost",
+            "name_vn": "Tăng ST HP Thấp",
+            "desc_vn": "ST lên kẻ địch có HP thấp hơn 50%+120%"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000200300,
+            "name": "Low-HP DMG Boost",
+            "name_vn": "Tăng ST HP Thấp",
+            "desc_vn": "ST lên kẻ địch có HP thấp hơn 50%+240%"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 702,
+        "suitType": 202,
+        "name": "Nether Soul Cup",
+        "name_vn": "Chén Tụ Hồn",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000210100,
+            "name": "Low-HP DMG Boost",
+            "name_vn": "Tăng ST HP Thấp",
+            "desc_vn": "ST lên kẻ địch có HP thấp hơn 50%+30%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000210200,
+            "name": "Low-HP DMG Boost",
+            "name_vn": "Tăng ST HP Thấp",
+            "desc_vn": "ST lên kẻ địch có HP thấp hơn 50%+60%"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000210300,
+            "name": "Low-HP DMG Boost",
+            "name_vn": "Tăng ST HP Thấp",
+            "desc_vn": "ST lên kẻ địch có HP thấp hơn 50%+120%"
+          }
+        ]
+      }
+    },
+    "burn": {
+      "type": 3,
+      "suitType": 103,
+      "name": "Burn",
+      "name_vn": "Thiêu Đốt",
+      "suit": {
+        "name": "Sky Scorch",
+        "name_vn": "Giương Lửa Đốt Trời",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Sacrifice Candle",
+            "name_vn": "Nến Hiến Tế"
+          },
+          {
+            "color": "purple",
+            "name": "Ghost Lighter",
+            "name_vn": "Bật Lửa Lửa Ma"
+          },
+          {
+            "color": "orange",
+            "name": "Dynamite Battery",
+            "name_vn": "Pin Cháy Nổ"
+          },
+          {
+            "color": "red",
+            "name": "Purgatory Oven",
+            "name_vn": "Lò Luyện Ngục"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000300100,
+            "name": "Burn DMG Boost",
+            "name_vn": "Tăng ST Thiêu Đốt",
+            "desc_vn": "Mỗi lần gây Thiêu Đốt lên phe địch, ST cá nhân+0.3%, tối đa 30%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000300200,
+            "name": "Burn DMG Boost",
+            "name_vn": "Tăng ST Thiêu Đốt",
+            "desc_vn": "Mỗi lần gây Thiêu Đốt lên phe địch, ST cá nhân+0.6%, tối đa 60%"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000300300,
+            "name": "Burn DMG Boost",
+            "name_vn": "Tăng ST Thiêu Đốt",
+            "desc_vn": "Mỗi lần gây Thiêu Đốt lên phe địch, ST cá nhân+1.2%, tối đa 120%"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 703,
+        "suitType": 203,
+        "name": "Spooky Pumpkin Kiln",
+        "name_vn": "Lò Bí Ngô Lửa Quỷ",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000310100,
+            "name": "Burn DMG Boost",
+            "name_vn": "Tăng ST Thiêu Đốt",
+            "desc_vn": "Mỗi lần gây Thiêu Đốt lên phe địch, ST cá nhân+0.15%, tối đa 15%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000310200,
+            "name": "Burn DMG Boost",
+            "name_vn": "Tăng ST Thiêu Đốt",
+            "desc_vn": "Mỗi lần gây Thiêu Đốt lên phe địch, ST cá nhân+0.3%, tối đa 30%"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000310300,
+            "name": "Burn DMG Boost",
+            "name_vn": "Tăng ST Thiêu Đốt",
+            "desc_vn": "Mỗi lần gây Thiêu Đốt lên phe địch, ST cá nhân+0.6%, tối đa 60%"
+          }
+        ]
+      }
+    },
+    "bleed": {
+      "type": 4,
+      "suitType": 104,
+      "name": "Bleed",
+      "name_vn": "Mất HP",
+      "suit": {
+        "name": "Wild Bloodlust",
+        "name_vn": "Cuồng Bạo Khát Huyết",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Rusty Knife",
+            "name_vn": "Dao Rỉ Sét"
+          },
+          {
+            "color": "purple",
+            "name": "Vampire Broom",
+            "name_vn": "Chổi Ma Cà Rồng"
+          },
+          {
+            "color": "orange",
+            "name": "Gore Grinder",
+            "name_vn": "Máy Xay Sương Huyết"
+          },
+          {
+            "color": "red",
+            "name": "Glutton Vacuum",
+            "name_vn": "Máy Hút Tham Ăn"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000400100,
+            "name": "Bleed DMG Boost",
+            "name_vn": "Tăng ST Mất HP",
+            "desc_vn": "Mỗi lần gây Mất HP lên phe địch, ST cá nhân+0.3%, tối đa 30%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000400200,
+            "name": "Bleed DMG Boost",
+            "name_vn": "Tăng ST Mất HP",
+            "desc_vn": "Mỗi lần gây Mất HP lên phe địch, ST cá nhân+0.6%, tối đa 60%"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000400300,
+            "name": "Bleed DMG Boost",
+            "name_vn": "Tăng ST Mất HP",
+            "desc_vn": "Mỗi lần gây Mất HP lên phe địch, ST cá nhân+1.2%, tối đa 120%"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 704,
+        "suitType": 204,
+        "name": "Bloodrose Needle",
+        "name_vn": "Kim Huyết Tường Vi",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000410100,
+            "name": "Bleed DMG Boost",
+            "name_vn": "Tăng ST Mất HP",
+            "desc_vn": "Mỗi lần gây Mất HP lên phe địch, ST cá nhân+0.15%, tối đa 15%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000410200,
+            "name": "Bleed DMG Boost",
+            "name_vn": "Tăng ST Mất HP",
+            "desc_vn": "Mỗi lần gây Mất HP lên phe địch, ST cá nhân+0.3%, tối đa 30%"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000410300,
+            "name": "Bleed DMG Boost",
+            "name_vn": "Tăng ST Mất HP",
+            "desc_vn": "Mỗi lần gây Mất HP lên phe địch, ST cá nhân+0.6%, tối đa 60%"
+          }
+        ]
+      }
+    },
+    "paralyze": {
+      "type": 5,
+      "suitType": 105,
+      "name": "Paralyze",
+      "name_vn": "Tê Liệt",
+      "suit": {
+        "name": "Thunder Tremor",
+        "name_vn": "Sấm Sét Ầm Trời",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Vicious Lantern",
+            "name_vn": "Đèn Tà Quang"
+          },
+          {
+            "color": "purple",
+            "name": "Shock Powerboard",
+            "name_vn": "Ổ Cắm Rò Điện"
+          },
+          {
+            "color": "orange",
+            "name": "Spooky Screen",
+            "name_vn": "Màn Hình Kinh Dị"
+          },
+          {
+            "color": "red",
+            "name": "Quantum Washer",
+            "name_vn": "Máy Giặt Không Gian"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000500100,
+            "name": "Paralysis DMG Boost",
+            "name_vn": "Tăng ST Tê Liệt",
+            "desc_vn": "Mỗi lần gây Tê Liệt lên phe địch, ST cá nhân+0.3%, tối đa 30%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000500200,
+            "name": "Paralysis DMG Boost",
+            "name_vn": "Tăng ST Tê Liệt",
+            "desc_vn": "Mỗi lần gây Tê Liệt lên phe địch, ST cá nhân+0.6%, tối đa 60%"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000500300,
+            "name": "Paralysis DMG Boost",
+            "name_vn": "Tăng ST Tê Liệt",
+            "desc_vn": "Mỗi lần gây Tê Liệt lên phe địch, ST cá nhân+1.2%, tối đa 120%"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 705,
+        "suitType": 205,
+        "name": "Cranial Shocker",
+        "name_vn": "Máy Sốc Điện Não",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000510100,
+            "name": "Paralysis DMG Boost",
+            "name_vn": "Tăng ST Tê Liệt",
+            "desc_vn": "Mỗi lần gây Tê Liệt lên phe địch, ST cá nhân+0.15%, tối đa 15%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000510200,
+            "name": "Paralysis DMG Boost",
+            "name_vn": "Tăng ST Tê Liệt",
+            "desc_vn": "Mỗi lần gây Tê Liệt lên phe địch, ST cá nhân+0.3%, tối đa 30%"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000510300,
+            "name": "Paralysis DMG Boost",
+            "name_vn": "Tăng ST Tê Liệt",
+            "desc_vn": "Mỗi lần gây Tê Liệt lên phe địch, ST cá nhân+0.6%, tối đa 60%"
+          }
+        ]
+      }
+    },
+    "crit": {
+      "type": 6,
+      "suitType": 106,
+      "name": "Crit",
+      "name_vn": "Bạo",
+      "suit": {
+        "name": "Sundered Spirit",
+        "name_vn": "Nhất Kích Nhập Hồn",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Rotten Scissors",
+            "name_vn": "Kéo Sâu Thối"
+          },
+          {
+            "color": "purple",
+            "name": "Glutton Can",
+            "name_vn": "Lon Tham Ăn"
+          },
+          {
+            "color": "orange",
+            "name": "Killer Camera",
+            "name_vn": "Camera Sát Thủ"
+          },
+          {
+            "color": "red",
+            "name": "Brawler Joystick",
+            "name_vn": "Tay Cầm Ma Thuật"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000600100,
+            "name": "Crit DMG Up",
+            "name_vn": "Tăng ST Bạo",
+            "desc_vn": "Trong chiến đấu, nhận thêm ST Bạo bằng 1 lần Tỷ Lệ Bảo cá nhân"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000600200,
+            "name": "Crit DMG Up",
+            "name_vn": "Tăng ST Bạo",
+            "desc_vn": "Trong chiến đấu, nhận thêm ST Bạo bằng 1.5 lần Tỷ Lệ Bạo cá nhân"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000600300,
+            "name": "Crit DMG Up",
+            "name_vn": "Tăng ST Bạo",
+            "desc_vn": "Trong chiến đấu, nhận thêm ST Bạo bằng 2 lần Tỷ Lệ Bảo cá nhân"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 706,
+        "suitType": 206,
+        "name": "Sanguine Soulseeker",
+        "name_vn": "Đạn Truy Hồn",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000610100,
+            "name": "Crit DMG Up",
+            "name_vn": "Tăng ST Bạo",
+            "desc_vn": "Trong chiến đấu, nhận thêm ST Bạo bằng 0.3 lần Tỷ Lệ Bạo cá nhân"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000610200,
+            "name": "Crit DMG Up",
+            "name_vn": "Tăng ST Bạo",
+            "desc_vn": "Trong chiến đấu, nhận thêm ST Bạo bằng 0.6 lần Tỷ Lệ Bạo cá nhân"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000610300,
+            "name": "Crit DMG Up",
+            "name_vn": "Tăng ST Bạo",
+            "desc_vn": "Trong chiến đấu, nhận thêm ST Bạo bằng 1 lần Tỷ Lệ Bảo cá nhân"
+          }
+        ]
+      }
+    },
+    "stun": {
+      "type": 7,
+      "suitType": 107,
+      "name": "Stun",
+      "name_vn": "Choáng",
+      "suit": {
+        "name": "Chaos Incarnate",
+        "name_vn": "Hỗn Độn Tàn Diệt",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Eyeball Wrench",
+            "name_vn": "Cờ Lê Mắt"
+          },
+          {
+            "color": "purple",
+            "name": "Tentacle Plug",
+            "name_vn": "Phích Cắm Xúc Tu"
+          },
+          {
+            "color": "orange",
+            "name": "Psycho Headphones",
+            "name_vn": "Tai Nghe Đoạt Hồn"
+          },
+          {
+            "color": "red",
+            "name": "Abyssal Mask",
+            "name_vn": "Mặt Nạ Vực Sâu"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000700100,
+            "name": "Stun Vulnerability",
+            "name_vn": "Choáng Tổn Thương",
+            "desc_vn": "Sau khi gây hiệu quả Choáng, phe địch trong 8s, ST phải chịu+30%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000700200,
+            "name": "Stun Vulnerability",
+            "name_vn": "Choáng Tổn Thương",
+            "desc_vn": "Sau khi gây hiệu quả Choáng, phe địch trong 8s, ST phải chịu+60%"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000700300,
+            "name": "Stun Vulnerability",
+            "name_vn": "Choáng Tổn Thương",
+            "desc_vn": "Sau khi gây hiệu quả Choáng, phe địch trong 8s, ST phải chịu+120%"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 707,
+        "suitType": 207,
+        "name": "Soul-Trapping Flashlight",
+        "name_vn": "Máy Ảnh Chụp Hồn",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000710100,
+            "name": "Stun Vulnerability",
+            "name_vn": "Choáng Tổn Thương",
+            "desc_vn": "Sau khi gây hiệu quả Choáng, phe địch trong 8s, ST phải chịu+15%"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000710200,
+            "name": "Stun Vulnerability",
+            "name_vn": "Choáng Tổn Thương",
+            "desc_vn": "Sau khi gây hiệu quả Choáng, phe địch trong 8s, ST phải chịu+30%"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000710300,
+            "name": "Stun Vulnerability",
+            "name_vn": "Choáng Tổn Thương",
+            "desc_vn": "Sau khi gây hiệu quả Choáng, phe địch trong 8s, ST phải chịu+60%"
+          }
+        ]
+      }
+    },
+    "knock": {
+      "type": 8,
+      "suitType": 108,
+      "name": "Knock",
+      "name_vn": "Đẩy Lùi",
+      "suit": {
+        "name": "Brutal Carnage",
+        "name_vn": "Như Bẻ Cành Khô",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Elastic Measure",
+            "name_vn": "Thước Ma"
+          },
+          {
+            "color": "purple",
+            "name": "Backward Watch",
+            "name_vn": "Đồng Hồ Cổ"
+          },
+          {
+            "color": "orange",
+            "name": "Haunted Faucet",
+            "name_vn": "Vòi Nước Ma Ám"
+          },
+          {
+            "color": "red",
+            "name": "Cyclone Fan",
+            "name_vn": "Quạt Bão Tố"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000800100,
+            "name": "Knockback True DMG",
+            "name_vn": "Đẩy Lùi ST Thật",
+            "desc_vn": "Khi gây Đẩy Lùi, khiến địch chịu ST Thực bằng 75% Công"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000800200,
+            "name": "Knockback True DMG",
+            "name_vn": "Đẩy Lùi ST Thật",
+            "desc_vn": "Khi gây Đẩy Lùi, khiến địch chịu ST Thực bằng 150% Công"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000800300,
+            "name": "Knockback True DMG",
+            "name_vn": "Đẩy Lùi ST Thật",
+            "desc_vn": "Khi gây Đẩy Lùi, khiến địch chịu ST Thực bằng 300% Công"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 708,
+        "suitType": 208,
+        "name": "Dreadful Pop-up Box",
+        "name_vn": "Hộp Hù Dọa",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000810100,
+            "name": "Knockback True DMG",
+            "name_vn": "Đẩy Lùi ST Thật",
+            "desc_vn": "Khi gây Đẩy Lùi, khiến địch chịu ST Thực bằng 37.5% Công"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000810200,
+            "name": "Knockback True DMG",
+            "name_vn": "Đẩy Lùi ST Thật",
+            "desc_vn": "Khi gây Đẩy Lùi, khiến địch chịu ST Thực bằng 75% Công"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000810300,
+            "name": "Knockback True DMG",
+            "name_vn": "Đẩy Lùi ST Thật",
+            "desc_vn": "Khi gây Đẩy Lùi, khiến địch chịu ST Thực bằng 150% Công"
+          }
+        ]
+      }
+    },
+    "frost": {
+      "type": 9,
+      "suitType": 109,
+      "name": "Frost",
+      "name_vn": "Băng Sương",
+      "suit": {
+        "name": "Absolute Zero",
+        "name_vn": "Độ Không Tuyệt Đối",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Whitening Brush",
+            "name_vn": "Bàn Trải Trắng"
+          },
+          {
+            "color": "purple",
+            "name": "Scream Egg",
+            "name_vn": "Trứng La Hét"
+          },
+          {
+            "color": "orange",
+            "name": "Devil Router",
+            "name_vn": "Router Quỷ"
+          },
+          {
+            "color": "red",
+            "name": "Cryo Cabinet",
+            "name_vn": "Tủ Đông Cực Lạnh"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000900100,
+            "name": "Frost Bonus DMG",
+            "name_vn": "ST Băng Sương Phụ",
+            "desc_vn": "Khi gây hiệu ứng Băng Sương, mỗi giây gây ST bằng 2% HPhiện tại lên địch, tối đa không vượt quá 75% Công của bản thân"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000900200,
+            "name": "Frost Bonus DMG",
+            "name_vn": "ST Băng Sương Phụ",
+            "desc_vn": "Khi gây hiệu ứng Băng Sương, mỗi giây gây ST bằng 3% HPhiện tại lên địch, tối đa không vượt quá 150% Công của bản thân"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60000900300,
+            "name": "Frost Bonus DMG",
+            "name_vn": "ST Băng Sương Phụ",
+            "desc_vn": "Khi gây hiệu ứng Băng Sương, mỗi giây gây ST bằng 4% HPhiện tại lên địch, tối đa không vượt quá 300% Công của bản thân"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 709,
+        "suitType": 209,
+        "name": "Frost Thorn Crown",
+        "name_vn": "Vương Miện Hàn Băng",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60000910100,
+            "name": "Frost Bonus DMG",
+            "name_vn": "ST Băng Sương Phụ",
+            "desc_vn": "Khi gây Băng Sương, khiến mỗi giây địch chịu ST bằng 1% HP hiện tại, tối đa không vượt quá 37.5% Công bản thân"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60000910200,
+            "name": "Frost Bonus DMG",
+            "name_vn": "ST Băng Sương Phụ",
+            "desc_vn": "Khi gây Băng Sương, khiến mỗi giây địch chịu ST bằng 1.5% HP hiện tại, tối đa không vượt quá 75% Công bản thân"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60000910300,
+            "name": "Frost Bonus DMG",
+            "name_vn": "ST Băng Sương Phụ",
+            "desc_vn": "Khi gây hiệu ứng Băng Sương, mỗi giây gây ST bằng 2% HPhiện tại lên địch, tối đa không vượt quá 150% Công của bản thân"
+          }
+        ]
+      }
+    },
+    "aspd": {
+      "type": 10,
+      "suitType": 110,
+      "name": "ASPD",
+      "name_vn": "Tốc Công",
+      "suit": {
+        "name": "Wild Rhapsody",
+        "name_vn": "Khúc Ca Lễ Hội",
+        "requireNum": 4,
+        "maxStar": 15,
+        "pieces": [
+          {
+            "color": "blue",
+            "name": "Poisoned Apple",
+            "name_vn": "Táo Kịch Độc"
+          },
+          {
+            "color": "purple",
+            "name": "Esports Bubble Tea",
+            "name_vn": "Trà Sữa Độc"
+          },
+          {
+            "color": "orange",
+            "name": "Skeleton Umbrella",
+            "name_vn": "Ô Xương Người"
+          },
+          {
+            "color": "red",
+            "name": "Deadly Phonograph",
+            "name_vn": "Máy Hát Tử Thần"
+          }
+        ],
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60001000100,
+            "name": "Wild Rhapsody",
+            "name_vn": "Khúc Ca Lễ Hội",
+            "desc_vn": "Khi Công Thường khiến Tăng ST và Tăng ST Cuối của Anh Hùng phe ta vĩnh viễn tăng 0.2%, tối đa 20%, hiệu quả chỉ áp dụng cho đội"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60001000200,
+            "name": "Wild Rhapsody",
+            "name_vn": "Khúc Ca Lễ Hội",
+            "desc_vn": "Khi Công Thường khiến Tăng ST và Tăng ST Cuối của Anh Hùng phe ta vĩnh viễn tăng 0.25%, tối đa 25%, hiệu quả áp dụng cho 2"
+          },
+          {
+            "stars": [
+              10,
+              11,
+              12,
+              13,
+              14,
+              15
+            ],
+            "code": 60001000300,
+            "name": "Wild Rhapsody",
+            "name_vn": "Khúc Ca Lễ Hội",
+            "desc_vn": "Khi Công Thường khiến Tăng ST và Tăng ST Cuối của Anh Hùng phe ta vĩnh viễn tăng 0.3%, tối đa 30%, hiệu quả áp dụng cho 3"
+          }
+        ]
+      },
+      "gold": {
+        "subType": 710,
+        "suitType": 210,
+        "name": "Severed-Finger Rhapsody",
+        "name_vn": "Khúc Nhạc Cuồng Loạn",
+        "maxStar": 10,
+        "starSkills": [
+          {
+            "stars": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "code": 60001010100,
+            "name": "Wild Rhapsody",
+            "name_vn": "Khúc Ca Lễ Hội",
+            "desc_vn": "Khi Công Thường khiến Tăng ST và Tăng ST Cuối của Anh Hùng phe ta vĩnh viễn tăng 0.08%, tối đa 8%, hiệu quả chỉ áp dụng cho đội"
+          },
+          {
+            "stars": [
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "code": 60001010200,
+            "name": "Wild Rhapsody",
+            "name_vn": "Khúc Ca Lễ Hội",
+            "desc_vn": "Khi Công Thường khiến Tăng ST và Tăng ST Cuối của Anh Hùng phe ta vĩnh viễn tăng 0.12%, tối đa 12%, hiệu quả áp dụng cho 2"
+          },
+          {
+            "stars": [
+              10
+            ],
+            "code": 60001010300,
+            "name": "Wild Rhapsody",
+            "name_vn": "Khúc Ca Lễ Hội",
+            "desc_vn": "Khi Công Thường khiến Tăng ST và Tăng ST Cuối của Anh Hùng phe ta vĩnh viễn tăng 0.15%, tối đa 15%, hiệu quả áp dụng cho 3"
+          }
+        ]
+      }
+    }
+  }
+}
