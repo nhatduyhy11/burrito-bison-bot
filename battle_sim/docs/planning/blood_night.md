@@ -94,8 +94,11 @@ Vực, …, Song Sinh, Khế Ước Quỷ Vương). Tra lại bằng `TeamExpand
 
 - Mirror: đã thêm `teamExpeHigh` + `teamExpe` (tham chiếu chéo) vào `MODE_BUNDLES[47]` của
   `scripts/mirror.js`. Replay có hình hết 404 và khớp `QuitRoom`.
-- Còn lỗi `p.speed is not a function` trong `_popAMsg` (~giây 66) sau `SetSpeed` trên
-  `GameRoomSocket` (stub). Trận vẫn chạy tới cuối và khớp.
+- Lỗi `p.speed is not a function` (~giây 66) đã sửa (bbb-w0t.7). Lỗi không do `SetSpeed`: popup đếm ngược
+  (`_popAMsg`, COUNT_DOWN) gọi `cc.Tween.prototype.speed`, hàm mà `Main.doHook` thêm lúc khởi động.
+  `setupMain` giờ thêm hàm này.
+- Nút x2 khi tự chơi: frame đội gọi `TDModule.setBattleSpeed` -> `BuildRoomProxy.SetSpeedRequest` và
+  chỉ commit `SetSpeed` trong callback. `stubRoomSpeed` trả lời local, nên x2 chạy được (timeScale 1.6).
 - `TeamExpeHighModule.battleRecived` chỉ vào trận nếu `amILeader()`, và đọc
   `teamInfo.team.members`. Sandbox cần một đội giả cục bộ (đội trưởng = mình, thành viên lấy
   từ `playerInfos`). Đã thử bản đầu trong `web/battle/setup.js` `ensureTeamState()`: qua được

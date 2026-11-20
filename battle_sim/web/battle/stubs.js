@@ -157,6 +157,19 @@ export function stubPause({ M, step }) {
   };
 }
 
+// Speed button in team battles (TDBattleTeamFrame / TDBattleTeamHighFrame = Blood Night /
+// TDBattleWerewolfFrame): _setTimeSpeed calls TDModule.setBattleSpeed, which sends
+// BuildRoomProxy.SetSpeedRequest({speed: 10 * timeScale}) to the room server and commits the
+// SetSpeed op only from its callback. There is no room server here: answer locally so the op
+// goes through the Local path like campaign's.
+export function stubRoomSpeed({ M, step }) {
+  M("BuildRoomProxy").Ins.SetSpeedRequest = function (req, cbs) {
+    step("SetSpeedRequest (local)", { speed: req.speed });
+    const cb = cbs && cbs[0];
+    if (cb) setTimeout(() => cb({ err: 0 }), 0);
+  };
+}
+
 // Play mode: closing the result view would leave the battle for the lobby, which this page does
 // not have (it hangs). Flag it instead; sandbox goes back to the setup page (or ends the run).
 export function leaveOnResultClose({ M, step }) {

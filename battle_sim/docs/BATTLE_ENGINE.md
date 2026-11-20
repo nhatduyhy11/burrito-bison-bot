@@ -19,7 +19,8 @@ Trong chế độ tự chơi, `unlockMonthCards` giả lập đã mua hai thẻ 
 `MallModule.checkActVipCardIsBuy(NewMonthCard, 7|8)`.
 
 - 9003 (thẻ 7) mở nút tăng tốc. Nút x2 gửi op `SetSpeed`. Giá trị
-  `BATTLE_SPEED_TIME_SCALE` và `frameSync.timeScale` khi bật là 1.6.
+  `BATTLE_SPEED_TIME_SCALE` và `frameSync.timeScale` khi bật là 1.6. Trận đội (Đêm Đỏ) gửi
+  `BuildRoomProxy.SetSpeedRequest` trước, rồi mới gửi `SetSpeed`. `stubRoomSpeed` trả lời yêu cầu này local.
 - 9007 (thẻ 8) mở auto qua `HostingMgr`, tự gửi các thao tác như Upgrade, Select và Lottery.
 
 Hai nút hiện sau khi vào giường. Các kiểm tra còn liên quan đến

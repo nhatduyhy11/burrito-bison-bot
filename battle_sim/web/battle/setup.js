@@ -2,6 +2,15 @@
 const DESIGN = { width: 720, height: 1280 }; // UIMgr.init defaults (Main passes the launch scene's)
 
 export function setupMain({ M, R, step }) {
+  // Main.doHook adds cc.Tween.prototype.speed, which the engine build reads (_speedMethod).
+  // BattleMsgJump._popAMsg calls it for COUNT_DOWN popups (Blood Night) and threw without it.
+  // Only this hook is ported: doHook's other patches (JSON.parse, render-error guards) are not.
+  if (!cc.Tween.prototype.speed) {
+    cc.Tween.prototype.speed = function (speed) {
+      this._finalAction._speedMethod = true;
+      this._finalAction._speed = speed;
+    };
+  }
   // Main.setDesignResolutionSize: frames wider than 9:16 (desktop windows) use FIXED_HEIGHT
   // with a 30px status bar, and Main opens BackGroundView to cover the sides.
   const frame = cc.view.getFrameSize();
