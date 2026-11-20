@@ -94,7 +94,7 @@ export function ArtifactBody({ artifact, heroCode, heroDict, pool, artifactDict,
     </div>
     <div class="row">
       <label>Cấp Thần Khí <${NumberInput} value=${artifact.level ?? 0} min=${0} max=${WEAPON_LEVEL_MAX} onChange=${setLevel} /></label>
-      <span class="note">${`mỗi bậc đã nâng = 1 dấu ${WEAPON_STAMP} vào trận (phỏng đoán) · capture VN chưa thấy dấu nào — nhập tay để mô phỏng · cap 0-${WEAPON_LEVEL_MAX}`}</span>
+      <span class="note">${`mỗi cấp đóng dấu skill ${WEAPON_STAMP} · cap 0-${WEAPON_LEVEL_MAX} chờ capture thật xác nhận`}</span>
       ${hint && html`<span class="note">${hint}</span>`}
     </div>
     ${slots}
