@@ -196,6 +196,23 @@ Sim bơm cấp bằng profile (`artifact.level` 0-5, field tùy chọn): cấp N
 thấy format khác (vd entry kèm level field) thì revisit bead. Hero có rainbow 07/08 trong trận
 nhưng không dấu nào → warn một lần khi chơi (`warnMissingStamps`), không tự mode cấp vào replay.
 
+**"Cấp Thần Khí" (神器等级) là gì — CHƯA KẾT LUẬN.** Đối chiếu UI game (2026-11-20, ảnh người
+chơi): UI Thần Khí hiện "Bậc N" = stage của món (đỏ tối đa bậc 4 = `MAX_STAGE[6]=4`), mỗi bậc mở
+một mốc skill (ArtifactLO.skillList cumulative) + attr theo stage — phần này sim đã model qua
+dropdown Stage. Điểm/exp là nguyên liệu unlock bậc, không phải cấp trận. Phỏng đoán khả dĩ:
+"cấp" trong desc rainbow = bậc đã nâng (ngưỡng 07 2-5 ≤ bậc tối đa theo phẩm; tên marker
+`3301000` 武将升神兵**打点** = điểm dấu nâng Thần Binh) — **chưa kiểm chứng được**: quy đổi
+exp→cấp nằm server-side, và chưa có món nào chắc chắn cấp ≥1 ra sân trong capture.
+
+Dấu chưa từng xuất hiện trong capture: quét RAW mọi events-pmain (0 hit `3301000`),
+`hero.artifact` chỉ `{code, uuid, battleEntryInfos}`. capture-pmain-artifact (2026-11-20) chụp
+luôn `GetPlayerArtifactR`/`GetArtifactInfoR`: đúng 1/11 món có `exp > 0` (`10205001`, Gai Độc,
+exp 100) và trận có hero đó ra sân vẫn 0 dấu — **nhưng exp 100 chưa chắc là cấp ≥1**, nên chưa
+loại được khả năng server gửi dấu khi cấp thật sự > 0 (GAT/CN có thể khác). Các row
+`8004nnLLL000` trong capture là **skill skin** ("Khi Anh Hùng dùng skin…"), không liên quan.
+Hệ quả thực dụng: ô "Cấp Thần Khí" trong sim nộp thay dấu; khi nào có capture từ món chắc chắn
+cấp ≥1 (và tốt nhất có rainbow thật) thì đối chiếu format — xem có phải 1 dấu/bậc không.
+
 ## Hướng sim
 
 Profile, cùng cách với `relic`:
