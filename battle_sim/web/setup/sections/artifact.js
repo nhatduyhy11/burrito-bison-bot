@@ -1,8 +1,9 @@
 // Thần Khí (artifact) editor of one hero card: quality, stage and the rolled slots. Rendered inside
 // the hero card in heroes.js, below the skin table — "Tùy chỉnh" on the card customizes it too.
-// Item names and every description are left out on purpose (look them up in game); only line names
-// (team buff, rainbow skill) are shown. State shape: profile-state.js artifactState.
-import { html, Select } from "../ui.js";
+// Item names and team buff descriptions are left out on purpose (look them up in game); only line
+// names are shown, plus a hover popover with the rainbow skill's description in the rainbow picker.
+// State shape: profile-state.js artifactState.
+import { html, label, plain, Select, SelectPop } from "../ui.js";
 import { MAX_STAGE, entryCode, parseEntryCode, rareSkill } from "../../artifacts.js";
 
 const QUALITIES = [[4, "Tím"], [5, "Cam"], [6, "Đỏ"], [7, "Vàng"]];
@@ -53,6 +54,14 @@ function buffEntry(pool, artifactDict, family, quality) {
   return { code: entryCode(pool, Number(family), q), value: buff.ranges[q][1] };
 }
 
+// SelectPop option for one rainbow skill: its name, and a popover with the skill's description.
+// No ✅ here — the options are candidates to compare, not the line in use.
+function rainbowOption(skill, family) {
+  if (!skill) return [String(family), `Rainbow ${family}`];
+  const pop = html`<div class="pop-title">${label(skill)}</div><div class="pop-desc">${plain(skill.desc_vn)}</div>`;
+  return [String(family), skill.name_vn || skill.name, pop];
+}
+
 function SlotRow({ index, slot, slots, heroCode, pool, artifactDict, edit }) {
   const parsed = slot && parseEntryCode(slot.code);
   const kind = !slot ? "" : parsed.quality === RAINBOW_QUALITY ? "rare" : "buff";
@@ -78,13 +87,12 @@ function SlotRow({ index, slot, slots, heroCode, pool, artifactDict, edit }) {
   const kindSelect = html`<${Select} aria-label=${`Ô ${index + 1}`} options=${kindOptions} value=${kind} onChange=${setKind} />`;
   const head = html`<strong class="note">${`Ô ${index + 1}`}</strong>${kindSelect}`;
   if (kind === "rare") {
-    const rainbowName = (family) => artifactDict.skills[rareSkill(heroCode, family)]?.name_vn || `Rainbow ${family}`;
     const options = RAINBOW
       .filter((family) => family === parsed.family || !used.has(family))
-      .map((family) => [String(family), rainbowName(family)]);
+      .map((family) => rainbowOption(artifactDict.skills[rareSkill(heroCode, family)], family));
     const setRainbow = (value) => set({ code: entryCode(pool, Number(value), RAINBOW_QUALITY), value: 0 });
     return html`
-      <div class="row">${head}<${Select} aria-label="Rainbow" options=${options}
+      <div class="row">${head}<${SelectPop} aria-label="Rainbow" options=${options}
         value=${String(parsed.family)} onChange=${setRainbow} /></div>
     `;
   }
