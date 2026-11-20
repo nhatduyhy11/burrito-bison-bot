@@ -225,6 +225,9 @@ món vàng, không có món lẻ hay attr), sinh bằng `gen_profile_dict.js`. G
 - Muốn chỉnh trong setup: dị vật = thêm/bỏ `6000TT00N00` (bộ) và `6000TT10N00` (món đặc biệt)
   ở `index 0` của hero. Trang bị = thêm/bỏ `9000x00000` ở build type 2. Attr đi kèm không tự
   tính được (giống Thánh Khí).
+- Setup (bbb-4g0.2): thẻ hero có dòng "Dị Vật" ngay dưới Thánh Khí, không cần "Tùy chỉnh". Profile
+  `beautyBag`: bỏ trống = theo capture, `null` = không đeo, `{type, star, gold}` (gold 0 = không đeo). Skill vàng
+  lấy theo min(sao vàng, sao bộ) (`web/beauty-bags.js`), trận thay ở `web/battle/hero/beauty-bag.js`.
 
 ## Còn mở
 

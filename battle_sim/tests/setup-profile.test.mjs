@@ -349,3 +349,29 @@ test('Trap / Pet / Spell: reserved slots stay null in state, compact in the prof
   normalize(state, dict);
   assert.deepEqual(toProfile(state, dict).pets, []);
 });
+
+test('Dị Vật: battle swaps suit/gold skills on index 0; gold follows min(gold, suit star); null clears', async () => {
+  const { applyBeautyBag } = await import('../web/battle/hero/beauty-bag.js');
+  const { types } = JSON.parse(readFileSync(new URL('../web/dict/beautybag-dict.json', import.meta.url)));
+  const rb = { listItems: (list) => list };
+  const M = () => ({ get: () => ({}) });
+  // Captured Hanuman: Tê Liệt suit N2 + gold N1 (events-pmain-20261119), plus an unrelated skill.
+  const hero = { code: 1, skills: [{ code: 111, index: 0 }, { code: 60000500200, index: 0 }, { code: 60000510100, index: 0 }, { code: 222, index: 1 }] };
+  const codes = (sel) => applyBeautyBag(hero, sel, types, rb, M, () => {}).skills.map((s) => s.code);
+  assert.deepEqual(codes({ type: 'magic', star: 10, gold: 10 }), [111, 60000200300, 60000210300, 222]);
+  assert.deepEqual(codes({ type: 'magic', star: 4, gold: 10 }), [111, 60000200100, 60000210100, 222]);
+  assert.deepEqual(codes({ type: 'paralyze', star: 5, gold: 0 }), [111, 60000500200, 222]);
+  assert.deepEqual(codes(null), [111, 222]);
+  assert.throws(() => codes({ type: 'magic', star: 16 }));
+  assert.throws(() => codes({ type: 'nope', star: 1 }));
+});
+
+test('Dị Vật: setup import/export keeps capture (omitted), none (null) and a pick', () => {
+  const { types } = JSON.parse(readFileSync(new URL('../web/dict/beautybag-dict.json', import.meta.url)));
+  const beautyBag = { type: 'paralyze', star: 7, gold: 3 };
+  const state = fromProfile({ heroes: [{ name: 'hanuman', beautyBag }, { name: 'lu_bu', beautyBag: null }, 'joker'] }, base, dict, { beautyBagTypes: types });
+  const out = toProfile(state, dict).heroes;
+  assert.deepEqual(out[0], { name: 'hanuman', beautyBag });
+  assert.deepEqual(out[1], { name: 'lu_bu', beautyBag: null });
+  assert.equal(out[2], 'joker');
+});

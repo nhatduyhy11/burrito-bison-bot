@@ -7,6 +7,7 @@ import { buildProfileHero } from "./build.js";
 import { applyArtifact } from "./artifact.js";
 import { applyAvatar } from "./avatar.js";
 import { applyRelic } from "./relic.js";
+import { applyBeautyBag } from "./beauty-bag.js";
 import { applySkin } from "./skin.js";
 import { applyBloodTeam } from "./blood-team.js";
 
@@ -15,7 +16,7 @@ const LINEUP = 5;
 // One hero object from a { option, selection } pick. `owned` = hero objects to take as they are
 // (matched by code), `donors` = heroes to borrow stats from when `owned` has none. `jokerSlots`
 // records whether Loli's skin slots hold the Joker-summon skin.
-export function heroBuilder({ relicLines, rb, M, step }) {
+export function heroBuilder({ relicLines, beautyBagTypes, rb, M, step }) {
   const state = { jokerSkillSlotted: false };
   const build = ({ option, selection }, { owned, donors }, existing) => {
     const { code, baseSkills, skins, avatarNodes } = option;
@@ -34,6 +35,7 @@ export function heroBuilder({ relicLines, rb, M, step }) {
       });
     }
     if (selection.relic !== undefined) hero = applyRelic(hero, selection.relic, relicLines, rb, M, step);
+    if (selection.beautyBag !== undefined) hero = applyBeautyBag(hero, selection.beautyBag, beautyBagTypes, rb, M, step);
     if (selection.artifact !== undefined) hero = applyArtifact(hero, selection.artifact, M, step);
     return hero;
   };
@@ -50,14 +52,14 @@ export function jokerPick(profile, catalog) {
 }
 
 // choices(key, max) = profile.js's name -> catalog option check; returns [{ option, selection }].
-export async function applyHeroSelection({ profile, player, catalog, relicLines, choices, asList, rb, M, step, start, team }) {
+export async function applyHeroSelection({ profile, player, catalog, relicLines, beautyBagTypes, choices, asList, rb, M, step, start, team }) {
   if (profile.map?.mode === "blood") {
-    return applyBloodTeam({ profile, player, catalog, relicLines, asList, rb, M, step, start, team });
+    return applyBloodTeam({ profile, player, catalog, relicLines, beautyBagTypes, asList, rb, M, step, start, team });
   }
   const captured = rb.listItems(player.heros);
   const selected = choices("heroes", LINEUP);
   if (selected.length !== LINEUP) throw new Error(`Profile needs exactly ${LINEUP} heroes`);
-  const { build, state } = heroBuilder({ relicLines, rb, M, step });
+  const { build, state } = heroBuilder({ relicLines, beautyBagTypes, rb, M, step });
   const source = { owned: captured, donors: captured };
   const heroes = selected.map((entry) => build(entry, source));
   if (hasSummonedJoker(selected.map(({ selection }) => selection), state.jokerSkillSlotted)) {

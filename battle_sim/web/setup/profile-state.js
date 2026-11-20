@@ -32,6 +32,7 @@ function emptyState(dict, antiqueDict) {
 
 function newHero(name) {
   // avatar: number of open Dị Năng skill nodes (red heroes, set when custom), null = as captured / borrowed.
+  // beautyBag (Dị Vật): left unset = as captured, null = none, { type, star, gold } (beauty-bags.js).
   return { name, custom: false, worn: null, skins: {}, slots: [], avatar: null, relic: null };
 }
 

@@ -36,7 +36,7 @@ function picks(profile, key, catalog) {
   });
 }
 
-export function applyBloodTeam({ profile, player, catalog, relicLines, asList, rb, M, step, start, team }) {
+export function applyBloodTeam({ profile, player, catalog, relicLines, beautyBagTypes, asList, rb, M, step, start, team }) {
   if (!team) throw new Error("Đêm Đỏ needs a capture with the team roster (refreshMemberInfosR)");
   const leaderId = Number(start.leaderId);
   const member = { master: team.find((m) => m.playerId === leaderId), guest: team.find((m) => m.playerId !== leaderId) };
@@ -56,7 +56,7 @@ export function applyBloodTeam({ profile, player, catalog, relicLines, asList, r
   const selected = { master: picks(profile, "heroes", catalog), guest: picks(profile, "guestHeroes", catalog) };
   const all = [...selected.master, ...selected.guest];
   if (new Set(all.map(({ option }) => option.code)).size !== all.length) throw new Error("Đêm Đỏ: the 6 heroes must differ");
-  const { build, state } = heroBuilder({ relicLines, rb, M, step });
+  const { build, state } = heroBuilder({ relicLines, beautyBagTypes, rb, M, step });
   const built = Object.fromEntries(SIDES.map((side) => [side, selected[side].map((pick) => build(pick, source[side]))]));
 
   // Slot order follows the captured owners (capture: guest, master, guest, ...); a lineup that does

@@ -4,6 +4,7 @@ import { JOKER_SUMMON } from "../hero-lineup.js";
 import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkillsConflict } from "../summoner-skills.js";
 import { antiqueSelections } from "../antiques.js";
 import { resolveRelic } from "../relics.js";
+import { resolveBeautyBag } from "../beauty-bags.js";
 import {
   LIMITS, BLOOD_SIDE, buildSkins, heroSkins, emptyState, newHero, newBuilding, normalize, artifactState,
 } from "./profile-state.js";
@@ -11,7 +12,7 @@ import {
 // Lenient import of a profile JSON (as written by toProfile or by hand). Unknown names throw.
 // catalogs: { maps (map-dict.json), bossDict (boss-dict.json), antiqueDict (antique-dict.json) },
 // each needed only when the profile has that part.
-export function fromProfile(profile, base, dict, { maps, bossDict, bloodDict, antiqueDict, relicLines } = {}) {
+export function fromProfile(profile, base, dict, { maps, bossDict, bloodDict, antiqueDict, relicLines, beautyBagTypes } = {}) {
   const next = { ...emptyState(dict, antiqueDict), battle: base.battle, seed: base.seed };
   const need = (group, name) => {
     if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong hero-dict.json / support-dict.json`);
@@ -27,6 +28,10 @@ export function fromProfile(profile, base, dict, { maps, bossDict, bloodDict, an
     if (sel.relic != null) {
       const { name, star, purification } = resolveRelic(sel.relic, relicLines);
       hero.relic = { name, star, purification };
+    }
+    if (sel.beautyBag !== undefined) {
+      const bag = sel.beautyBag && resolveBeautyBag(sel.beautyBag, beautyBagTypes);
+      hero.beautyBag = bag && { type: bag.type, star: bag.star, gold: bag.gold };
     }
     const skins = heroSkins(dict, hero.name);
     hero.custom = ["skin", "star", "ownedSkins", "slots", "avatar"].some((key) => sel[key] !== undefined);

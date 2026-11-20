@@ -45,11 +45,11 @@ export async function applyProfile(start, rb, M, step, team) {
     });
   };
   if (Object.hasOwn(profile, "heroes")) {
-    const hasRelicOverride = [...(Array.isArray(profile.heroes) ? profile.heroes : []),
-      ...(Array.isArray(profile.guestHeroes) ? profile.guestHeroes : []), profile.summonedJoker]
-      .some((hero) => hero?.relic !== undefined);
-    const relicLines = hasRelicOverride ? (await read("dict/relic-dict")).lines : undefined;
-    await applyHeroSelection({ profile, player, catalog, relicLines, choices, asList, rb, M, step, start, team });
+    const picked = [...(Array.isArray(profile.heroes) ? profile.heroes : []),
+      ...(Array.isArray(profile.guestHeroes) ? profile.guestHeroes : []), profile.summonedJoker];
+    const relicLines = picked.some((hero) => hero?.relic !== undefined) ? (await read("dict/relic-dict")).lines : undefined;
+    const beautyBagTypes = picked.some((hero) => hero?.beautyBag !== undefined) ? (await read("dict/beautybag-dict")).types : undefined;
+    await applyHeroSelection({ profile, player, catalog, relicLines, beautyBagTypes, choices, asList, rb, M, step, start, team });
   }
   if (Object.hasOwn(profile, "mounts")) {
     const mounts = catalog.mounts;

@@ -1,10 +1,12 @@
 // Hero list; "Tùy chỉnh" on a hero card opens its Dị Năng skill nodes (red heroes), skin table
-// (owned, star, slots) and the Thần Khí editor (below the skin table, artifact.js).
+// (owned, star, slots) and the Thần Khí editor (artifact.js). Dị Vật sits right below Thánh Khí and,
+// like it, works without "Tùy chỉnh".
 import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, StarSkillsLabel, plain, starsLabel, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, isBlood, newHero } from "../profile-state.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { resolveRelic } from "../../relics.js";
+import { resolveBeautyBag } from "../../beauty-bags.js";
 import { headerRow, nameOptions, requiresNote, without } from "./shared.js";
 import { ArtifactBody } from "./artifact.js";
 import { BloodTeams } from "./blood-teams.js";
@@ -82,6 +84,7 @@ export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes",
         ${custom}
       </div>
       ${hero.name && html`<${RelicPicker} selection=${hero.relic} lines=${ctx.relicLines} edit=${edit} />`}
+      ${hero.name && html`<${BeautyBagPicker} selection=${hero.beautyBag} types=${ctx.beautyBagTypes} edit=${edit} />`}
       ${avatar}
       ${table}
       ${artifact}
@@ -181,6 +184,69 @@ function RelicPicker({ selection, lines, edit }) {
         <label>Thanh tẩy
           <${Select} aria-label="Thanh tẩy" options=${levels} value=${String(selected.purification)} onChange=${setPurification} />
         </label>
+      `}
+    </div>
+  `;
+}
+
+// Hover summary for one Dị Vật type: the suit's star runs, a divider, then the gold item's. With a
+// resolved selection, ✅ marks the suit run and the gold run in effect (gold counts up to the suit star).
+function beautyBagPop(entry, selected) {
+  const run = (s, on) => html`
+    <div class="pop-line" key=${s.code}>
+      <span class="hint">${on ? "✅ " : ""}${starsLabel(s.stars)}</span>
+      <div class="pop-desc">${plain(s.desc_vn)}</div>
+    </div>
+  `;
+  return html`
+    <div class="relic-pop">
+      <div class="pop-title">${label(entry)} · ${label(entry.suit.starSkills[0])}</div>
+      <div class="hint">Bộ 4 món</div>
+      ${entry.suit.starSkills.map((s) => run(s, s === selected?.suitSkill))}
+      <hr class="pop-divider" />
+      <div class="hint">Món vàng · cần bộ cùng hệ, mỗi mốc cần sao bộ ≥ mốc</div>
+      ${entry.gold.starSkills.map((s) => run(s, s === selected?.goldSkill))}
+    </div>
+  `;
+}
+
+// Dị Vật: one suit type with its star, plus the gold item star (0 = not worn). Only the index-0
+// skills change in battle; the suit/gold attrs stay as captured (server-merged).
+function BeautyBagPicker({ selection, types, edit }) {
+  if (!types) return null;
+  const selected = selection ? resolveBeautyBag(selection, types) : null;
+  const options = [
+    ["capture", "Theo capture"],
+    ["", "Không đeo Dị Vật"],
+    ...Object.entries(types).map(([key, entry]) => [key, optionText(entry), beautyBagPop(entry)]),
+  ];
+  const range = (from, to, zero) => Array.from({ length: to - from + 1 }, (_, i) => {
+    const n = from + i;
+    return [String(n), n === 0 && zero ? zero : String(n)];
+  });
+  const choose = (key) => edit((h) => {
+    if (key === "capture") h.beautyBag = undefined;
+    else if (!key) h.beautyBag = null;
+    else {
+      const { suit, gold } = types[key];
+      h.beautyBag = { type: key, star: Math.min(h.beautyBag?.star ?? 1, suit.maxStar), gold: Math.min(h.beautyBag?.gold ?? 0, gold.maxStar) };
+    }
+  });
+  const setStar = (value) => edit((h) => (h.beautyBag.star = Number(value)));
+  const setGold = (value) => edit((h) => (h.beautyBag.gold = Number(value)));
+  return html`
+    <div class="row">
+      ${selected
+        ? html`<${PopHover} content=${beautyBagPop(selected.entry, selected)}><label class="pop-trigger">Dị Vật</label><//>`
+        : html`<label>Dị Vật</label>`}
+      <${SelectPop} aria-label="Dị Vật" options=${options}
+        value=${selection === undefined ? "capture" : selection?.type ?? ""} onChange=${choose} />
+      ${selected && html`
+        <label>Sao bộ <${Select} aria-label="Sao bộ Dị Vật" options=${range(1, selected.entry.suit.maxStar)}
+          value=${String(selected.star)} onChange=${setStar} /></label>
+        <label>Món vàng <${Select} aria-label="Sao món vàng Dị Vật" options=${range(0, selected.entry.gold.maxStar, "Không")}
+          value=${String(selected.gold)} onChange=${setGold} /></label>
+        ${selected.gold > selected.star && html`<span class="note">${`vàng tính tới sao ${selected.star}`}</span>`}
       `}
     </div>
   `;
