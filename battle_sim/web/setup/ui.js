@@ -3,7 +3,7 @@
 // (no inline functions).
 import { h } from "preact";
 import htm from "htm";
-import { useState, useRef, useLayoutEffect } from "preact/hooks";
+import { useState, useRef, useLayoutEffect, useEffect } from "preact/hooks";
 import { clamp } from "./skin-rules.js";
 
 export const html = htm.bind(h);
@@ -93,28 +93,64 @@ const popAt = (target, setPop, content) => {
   });
 };
 
-// Floating informational card; pointer-events stay off the popover so it never blocks the
-// controls underneath and mouse-leave logic stays on the trigger side. After layout it is lifted
-// by its real height so a tall card (5 Dị Năng nodes) stays inside the viewport.
-export function Popover({ x, y, children }) {
+// Floating card. By default pointer-events stay off so it never blocks the controls underneath
+// and mouse-leave logic stays on the trigger side (SelectPop option popovers). `interactive`
+// (PopHover) lets the mouse enter it to scroll and select text. After layout it is lifted by its
+// real height so a tall card (5 Dị Năng nodes) stays inside the viewport.
+export function Popover({ x, y, interactive, onMouseDown, children }) {
   const ref = useRef(null);
   const [top, setTop] = useState(y);
   useLayoutEffect(() => {
     const height = ref.current?.offsetHeight ?? 0;
     setTop(Math.max(8, Math.min(y, window.innerHeight - height - 8)));
   }, [y, children]);
-  return html`<div class="popover" ref=${ref} style=${{ left: `${x}px`, top: `${top}px` }}>${children}</div>`;
+  // Triggers often sit inside a <label>: a click in the card would otherwise activate its control.
+  const stopLabel = (e) => e.preventDefault();
+  return html`
+    <div class=${interactive ? "popover interactive" : "popover"} ref=${ref}
+      style=${{ left: `${x}px`, top: `${top}px` }}
+      onClick=${interactive ? stopLabel : undefined} onMouseDown=${onMouseDown}>${children}</div>
+  `;
 }
 
-// Hover popover on an arbitrary trigger element (skin labels, the Dị Năng (i) icon).
+// Grace period for crossing the gap between the trigger and its card.
+const HIDE_DELAY = 200;
+
+// Hover popover on an arbitrary trigger element (skin labels, the Dị Năng (i) icon). The card is a
+// DOM child of the wrapper, so moving onto it counts as still hovering; the short hide delay
+// bridges the gap beside the trigger. A text-selection drag that leaves the card keeps it open
+// until the mouse button is released.
 export function PopHover({ content, children }) {
   const [pop, setPop] = useState(null);
-  const show = (e) => popAt(e.currentTarget, setPop, content);
-  const hide = () => setPop(null);
+  const timer = useRef(0);
+  const hovered = useRef(false);
+  const dragging = useRef(false);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const show = (e) => {
+    hovered.current = true;
+    clearTimeout(timer.current);
+    if (!pop) popAt(e.currentTarget, setPop, content);
+  };
+  const scheduleHide = () => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setPop(null), HIDE_DELAY);
+  };
+  const leave = () => {
+    hovered.current = false;
+    if (!dragging.current) scheduleHide();
+  };
+  const endDrag = () => {
+    dragging.current = false;
+    if (!hovered.current) scheduleHide();
+  };
+  const startDrag = () => {
+    dragging.current = true;
+    document.addEventListener("mouseup", endDrag, { once: true });
+  };
   return html`
-    <span class="pop-hover" onMouseEnter=${show} onMouseLeave=${hide}>
+    <span class="pop-hover" onMouseEnter=${show} onMouseLeave=${leave}>
       ${children}
-      ${pop && html`<${Popover} x=${pop.x} y=${pop.y}>${pop.content}<//>`}
+      ${pop && html`<${Popover} x=${pop.x} y=${pop.y} interactive onMouseDown=${startDrag}>${pop.content}<//>`}
     </span>
   `;
 }
