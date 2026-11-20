@@ -3,36 +3,10 @@
   "types": {
     "physical": {
       "type": 1,
-      "suitType": 101,
       "name": "Physical",
       "name_vn": "V.Lý",
       "suit": {
-        "name": "Force of Nature",
-        "name_vn": "Thế Như Chẻ Tre",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Bone Drill",
-            "name_vn": "Mũi Khoan Xương"
-          },
-          {
-            "color": "purple",
-            "name": "Cannibal Shelf",
-            "name_vn": "Khung Xương Quỷ"
-          },
-          {
-            "color": "orange",
-            "name": "Carnivore Stapler",
-            "name_vn": "Máy Dập Ghim Thịt"
-          },
-          {
-            "color": "red",
-            "name": "Maniac Bonesaw",
-            "name_vn": "Cưa Bá Vương"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -76,10 +50,6 @@
         ]
       },
       "gold": {
-        "subType": 701,
-        "suitType": 201,
-        "name": "Banewing Drill",
-        "name_vn": "Mũi Khoan Phá Giáp",
         "maxStar": 10,
         "starSkills": [
           {
@@ -121,36 +91,10 @@
     },
     "magic": {
       "type": 2,
-      "suitType": 102,
       "name": "Magic",
       "name_vn": "Phép",
       "suit": {
-        "name": "Total Annihilation",
-        "name_vn": "Diệt Tận Gốc",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Evil-Eye Bracelet",
-            "name_vn": "Vòng Tà Nhãn"
-          },
-          {
-            "color": "purple",
-            "name": "Skeleton Pendant",
-            "name_vn": "Mặt Dây Vua Xương"
-          },
-          {
-            "color": "orange",
-            "name": "Necropedia",
-            "name_vn": "Sách Tử Linh"
-          },
-          {
-            "color": "red",
-            "name": "Stygian Oujia",
-            "name_vn": "Đĩa Thông Linh"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -194,10 +138,6 @@
         ]
       },
       "gold": {
-        "subType": 702,
-        "suitType": 202,
-        "name": "Nether Soul Cup",
-        "name_vn": "Chén Tụ Hồn",
         "maxStar": 10,
         "starSkills": [
           {
@@ -239,36 +179,10 @@
     },
     "burn": {
       "type": 3,
-      "suitType": 103,
       "name": "Burn",
       "name_vn": "Thiêu Đốt",
       "suit": {
-        "name": "Sky Scorch",
-        "name_vn": "Giương Lửa Đốt Trời",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Sacrifice Candle",
-            "name_vn": "Nến Hiến Tế"
-          },
-          {
-            "color": "purple",
-            "name": "Ghost Lighter",
-            "name_vn": "Bật Lửa Lửa Ma"
-          },
-          {
-            "color": "orange",
-            "name": "Dynamite Battery",
-            "name_vn": "Pin Cháy Nổ"
-          },
-          {
-            "color": "red",
-            "name": "Purgatory Oven",
-            "name_vn": "Lò Luyện Ngục"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -312,10 +226,6 @@
         ]
       },
       "gold": {
-        "subType": 703,
-        "suitType": 203,
-        "name": "Spooky Pumpkin Kiln",
-        "name_vn": "Lò Bí Ngô Lửa Quỷ",
         "maxStar": 10,
         "starSkills": [
           {
@@ -357,36 +267,10 @@
     },
     "bleed": {
       "type": 4,
-      "suitType": 104,
       "name": "Bleed",
       "name_vn": "Mất HP",
       "suit": {
-        "name": "Wild Bloodlust",
-        "name_vn": "Cuồng Bạo Khát Huyết",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Rusty Knife",
-            "name_vn": "Dao Rỉ Sét"
-          },
-          {
-            "color": "purple",
-            "name": "Vampire Broom",
-            "name_vn": "Chổi Ma Cà Rồng"
-          },
-          {
-            "color": "orange",
-            "name": "Gore Grinder",
-            "name_vn": "Máy Xay Sương Huyết"
-          },
-          {
-            "color": "red",
-            "name": "Glutton Vacuum",
-            "name_vn": "Máy Hút Tham Ăn"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -430,10 +314,6 @@
         ]
       },
       "gold": {
-        "subType": 704,
-        "suitType": 204,
-        "name": "Bloodrose Needle",
-        "name_vn": "Kim Huyết Tường Vi",
         "maxStar": 10,
         "starSkills": [
           {
@@ -475,36 +355,10 @@
     },
     "paralyze": {
       "type": 5,
-      "suitType": 105,
       "name": "Paralyze",
       "name_vn": "Tê Liệt",
       "suit": {
-        "name": "Thunder Tremor",
-        "name_vn": "Sấm Sét Ầm Trời",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Vicious Lantern",
-            "name_vn": "Đèn Tà Quang"
-          },
-          {
-            "color": "purple",
-            "name": "Shock Powerboard",
-            "name_vn": "Ổ Cắm Rò Điện"
-          },
-          {
-            "color": "orange",
-            "name": "Spooky Screen",
-            "name_vn": "Màn Hình Kinh Dị"
-          },
-          {
-            "color": "red",
-            "name": "Quantum Washer",
-            "name_vn": "Máy Giặt Không Gian"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -548,10 +402,6 @@
         ]
       },
       "gold": {
-        "subType": 705,
-        "suitType": 205,
-        "name": "Cranial Shocker",
-        "name_vn": "Máy Sốc Điện Não",
         "maxStar": 10,
         "starSkills": [
           {
@@ -593,36 +443,10 @@
     },
     "crit": {
       "type": 6,
-      "suitType": 106,
       "name": "Crit",
       "name_vn": "Bạo",
       "suit": {
-        "name": "Sundered Spirit",
-        "name_vn": "Nhất Kích Nhập Hồn",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Rotten Scissors",
-            "name_vn": "Kéo Sâu Thối"
-          },
-          {
-            "color": "purple",
-            "name": "Glutton Can",
-            "name_vn": "Lon Tham Ăn"
-          },
-          {
-            "color": "orange",
-            "name": "Killer Camera",
-            "name_vn": "Camera Sát Thủ"
-          },
-          {
-            "color": "red",
-            "name": "Brawler Joystick",
-            "name_vn": "Tay Cầm Ma Thuật"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -666,10 +490,6 @@
         ]
       },
       "gold": {
-        "subType": 706,
-        "suitType": 206,
-        "name": "Sanguine Soulseeker",
-        "name_vn": "Đạn Truy Hồn",
         "maxStar": 10,
         "starSkills": [
           {
@@ -711,36 +531,10 @@
     },
     "stun": {
       "type": 7,
-      "suitType": 107,
       "name": "Stun",
       "name_vn": "Choáng",
       "suit": {
-        "name": "Chaos Incarnate",
-        "name_vn": "Hỗn Độn Tàn Diệt",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Eyeball Wrench",
-            "name_vn": "Cờ Lê Mắt"
-          },
-          {
-            "color": "purple",
-            "name": "Tentacle Plug",
-            "name_vn": "Phích Cắm Xúc Tu"
-          },
-          {
-            "color": "orange",
-            "name": "Psycho Headphones",
-            "name_vn": "Tai Nghe Đoạt Hồn"
-          },
-          {
-            "color": "red",
-            "name": "Abyssal Mask",
-            "name_vn": "Mặt Nạ Vực Sâu"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -784,10 +578,6 @@
         ]
       },
       "gold": {
-        "subType": 707,
-        "suitType": 207,
-        "name": "Soul-Trapping Flashlight",
-        "name_vn": "Máy Ảnh Chụp Hồn",
         "maxStar": 10,
         "starSkills": [
           {
@@ -829,36 +619,10 @@
     },
     "knock": {
       "type": 8,
-      "suitType": 108,
       "name": "Knock",
       "name_vn": "Đẩy Lùi",
       "suit": {
-        "name": "Brutal Carnage",
-        "name_vn": "Như Bẻ Cành Khô",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Elastic Measure",
-            "name_vn": "Thước Ma"
-          },
-          {
-            "color": "purple",
-            "name": "Backward Watch",
-            "name_vn": "Đồng Hồ Cổ"
-          },
-          {
-            "color": "orange",
-            "name": "Haunted Faucet",
-            "name_vn": "Vòi Nước Ma Ám"
-          },
-          {
-            "color": "red",
-            "name": "Cyclone Fan",
-            "name_vn": "Quạt Bão Tố"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -902,10 +666,6 @@
         ]
       },
       "gold": {
-        "subType": 708,
-        "suitType": 208,
-        "name": "Dreadful Pop-up Box",
-        "name_vn": "Hộp Hù Dọa",
         "maxStar": 10,
         "starSkills": [
           {
@@ -947,36 +707,10 @@
     },
     "frost": {
       "type": 9,
-      "suitType": 109,
       "name": "Frost",
       "name_vn": "Băng Sương",
       "suit": {
-        "name": "Absolute Zero",
-        "name_vn": "Độ Không Tuyệt Đối",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Whitening Brush",
-            "name_vn": "Bàn Trải Trắng"
-          },
-          {
-            "color": "purple",
-            "name": "Scream Egg",
-            "name_vn": "Trứng La Hét"
-          },
-          {
-            "color": "orange",
-            "name": "Devil Router",
-            "name_vn": "Router Quỷ"
-          },
-          {
-            "color": "red",
-            "name": "Cryo Cabinet",
-            "name_vn": "Tủ Đông Cực Lạnh"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -1020,10 +754,6 @@
         ]
       },
       "gold": {
-        "subType": 709,
-        "suitType": 209,
-        "name": "Frost Thorn Crown",
-        "name_vn": "Vương Miện Hàn Băng",
         "maxStar": 10,
         "starSkills": [
           {
@@ -1065,36 +795,10 @@
     },
     "aspd": {
       "type": 10,
-      "suitType": 110,
       "name": "ASPD",
       "name_vn": "Tốc Công",
       "suit": {
-        "name": "Wild Rhapsody",
-        "name_vn": "Khúc Ca Lễ Hội",
-        "requireNum": 4,
         "maxStar": 15,
-        "pieces": [
-          {
-            "color": "blue",
-            "name": "Poisoned Apple",
-            "name_vn": "Táo Kịch Độc"
-          },
-          {
-            "color": "purple",
-            "name": "Esports Bubble Tea",
-            "name_vn": "Trà Sữa Độc"
-          },
-          {
-            "color": "orange",
-            "name": "Skeleton Umbrella",
-            "name_vn": "Ô Xương Người"
-          },
-          {
-            "color": "red",
-            "name": "Deadly Phonograph",
-            "name_vn": "Máy Hát Tử Thần"
-          }
-        ],
         "starSkills": [
           {
             "stars": [
@@ -1138,10 +842,6 @@
         ]
       },
       "gold": {
-        "subType": 710,
-        "suitType": 210,
-        "name": "Severed-Finger Rhapsody",
-        "name_vn": "Khúc Nhạc Cuồng Loạn",
         "maxStar": 10,
         "starSkills": [
           {

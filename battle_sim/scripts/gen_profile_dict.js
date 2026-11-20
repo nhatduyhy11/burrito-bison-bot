@@ -6,7 +6,7 @@
 // - web/dict/blood-dict.json: Blood Night (battleType 47) levels with their boss, mini bosses and creeps in one dict;
 // - web/dict/antique-dict.json: antiques with setup labels and battle rank codes;
 // - web/dict/relic-dict.json: Thánh Khí (relics) by line and purification step, with their skills;
-// - web/dict/beautybag-dict.json: Dị Vật (BeautyBag): per type the red 4-piece suit and its gold item, skill codes per star;
+// - web/dict/beautybag-dict.json: Dị Vật (BeautyBag): per type the suit and gold star skills (codes per star);
 // - web/dict/artifact-dict.json: Thần Khí per hero (names, slot) + shared team buffs; rules in web/artifacts.js;
 // - web/dict/hero-dict.json: the hero side: heroes with their skins and Dị Năng (avatar) nodes;
 // - web/dict/support-dict.json: the non-hero side: Summoner skins, traps, pets, spells (daoists),
@@ -378,12 +378,13 @@ async function main() {
     lines: relicLines,
   };
 
-  // Dị Vật (遗物 = BeautyBag). One entry per type (1-10): the red 4-piece suit (suitType 10T, colors
-  // 3-6) and its gold item (color 7, subType 70T), which only enhances that suit. In battle they are
-  // two separate index-0 skills the server picks: suit = 6000TT00N00 by suit star (BeautyBagSuitLO
-  // _isSkill levels 1/5/10 -> N1-3), gold = BeautyBagLO._suitSkill (6000TT10N00, stars 1-10). The gold
-  // skill only counts while that suit is on, at N <= the suit's N (client rule). Attrs are left out
-  // (server-merged into hero.attr). See battle_sim/docs/planning/hero_gear.md, Dị Vật.
+  // Dị Vật (遗物 = BeautyBag): only the star skills the setup toggles. One entry per type (1-10): the
+  // red 4-piece suit and its gold item (subType 70T), which only enhances that suit. Pieces, names
+  // of items and attrs are left out (server-merged into hero.attr). In battle they are two separate
+  // index-0 skills the server picks: suit = 6000TT00N00 by suit star (BeautyBagSuitLO _isSkill levels
+  // 1/5/10 -> N1-3), gold = BeautyBagLO._suitSkill (6000TT10N00, stars 1-10). The gold
+  // skill only counts while that suit is on, at N <= the suit's N (client rule).
+  // See battle_sim/docs/planning/hero_gear.md, Dị Vật.
   const bbExpect = (ok, what) => { if (!ok) throw new Error(`beautybag rule broken: ${what}`); };
   const bbSuits = rows(M("BeautyBagSuitLO"));
   const bbItems = rows(M("BeautyBagLO"));
@@ -398,8 +399,6 @@ async function main() {
     const goldSub = [...enhance][0];
     const tierOf = (star) => tierStarts.filter((l) => star >= l).length;
     const suitTiers = starSkillsOf(suitRows.map((s) => [s.level, bbSkill(Number(`6000${TT}00${tierOf(s.level)}00`))]));
-    const pieces = bbItems.filter((b) => b.type === t.type && b.suitType === t.suitType && b.level === 1).sort((a, b) => a.color - b.color);
-    bbExpect(JSON.stringify(pieces.map((b) => b.color)) === "[3,4,5,6]", `suit ${t.suitType} pieces`);
     const goldRows = bbItems.filter((b) => b.subType === goldSub && b.level > 0).sort((a, b) => a.level - b.level);
     bbExpect(goldRows.length && goldRows.every((b) => b.color === 7 && b.type === t.type), `gold ${goldSub} rows`);
     const goldTiers = starSkillsOf(goldRows.map((b) => {
@@ -407,15 +406,9 @@ async function main() {
       bbExpect(jsonField(b.suitUnlock)[0] === t.suitType, `gold ${b.code} suitUnlock`);
       return [b.level, bbSkill(b.suitSkill)];
     }));
-    const gold = goldRows[0];
-    return [t.name, {
-      type: t.type, suitType: t.suitType, name: t.name, name_vn: vn("BeautyBagTypeLO", t.type),
-      suit: { name: suitRows[0].name, name_vn: vn("BeautyBagSuitLO", suitRows[0].code), requireNum: suitRows[0].requireNum,
-        maxStar: suitRows.at(-1).level, pieces: pieces.map((b) => ({ color: RARITY[b.color] ?? b.color, name: b.name, name_vn: vn("BeautyBagLO", b.code) })),
-        starSkills: suitTiers },
-      gold: { subType: goldSub, suitType: gold.suitType, name: gold.name, name_vn: vn("BeautyBagLO", gold.code),
-        maxStar: goldRows.at(-1).level, starSkills: goldTiers },
-    }];
+    return [t.name, { type: t.type, name: t.name, name_vn: vn("BeautyBagTypeLO", t.type),
+      suit: { maxStar: suitRows.at(-1).level, starSkills: suitTiers },
+      gold: { maxStar: goldRows.at(-1).level, starSkills: goldTiers } }];
   }));
 
   // Thần Khí (神器). Item code, stage skills, holes and entry codes follow web/artifacts.js; every
