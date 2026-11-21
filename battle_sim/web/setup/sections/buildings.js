@@ -1,7 +1,7 @@
 // "Skin building": each building has its own "Ghi đè" and skin table (1 red / 2 gold / 1 special slot).
 import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, Accordion, StarSkillsLabel } from "../ui.js";
 import { BUILD_SLOTS, buildingForced, buildingLocks } from "../skin-rules.js";
-import { BUILDINGS, buildSkins, newBuilding } from "../profile-state.js";
+import { BUILDINGS, buildSkins, newBuilding, stashValue, takeStashed } from "../profile-state.js";
 import { eventUnlockNote, headerRow, requiresNote, without } from "./shared.js";
 
 const HEADERS = ["Skin", "Màu / slot", "Sở hữu", "Sao", "Slot"];
@@ -29,10 +29,18 @@ export function BuildingsSection({ ctx }) {
 }
 
 function BuildingCard({ ctx, building, title }) {
-  const { state, dict, update } = ctx;
+  const { state, dict, update, region } = ctx;
   const entry = state.buildings[building];
   const edit = (fn) => update((s) => void fn(s.buildings[building]));
-  const setEnabled = (on) => update((s) => void (s.buildings[building] = on ? newBuilding(dict, building) : null));
+  // Untick parks the skin table in the session stash; re-tick restores it, else start from defaults.
+  const setEnabled = (on) => update((s) => {
+    const key = `building:${region}:${building}`;
+    if (on) s.buildings[building] = takeStashed(key) || newBuilding(dict, building);
+    else {
+      stashValue(key, s.buildings[building]);
+      s.buildings[building] = null;
+    }
+  });
   const table = entry
     ? html`<${BuildingSkinTable} entry=${entry} skins=${buildSkins(dict, building)} edit=${edit} />`
     : null;

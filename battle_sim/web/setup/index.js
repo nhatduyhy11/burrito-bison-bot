@@ -13,7 +13,7 @@ import { render } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { html } from "./ui.js";
 import { bloodTeams, capturedArtifact, prefill } from "./capture.js";
-import { emptyState, fromProfile, normalize, toProfile } from "./profile-io.js";
+import { emptyState, fromProfile, normalize, stashValue, takeStashed, toProfile } from "./profile-io.js";
 import { forRegion } from "./region.js";
 import { FormSections } from "./sections/index.js";
 import { Side } from "./side.js";
@@ -51,8 +51,26 @@ function App({ dict, maps, bossDict, navalDict, creepsDict, campaignDict, bloodD
     const teams = await bloodTeams(dict, region, state.battle);
     if (teams) update((s) => { s.heroes = [...teams.master, ...s.heroes.slice(teams.master.length)]; s.guestHeroes = teams.guest; });
   };
+  // Untick parks the group's values in the session stash (profile-state.js); a re-tick with the
+  // same battle + region restores them instead of re-prefilling from the capture — which, like the
+  // Đêm Đỏ team refill, would wipe the edits the stash exists to keep.
   const toggleWithPrefill = async (group, on) => {
-    const value = on ? await prefill(dict, maps, region, state.battle, group, navalDict) : null;
+    const key = `${region}:${state.battle}:${group}`;
+    if (!on) {
+      stashValue(key, state[group]);
+      if (group === "summonerSkins") stashValue(`${key}:worn`, state.summonerWorn);
+      update((s) => void (s[group] = null));
+      return;
+    }
+    const saved = takeStashed(key);
+    if (saved) {
+      update((s) => {
+        s[group] = saved;
+        if (group === "summonerSkins") s.summonerWorn = takeStashed(`${key}:worn`) || null;
+      });
+      return;
+    }
+    const value = await prefill(dict, maps, region, state.battle, group, navalDict);
     update((s) => void (s[group] = value));
     if (group === "map" && value?.mode === "blood") await fillBloodTeams();
   };
