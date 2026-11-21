@@ -1,0 +1,5266 @@
+{
+  "_generated": "node battle_sim/scripts/gen_naval_dict.js sea_66328 2.3.1-2_E64067_P63528_C64067",
+  "battleType": 42,
+  "bosses": {
+    "cursed_botchling_70070101": {
+      "code": 70070101,
+      "name": "Cursed Botchling",
+      "name_vn": "U Linh Nhi",
+      "avatar": "head/head_boss_001_sea",
+      "desc": "Weakness: None ·  Resistance: None  ·  Trait: Enters Rage mode at low HP, massively increases ASPD",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Khi HP dưới mức nhất định sẽ vào trạng thái Cuồng Bạo, tăng mạnh Tốc Công",
+      "presets": [
+        {
+          "level": 1010101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 1,
+          "creeps": [
+            70080801,
+            70080901,
+            70081901
+          ]
+        },
+        {
+          "level": 1020101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 1,
+          "creeps": [
+            70081001,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1030101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 1,
+          "creeps": [
+            70080501,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 1040101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 1,
+          "creeps": [
+            70081101,
+            70081201,
+            70082001
+          ]
+        },
+        {
+          "level": 1050101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 1,
+          "creeps": [
+            70081001,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1060101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 1,
+          "creeps": [
+            70080501,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 1070101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 1,
+          "creeps": [
+            70081101,
+            70081201,
+            70082001
+          ]
+        },
+        {
+          "level": 2010101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 1,
+          "creeps": [
+            70080801,
+            70080901,
+            70081901
+          ]
+        },
+        {
+          "level": 2020101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 1,
+          "creeps": [
+            70081001,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2030101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 1,
+          "creeps": [
+            70080501,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 2040101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 1,
+          "creeps": [
+            70081101,
+            70081201,
+            70082001
+          ]
+        },
+        {
+          "level": 2050101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 1,
+          "creeps": [
+            70081001,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2060101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 1,
+          "creeps": [
+            70080501,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 2070101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 1,
+          "creeps": [
+            70081101,
+            70081201,
+            70082001
+          ]
+        },
+        {
+          "level": 3010101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 1,
+          "creeps": [
+            70080801,
+            70080901,
+            70081901
+          ]
+        },
+        {
+          "level": 3020101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 1,
+          "creeps": [
+            70081001,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3030101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 1,
+          "creeps": [
+            70080501,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 3040101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 1,
+          "creeps": [
+            70081101,
+            70081201,
+            70082001
+          ]
+        },
+        {
+          "level": 3050101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 1,
+          "creeps": [
+            70081001,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3060101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 1,
+          "creeps": [
+            70080501,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 3070101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 1,
+          "creeps": [
+            70081101,
+            70081201,
+            70082001
+          ]
+        }
+      ]
+    },
+    "masked_spirit_70070201": {
+      "code": 70070201,
+      "name": "Masked Spirit",
+      "name_vn": "Mặt Nạ Oán Linh",
+      "avatar": "head/head_boss_003",
+      "desc": "Weakness: Bleed ·  Resistance: Burn, Knockback, Stun ·  Trait: There is a chance to restore HP when taking Burn",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Đẩy Lùi Choáng · Đặc điểm: Khi chịu Thiêu Đốt có tỷ lệ hồi HP",
+      "presets": [
+        {
+          "level": 1010201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 2,
+          "creeps": [
+            70080901,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1020201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 2,
+          "creeps": [
+            70080501,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 1030201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 2,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 1040201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 2,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 1050201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 2,
+          "creeps": [
+            70080501,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 1060201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 2,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 1070201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 2,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 2010201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 2,
+          "creeps": [
+            70080901,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2020201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 2,
+          "creeps": [
+            70080501,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 2030201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 2,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 2040201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 2,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 2050201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 2,
+          "creeps": [
+            70080501,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 2060201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 2,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 2070201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 2,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 3010201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 2,
+          "creeps": [
+            70080901,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3020201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 2,
+          "creeps": [
+            70080501,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 3030201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 2,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 3040201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 2,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 3050201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 2,
+          "creeps": [
+            70080501,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 3060201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 2,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 3070201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 2,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        }
+      ]
+    },
+    "voodoo_doll_70070301": {
+      "code": 70070301,
+      "name": "Voodoo Doll",
+      "name_vn": "Búp Bê Hắc Ám",
+      "avatar": "head/head_boss_004",
+      "desc": "Weakness: Paralysis ·  Resistance: Bleed, Frost, Frozen, Pull, Knockback ·  Trait: Increases All RES by 25% when taking Knockback, lasts 10s",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Khi bị Đẩy Lùi, bản thân tăng 25% Kháng Kép, duy trì 10s",
+      "presets": [
+        {
+          "level": 1010301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 3,
+          "creeps": [
+            70080301,
+            70080701,
+            70081201
+          ]
+        },
+        {
+          "level": 1020301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 3,
+          "creeps": [
+            70080801,
+            70080901,
+            70081501
+          ]
+        },
+        {
+          "level": 1030301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 3,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 1040301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 3,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 1050301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 3,
+          "creeps": [
+            70080801,
+            70080901,
+            70081501
+          ]
+        },
+        {
+          "level": 1060301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 3,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 1070301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 3,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 2010301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 3,
+          "creeps": [
+            70080301,
+            70080701,
+            70081201
+          ]
+        },
+        {
+          "level": 2020301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 3,
+          "creeps": [
+            70080801,
+            70080901,
+            70081501
+          ]
+        },
+        {
+          "level": 2030301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 3,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 2040301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 3,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 2050301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 3,
+          "creeps": [
+            70080801,
+            70080901,
+            70081501
+          ]
+        },
+        {
+          "level": 2060301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 3,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 2070301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 3,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 3010301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 3,
+          "creeps": [
+            70080301,
+            70080701,
+            70081201
+          ]
+        },
+        {
+          "level": 3020301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 3,
+          "creeps": [
+            70080801,
+            70080901,
+            70081501
+          ]
+        },
+        {
+          "level": 3030301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 3,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 3040301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 3,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 3050301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 3,
+          "creeps": [
+            70080801,
+            70080901,
+            70081501
+          ]
+        },
+        {
+          "level": 3060301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 3,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 3070301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 3,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        }
+      ]
+    },
+    "hell_flytrap_70070401": {
+      "code": 70070401,
+      "name": "Hell Flytrap",
+      "name_vn": "Hắc Hoa U Vực",
+      "avatar": "head/head_boss_005",
+      "desc": "Weak: Burn ·  Resistance: Paralysis, Knockback, Stun ·  Trait: Deals more DMG the more the Door loses HP",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Đẩy Lùi Choáng · Đặc điểm: Cửa càng mất nhiều HP, ST cá nhân càng cao",
+      "presets": [
+        {
+          "level": 1010401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 4,
+          "creeps": [
+            70080901,
+            70081101,
+            70081301
+          ]
+        },
+        {
+          "level": 1020401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 4,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 1030401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 4,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 1040401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 4,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 1050401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 4,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 1060401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 4,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 1070401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 4,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 2010401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 4,
+          "creeps": [
+            70080901,
+            70081101,
+            70081301
+          ]
+        },
+        {
+          "level": 2020401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 4,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 2030401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 4,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 2040401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 4,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 2050401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 4,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 2060401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 4,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 2070401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 4,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 3010401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 4,
+          "creeps": [
+            70080901,
+            70081101,
+            70081301
+          ]
+        },
+        {
+          "level": 3020401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 4,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 3030401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 4,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 3040401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 4,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 3050401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 4,
+          "creeps": [
+            70080201,
+            70080301,
+            70080801
+          ]
+        },
+        {
+          "level": 3060401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 4,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 3070401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 4,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        }
+      ]
+    },
+    "master_dread_70070501": {
+      "code": 70070501,
+      "name": "Master Dread",
+      "name_vn": "Tâm Khiếp Giả",
+      "avatar": "head/head_boss_006",
+      "desc": "Weakness: P.DMG ·  Resistance: Knockback, Frost, Stun, Pull ·  Trait: Gains 4s of DMG Immunity when taking M.DMG. Cooldown: 10s",
+      "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Đẩy Lùi Băng Sương Choáng Dẫn Dắt · Đặc điểm: Khi chịu ST Phép, bản thân nhận 4s Miễn ST, CD 10s",
+      "presets": [
+        {
+          "level": 1010501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080401,
+            70081301
+          ]
+        },
+        {
+          "level": 1020501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 5,
+          "creeps": [
+            70081301,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 1030501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080501,
+            70081001
+          ]
+        },
+        {
+          "level": 1040501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 5,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 1050501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 5,
+          "creeps": [
+            70081301,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 1060501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080501,
+            70081001
+          ]
+        },
+        {
+          "level": 1070501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 5,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 2010501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080401,
+            70081301
+          ]
+        },
+        {
+          "level": 2020501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 5,
+          "creeps": [
+            70081301,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 2030501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080501,
+            70081001
+          ]
+        },
+        {
+          "level": 2040501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 5,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 2050501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 5,
+          "creeps": [
+            70081301,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 2060501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080501,
+            70081001
+          ]
+        },
+        {
+          "level": 2070501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 5,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 3010501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080401,
+            70081301
+          ]
+        },
+        {
+          "level": 3020501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 5,
+          "creeps": [
+            70081301,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 3030501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080501,
+            70081001
+          ]
+        },
+        {
+          "level": 3040501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 5,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        },
+        {
+          "level": 3050501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 5,
+          "creeps": [
+            70081301,
+            70081601,
+            70081701
+          ]
+        },
+        {
+          "level": 3060501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 5,
+          "creeps": [
+            70080201,
+            70080501,
+            70081001
+          ]
+        },
+        {
+          "level": 3070501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 5,
+          "creeps": [
+            70080401,
+            70080701,
+            70081601
+          ]
+        }
+      ]
+    },
+    "lady_boggart_70070601": {
+      "code": 70070601,
+      "name": "Lady Boggart",
+      "name_vn": "Hắc Ám Phu Nhân",
+      "avatar": "head/head_boss_007",
+      "desc": "Weakness: M.DMG ·  Resistance: Physical, Frozen, Knockback ·  Trait: Every 15s, generates a Shield that blocks 10 instances of DMG",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: V.Lý Đóng Băng Đẩy Lùi · Đặc điểm: Cứ cách 15s sẽ tạo 1 khiên ngăn 10 lần ST cho bản thân",
+      "presets": [
+        {
+          "level": 1010601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 6,
+          "creeps": [
+            70080501,
+            70081101,
+            70081701
+          ]
+        },
+        {
+          "level": 1020601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 6,
+          "creeps": [
+            70080201,
+            70080501,
+            70080801
+          ]
+        },
+        {
+          "level": 1030601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 6,
+          "creeps": [
+            70081201,
+            70081501,
+            70082001
+          ]
+        },
+        {
+          "level": 1040601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 6,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 1050601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 6,
+          "creeps": [
+            70080201,
+            70080501,
+            70080801
+          ]
+        },
+        {
+          "level": 1060601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 6,
+          "creeps": [
+            70081201,
+            70081501,
+            70082001
+          ]
+        },
+        {
+          "level": 1070601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 6,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 2010601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 6,
+          "creeps": [
+            70080501,
+            70081101,
+            70081701
+          ]
+        },
+        {
+          "level": 2020601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 6,
+          "creeps": [
+            70080201,
+            70080501,
+            70080801
+          ]
+        },
+        {
+          "level": 2030601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 6,
+          "creeps": [
+            70081201,
+            70081501,
+            70082001
+          ]
+        },
+        {
+          "level": 2040601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 6,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 2050601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 6,
+          "creeps": [
+            70080201,
+            70080501,
+            70080801
+          ]
+        },
+        {
+          "level": 2060601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 6,
+          "creeps": [
+            70081201,
+            70081501,
+            70082001
+          ]
+        },
+        {
+          "level": 2070601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 6,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 3010601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 6,
+          "creeps": [
+            70080501,
+            70081101,
+            70081701
+          ]
+        },
+        {
+          "level": 3020601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 6,
+          "creeps": [
+            70080201,
+            70080501,
+            70080801
+          ]
+        },
+        {
+          "level": 3030601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 6,
+          "creeps": [
+            70081201,
+            70081501,
+            70082001
+          ]
+        },
+        {
+          "level": 3040601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 6,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 3050601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 6,
+          "creeps": [
+            70080201,
+            70080501,
+            70080801
+          ]
+        },
+        {
+          "level": 3060601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 6,
+          "creeps": [
+            70081201,
+            70081501,
+            70082001
+          ]
+        },
+        {
+          "level": 3070601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 6,
+          "creeps": [
+            70080701,
+            70081901,
+            70082001
+          ]
+        }
+      ]
+    },
+    "xenoqueen_70071201": {
+      "code": 70071201,
+      "name": "Xenoqueen",
+      "name_vn": "Nữ Hoàng Alien",
+      "avatar": "head/head_boss_008",
+      "desc": "Weakness: Paralysis ·  Resistance: Bleed, Burn, Stun, Pull ·  Trait: Blocks projectiles; summons 5 small snakes behind at intervals",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Chặn đường đạn bắn, cứ cách một khoảng thời gian triệu hồi 5 rắn nhỏ phía sau",
+      "presets": [
+        {
+          "level": 1010701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70080901
+          ]
+        },
+        {
+          "level": 1021801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 18,
+          "creeps": [
+            70081501,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 1031601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 16,
+          "creeps": [
+            70081601,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 1041401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 14,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 1051201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 12,
+          "creeps": [
+            70080201,
+            70080601,
+            70081101
+          ]
+        },
+        {
+          "level": 1061001,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 1070801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 8,
+          "creeps": [
+            70081001,
+            70081101,
+            70081201
+          ]
+        },
+        {
+          "level": 2011501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 15,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 2021301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 13,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2031101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 11,
+          "creeps": [
+            70080301,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 2040901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 9,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 2050701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 2061801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 18,
+          "creeps": [
+            70082001,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 2071601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 16,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        }
+      ]
+    },
+    "olden_lord_70071801": {
+      "code": 70071801,
+      "name": "Olden Lord",
+      "name_vn": "Cổ Thần",
+      "avatar": "head/head_boss_021",
+      "desc": "Weakness: DoT ·  Resistance: Direct DMG, Frozen, Knockback ·  Trait: Fires 9 bullets per attack, but reduces ACC by 35%",
+      "desc_vn": "Điểm yếu: ST Duy Trì · Kháng: ST Trực Tiếp Đóng Băng Đẩy Lùi · Đặc điểm: Mỗi lần tấn công bắn 9 viên đạn nhưng Chính Xác bản thân giảm 35%",
+      "presets": [
+        {
+          "level": 1010801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 8,
+          "creeps": [
+            70080801,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 1021901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 19,
+          "creeps": [
+            70081201,
+            70081801,
+            70082101
+          ]
+        },
+        {
+          "level": 1031701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 17,
+          "creeps": [
+            70081801,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 1041501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 15,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 1051301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 13,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1061101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 11,
+          "creeps": [
+            70080301,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 1070901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 9,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 2010801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 8,
+          "creeps": [
+            70080801,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 2021901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 19,
+          "creeps": [
+            70081201,
+            70081801,
+            70082101
+          ]
+        },
+        {
+          "level": 2031701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 17,
+          "creeps": [
+            70081801,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 2041501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 15,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 2051301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 13,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2061101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 11,
+          "creeps": [
+            70080301,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 2070901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 9,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 3010701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70080901
+          ]
+        },
+        {
+          "level": 3021801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 18,
+          "creeps": [
+            70081501,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 3031601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 16,
+          "creeps": [
+            70081601,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 3041401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 14,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 3051201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 12,
+          "creeps": [
+            70080201,
+            70080601,
+            70081101
+          ]
+        },
+        {
+          "level": 3061001,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 3070801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 8,
+          "creeps": [
+            70081001,
+            70081101,
+            70081201
+          ]
+        }
+      ]
+    },
+    "grudge_cauldron_70071301": {
+      "code": 70071301,
+      "name": "Grudge Cauldron",
+      "name_vn": "Oán Khí Chi Oa",
+      "avatar": "head/head_boss_009",
+      "desc": "Weakness: Bleed ·  Resistance: Burn, Paralysis, Knockback, Frost ·  Trait: Restores own HP when nearby monsters die",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: Thiêu Đốt Tê Liệt Đẩy Lùi Băng Sương · Đặc điểm: Dị Thú xung quanh tử trận sẽ hồi HP bản thân",
+      "presets": [
+        {
+          "level": 1010901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 9,
+          "creeps": [
+            70080401,
+            70081201,
+            70081801
+          ]
+        },
+        {
+          "level": 1020701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 1031801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 18,
+          "creeps": [
+            70082001,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 1041601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 16,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1051401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 14,
+          "creeps": [
+            70080701,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 1061201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 12,
+          "creeps": [
+            70080601,
+            70080701,
+            70081501
+          ]
+        },
+        {
+          "level": 1071001,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 2010701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70080901
+          ]
+        },
+        {
+          "level": 2021801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 18,
+          "creeps": [
+            70081501,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 2031601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 16,
+          "creeps": [
+            70081601,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 2041401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 14,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 2051201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 12,
+          "creeps": [
+            70080201,
+            70080601,
+            70081101
+          ]
+        },
+        {
+          "level": 2061001,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 2070801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 8,
+          "creeps": [
+            70081001,
+            70081101,
+            70081201
+          ]
+        },
+        {
+          "level": 3011701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 17,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 3021501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 15,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 3031301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 13,
+          "creeps": [
+            70080901,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 3041101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 11,
+          "creeps": [
+            70080501,
+            70081401,
+            70081701
+          ]
+        },
+        {
+          "level": 3050901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 9,
+          "creeps": [
+            70080501,
+            70080801,
+            70081801
+          ]
+        },
+        {
+          "level": 3060701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 7,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 3071801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 18,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        }
+      ]
+    },
+    "chainsaw_lynx_70071601": {
+      "code": 70071601,
+      "name": "Chainsaw Lynx",
+      "name_vn": "Hắc Linh Cưa Giả",
+      "avatar": "head/head_boss_019",
+      "desc": "Weakness: None ·  Resistance: Knockback, Stun ·  Trait: Immune to P.DMG and DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Đẩy Lùi Choáng · Đặc điểm: Miễn ST V.Lý và ST Duy Trì",
+      "presets": [
+        {
+          "level": 1011001,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080501,
+            70080601
+          ]
+        },
+        {
+          "level": 1020801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 8,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 1031901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 19,
+          "creeps": [
+            70080501,
+            70081701,
+            70082201
+          ]
+        },
+        {
+          "level": 1041701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 17,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 1051501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 15,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 1061301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 13,
+          "creeps": [
+            70080901,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 1071101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 11,
+          "creeps": [
+            70080501,
+            70081401,
+            70081701
+          ]
+        },
+        {
+          "level": 2011201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70080601,
+            70080801
+          ]
+        },
+        {
+          "level": 2021001,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 10,
+          "creeps": [
+            70080601,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 2030801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 8,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 2041901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 19,
+          "creeps": [
+            70081101,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2051701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 17,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 2061501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 15,
+          "creeps": [
+            70081101,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 2071301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3011001,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080501,
+            70080601
+          ]
+        },
+        {
+          "level": 3020801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 8,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 3031901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 19,
+          "creeps": [
+            70080501,
+            70081701,
+            70082201
+          ]
+        },
+        {
+          "level": 3041701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 17,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 3051501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 15,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 3061301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 13,
+          "creeps": [
+            70080901,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 3071101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 11,
+          "creeps": [
+            70080501,
+            70081401,
+            70081701
+          ]
+        }
+      ]
+    },
+    "faceless_chomper_70071401": {
+      "code": 70071401,
+      "name": "Faceless Chomper",
+      "name_vn": "Vô Diện Giả",
+      "avatar": "head/head_boss_010",
+      "desc": "Weak: Burn ·  Resistance: Paralysis, Bleed, Frost, Frozen, Pull, Knockback ·  Trait: Charges an attack every 10s, and Stuns all Heroes",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Cứ cách 10s tích lực tấn công 1 lần, làm Choáng toàn bộ Anh Hùng",
+      "presets": [
+        {
+          "level": 1011101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082001
+          ]
+        },
+        {
+          "level": 1020901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 9,
+          "creeps": [
+            70080501,
+            70080801,
+            70081801
+          ]
+        },
+        {
+          "level": 1030701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 7,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 1041801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 18,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 1051601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 16,
+          "creeps": [
+            70080901,
+            70081001,
+            70082101
+          ]
+        },
+        {
+          "level": 1061401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 14,
+          "creeps": [
+            70081101,
+            70081801,
+            70082301
+          ]
+        },
+        {
+          "level": 1071201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70081701,
+            70082101
+          ]
+        },
+        {
+          "level": 2011701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 17,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 2021501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 15,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 2031301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 13,
+          "creeps": [
+            70080901,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 2041101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 11,
+          "creeps": [
+            70080501,
+            70081401,
+            70081701
+          ]
+        },
+        {
+          "level": 2050901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 9,
+          "creeps": [
+            70080501,
+            70080801,
+            70081801
+          ]
+        },
+        {
+          "level": 2060701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 7,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 2071801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 18,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 3010901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 9,
+          "creeps": [
+            70080401,
+            70081201,
+            70081801
+          ]
+        },
+        {
+          "level": 3020701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 3031801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 18,
+          "creeps": [
+            70082001,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 3041601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 16,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3051401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 14,
+          "creeps": [
+            70080701,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 3061201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 12,
+          "creeps": [
+            70080601,
+            70080701,
+            70081501
+          ]
+        },
+        {
+          "level": 3071001,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        }
+      ]
+    },
+    "clawman_70072101": {
+      "code": 70072101,
+      "name": "Clawman",
+      "name_vn": "Hắc Trảo",
+      "avatar": "head/head_boss_025",
+      "desc": "Weakness: None ·  Resistance: Paralysis DMG, Burn DMG, Stun, Pull ·  Trait: Every 10s, devours summons or minions to restore HP",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Tê Liệt ST Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Mỗi 10s nuốt chửng Vật Triệu Hồi hoặc Quái Nhỏ, hồi HP",
+      "presets": [
+        {
+          "level": 1011201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70080601,
+            70080801
+          ]
+        },
+        {
+          "level": 1021001,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 10,
+          "creeps": [
+            70080601,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 1030801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 8,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 1041901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 19,
+          "creeps": [
+            70081101,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1051701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 17,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 1061501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 15,
+          "creeps": [
+            70081101,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 1071301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2011301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2021101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 2030901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 9,
+          "creeps": [
+            70080601,
+            70081801,
+            70081901
+          ]
+        },
+        {
+          "level": 2040701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 7,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 2051801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 18,
+          "creeps": [
+            70081501,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 2061601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 16,
+          "creeps": [
+            70081601,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 2071401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 14,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 3011401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 14,
+          "creeps": [
+            70080901,
+            70081501,
+            70082101
+          ]
+        },
+        {
+          "level": 3021201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 12,
+          "creeps": [
+            70080201,
+            70080601,
+            70081101
+          ]
+        },
+        {
+          "level": 3031001,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 3040801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 8,
+          "creeps": [
+            70081001,
+            70081101,
+            70081201
+          ]
+        },
+        {
+          "level": 3051901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 19,
+          "creeps": [
+            70081201,
+            70081801,
+            70082101
+          ]
+        },
+        {
+          "level": 3061701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 17,
+          "creeps": [
+            70081801,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 3071501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 15,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        }
+      ]
+    },
+    "headless_knight_70071501": {
+      "code": 70071501,
+      "name": "Headless Knight",
+      "name_vn": "Ẩn Diện Kỵ Sĩ",
+      "avatar": "head/head_boss_017",
+      "desc": "Weakness: None ·  Resistance: Frost, Frozen, Pull ·  Trait: Immune to M.DMG and DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Dẫn Dắt · Đặc điểm: Miễn ST Phép và ST Duy Trì",
+      "presets": [
+        {
+          "level": 1011301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1021101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 1030901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 9,
+          "creeps": [
+            70080601,
+            70081801,
+            70081901
+          ]
+        },
+        {
+          "level": 1040701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 7,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 1051801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 18,
+          "creeps": [
+            70081501,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 1061601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 16,
+          "creeps": [
+            70081601,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 1071401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 14,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 2010901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 9,
+          "creeps": [
+            70080401,
+            70081201,
+            70081801
+          ]
+        },
+        {
+          "level": 2020701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 2031801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 18,
+          "creeps": [
+            70082001,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 2041601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 16,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2051401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 14,
+          "creeps": [
+            70080701,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 2061201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 12,
+          "creeps": [
+            70080601,
+            70080701,
+            70081501
+          ]
+        },
+        {
+          "level": 2071001,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 3011301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3021101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 3030901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 9,
+          "creeps": [
+            70080601,
+            70081801,
+            70081901
+          ]
+        },
+        {
+          "level": 3040701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 7,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 3051801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 18,
+          "creeps": [
+            70081501,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 3061601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 16,
+          "creeps": [
+            70081601,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 3071401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 14,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        }
+      ]
+    },
+    "overtime_hex_70072001": {
+      "code": 70072001,
+      "name": "Overtime Hex",
+      "name_vn": "Hắc Nữ Tăng Ca",
+      "avatar": "head/head_boss_024",
+      "desc": "Weakness: None ·  Resistance: Frost, Frozen, Knockback ·  Trait: Taking P.DMG grants 5s of Invincible and 70% increased ATK. Cooldown: 10s",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Băng Sương Đóng Băng Đẩy Lùi · Đặc điểm: Khi chịu ST V.Lý vô địch 5s, Công tăng 70% khi Vô Địch, CD 10s",
+      "presets": [
+        {
+          "level": 1011401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 14,
+          "creeps": [
+            70080901,
+            70081501,
+            70082101
+          ]
+        },
+        {
+          "level": 1021201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 12,
+          "creeps": [
+            70080201,
+            70080601,
+            70081101
+          ]
+        },
+        {
+          "level": 1031001,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 1040801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 8,
+          "creeps": [
+            70081001,
+            70081101,
+            70081201
+          ]
+        },
+        {
+          "level": 1051901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 19,
+          "creeps": [
+            70081201,
+            70081801,
+            70082101
+          ]
+        },
+        {
+          "level": 1061701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 17,
+          "creeps": [
+            70081801,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 1071501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 15,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 2011001,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080501,
+            70080601
+          ]
+        },
+        {
+          "level": 2020801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 8,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 2031901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 19,
+          "creeps": [
+            70080501,
+            70081701,
+            70082201
+          ]
+        },
+        {
+          "level": 2041701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 17,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 2051501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 15,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 2061301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 13,
+          "creeps": [
+            70080901,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 2071101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 11,
+          "creeps": [
+            70080501,
+            70081401,
+            70081701
+          ]
+        },
+        {
+          "level": 3011101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082001
+          ]
+        },
+        {
+          "level": 3020901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 9,
+          "creeps": [
+            70080501,
+            70080801,
+            70081801
+          ]
+        },
+        {
+          "level": 3030701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 7,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 3041801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 18,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 3051601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 16,
+          "creeps": [
+            70080901,
+            70081001,
+            70082101
+          ]
+        },
+        {
+          "level": 3061401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 14,
+          "creeps": [
+            70081101,
+            70081801,
+            70082301
+          ]
+        },
+        {
+          "level": 3071201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70081701,
+            70082101
+          ]
+        }
+      ]
+    },
+    "drum_monkey_70072201": {
+      "code": 70072201,
+      "name": "Drum Monkey",
+      "name_vn": "Khỉ Điên Đánh Trống",
+      "avatar": "head/head_boss_029",
+      "desc": "Weakness: None ·  Resistance: Melee DMG Pull Knockback ·  Trait: Deals DMG to the Door every 8s",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến Dẫn Dắt Đẩy Lùi · Đặc điểm: mỗi 8s gây 1 lần ST lên cửa",
+      "presets": [
+        {
+          "level": 1011501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 15,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 1021301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 13,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1031101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 11,
+          "creeps": [
+            70080301,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 1040901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 9,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 1050701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 1061801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 18,
+          "creeps": [
+            70082001,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 1071601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 16,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        }
+      ]
+    },
+    "headless_reaper_70072401": {
+      "code": 70072401,
+      "name": "Headless Reaper",
+      "name_vn": "Vô Diện Tử Thần",
+      "avatar": "head/head_boss_026",
+      "desc": "Weakness: None ·  Resistance: Burn ·  Trait: Extremely long ATK range; summons 1 RnR Ghouls every 5s",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Thiêu Đốt · Đặc điểm: Tầm tấn công cực xa, cứ 5s sẽ triệu hồi 1 Dạ Quỷ Mê Rock",
+      "presets": [
+        {
+          "level": 1011601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 16,
+          "creeps": [
+            70081001,
+            70082001,
+            70082101
+          ]
+        },
+        {
+          "level": 1021401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 14,
+          "creeps": [
+            70080701,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 1031201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 12,
+          "creeps": [
+            70080601,
+            70080701,
+            70081501
+          ]
+        },
+        {
+          "level": 1041001,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 1050801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 8,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 1061901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 19,
+          "creeps": [
+            70080501,
+            70081701,
+            70082201
+          ]
+        },
+        {
+          "level": 1071701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 17,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 3011501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 15,
+          "creeps": [
+            70080601,
+            70081101,
+            70081601
+          ]
+        },
+        {
+          "level": 3021301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 13,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3031101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 11,
+          "creeps": [
+            70080301,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 3040901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 9,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 3050701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 7,
+          "creeps": [
+            70080201,
+            70080301,
+            70081701
+          ]
+        },
+        {
+          "level": 3061801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 18,
+          "creeps": [
+            70082001,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 3071601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 16,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        }
+      ]
+    },
+    "ghost_in_white_70072301": {
+      "code": 70072301,
+      "name": "Ghost in White",
+      "name_vn": "Bạch Y Nữ",
+      "avatar": "head/head_boss_016_sea",
+      "desc": "Weakness: None ·  Resistance: All CC Trait: Seals all Doors after Boss Invasion; sealed Doors cannot be upgraded",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Tất cả Khống ChếĐặc điểm: Khi BOSS tập kích sẽ phong ấn tất cả Cửa trong trận, không thể tăng cấp Cửa bị phong ấn",
+      "presets": [
+        {
+          "level": 1011701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 17,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 1021501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 15,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        },
+        {
+          "level": 1031301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 13,
+          "creeps": [
+            70080901,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 1041101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 11,
+          "creeps": [
+            70080501,
+            70081401,
+            70081701
+          ]
+        },
+        {
+          "level": 1050901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 9,
+          "creeps": [
+            70080501,
+            70080801,
+            70081801
+          ]
+        },
+        {
+          "level": 1060701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 7,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 1071801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 18,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 2011101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082001
+          ]
+        },
+        {
+          "level": 2020901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 9,
+          "creeps": [
+            70080501,
+            70080801,
+            70081801
+          ]
+        },
+        {
+          "level": 2030701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 7,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        },
+        {
+          "level": 2041801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 18,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 2051601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 16,
+          "creeps": [
+            70080901,
+            70081001,
+            70082101
+          ]
+        },
+        {
+          "level": 2061401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 14,
+          "creeps": [
+            70081101,
+            70081801,
+            70082301
+          ]
+        },
+        {
+          "level": 2071201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70081701,
+            70082101
+          ]
+        }
+      ]
+    },
+    "scorpion_queen_70072801": {
+      "code": 70072801,
+      "name": "Scorpion Queen",
+      "name_vn": "Bọ Cạp Hoàng Tuyền",
+      "avatar": "head/head_boss_034",
+      "desc": "Weakness: Summon DMG · Resistance: Non-summon DMG, Frost, Frozen, Pull, Knockback · Trait: Summons 5 Scorpions every 15s",
+      "desc_vn": "Điểm yếu: ST Vật Triệu Hồi · Kháng: ST ngoài Vật Triệu Hồi Băng Sương Đóng Băng Dẫn Dắt Đẩy Lùi · Đặc điểm: Cứ 15s triệu hồi 5 Bọ Cạp Nhỏ",
+      "presets": [
+        {
+          "level": 1011801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 18,
+          "creeps": [
+            70081201,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 1021601,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 16,
+          "creeps": [
+            70080901,
+            70081001,
+            70082101
+          ]
+        },
+        {
+          "level": 1031401,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 14,
+          "creeps": [
+            70081101,
+            70081801,
+            70082301
+          ]
+        },
+        {
+          "level": 1041201,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70081701,
+            70082101
+          ]
+        },
+        {
+          "level": 1051001,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 10,
+          "creeps": [
+            70080601,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 1060801,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 8,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 1071901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 19,
+          "creeps": [
+            70081101,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2011401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 14,
+          "creeps": [
+            70080901,
+            70081501,
+            70082101
+          ]
+        },
+        {
+          "level": 2021201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 12,
+          "creeps": [
+            70080201,
+            70080601,
+            70081101
+          ]
+        },
+        {
+          "level": 2031001,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 2040801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 8,
+          "creeps": [
+            70081001,
+            70081101,
+            70081201
+          ]
+        },
+        {
+          "level": 2051901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 19,
+          "creeps": [
+            70081201,
+            70081801,
+            70082101
+          ]
+        },
+        {
+          "level": 2061701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 17,
+          "creeps": [
+            70081801,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 2071501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 15,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 3011201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70080601,
+            70080801
+          ]
+        },
+        {
+          "level": 3021001,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 10,
+          "creeps": [
+            70080601,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 3030801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 8,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 3041901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 19,
+          "creeps": [
+            70081101,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3051701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 17,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 3061501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 15,
+          "creeps": [
+            70081101,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 3071301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        }
+      ]
+    },
+    "ghost_train_70071901": {
+      "code": 70071901,
+      "name": "Ghost Train",
+      "name_vn": "Hắc Hạm",
+      "avatar": "head/head_boss_023",
+      "desc": "Weakness: None ·  Resistance: Stun, Pull ·  Trait: Recovers 5% Max HP per second while under DoT",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Choáng Dẫn Dắt · Đặc điểm: Khi bản thân chịu ST Duy Trì, mỗi giây hồi 5% HP tối đa",
+      "presets": [
+        {
+          "level": 1011901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 1,
+          "position": 19,
+          "creeps": [
+            70081901,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 1021701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 2,
+          "position": 17,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 1031501,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 3,
+          "position": 15,
+          "creeps": [
+            70081101,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 1041301,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 4,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 1051101,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 5,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 1060901,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 6,
+          "position": 9,
+          "creeps": [
+            70080601,
+            70081801,
+            70081901
+          ]
+        },
+        {
+          "level": 1070701,
+          "phase": "rooms",
+          "subType": 1,
+          "day": 7,
+          "position": 7,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 3010801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 8,
+          "creeps": [
+            70080801,
+            70081001,
+            70081701
+          ]
+        },
+        {
+          "level": 3021901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 19,
+          "creeps": [
+            70081201,
+            70081801,
+            70082101
+          ]
+        },
+        {
+          "level": 3031701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 17,
+          "creeps": [
+            70081801,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 3041501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 15,
+          "creeps": [
+            70081901,
+            70082101,
+            70082301
+          ]
+        },
+        {
+          "level": 3051301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 13,
+          "creeps": [
+            70081201,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3061101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 11,
+          "creeps": [
+            70080301,
+            70081901,
+            70082001
+          ]
+        },
+        {
+          "level": 3070901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 9,
+          "creeps": [
+            70081401,
+            70081601,
+            70082101
+          ]
+        }
+      ]
+    },
+    "shining_twins_70073001": {
+      "code": 70073001,
+      "name": "Shining Twins",
+      "name_vn": "Song Sinh",
+      "avatar": "head/head_boss_018",
+      "desc": "Weakness: None ·  Resistance: Melee DMG, M.DMG, CC ·  Trait: Summons Young Skinners at intervals",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến ST Phép hiệu quả Khống Chế · Đặc điểm: Cứ cách một khoảng thời gian sẽ triệu hồi Quỷ Đồng Lột Da",
+      "presets": [
+        {
+          "level": 2011601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 16,
+          "creeps": [
+            70081001,
+            70082001,
+            70082101
+          ]
+        },
+        {
+          "level": 2021401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 14,
+          "creeps": [
+            70080701,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 2031201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 12,
+          "creeps": [
+            70080601,
+            70080701,
+            70081501
+          ]
+        },
+        {
+          "level": 2041001,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 2050801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 8,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 2061901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 19,
+          "creeps": [
+            70080501,
+            70081701,
+            70082201
+          ]
+        },
+        {
+          "level": 2071701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 17,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        }
+      ]
+    },
+    "skinnerette_70073201": {
+      "code": 70073201,
+      "name": "Skinnerette",
+      "name_vn": "Búp Bê Da",
+      "avatar": "head/head_boss_030",
+      "desc": "Weakness: Melee DMG, Direct DMG ·  Resistance: DoT, Knockback, Interrupt, Teleport ·  Trait: With more than 10 summons on the field, immediately becomes Enraged, greatly reduces DMG taken, and greatly increases ASPD",
+      "desc_vn": "Điểm yếu: ST Cận Chiến ST Trực Tiếp · Kháng: ST Duy Trì Đẩy Lùi Ngăn Chặn Dịch Chuyển · Đặc điểm: khi số lượng vật triệu hồi trên sân lớn hơn 10 sẽ lập tức nổi giận, đồng thời khiến ST mà bản thân phải chịu giảm mạnh, Công và Tốc Công tăng mạnh",
+      "presets": [
+        {
+          "level": 2011801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 18,
+          "creeps": [
+            70081201,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 2021601,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 16,
+          "creeps": [
+            70080901,
+            70081001,
+            70082101
+          ]
+        },
+        {
+          "level": 2031401,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 14,
+          "creeps": [
+            70081101,
+            70081801,
+            70082301
+          ]
+        },
+        {
+          "level": 2041201,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70081701,
+            70082101
+          ]
+        },
+        {
+          "level": 2051001,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 10,
+          "creeps": [
+            70080601,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 2060801,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 8,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 2071901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 19,
+          "creeps": [
+            70081101,
+            70081701,
+            70082301
+          ]
+        }
+      ]
+    },
+    "mummy_pharaoh_70071001": {
+      "code": 70071001,
+      "name": "Mummy Pharaoh",
+      "name_vn": "Cổ Thi",
+      "avatar": "head/head_boss_014",
+      "desc": "Weakness: P.DMG ·  Resistance: Burn, Pull, Frost ·  Trait: Gains 6s of DMG Immunity when taking M.DMG",
+      "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Thiêu Đốt Dẫn Dắt Băng Sương · Đặc điểm: Khi chịu ST Phép, bản thân nhận 6s Miễn ST",
+      "presets": [
+        {
+          "level": 2011901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 1,
+          "position": 19,
+          "creeps": [
+            70081901,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 2021701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 2,
+          "position": 17,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 2031501,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 3,
+          "position": 15,
+          "creeps": [
+            70081101,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 2041301,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 4,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 2051101,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 5,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 2060901,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 6,
+          "position": 9,
+          "creeps": [
+            70080601,
+            70081801,
+            70081901
+          ]
+        },
+        {
+          "level": 2070701,
+          "phase": "rooms",
+          "subType": 2,
+          "day": 7,
+          "position": 7,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        },
+        {
+          "level": 3011901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 19,
+          "creeps": [
+            70081901,
+            70082001,
+            70082201
+          ]
+        },
+        {
+          "level": 3021701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 17,
+          "creeps": [
+            70080501,
+            70080901,
+            70081401
+          ]
+        },
+        {
+          "level": 3031501,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 15,
+          "creeps": [
+            70081101,
+            70081701,
+            70082001
+          ]
+        },
+        {
+          "level": 3041301,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 13,
+          "creeps": [
+            70081501,
+            70081701,
+            70082301
+          ]
+        },
+        {
+          "level": 3051101,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 11,
+          "creeps": [
+            70081001,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 3060901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 9,
+          "creeps": [
+            70080601,
+            70081801,
+            70081901
+          ]
+        },
+        {
+          "level": 3070701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 7,
+          "creeps": [
+            70080401,
+            70081301,
+            70081701
+          ]
+        }
+      ]
+    },
+    "bonescorcher_70073101": {
+      "code": 70073101,
+      "name": "Bonescorcher",
+      "name_vn": "Tướng Quân Phần Cốt",
+      "avatar": "head/head_boss_033",
+      "desc": "Weakness: Burn DMG, Paralysis DMG ·  Resistance: Physical, Knockback, Frost, Stun ·  Trait: Attacks ignore and destroy the Door's Immunity effect; for every 30 instances of DMG dealt to the door, immediately executes the hero dealing the lowest DMG and increases DMG by 20%",
+      "desc_vn": "Điểm yếu: ST Thiêu Đốt ST Tê Liệt · Kháng: V.Lý Đẩy Lùi Băng Sương Choáng · Đặc điểm: Khi tấn công sẽ bỏ qua và phá hiệu quả Miễn Dịch của Cửa. Mỗi 30 lần gây ST lên Cửa sẽ Trảm Sát ngay 1 Tướng có sát thương thấp nhất và tăng 20% ST",
+      "presets": [
+        {
+          "level": 3011601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 16,
+          "creeps": [
+            70081001,
+            70082001,
+            70082101
+          ]
+        },
+        {
+          "level": 3021401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 14,
+          "creeps": [
+            70080701,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 3031201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 12,
+          "creeps": [
+            70080601,
+            70080701,
+            70081501
+          ]
+        },
+        {
+          "level": 3041001,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 10,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 3050801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 8,
+          "creeps": [
+            70081501,
+            70081601,
+            70081901
+          ]
+        },
+        {
+          "level": 3061901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 19,
+          "creeps": [
+            70080501,
+            70081701,
+            70082201
+          ]
+        },
+        {
+          "level": 3071701,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 17,
+          "creeps": [
+            70081201,
+            70081501,
+            70082301
+          ]
+        }
+      ]
+    },
+    "banded_curselord_70072901": {
+      "code": 70072901,
+      "name": "Banded Curselord",
+      "name_vn": "Khế Ước Quỷ Vương",
+      "avatar": "head/head_boss_031",
+      "desc": "Weakness: Bleed DMG, Paralysis DMG ·  Resistance: Crit, Knockback, Frozen ·  Trait: DMG changes to 0 when taking Crit.",
+      "desc_vn": "Điểm yếu: ST Mất HP ST Tê Liệt · Kháng: Bạo Đẩy Lùi Đóng Băng · Đặc điểm: Khi chịu Bạo, ST biến thành 0",
+      "presets": [
+        {
+          "level": 3011801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 1,
+          "position": 18,
+          "creeps": [
+            70081201,
+            70082101,
+            70082201
+          ]
+        },
+        {
+          "level": 3021601,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 2,
+          "position": 16,
+          "creeps": [
+            70080901,
+            70081001,
+            70082101
+          ]
+        },
+        {
+          "level": 3031401,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 3,
+          "position": 14,
+          "creeps": [
+            70081101,
+            70081801,
+            70082301
+          ]
+        },
+        {
+          "level": 3041201,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 4,
+          "position": 12,
+          "creeps": [
+            70080401,
+            70081701,
+            70082101
+          ]
+        },
+        {
+          "level": 3051001,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 5,
+          "position": 10,
+          "creeps": [
+            70080601,
+            70081601,
+            70082301
+          ]
+        },
+        {
+          "level": 3060801,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 6,
+          "position": 8,
+          "creeps": [
+            70080201,
+            70080301,
+            70081401
+          ]
+        },
+        {
+          "level": 3071901,
+          "phase": "rooms",
+          "subType": 3,
+          "day": 7,
+          "position": 19,
+          "creeps": [
+            70081101,
+            70081701,
+            70082301
+          ]
+        }
+      ]
+    },
+    "night_haunter_70072601": {
+      "code": 70072601,
+      "name": "Night Haunter",
+      "name_vn": "Hồi Chuông Đêm",
+      "avatar": "head/head_boss_028",
+      "desc": "Weakness: Melee DMG ·  Resistance: Ranged DMG, CC ·  Trait: Immune to all Ranged DMG and all CC effects",
+      "desc_vn": "Điểm yếu: ST Cận Chiến · Kháng: ST Tầm Xa Khống Chế · Đặc điểm: Miễn tất cả ST Tầm Xa, kháng tất cả khống chế",
+      "presets": [
+        {
+          "level": 10000101,
+          "phase": "audition",
+          "subType": 0,
+          "day": 7,
+          "position": null,
+          "creeps": []
+        }
+      ]
+    },
+    "savage_butcher_70072701": {
+      "code": 70072701,
+      "name": "Savage Butcher",
+      "name_vn": "Đồ Tể Thối Rữa",
+      "avatar": "head/head_boss_032",
+      "desc": "Weakness: None ·  Resistance: Melee DMG, CC ·  Trait: Immune to all CC",
+      "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến  Khống Chế · Đặc điểm: kháng tất cả khống chế",
+      "presets": [
+        {
+          "level": 10000201,
+          "phase": "audition",
+          "subType": 0,
+          "day": 7,
+          "position": null,
+          "creeps": []
+        }
+      ]
+    },
+    "maniac_clown_70072501": {
+      "code": 70072501,
+      "name": "Maniac Clown",
+      "name_vn": "Gã Hề Điên",
+      "avatar": "head/head_boss_027",
+      "desc": "Weakness: CC effects ·  Resistance: Non-True DMG Immunity ·  Trait: Takes additional True DMG under CC effects",
+      "desc_vn": "Điểm yếu: hiệu quả Khống Chế · Kháng: Ngoài ST Thực · Đặc điểm: Khi bị khống chế, chịu thêm ST Thực",
+      "presets": [
+        {
+          "level": 10000301,
+          "phase": "audition",
+          "subType": 0,
+          "day": 7,
+          "position": null,
+          "creeps": []
+        }
+      ]
+    }
+  },
+  "creeps": {
+    "70080201": {
+      "code": 70080201,
+      "name": "Common Zombie",
+      "name_vn": "Zombie Thường",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None ·  Resistance: None  ·  Trait: None",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Trống · Đặc điểm: Trống"
+    },
+    "70080301": {
+      "code": 70080301,
+      "name": "Twin Zombie",
+      "name_vn": "Zombie Song Sinh",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Burn, Bleed ·  Resistance: None  ·  Trait: Splits into two Zombies on death",
+      "desc_vn": "Điểm yếu: Thiêu Đốt Mất HP · Kháng: Trống · Đặc điểm: Khi tử trận sẽ tách thành 2 Zombie"
+    },
+    "70080401": {
+      "code": 70080401,
+      "name": "Zombie Wolf",
+      "name_vn": "Sói Zombie",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: Paralysis ·  Resistance: None  ·  Trait: Charges quickly at start",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Trống · Đặc điểm: Bắt đầu sẽ lao nhanh"
+    },
+    "70080501": {
+      "code": 70080501,
+      "name": "Ghost Bird",
+      "name_vn": "Chim Mặt Quỷ",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: M.DMG ·  Resistance: P.DMG ·  Trait: Ranged, Flying",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Tầm Xa   Đơn vị Bay"
+    },
+    "70080601": {
+      "code": 70080601,
+      "name": "Thief Zombie",
+      "name_vn": "Zombie Trộm",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: P.DMG ·  Resistance: None  ·  Trait: Steals Banknotes on attack",
+      "desc_vn": "Điểm yếu: ST V.Lý · Kháng: Trống · Đặc điểm: Khi tấn công sẽ hút tiền"
+    },
+    "70080701": {
+      "code": 70080701,
+      "name": "Demon Hag",
+      "name_vn": "Quỷ Bà Bà",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weak: Burn ·  Resistance: None  ·  Trait: Ranged, restores HP when low",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Trống · Đặc điểm: Tầm Xa   Khi HP thấp sẽ duy trì hồi HP bản thân"
+    },
+    "70080801": {
+      "code": 70080801,
+      "name": "Flame Zombie",
+      "name_vn": "Zombie Lửa",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: Paralysis, Frost ·  Resistance: Burn, Stun, Pull ·  Trait: None",
+      "desc_vn": "Điểm yếu: Tê Liệt Sương Giá · Kháng: Thiêu Đốt Choáng Dẫn Dắt · Đặc điểm: Trống"
+    },
+    "70080901": {
+      "code": 70080901,
+      "name": "Gorilla Zombie",
+      "name_vn": "Zombie Khỉ Đột",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Paralysis ·  Resistance: P.DMG, Knockback, Stun  ·  Trait: None",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: ST V.Lý Đẩy Lùi Choáng · Đặc điểm: Trống"
+    },
+    "70081001": {
+      "code": 70081001,
+      "name": "Xenom Zombie",
+      "name_vn": "Zombie Biến Dị",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed ·  Resistance: M.DMG, Paralysis, Pull ·  Trait: Ranged",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Tê Liệt Dẫn Dắt · Đặc điểm: Tầm Xa"
+    },
+    "70081101": {
+      "code": 70081101,
+      "name": "Yeti Zombie",
+      "name_vn": "Zombie Người Tuyết",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weak: Burn ·  Resistance: Frost, Bleed, Paralysis ·  Trait: None",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Băng Sương Mất HP Tê Liệt · Đặc điểm: Trống"
+    },
+    "70081201": {
+      "code": 70081201,
+      "name": "Antenna Zombie",
+      "name_vn": "Zombie Ăng-ten",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weak: Burn ·  Resistance:Paralysis ·  Trait: Ranged, steals Sparks on attack",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt · Đặc điểm: Tầm Xa   Khi tấn công sẽ hút điện"
+    },
+    "70081301": {
+      "code": 70081301,
+      "name": "Explosive Spider",
+      "name_vn": "Nhện Nổ",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Physical ·  Resistance: Burn, Bleed  ·  Trait: Moves faster at low HP, self-destructs",
+      "desc_vn": "Điểm yếu: V.Lý · Kháng: Thiêu Đốt Mất HP  · Đặc điểm: Khi HP thấp sẽ tăng Vận Tốc và tự phát nổ"
+    },
+    "70081401": {
+      "code": 70081401,
+      "name": "Clumsy Zombie",
+      "name_vn": "Zombie Nặng Nề",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed ·  Resistance: Knockback, Frost ·  Trait: Ranged",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: Đẩy Lùi Băng Sương · Đặc điểm: Tầm Xa"
+    },
+    "70081501": {
+      "code": 70081501,
+      "name": "Zombie Bloom",
+      "name_vn": "Minh Hoa Hoán Thi",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: M.DMG ·  Resistance: Bleed, Paralysis, Stun ·  Trait: Ranged, periodically spawns mini Zombies",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: Mất HP Tê Liệt Choáng · Đặc điểm: Tầm Xa   Cứ cách một khoảng thời gian sẽ ấp nở Zombie nhỏ"
+    },
+    "70081601": {
+      "code": 70081601,
+      "name": "Shield Zombie",
+      "name_vn": "Zombie Khiên",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weak: Burn ·  Resistance: Interrupt, Knockback ·  Trait: Blocks projectiles with shield",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Ngăn Chặn Đẩy Lùi · Đặc điểm: Sẽ dùng Khiên chặn đường đạn bắn"
+    },
+    "70081701": {
+      "code": 70081701,
+      "name": "Coffin Zombie",
+      "name_vn": "Zombie Quan Tài",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: M.DMG ·  Resistance: P.DMG ·  Trait: Immune to 10 hits and debuffs",
+      "desc_vn": "Điểm yếu: ST Phép · Kháng: ST V.Lý · Đặc điểm: Sẽ miễn 10 lần ST và hiệu quả DEBUFF"
+    },
+    "70081801": {
+      "code": 70081801,
+      "name": "Bell Zombie",
+      "name_vn": "Zombie Chuông Lớn",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weakness: Paralysis ·  Resistance: Bleed, Knockback, Frost ·  Trait: Blocks piercing bullets",
+      "desc_vn": "Điểm yếu: Tê Liệt · Kháng: Mất HP Đẩy Lùi Băng Sương · Đặc điểm: Sẽ chặn đạn xuyên thấu"
+    },
+    "70081901": {
+      "code": 70081901,
+      "name": "Deathbringer",
+      "name_vn": "Quỷ Sai",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Bleed, Physical ·  Resistance: Pull ·  Trait: Reduces production if more than 8 present",
+      "desc_vn": "Điểm yếu: Mất HP V.Lý · Kháng: Dẫn Dắt · Đặc điểm: Số lượng trong trận trên 8 giờ sẽ giảm hiệu suất sản xuất"
+    },
+    "70082001": {
+      "code": 70082001,
+      "name": "Armored Drake",
+      "name_vn": "Thể Rồng Giáp",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: Bleed ·  Resistance: M.DMG, Burn, Pull, Frozen ·  Trait: There is a chance to dodge M.DMG",
+      "desc_vn": "Điểm yếu: Mất HP · Kháng: ST Phép Thiêu Đốt Dẫn Dắt Đóng Băng · Đặc điểm: Có tỷ lệ né ST Phép"
+    },
+    "70082101": {
+      "code": 70082101,
+      "name": "Ancient Ghoul",
+      "name_vn": "Dị Quỷ Ngàn Năm",
+      "avatar": "head/touxiang_img_206",
+      "desc": "Weak: Burn ·  Resistance: Paralysis, Bleed ·  Trait: Increases own Crit RES by 100%",
+      "desc_vn": "Điểm yếu: Thiêu Đốt · Kháng: Tê Liệt Mất HP · Đặc điểm: Sẽ tăng 100% Kháng Bạo bản thân"
+    },
+    "70082201": {
+      "code": 70082201,
+      "name": "Stone Lion",
+      "name_vn": "Quỷ Sư Tử Đá",
+      "avatar": "head/touxiang_img_207",
+      "desc": "Weakness: Direct DMG ·  Resistance: Burn, Paralysis, Bleed, Interrupt, Knockback, Stun, Frost ·  Trait: None",
+      "desc_vn": "Điểm yếu: ST Trực Tiếp · Kháng: Thiêu Đốt Tê Liệt Mất HP Ngăn Chặn Đẩy Lùi Choáng Băng Sương · Đặc điểm: Trống"
+    },
+    "70082301": {
+      "code": 70082301,
+      "name": "Hundred-Eyed Zombie",
+      "name_vn": "Cuồng Thi Trăm Mắt",
+      "avatar": "head/touxiang_img_205",
+      "desc": "Weakness: None ·  Resistance: Bleed, Interrupt, Stun ·  Trait: Gains ASPD & Move SPD when HP is low",
+      "desc_vn": "Điểm yếu: Trống · Kháng: Mất HP Ngăn Chặn Choáng · Đặc điểm: Tăng Tốc Công và Tốc Độ khi HP bản thân thấp"
+    }
+  }
+}
