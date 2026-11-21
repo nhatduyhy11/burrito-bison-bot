@@ -25,7 +25,7 @@ export async function runBattle({ sim, step, R }) {
   let summonerDerma = 0;
   if (play && params.has("profile")) {
     const { applyProfile } = await import("./profile.js");
-    ({ summonerDerma } = await applyProfile(start, rb, M, step, sim.capture.team));
+    ({ summonerDerma } = await applyProfile(start, rb, M, step, sim.capture.team, sim.capture.roster));
   }
   const s2c = rb.build("StartGameP_BuildRoom_S2C", start);
   const ops = play ? [] : rb.listItems(quit.operations).slice().sort((a, b) => a.operFrame - b.operFrame || a.index - b.index);

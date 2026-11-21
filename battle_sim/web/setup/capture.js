@@ -77,9 +77,11 @@ export async function prefill(dict, maps, region, battle, group, navalDict) {
 
 // Thần Khí of a hero in the base capture as setup state (hero card in Teams), null when it has none.
 export async function capturedArtifact(region, battle, heroCode) {
-  const start = await capturedStart(region, battle);
-  const player = start && listItems(start.playerInfos)[0];
-  const artifact = listItems(player?.heros).find((h) => h.code === heroCode)?.artifact;
+  const capture = await capturedBattle(region, battle);
+  const player = listItems(capture?.start?.playerInfos)[0];
+  const hero = listItems(player?.heros).find((h) => h.code === heroCode)
+    || listItems(capture?.roster?.heros).find((h) => h.code === heroCode);
+  const artifact = hero?.artifact;
   if (!artifact) return null;
   const entries = listItems(artifact.battleEntryInfos).map(({ code, value }) => ({ code, value }));
   return artifactState({ quality: Math.floor(artifact.code / 1000) % 100, stage: artifact.code % 1000, entries });

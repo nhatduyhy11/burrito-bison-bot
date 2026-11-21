@@ -10,12 +10,12 @@ export function toProfile(state, dict) {
   else if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
   if (state.heroes) {
     const heroProfile = (hero) => {
-      if (!hero.custom && hero.relic === undefined && hero.beautyBag === undefined && hero.artifact === undefined) return hero.name;
+      if (!hero.custom) return hero.name;
       const out = { name: hero.name };
       if (hero.relic !== undefined) out.relic = hero.relic;
       if (hero.beautyBag !== undefined) out.beautyBag = hero.beautyBag;
       if (hero.artifact !== undefined) out.artifact = artifactProfile(hero.artifact);
-      if (!hero.custom) return out;
+      if (hero.skinOverride === false) return out;
       const skins = heroSkins(dict, hero.name);
       if (hero.avatar !== null && dict.heroes[hero.name].avatarNodes) out.avatar = hero.avatar;
       if (!Object.keys(skins).length) return out;

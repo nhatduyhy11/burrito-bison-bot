@@ -26,15 +26,22 @@ function loadCapture(file) {
   const battles = [];
   let cur = null;
   let team = null; // latest refreshMemberInfosR members
+  let roster = null; // explicit passive snapshot of this account, before StartGameP
   for (const e of lines) {
     const msg = e.data && typeof e.data === "object" ? String(e.data.msg || "") : "";
     if (e.kind === "sock" && msg.includes("refreshMemberInfosR(") && e.data.obj?.members) {
       team = listItems(e.data.obj.members).map(teamMember);
     }
+    if (e.kind === "roster" && msg === "HeroRosterSnapshot" && e.data.obj?.heros) {
+      roster = e.data.obj;
+    }
     if (e.kind === "room" && msg.includes("StartGameP")) {
       const start = e.data.obj;
       cur = { file, start, events: [] };
       const ids = listItems(start.playerInfos).map((p) => Number(p.playerId));
+      const main = team?.find((m) => m.playerId === ids[0]);
+      if (main) cur.roster = { playerId: main.playerId, heros: main.heros, source: "team", complete: true };
+      else if (roster && Number(roster.playerId) === ids[0]) cur.roster = JSON.parse(JSON.stringify(roster));
       if (TEAM_BATTLE_TYPES.has(start.battleType) && team && ids.every((id) => team.some((m) => m.playerId === id))) {
         cur.team = team;
       }

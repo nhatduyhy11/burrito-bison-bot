@@ -33,7 +33,7 @@ function emptyState(dict, antiqueDict) {
 function newHero(name) {
   // avatar: number of open Dị Năng skill nodes (red heroes, set when custom), null = as captured / borrowed.
   // beautyBag (Dị Vật): left unset = as captured, null = none, { type, star, gold } (beauty-bags.js).
-  return { name, custom: false, worn: null, skins: {}, slots: [], avatar: null, relic: null };
+  return { name, custom: false, skinOverride: false, worn: null, skins: {}, slots: [], avatar: null };
 }
 
 function newBuilding(dict, building) {
@@ -52,8 +52,8 @@ function normalize(state, dict) {
   // The worn Summoner skin is picked among the skins checked in the Summoner table.
   if (!state.summonerSkins?.some(({ name }) => name === state.summonerWorn)) state.summonerWorn = null;
   for (const hero of [...state.heroes, ...state.guestHeroes, state.summonedJoker].filter(Boolean)) {
-    // "Tùy chỉnh" customizes everything: a red hero's Dị Năng defaults to 0; untouched = as captured.
-    if (!hero.custom || !dict.heroes[hero.name]?.avatarNodes) hero.avatar = null;
+    // Skin/avatar/artifact toggle: a red hero's Dị Năng defaults to 0; untouched = as captured.
+    if (!hero.custom || hero.skinOverride === false || !dict.heroes[hero.name]?.avatarNodes) hero.avatar = null;
     else hero.avatar ??= 0;
   }
   for (const hero of [...state.heroes, ...state.guestHeroes]) R.normalizeHero(hero, heroSkins(dict, hero.name));

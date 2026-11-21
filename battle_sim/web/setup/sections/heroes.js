@@ -1,6 +1,4 @@
-// Hero list; "Tùy chỉnh" on a hero card opens its Dị Năng skill nodes (red heroes), skin table
-// (owned, star, slots) and the Thần Khí editor (artifact.js). Dị Vật sits right below Thánh Khí and,
-// like it, works without "Tùy chỉnh".
+// Per-hero customization: off keeps every captured field; on unlocks all hero overrides.
 import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, StarSkillsLabel, plain, starsLabel, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
 import { heroSkins, isBlood, newHero } from "../profile-state.js";
@@ -35,8 +33,8 @@ function HeroesBody({ ctx }) {
     ${cards}
     ${showJoker && html`<${HeroCard} ctx=${ctx} hero=${state.summonedJoker} index=${5} summoned=${true} />`}
     <div class="note">
-      Hero có trong capture giữ chỉ số và skill gốc; hero khác mượn chỉ số trung bình, level và level skill của các
-      hero cùng độ hiếm trong capture (gần đúng, ±10%). Không tick "Tùy chỉnh" thì giữ skin và Dị Năng từ capture; tick thì Dị Năng bắt đầu từ 0.
+      Ưu tiên dữ liệu hero trong trận, rồi roster của acc nếu capture có lưu. Hero ngoài cả hai nguồn mượn chỉ số trung bình, level và level skill của các
+      hero cùng độ hiếm trong capture (gần đúng, ±10%). Tắt "Tùy chỉnh" giữ toàn bộ dữ liệu hero từ capture. Bật mới sửa skin, Dị Năng, Thánh Khí, Dị Vật và Thần Khí; Dị Năng bắt đầu từ 0. Roster lobby thường có thể thiếu trang bị; roster Đêm Đỏ đầy đủ hơn.
     </div>
   `;
 }
@@ -52,6 +50,7 @@ export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes",
   const pool = artifactDict.heroes[heroCode]?.pool;
   const options = [["", "— Chọn hero —"], ...nameOptions(dict, "heroes", chosen ?? state.heroes.map((h) => h.name), hero.name)];
   const edit = (fn) => update((s) => void fn(summoned ? s.summonedJoker : s[group][index]));
+  const editSkin = (fn) => edit((h) => { h.skinOverride = true; fn(h); });
   const setName = (v) => update((s) => void (s[group][index] = newHero(v)));
   // "Tùy chỉnh" also owns the Thần Khí: tick fills it from the capture (Teams slots only — the
   // summoned Joker has none), untick returns to "theo capture".
@@ -61,16 +60,14 @@ export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes",
       : undefined;
     edit((h) => {
       h.custom = on;
-      if (on && h.relic === undefined) h.relic = null;
+      h.skinOverride = on;
+      if (!on) { h.relic = undefined; h.beautyBag = undefined; h.artifact = undefined; }
       if (on && pool && !summoned && h.artifact === undefined) h.artifact = artifact;
-      if (!on && !summoned) h.artifact = undefined;
     });
   };
-  const custom = hasSkins || nodes.length || pool
-    ? html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh</label>`
-    : html`<span class="note">không có skin</span>`;
-  const avatar = hero.custom && nodes.length ? html`<${AvatarPicker} hero=${hero} nodes=${nodes} edit=${edit} />` : null;
-  const table = hero.custom && hasSkins ? html`<${HeroSkinTable} hero=${hero} skins=${skins} edit=${edit} />` : null;
+  const custom = html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh</label>`;
+  const avatar = hero.custom && nodes.length ? html`<${AvatarPicker} hero=${hero} nodes=${nodes} edit=${editSkin} />` : null;
+  const table = hero.custom && hasSkins ? html`<${HeroSkinTable} hero=${hero} skins=${skins} edit=${editSkin} />` : null;
   const artifact = !summoned && hero.custom && pool
     ? html`<div class="subsection"><${ArtifactBody} artifact=${hero.artifact} heroCode=${heroCode} pool=${pool} artifactDict=${artifactDict} edit=${edit} /></div>`
     : null;
@@ -83,8 +80,9 @@ export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes",
           : html`<${Select} aria-label=${`Hero ${group === "heroes" ? "" : "Guest "}slot ${index + 1}`} options=${options} value=${hero.name} onChange=${setName} />`}
         ${custom}
       </div>
-      ${hero.name && html`<${RelicPicker} selection=${hero.relic} lines=${ctx.relicLines} edit=${edit} />`}
-      ${hero.name && html`<${BeautyBagPicker} selection=${hero.beautyBag} types=${ctx.beautyBagTypes} edit=${edit} />`}
+      ${hero.name && hero.custom && html`<${RelicPicker} selection=${hero.relic} lines=${ctx.relicLines} edit=${edit} />`}
+      ${hero.name && hero.custom && html`<${BeautyBagPicker} selection=${hero.beautyBag} types=${ctx.beautyBagTypes} edit=${edit} />`}
+      ${hero.name && !hero.custom && html`<div class="note">Theo capture: chỉ số, skill, skin, Dị Năng, Thánh Khí, Dị Vật và Thần Khí.</div>`}
       ${avatar}
       ${table}
       ${artifact}

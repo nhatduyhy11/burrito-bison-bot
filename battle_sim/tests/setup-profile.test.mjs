@@ -425,3 +425,42 @@ test('naval capture prefill finds the captured boss/preset, normalizing its bed 
   assert.equal(map.level, 2040401);
   assert.equal(navalDict.bosses[map.boss].code, 70070401);
 });
+
+test('untouched hero slots export names only and preserve captured equipment by default', () => {
+  const state = emptyState(dict);
+  state.heroes = ['hanuman', 'archangel', 'frosthealer', 'lu_bu', 'bride_wraith'].map((name) => ({ ...state.heroes[0], name }));
+  assert.deepEqual(toProfile(state, dict).heroes, ['hanuman', 'archangel', 'frosthealer', 'lu_bu', 'bride_wraith']);
+});
+
+test('solo lineup prefers battle heroes, then roster, preserving their equipment without overrides', async () => {
+  const { applyHeroSelection } = await import('../web/battle/hero/selection.js');
+  const asList = (xs) => ({ ...xs, _length: xs.length });
+  const rb = { listItems: (xs) => Array.isArray(xs) ? xs : Array.from({ length: xs?._length || 0 }, (_, i) => xs[i]) };
+  const hero = (code, atk) => ({ code, uuid: String(code), attr: { _keyList: asList([1, 6]), _valueList: asList([atk, 100]) },
+    skills: asList([{ code: code * 100, index: 0 }]), relic: code + 1000, artifact: { code: code + 2000 } });
+  const player = { heros: asList([hero(1, 999)]) };
+  const roster = { heros: asList([hero(1, 1), hero(2, 222), hero(3, 333), hero(4, 444), hero(5, 555)]), complete: true, source: 'team' };
+  const picks = [1, 2, 3, 4, 5].map((code) => ({ option: { code }, selection: { name: `hero${code}` } }));
+  const profile = { heroes: picks.map((p) => p.selection.name) };
+  await applyHeroSelection({ profile, player, catalog: {}, choices: () => picks, asList, rb, M: () => ({ get: () => ({}) }), step() {}, start: {}, roster });
+  const result = rb.listItems(player.heros);
+  assert.equal(result[0].attr._valueList[0], 999); // battle object wins over roster
+  for (let i = 1; i < 5; i++) {
+    assert.equal(result[i].attr._valueList[0], (i + 1) * 111);
+    assert.equal(result[i].relic, i + 1001);
+    assert.deepEqual(result[i].artifact, { code: i + 2001 });
+    assert.equal(rb.listItems(result[i].skills)[0].code, (i + 1) * 100);
+  }
+  assert.equal(roster.heros[1].attr._valueList[1], 100); // source never mutated
+});
+
+test('custom off ignores every hero override; importing gear-only profiles enables custom without clearing skins', () => {
+  const hero = { name: 'hanuman', relic: null, beautyBag: null, artifact: null };
+  const state = fromProfile({ heroes: [hero] }, base, dict);
+  assert.equal(state.heroes[0].custom, true);
+  assert.deepEqual(toProfile(state, dict).heroes, [hero]);
+  state.heroes[0].custom = false;
+  state.heroes[0].worn = 'stale-skin';
+  state.heroes[0].avatar = 5;
+  assert.deepEqual(toProfile(state, dict).heroes, ['hanuman']);
+});

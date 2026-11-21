@@ -34,7 +34,8 @@ export function fromProfile(profile, base, dict, { maps, bossDict, navalDict, bl
       hero.beautyBag = bag && { type: bag.type, star: bag.star, gold: bag.gold };
     }
     const skins = heroSkins(dict, hero.name);
-    hero.custom = ["skin", "star", "ownedSkins", "slots", "avatar"].some((key) => sel[key] !== undefined);
+    hero.skinOverride = ["skin", "star", "ownedSkins", "slots", "avatar"].some((key) => sel[key] !== undefined);
+    hero.custom = hero.skinOverride || ["relic", "beautyBag", "artifact"].some((key) => sel[key] !== undefined);
     if (!hero.custom) return hero;
     if (sel.avatar !== undefined) {
       const nodes = dict.heroes[hero.name].avatarNodes || [];

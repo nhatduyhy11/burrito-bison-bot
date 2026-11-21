@@ -9,6 +9,7 @@ import { applyAvatar } from "./avatar.js";
 import { applyRelic } from "./relic.js";
 import { applyBeautyBag } from "./beauty-bag.js";
 import { applySkin } from "./skin.js";
+import { rosterHero } from "./roster.js";
 import { applyBloodTeam } from "./blood-team.js";
 
 const LINEUP = 5;
@@ -52,7 +53,7 @@ export function jokerPick(profile, catalog) {
 }
 
 // choices(key, max) = profile.js's name -> catalog option check; returns [{ option, selection }].
-export async function applyHeroSelection({ profile, player, catalog, relicLines, beautyBagTypes, choices, asList, rb, M, step, start, team }) {
+export async function applyHeroSelection({ profile, player, catalog, relicLines, beautyBagTypes, choices, asList, rb, M, step, start, team, roster }) {
   if (profile.map?.mode === "blood") {
     return applyBloodTeam({ profile, player, catalog, relicLines, beautyBagTypes, asList, rb, M, step, start, team });
   }
@@ -60,7 +61,11 @@ export async function applyHeroSelection({ profile, player, catalog, relicLines,
   const selected = choices("heroes", LINEUP);
   if (selected.length !== LINEUP) throw new Error(`Profile needs exactly ${LINEUP} heroes`);
   const { build, state } = heroBuilder({ relicLines, beautyBagTypes, rb, M, step });
-  const source = { owned: captured, donors: captured };
+  const extra = rb.listItems(roster?.heros).map((hero) => rosterHero(hero, rb))
+    .filter((hero) => !captured.some((entry) => entry.code === hero.code));
+  const owned = [...captured, ...extra];
+  const source = { owned, donors: owned };
+  if (extra.length) step("profile roster", { source: roster.source, complete: !!roster.complete, heroes: extra.length });
   const heroes = selected.map((entry) => build(entry, source));
   if (hasSummonedJoker(selected.map(({ selection }) => selection), state.jokerSkillSlotted)) {
     const joker = jokerPick(profile, catalog);
