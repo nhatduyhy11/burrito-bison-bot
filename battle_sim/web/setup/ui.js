@@ -215,6 +215,18 @@ export function SelectPop({ options, value, onChange, ...attrs }) {
     const below = window.innerHeight - btn.bottom;
     setUp(list.current.offsetHeight + 8 > below && btn.top > below);
   }, [open]);
+  // A fresh list starts at scrollTop 0, so a selected option deeper down opens out of sight (like
+  // a native <select>, which scrolls to its selected option). Center the keyboard cursor — the
+  // selected option on open — whenever it sits outside the visible rows.
+  useLayoutEffect(() => {
+    if (!open || !list.current) return;
+    const box = list.current;
+    const el = box.querySelector(".dd-opt.active") || box.querySelector(".dd-opt.selected");
+    if (!el) return;
+    const top = el.offsetTop;
+    if (top >= box.scrollTop && top + el.offsetHeight <= box.scrollTop + box.clientHeight) return;
+    box.scrollTop = Math.max(0, top - (box.clientHeight - el.offsetHeight) / 2);
+  }, [open, active]);
   const hidePop = () => setPop(null);
   const hover = (opt, target) => (opt[2] ? popAt(target, setPop, opt[2]) : hidePop());
   const pick = (key) => { reset(); if (key !== value) onChange(key); };
