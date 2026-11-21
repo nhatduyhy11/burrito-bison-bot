@@ -1,4 +1,4 @@
-// Trap / Pet / Spell lists: name, level (traps, pets), star.
+// Trap / Pet / Spell lists: name, star, level (traps, pets).
 import { Accordion, html, label, NumberInput, plain, SelectPop, starsLabel } from "../ui.js";
 import { LIMITS } from "../profile-state.js";
 import { nameOptions } from "./shared.js";
@@ -94,9 +94,9 @@ function ListRow({ ctx, group, item, index }) {
     <div class="row list-row">
       ${reset}
       ${picker}
-      ${level}
       <label>Sao <${NumberInput} value=${item.star} min=${1} max=${info.maxStar} onChange=${setStar} /></label>
-      <span class="note">${`max lv ${info.maxLevel || "-"} / ${info.maxStar}★`}</span>
+      ${level}
+      <span class="note">${`max ${info.maxStar}★ / lv ${info.maxLevel || "-"}`}</span>
     </div>
   `;
 }
