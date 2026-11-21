@@ -1,10 +1,11 @@
 import { starterAntiques } from "../../antiques.js";
 import { Accordion, Checkbox, html, NumberInput, StarSkillsLabel } from "../ui.js";
+import { stashValue, takeStashed } from "../profile-state.js";
 
 const COLORS = [["gold", "Vàng"], ["red", "Đỏ"], ["orange", "Cam"], ["purple", "Tím"], ["blue", "Xanh dương"]];
 
 export function AntiquesSection({ ctx }) {
-  const { state, antiqueDict, update } = ctx;
+  const { state, antiqueDict, update, region } = ctx;
   const owned = state.antiques;
   const catalog = antiqueDict.antiques;
   const useStarter = () => update((s) => { s.antiques = starterAntiques(catalog); });
@@ -13,9 +14,14 @@ export function AntiquesSection({ ctx }) {
     const count = items.filter(([name]) => Object.hasOwn(owned, name)).length;
     const rows = items.map(([name, item]) => {
       const star = owned[name];
+      // Untick parks the star in the session stash; re-tick restores it instead of falling to 1.
       const setOwned = (on) => update((s) => {
-        if (on) s.antiques[name] = 1;
-        else delete s.antiques[name];
+        const key = `antique:${region}:${name}`;
+        if (on) s.antiques[name] = takeStashed(key) ?? 1;
+        else {
+          stashValue(key, s.antiques[name]);
+          delete s.antiques[name];
+        }
       });
       const setStar = (value) => update((s) => { s.antiques[name] = value; });
       return html`

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "preact/hooks";
 import { Accordion, Checkbox, html, NumberInput, optionText, PopHover, Select, StarSkillsLabel, label, plain } from "../ui.js";
 import { eventUnlockNote, headerRow } from "./shared.js";
+import { stashValue, takeStashed } from "../profile-state.js";
 import { SUMMONER_SLOTS, isPassiveSummonerSkin, slottedSkillCount, summonerSkillsConflict } from "../../summoner-skills.js";
 
 const COLORS = [["gold", "Vàng"], ["red", "Đỏ"]];
@@ -99,7 +100,7 @@ function SummonerSkills({ ctx }) {
 }
 
 function SkillRow({ ctx, name, skin }) {
-  const { state, dict, update } = ctx;
+  const { state, dict, update, region } = ctx;
   const selected = state.summonerSkins;
   const entry = selected.find((item) => item.name === name);
   const passive = isPassiveSummonerSkin(skin);
@@ -108,9 +109,14 @@ function SkillRow({ ctx, name, skin }) {
     return other.skill && summonerSkillsConflict(other, skin);
   });
   const full = !entry && !passive && slottedSkillCount(selected, dict.summonerSkins) >= SUMMONER_SLOTS;
+  // Untick parks the star in the session stash; re-tick restores it instead of falling to 1.
+  const starKey = `summonerSkin:${region}:${name}`;
   const setSlot = (on) => update((s) => {
-    if (on) s.summonerSkins.push({ name, star: 1 });
-    else s.summonerSkins = s.summonerSkins.filter((item) => item.name !== name);
+    if (on) s.summonerSkins.push({ name, star: takeStashed(starKey) ?? 1 });
+    else {
+      stashValue(starKey, s.summonerSkins.find((item) => item.name === name)?.star);
+      s.summonerSkins = s.summonerSkins.filter((item) => item.name !== name);
+    }
   });
   const setStar = (star) => update((s) => {
     s.summonerSkins.find((item) => item.name === name).star = star;

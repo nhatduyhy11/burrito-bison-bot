@@ -18,10 +18,10 @@ const BUILDINGS = [["door", "Cửa"], ["bed", "Giường"], ["generator", "Chu�
 const heroSkins = (dict, name) => dict.heroes[name]?.skins || {};
 const buildSkins = (dict, building) => dict.buildings[building].skins;
 
-// Session stash for the "Ghi đè" checkboxes: unticking parks the entered values here instead of
-// dropping them, so re-ticking restores what was typed rather than re-prefilling from the capture
-// (or resetting to defaults). In-page session only — a refresh starts empty; callers key it by
-// region/battle where the values depend on them.
+// Session stash for checkboxes whose untick must not wipe a typed value: section "Ghi đè" toggles
+// park their whole value here (re-tick restores it instead of re-prefilling), and row-level
+// Sở hữu/Slot toggles park the star (re-tick restores it instead of falling back to 1). In-page
+// session only — a refresh starts empty; callers key it by region/battle where values depend on them.
 const stash = new Map();
 export const stashValue = (key, value) => {
   if (value != null) stash.set(key, structuredClone(value));
