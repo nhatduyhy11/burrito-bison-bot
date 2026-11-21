@@ -4,6 +4,7 @@
 //   capital (U Đô, GuildNavalWar): { boss, level } of a preset in boss-dict capital. The game plays it
 //   solo (no robot teammates) and puts the 5 heroes on the field itself
 //   (GuildPVPBattleRoom.createInitHeroBuild). See docs/planning/capital.md.
+//   naval (Tranh Bá, GuildNavalWarMatch): { boss, level } from naval-boss-dict.json.
 //   blood (Đêm Đỏ): { level } on a Đêm Đỏ capture, blood-map.js.
 import { applyBloodMap } from "./blood-map.js";
 
@@ -11,13 +12,19 @@ const CAMPAIGN_BATTLE_TYPE = 3; // EBattleTypeHangUpSystem
 
 export async function applyMapProfile(start, map, rb, M, step) {
   if (map.mode === "blood") return applyBloodMap(start, map, M, step);
+  if (map.mode === "naval") {
+    const response = await fetch("/__sim/dict/naval-boss-dict.json");
+    if (!response.ok) throw new Error(`Could not load naval-boss-dict: HTTP ${response.status}`);
+    const catalog = await response.json();
+    return applySoloBoss(start, map, catalog, catalog, rb, M, step);
+  }
   const [maps, bossDict] = await Promise.all(["map", "boss"].map(async (name) => {
     const response = await fetch(`/__sim/dict/${name}-dict.json`);
     if (!response.ok) throw new Error(`Could not load ${name}-dict: HTTP ${response.status}`);
     return response.json();
   }));
   if (map.mode === "campaign") return applyCampaign(start, map, M);
-  if (map.mode === "capital") return applyCapital(start, map, maps.capital, bossDict, rb, M, step);
+  if (map.mode === "capital") return applySoloBoss(start, map, maps.capital, bossDict, rb, M, step);
   throw new Error(`Unsupported map mode: ${map.mode}`);
 }
 
@@ -33,18 +40,19 @@ function applyCampaign(start, { stage }, M) {
   start.level = stage;
 }
 
-function applyCapital(start, map, capital, bossDict, rb, M, step) {
+function applySoloBoss(start, map, modeCatalog, bossDict, rb, M, step) {
   const boss = bossDict.bosses[map.boss];
-  if (!boss) throw new Error(`Unknown capital boss: ${map.boss}`);
+  if (!boss) throw new Error(`Unknown ${map.mode} boss: ${map.boss}`);
   if (!boss.presets.some((preset) => preset.level === map.level)) {
-    throw new Error(`Capital level ${map.level} is not a preset of ${map.boss}`);
+    throw new Error(`${map.mode} level ${map.level} is not a preset of ${map.boss}`);
   }
-  const row = M("GuildNavalWarLO").get(map.level - (map.level % 100));
+  const row = M(map.mode === "naval" ? "GuildNavalMonthwarLO" : "GuildNavalWarLO").get(map.level - (map.level % 100));
   if (!row || JSON.parse(row.showCreep)[0] !== boss.code || !M("BattleGroundLO").get(row.battleGroundCode)) {
-    throw new Error(`Capital level ${map.level} does not match the game config`);
+    throw new Error(`${map.mode} level ${map.level} does not match the game config`);
   }
-  start.battleType = capital.battleType;
+  start.battleType = modeCatalog.battleType;
   start.level = map.level;
   start.playerInfos = { 0: rb.listItems(start.playerInfos)[0], _length: 1 };
-  step("capital map", { boss: boss.name, level: map.level, creeps: JSON.parse(row.showCreep).slice(1) });
+  delete start.curLife; // Remaining HP belongs to the captured encounter, not the selected preset.
+  step(`${map.mode} map`, { boss: boss.name, level: map.level, creeps: JSON.parse(row.showCreep).slice(1) });
 }

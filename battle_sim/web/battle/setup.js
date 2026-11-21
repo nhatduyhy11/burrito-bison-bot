@@ -73,6 +73,10 @@ const BATTLE_CONFIGS = {
     cfg: { frameClass: "BattleAdvFrame", customShellView: "BattleTDAdvView", isFullView: true, customResultView: "BattleResultViewAdventure" },
     director: "BattleTDAdvDirector",
   },
+  42: { // EBattleTypeGuildNavalWarMatch (Tranh Bá event)
+    cfg: { frameClass: "TDGuildPvpPromotionBattleFram", customShellView: "BattleTDGuildPvpPromotionView", customResultView: "BattleResultViewGuildPVP" },
+    director: "BattleTDGuildPvpPromotionDirector",
+  },
   21: { // EBattleTypeGuildNavalWar (U Đô)
     cfg: { frameClass: "TDGuildPVPBattleFram", customShellView: "BattleTDGuildPVPView", customResultView: "BattleResultViewGuildPVP" },
     director: "BattleTDGuildPVPDirector",

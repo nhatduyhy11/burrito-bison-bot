@@ -133,7 +133,7 @@ async function fetchConfig(rel) {
 const server = http.createServer(async (req, res) => {
   const [urlPath, query] = req.url.split("?", 2);
   const reqRegion = requestRegion(region, query);
-  const dict = /^\/__sim\/dict\/(hero|support|map|boss|creeps|campaign|blood|antique|relic|artifact|beautybag)-dict\.json$/.exec(urlPath);
+  const dict = /^\/__sim\/dict\/(hero|support|map|boss|naval-boss|creeps|campaign|blood|antique|relic|artifact|beautybag)-dict\.json$/.exec(urlPath);
   if (region.locale && req.method === "GET" && urlPath === "/__sim/deploy.json") {
     sendJson(res, { ...JSON.parse(fs.readFileSync(path.join(root, "deploy.json"), "utf8")), locale: region.locale });
     return;

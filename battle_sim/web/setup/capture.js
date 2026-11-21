@@ -36,7 +36,7 @@ export async function bloodTeams(dict, region, battle) {
 // Turning a section on fills it from the base capture. The map prefills as a safe fallback only:
 // a campaign capture fills its own stage, a capital capture opens the blank capital form (the
 // engine forbids a campaign override on a capital base — map-profile.js applyCampaign).
-export async function prefill(dict, maps, region, battle, group) {
+export async function prefill(dict, maps, region, battle, group, navalDict) {
   const start = await capturedStart(region, battle);
   const player = start && listItems(start.playerInfos)[0];
   if (group === "mounts") {
@@ -51,6 +51,11 @@ export async function prefill(dict, maps, region, battle, group) {
     return Object.keys(dict.summonerGear).filter((key) => codes.has(dict.summonerGear[key].code));
   }
   if (group === "map") {
+    if (start?.battleType === 42) {
+      const level = start.level - start.level % 100 + 1;
+      const boss = Object.keys(navalDict?.bosses || {}).find((key) => navalDict.bosses[key].presets.some((p) => p.level === level));
+      return { mode: "naval", stage: maps.campaign.minStage, boss: boss || null, level: boss ? level : null };
+    }
     if (BLOOD_BATTLE_TYPES.includes(start?.battleType)) return { mode: "blood", stage: maps.campaign.minStage, boss: null, level: start.level };
     if (start?.battleType === maps.capital.battleType) return { mode: "capital", stage: maps.campaign.minStage, boss: null, level: null };
     return { mode: "campaign", stage: start?.level || maps.campaign.minStage, boss: null, level: null };

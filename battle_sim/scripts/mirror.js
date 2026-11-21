@@ -25,6 +25,7 @@ const CORE_BUNDLES = ["internal", "main", "resources", "login", "battle", "battl
 // (`assets/<bundle>/config.*.json`): add them here. `mirror.js bundles` lists what the deploy has.
 const MODE_BUNDLES = {
   21: ["guildPVP", "climbTower", "worldBoss"], // U Đô (GuildNavalWar)
+  42: ["guildPvpPromotion", "guildPVP", "climbTower", "worldBoss"], // Tranh Bá event
   43: ["worldBossMatch"], // Ác Mộng / World Boss tháng
   47: ["teamExpeHigh", "teamExpe"], // Blood Night (TeamExpedition16); teamExpe = 404 seen in sandbox
 };

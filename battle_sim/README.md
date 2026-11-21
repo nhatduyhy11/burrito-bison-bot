@@ -103,6 +103,21 @@ Trong Setup, chọn vùng **GAT** rồi chọn trận theo **Capture ID** script
 Để dùng lại seed gốc của trận mẫu, nhập **GAT template seed** vào ô seed.
 Capture tạo ra dành cho chế độ **Chơi** offline và có danh sách thao tác rỗng.
 
+### Tranh Bá liên server (battleType 42)
+
+Trong **Màn chơi**, bật **Ghi đè**, chọn **Tranh Bá liên server** → **Boss** → **Bộ quái**.
+Preset ghi rõ sơ tuyển hoặc nhóm/ngày/phòng. Có thể dùng capture campaign, U Đô hoặc
+Tranh Bá làm nguồn đội hình solo; engine kiểm tra boss/level với config của capture gốc.
+
+Crawl lại catalog riêng (27 boss / 402 preset ở config này):
+
+```bash
+node battle_sim/scripts/gen_naval_dict.js sea_66328
+```
+
+`mirror.js fetch` có kèm bundle `guildPvpPromotion` để mở UI trận offline.
+Xem [research và kiểm chứng](docs/planning/tranh_ba.md).
+
 ## Cấu trúc
 
 - `replay.js` — replay + so sánh, 1 hoặc nhiều trận.

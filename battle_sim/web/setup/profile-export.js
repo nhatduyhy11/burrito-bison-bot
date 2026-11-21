@@ -5,7 +5,7 @@ import { BLOOD_SIDE, BUILDINGS, heroSkins, buildSkins, isBlood, lineupHeroes } f
 
 export function toProfile(state, dict) {
   const profile = {};
-  if (state.map?.mode === "capital") profile.map = { mode: "capital", boss: state.map.boss, level: state.map.level };
+  if (["capital", "naval"].includes(state.map?.mode)) profile.map = { mode: state.map.mode, boss: state.map.boss, level: state.map.level };
   else if (isBlood(state)) profile.map = { mode: "blood", level: state.map.level };
   else if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };
   if (state.heroes) {

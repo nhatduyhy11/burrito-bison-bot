@@ -4,14 +4,14 @@
 import { Accordion, html, NumberInput, PopHover, Select, SelectPop, optionText } from "../ui.js";
 import { BloodBody } from "./blood-map.js";
 
-const MODE_OPTIONS = [["campaign", "Campaign"], ["capital", "U Đô (Capital)"]];
+const MODE_OPTIONS = [["campaign", "Campaign"], ["capital", "U Đô (Capital)"], ["naval", "Tranh Bá liên server"]];
 const BLOOD_OPTION = ["blood", "Đêm Đỏ"]; // only on a Đêm Đỏ capture (one with the team roster)
 
 export function MapSection({ ctx }) {
   const enabled = !!ctx.state.map;
   const onToggle = (on) => ctx.toggleWithPrefill("map", on);
   return html`
-    <${Accordion} title="Màn chơi" hint="Campaign / U Đô / Đêm Đỏ; tắt = màn của capture" override=${{ enabled, onToggle }}>
+    <${Accordion} title="Màn chơi" hint="Campaign / U Đô / Tranh Bá / Đêm Đỏ; tắt = màn của capture" override=${{ enabled, onToggle }}>
       ${enabled && html`<${MapBody} ctx=${ctx} />`}
     <//>
   `;
@@ -23,11 +23,13 @@ function MapBody({ ctx }) {
   const setMode = (mode) => {
     update((s) => {
       s.map.mode = mode;
+      s.map.boss = null;
+      s.map.level = null;
       if (mode === "blood") s.map.level = ctx.bloodDict.levels[ctx.baseBattle.level] ? ctx.baseBattle.level : Number(Object.keys(ctx.bloodDict.levels)[0]);
     });
     if (mode === "blood") ctx.fillBloodTeams();
   };
-  const body = state.map.mode === "capital" ? html`<${CapitalBody} ctx=${ctx} />`
+  const body = ["capital", "naval"].includes(state.map.mode) ? html`<${CapitalBody} ctx=${ctx} />`
     : state.map.mode === "blood" ? html`<${BloodBody} ctx=${ctx} />` : html`<${CampaignBody} ctx=${ctx} />`;
   const options = blood || state.map.mode === "blood" ? [...MODE_OPTIONS, BLOOD_OPTION] : MODE_OPTIONS;
   return html`
@@ -96,11 +98,13 @@ const bossPop = (b) => html`<div class="pop-title">${b.name_vn || b.name}</div>$
 
 function CapitalBody({ ctx }) {
   const { state, bossDict, creepsDict, update } = ctx;
-  const { bosses } = bossDict;
+  const naval = state.map.mode === "naval";
+  const { bosses } = naval ? ctx.navalDict : bossDict;
   const boss = bosses[state.map.boss];
   const bossOptions = [["", "— chọn boss —"], ...Object.entries(bosses).map(([key, b]) => [key, `${optionText(b)} · ${b.presets.length} bộ quái`, bossPop(b)])];
   const presetOptions = [["", boss ? "— chọn bộ quái —" : "— chọn boss trước —"],
-    ...(boss?.presets || []).map((p) => [String(p.level), p.creeps.map((id) => creepName(creepsDict, id)).join(" + ")])];
+    ...(boss?.presets || []).map((p) => [String(p.level), (naval ? `${p.phase === "audition" ? "Sơ tuyển" : `Nhóm ${p.subType} · Ngày ${p.day} · Phòng ${p.position}`} — ` : "") +
+      (p.creeps.map((id) => naval ? optionText(ctx.navalDict.creeps[id]) : creepName(creepsDict, id)).join(" + ") || "Không có quái đi kèm")])];
   const preset = boss?.presets.find((p) => p.level === state.map.level);
   // A new boss resets the preset; a boss with a single preset gets it right away.
   const setBoss = (key) => update((s) => {

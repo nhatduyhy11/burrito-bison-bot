@@ -12,14 +12,14 @@ import {
 // Lenient import of a profile JSON (as written by toProfile or by hand). Unknown names throw.
 // catalogs: { maps (map-dict.json), bossDict (boss-dict.json), antiqueDict (antique-dict.json) },
 // each needed only when the profile has that part.
-export function fromProfile(profile, base, dict, { maps, bossDict, bloodDict, antiqueDict, relicLines, beautyBagTypes } = {}) {
+export function fromProfile(profile, base, dict, { maps, bossDict, navalDict, bloodDict, antiqueDict, relicLines, beautyBagTypes } = {}) {
   const next = { ...emptyState(dict, antiqueDict), battle: base.battle, seed: base.seed };
   const need = (group, name) => {
     if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong hero-dict.json / support-dict.json`);
     return name;
   };
   const entryOf = (item) => (typeof item === "string" ? { name: item } : item || {});
-  if (profile.map) next.map = readMap(profile.map, { maps, bossDict, bloodDict });
+  if (profile.map) next.map = readMap(profile.map, { maps, bossDict, navalDict, bloodDict });
   const readHero = (item) => {
     const sel = entryOf(item);
     const hero = newHero(need("heroes", sel.name));
@@ -137,7 +137,7 @@ export function fromProfile(profile, base, dict, { maps, bossDict, bloodDict, an
   return next;
 }
 
-function readMap(map, { maps, bossDict, bloodDict }) {
+function readMap(map, { maps, bossDict, navalDict, bloodDict }) {
   if (!maps) throw new Error("Thiếu map-dict.json");
   const stage = Number(map.stage) || maps.campaign.minStage;
   if (map.mode === "blood") {
@@ -145,11 +145,14 @@ function readMap(map, { maps, bossDict, bloodDict }) {
     if (!bloodDict.levels[map.level]) throw new Error(`Không có ải Đêm Đỏ ${map.level} trong blood-dict.json`);
     return { mode: "blood", stage, boss: null, level: map.level };
   }
-  if (map.mode !== "capital") return { mode: "campaign", stage, boss: null, level: null };
-  if (map.boss == null) return { mode: "capital", stage, boss: null, level: null };
-  if (!bossDict) throw new Error("Thiếu boss-dict.json");
-  const entry = bossDict.bosses[map.boss];
-  if (!entry) throw new Error(`Không có boss U Đô "${map.boss}" trong boss-dict.json`);
+  if (!["capital", "naval"].includes(map.mode)) return { mode: "campaign", stage, boss: null, level: null };
+  const mode = map.mode;
+  const catalog = mode === "naval" ? navalDict : bossDict;
+  const file = mode === "naval" ? "naval-boss-dict.json" : "boss-dict.json";
+  if (map.boss == null) return { mode, stage, boss: null, level: null };
+  if (!catalog) throw new Error(`Thiếu ${file}`);
+  const entry = catalog.bosses[map.boss];
+  if (!entry) throw new Error(`Không có boss "${map.boss}" trong ${file}`);
   const level = entry.presets.some((p) => p.level === map.level) ? map.level : null;
-  return { mode: "capital", stage, boss: map.boss, level };
+  return { mode, stage, boss: map.boss, level };
 }

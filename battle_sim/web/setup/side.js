@@ -22,8 +22,11 @@ function warnings(state, profile, baseBattle) {
     if (baseBattle?.team) out.push("Capture Đêm Đỏ: bật Màn chơi và chọn mode Đêm Đỏ.");
   }
   if (!state.battle) out.push("Chưa có capture nào để làm trận gốc.");
-  if (profile.map?.mode === "capital" && !profile.map.boss) out.push("U Đô: chưa chọn boss.");
-  else if (profile.map?.mode === "capital" && !profile.map.level) out.push("U Đô: chưa chọn bộ quái đi kèm.");
+  if (["capital", "naval"].includes(profile.map?.mode)) {
+    const name = profile.map.mode === "naval" ? "Tranh Bá" : "U Đô";
+    if (!profile.map.boss) out.push(`${name}: chưa chọn boss.`);
+    else if (!profile.map.level) out.push(`${name}: chưa chọn bộ quái đi kèm.`);
+  }
   return out;
 }
 

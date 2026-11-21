@@ -9,6 +9,7 @@ const SEED_OPTIONS = [
 // Capital (U Đô) level = day*10000 + room*100 + index.
 const captureWhere = (b) => b.battleType === 21
   ? `capture U Đô ngày ${Math.floor(b.level / 10000)} phòng ${Math.floor((b.level % 10000) / 100)}`
+  : b.battleType === 42 ? `capture Tranh Bá · ${b.level >= 10000000 ? "Sơ tuyển" : `Nhóm ${Math.floor(b.level / 1000000)}`} · ${b.level}`
   : [47, 48].includes(b.battleType) ? `capture Đêm Đỏ Ải ${b.level % 1000}`
   : `capture ở Stage ${b.level}`;
 

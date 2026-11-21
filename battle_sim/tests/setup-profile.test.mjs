@@ -375,3 +375,53 @@ test('Dị Vật: setup import/export keeps capture (omitted), none (null) and a
   assert.deepEqual(out[1], { name: 'lu_bu', beautyBag: null });
   assert.equal(out[2], 'joker');
 });
+
+test('naval: boss/preset round trip, rejecting another boss or unknown level', () => {
+  const navalDict = JSON.parse(readFileSync(new URL('../web/dict/naval-boss-dict.json', import.meta.url)));
+  const catalogs = { maps, navalDict };
+  for (const [boss, entry] of Object.entries(navalDict.bosses)) {
+    for (const preset of entry.presets) {
+      const map = { mode: 'naval', boss, level: preset.level };
+      assert.deepEqual(toProfile(fromProfile({ map }, base, dict, catalogs), dict).map, map);
+    }
+  }
+  const boss = Object.keys(navalDict.bosses)[0];
+  const profile = { map: { mode: 'naval', boss, level: 2040401 } };
+  assert.equal(fromProfile(profile, base, dict, catalogs).map.level, null);
+  assert.throws(() => fromProfile({ map: { mode: 'naval', boss: 'missing' } }, base, dict, catalogs));
+  assert.throws(() => fromProfile(profile, base, dict, { maps }), /naval-boss-dict/);
+});
+
+test('naval: map override validates game config and removes old encounter HP and teammates', async (t) => {
+  const { applyMapProfile } = await import('../web/battle/map-profile.js');
+  const navalDict = JSON.parse(readFileSync(new URL('../web/dict/naval-boss-dict.json', import.meta.url)));
+  const boss = Object.keys(navalDict.bosses).find((key) => navalDict.bosses[key].code === 70070401);
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: true, json: async () => navalDict });
+  t.after(() => { globalThis.fetch = realFetch; });
+  let code = 70070401;
+  const M = (name) => ({ get: () => name === 'GuildNavalMonthwarLO' ? { showCreep: JSON.stringify([code, 70081501]), battleGroundCode: 62061 } : {} });
+  const rb = { listItems: (list) => Array.from({ length: list._length }, (_, i) => list[i]) };
+  const start = { battleType: 3, level: 1, curLife: { _length: 1 }, playerInfos: { 0: { playerId: 1 }, 1: { playerId: 2 }, _length: 2 } };
+  const map = { mode: 'naval', boss, level: 2040401 };
+  await applyMapProfile(start, map, rb, M, () => {});
+  assert.equal(start.battleType, 42);
+  assert.equal(start.level, 2040401);
+  assert.equal(start.playerInfos._length, 1);
+  assert.equal(start.curLife, undefined);
+  code = 70070101;
+  await assert.rejects(applyMapProfile(start, map, rb, M, () => {}), /does not match/);
+  await assert.rejects(applyMapProfile(start, { ...map, level: 999 }, rb, M, () => {}), /not a preset/);
+});
+
+test('naval capture prefill finds the captured boss/preset, normalizing its bed index', async (t) => {
+  const { prefill } = await import('../web/setup/capture.js');
+  const navalDict = JSON.parse(readFileSync(new URL('../web/dict/naval-boss-dict.json', import.meta.url)));
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => ({ ok: true, json: async () => ({ start: { battleType: 42, level: 2040403 } }) });
+  t.after(() => { globalThis.fetch = realFetch; });
+  const map = await prefill(dict, maps, 'vn', 'naval-prefill-check', 'map', navalDict);
+  assert.equal(map.mode, 'naval');
+  assert.equal(map.level, 2040401);
+  assert.equal(navalDict.bosses[map.boss].code, 70070401);
+});

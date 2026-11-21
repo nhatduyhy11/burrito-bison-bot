@@ -1,6 +1,6 @@
 # Tranh Bá liên server — battleType 42 (GuildNavalWarMatch)
 
-Research 2026-11-21, bead `bbb-173`. Chỉ đọc capture, bundle và config; chưa thêm mode vào setup.
+Research 2026-11-21, bead `bbb-173`. Research ban đầu đọc capture, bundle và config. Sau đó đã triển khai catalog (bbb-1tx) và setup (bbb-svk).
 So sánh với U Đô / Tranh Đoạt U Đô tuần (`battleType 21`), xem [capital.md](capital.md).
 
 ## Bằng chứng và phạm vi
@@ -130,8 +130,24 @@ Do đó dòng “TIER2 MATCH” của CLI **không chứng minh** các checkpoin
 
 ## Hướng mô phỏng sau research
 
-Engine headless đã replay được type 42 nguyên bản, chưa cần sửa logic chiến đấu.
-Setup hiện chỉ có catalog U Đô type 21: cần catalog mode riêng cho 42, giữ subtype/ngày/phòng
-và tách sơ tuyển khỏi vòng chiếm phòng; không tái dùng nguyên pool 14 boss của tuần.
-Browser cần prefab/bundle `guildPvpPromotion` và asset tương ứng được mirror trước khi test.
-Chưa thử browser mode 42, chưa implement setup và chưa xác nhận server có gộp buff vào attr hero.
+Engine headless replay được type 42 nguyên bản, không cần sửa logic chiến đấu.
+`gen_naval_dict.js` sinh catalog riêng `naval-boss-dict.json` đủ 27 boss/402 preset,
+giữ subtype/ngày/phòng và phân biệt sơ tuyển. Setup có mode **Tranh Bá liên server**:
+chọn boss rồi chọn preset, profile `{mode: "naval", boss, level}`. Prefill từ capture type 42
+chọn đúng preset; import/export kiểm tra level thuộc boss; battle kiểm tra lại config thật.
+`mirror.js` có bundle `guildPvpPromotion` và sandbox có fallback đăng ký battle config type42.
+Chưa xác nhận server có gộp buff vào attr hero.
+
+
+## Kiểm chứng sau triển khai (2026-11-21)
+
+- Chạy lại Node replay trận gốc: TIER1 MATCH, 57/57 op, frame 1800.
+- Browser replay đầy đủ: QuitRoom MATCH, không lỗi thao tác, lỗi module hay lỗi trang;
+  0 request ngoài localhost, 0 asset 404. Report: `.tmp/battle_research/naval-browser-replay.json`.
+- UI chọn Vô Diện Tử Thần `70072401`, preset `1011601` (nhóm 1/ngày 1/phòng 16),
+  import/export giữ nguyên lựa chọn rồi bấm Chơi. Seed ngẫu nhiên riêng, không dùng op log gốc.
+- Tự chọn 5 lượt đầu trận, đổi tốc độ và chọn vòng quay; smoke đến frame 373 (~37s),
+  `totalHurt 45163503104`, không lỗi. Ảnh `.tmp/battle_research/naval-play-short.png`,
+  report `.tmp/battle_research/naval-play-short.json`. Smoke ngắn, không khẳng định thắng cả trận.
+- `node --test battle_sim/tests/*.test.mjs`: 23 tests pass, gồm round trip đủ 402 preset,
+  chặn boss/level sai và prefill từ capture type42.
