@@ -1,7 +1,7 @@
 // Per-hero customization: off keeps every captured field; on unlocks all hero overrides.
 import { html, label, optionText, colorTag, COLOR_LABEL, NumberInput, Checkbox, Select, SelectPop, PopHover, StarSkillsLabel, plain, starsLabel, Accordion } from "../ui.js";
 import { HERO_SLOTS, heroForced, heroSlotForced, heroSlotKind } from "../skin-rules.js";
-import { heroSkins, isBlood, newHero } from "../profile-state.js";
+import { heroSkins, isBlood, newHero, stashValue, takeStashed } from "../profile-state.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { resolveRelic } from "../../relics.js";
 import { resolveBeautyBag } from "../../beauty-bags.js";
@@ -42,7 +42,7 @@ function HeroesBody({ ctx }) {
 // group = state list the card edits ("heroes" or Đêm Đỏ "guestHeroes"); slot = shown label;
 // chosen = names taken elsewhere in the lineup (disabled in the picker).
 export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes", slot = `#${index + 1}`, chosen }) {
-  const { state, dict, artifactDict, update, capturedHeroArtifact } = ctx;
+  const { state, dict, artifactDict, update, capturedHeroArtifact, region } = ctx;
   const skins = heroSkins(dict, hero.name);
   const hasSkins = Object.keys(skins).length > 0;
   const nodes = dict.heroes[hero.name]?.avatarNodes || [];
@@ -53,16 +53,30 @@ export function HeroCard({ ctx, hero, index, summoned = false, group = "heroes",
   const editSkin = (fn) => edit((h) => { h.skinOverride = true; fn(h); });
   const setName = (v) => update((s) => void (s[group][index] = newHero(v)));
   // "Tùy chỉnh" also owns the Thần Khí: tick fills it from the capture (Teams slots only — the
-  // summoned Joker has none), untick returns to "theo capture".
+  // summoned Joker has none), untick returns to "theo capture". Untick parks the typed relic,
+  // beauty bag, Thần Khí and Dị Năng in the session stash; re-tick restores them (an untouched
+  // Thần Khí still refills from the capture). Keyed by hero name too — switching the slot's hero
+  // must not restore the previous hero's parked values.
+  const customKey = `custom:${region}:${summoned ? "joker" : `${group}:${index}`}:${hero.name}`;
   const setCustom = async (on) => {
     const artifact = on && !summoned && pool
       ? (await capturedHeroArtifact(heroCode)) ?? { quality: 4, stage: 1, slots: [] }
       : undefined;
     edit((h) => {
-      h.custom = on;
-      h.skinOverride = on;
-      if (!on) { h.relic = undefined; h.beautyBag = undefined; h.artifact = undefined; }
-      if (on && pool && !summoned && h.artifact === undefined) h.artifact = artifact;
+      if (on) {
+        h.custom = true;
+        h.skinOverride = true;
+        const parked = takeStashed(customKey);
+        if (parked) Object.assign(h, parked);
+        if (pool && !summoned && h.artifact === undefined) h.artifact = artifact;
+      } else {
+        h.custom = false;
+        h.skinOverride = false;
+        stashValue(customKey, { relic: h.relic, beautyBag: h.beautyBag, artifact: h.artifact, avatar: h.avatar });
+        h.relic = undefined;
+        h.beautyBag = undefined;
+        h.artifact = undefined;
+      }
     });
   };
   const custom = html`<label><${Checkbox} checked=${hero.custom} onChange=${setCustom} />Tùy chỉnh</label>`;
