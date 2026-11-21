@@ -35,6 +35,7 @@
 - [creep_waves.md](creep_waves.md) — lịch spawn quái
 - [boss.md](boss.md) — mini / final boss
 - [capital.md](capital.md) — capital battle (GuildNavalWar): level, phòng, 14 boss, cách mô phỏng
+- [tranh_ba.md](tranh_ba.md) — Tranh Bá liên server (battleType 42): capture, pool boss, buff, replay
 - [blood_night.md](blood_night.md) — Blood Night (TeamExpedition16, battleType 47): ải, đội, lịch boss/quái
 - [assets.md](assets.md) — bundle, ext-res, map
 - Skin: [PROFILE_SKINS.md](../../PROFILE_SKINS.md) (hero), [BUILD_SKINS.md](../../BUILD_SKINS.md)

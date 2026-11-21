@@ -22,3 +22,6 @@ env.*
 
 # scripts/loc.py reports
 scripts/loc_*.*.txt
+
+# bv (beads viewer) local config and caches
+.bv/

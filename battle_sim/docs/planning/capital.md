@@ -8,7 +8,8 @@ Tra từ bundle `main.1377a` + config `sea_65380`, capture `events-runner-202611
 - `battleType 21` = `EBattleTypeGuildNavalWar`, UI `GuildPVP*`, director `BattleTDGuildPVPDirector`
   (kế thừa `BattleTD4Pick2Director`), room `GuildPVPBattleRoom`, frame sync `Local` như campaign.
 - Bản tháng/liên server là `battleType 42` `GuildNavalWarMatch` (`GuildPvpPromotion*`), bảng riêng
-  `GuildNavalMonthwar*LO`. Chưa capture.
+  `GuildNavalMonthwar*LO`. Đã capture và replay khớp ngày 2026-11-21; xem
+  [research Tranh Bá liên server](tranh_ba.md) cho pool boss, buff và khác biệt với bản tuần.
 
 ## Level → config
 
