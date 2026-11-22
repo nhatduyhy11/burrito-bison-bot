@@ -37,6 +37,9 @@
 - [capital.md](capital.md) — capital battle (GuildNavalWar): level, phòng, 14 boss, cách mô phỏng
 - [tranh_ba.md](tranh_ba.md) — Tranh Bá liên server (battleType 42): capture, pool boss, buff, replay
 - [blood_night.md](blood_night.md) — Blood Night (TeamExpedition16, battleType 47): ải, đội, lịch boss/quái
+- [roster-reuse-report.md](roster-reuse-report.md) — report đối chiếu roster 4 mode (bbb-1qp, run 2026-11-22)
+  + đề xuất UI setup (bbb-n6m): nguồn roster từng mode, attr đầu trận giống nhau giữa solo modes,
+  Đêm Đỏ guest = lineup đội dùng chung hero thật theo owner, TeamExpeditionInfoP = nguồn roster đội
 - [assets.md](assets.md) — bundle, ext-res, map
 - Skin: [PROFILE_SKINS.md](../../PROFILE_SKINS.md) (hero), [BUILD_SKINS.md](../../BUILD_SKINS.md)
   (building)
