@@ -40,9 +40,16 @@ def main():
             output.write(payload + '\n')
             msg, obj = event['data']['msg'], event['data']['obj']
             if msg == 'HeroRosterSnapshot':
-                print(f"ROSTER {obj['heros']['_length']} heroes (lobby cache; gear may be incomplete)", flush=True)
+                print(f"ROSTER {obj['heros']['_length']} heroes (lobby cache; missing per-hero artifact/relic)", flush=True)
+            elif msg == 'HeroRosterSnapshotError':
+                print(f"ROSTER SNAPSHOT FAILED: {obj.get('reason')}", flush=True)
+            elif 'refreshMemberInfosR' in msg:
+                members = obj.get('members') or {}
+                print(f"TEAM ROSTER {members.get('_length', 0)} members (complete, has artifact/relic)", flush=True)
             elif msg.startswith('StartGameP'):
                 print(f"START type={obj.get('battleType')} level={obj.get('level')} uuid={obj.get('uuid')}", flush=True)
+            elif 'GetPlayerArtifactR' in msg:
+                print('ARTIFACT response captured', flush=True)
             elif msg.startswith('QuitRoom'):
                 print('QUIT captured', flush=True)
 

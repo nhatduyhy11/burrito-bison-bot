@@ -57,3 +57,68 @@ test('passive hook records roster and nested lobby gear without changing calls o
   assert.deepEqual(events[0].data.obj.heros[0].artifact, artifact);
   assert.deepEqual(events.find((e) => e.data.msg === 'refreshMemberInfosR(3)').data.obj, lobby);
 });
+
+test('roster snapshot marks lobby-cache gaps and reports failures instead of staying silent', () => {
+  const read = (hook) => {
+    const events = [];
+    const socket = { prototype: { send() { return 19; }, log() {} } };
+    const td = { prototype: { onStartGamePPush() {} } };
+    const map = { foreach(fn) { fn('a', { code: 1 }); } };
+    const modules = { TDModule: { TDModule: td }, SocketMgr: { SocketMgr: socket }, PlayerModule: { PlayerModule: { Ins: { playerId: 123 } } },
+      HeroModule: { HeroModule: { Ins: { _uuid2HeroMap: map } } }, SummonerModule: { SummonerModule: { Ins: { info: {} } } } };
+    const window = { cc: { js: { getClassByName: (key) => modules[key]?.[key] } }, __recordBattle: (data) => { events.push(JSON.parse(data)); return Promise.resolve(); } };
+    vm.runInContext(hook, vm.createContext({ window, WebSocket: { OPEN: 1 } }));
+    td.prototype.onStartGamePPush({});
+    return { events, map };
+  };
+  const source = readFileSync(new URL('../../scripts/capture/battle-hook.js', import.meta.url), 'utf8');
+  const ok = read(source);
+  assert.equal(ok.events[0].data.msg, 'HeroRosterSnapshot');
+  assert.deepEqual(ok.events[0].data.obj.incompleteFields, ['artifact', 'relic']);
+  assert.equal(ok.events[0].data.obj.complete, false);
+  // Empty lobby cache: an explicit error event, not a silent gap in the capture.
+  const empty = read(source.replace("cls(\"HeroModule\").Ins._uuid2HeroMap.foreach((_k, hero) => heroes.push(hero));", ""));
+  assert.equal(empty.events[0].data.msg, 'HeroRosterSnapshotError');
+  assert.equal(empty.events[0].data.obj.reason, 'hero cache empty');
+  // A throwing cache surfaces the reason too.
+  const boom = read(source.replace("=> heroes.push(hero));", "=> { throw Error('boom'); });"));
+  assert.equal(boom.events[0].data.msg, 'HeroRosterSnapshotError');
+  assert.equal(boom.events[0].data.obj.reason, 'boom');
+});
+
+test('hook keeps every lobby message except keep-alive and chat noise', () => {
+  const events = [];
+  const socket = { prototype: { send() { return 19; }, log() {} } };
+  const td = { prototype: { onStartGamePPush() {} } };
+  const modules = { TDModule: { TDModule: td }, SocketMgr: { SocketMgr: socket }, PlayerModule: { PlayerModule: { Ins: { playerId: 123 } } },
+    HeroModule: { HeroModule: { Ins: { _uuid2HeroMap: { foreach() {} } } } }, SummonerModule: { SummonerModule: { Ins: { info: {} } } } };
+  const window = { cc: { js: { getClassByName: (key) => modules[key]?.[key] } }, __recordBattle: (data) => { events.push(JSON.parse(data)); return Promise.resolve(); } };
+  vm.runInContext(readFileSync(new URL('../../scripts/capture/battle-hook.js', import.meta.url), 'utf8'), vm.createContext({ window, WebSocket: { OPEN: 1 } }));
+  for (const msg of ['收到 Ping', '收到 PingR', '发送 GetChatList', '收到 GetChatListR', '收到 HeroInfoP(1)', '发送 EnterRoom(2)', '收到 refreshMemberInfosR(3)']) {
+    socket.prototype.log(msg, { msg });
+  }
+  assert.deepEqual(events.map((e) => e.data.msg), ['收到 HeroInfoP(1)', '发送 EnterRoom(2)', '收到 refreshMemberInfosR(3)']);
+});
+
+test('loadCapture keeps lobby events between battles as each battle pre-window', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'roster-pre-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'capture.jsonl');
+  const start2 = { ...start, battleType: 3 };
+  writeFileSync(path, [
+    event('sock', 'EnterRoom(2)', { battleType: 42 }), // before the first battle
+    event('room', 'StartGameP', start), event('sock', 'QuitRoom(', {}),
+    event('sock', 'QuitRoomR(4)', { result: 1 }), // reward response lands after the battle
+    event('sock', 'refreshMemberInfosR(3)', { members: list([]) }),
+    event('room', 'StartGameP', start2), event('sock', 'QuitRoom(', {}),
+    event('sock', 'QuitRoomR(4)', { result: 2 }),
+  ].map(JSON.stringify).join('\n'));
+  const battles = loadCapture(path);
+  assert.equal(battles.length, 2);
+  assert.deepEqual(battles[0].pre.map((e) => e.data.msg), ['EnterRoom(2)']);
+  assert.deepEqual(battles[0].events.map((e) => e.data.msg), ['QuitRoom(']);
+  assert.equal(battles[0].start.battleType, 42);
+  assert.deepEqual(battles[1].pre.map((e) => e.data.msg), ['QuitRoomR(4)', 'refreshMemberInfosR(3)']);
+  assert.deepEqual(battles[1].events.map((e) => e.data.msg), ['QuitRoom(']);
+  assert.equal(battles[1].start.battleType, 3);
+});

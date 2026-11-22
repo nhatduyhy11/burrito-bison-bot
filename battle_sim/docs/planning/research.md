@@ -55,11 +55,30 @@ Capture thụ động bằng script được lưu trong repo (user tự chơi, k
 uv run python scripts/capture/battle.py --profile .tmp/pmain
 ```
 
-Script mới ghi `StartGameP`, `QuitRoom`, snapshot cache hero trước trận và gói lobby team
-`refreshMemberInfosR` nếu server gửi tự nhiên. Không tự gửi request để lấy roster/trang bị.
-Cache hero thường có thể thiếu gear/skill skin; roster lobby Đêm Đỏ đầy đủ hơn. Sim ưu tiên
-hero trong trận, rồi roster có trong capture; không lấy roster từ file/account khác. File capture
-cũ không chứa roster sẽ không tự có thêm dữ liệu. Vẫn phải có yêu cầu user trước mỗi lần mở pmain.
+Script mới ghi `StartGameP`, `QuitRoom`, snapshot cache hero trước trận và **mọi message lobby
+socket còn lại** (trừ `Ping`/`GetChatList`), cả 2 chiều — đủ bằng chứng cho đối chiếu
+enter/start payload từng mode (bbb-1qp) và các push tự nhiên mang roster/artifact
+(`HeroInfoP`, `GetHeroInfoR`, `refreshMemberInfosR`, `GetPlayerArtifactR`). Không tự gửi request
+để lấy roster/trang bị; lỗi snapshot được ghi thành `HeroRosterSnapshotError` thay vì im lặng.
+
+**Roster đầy đủ theo mode (đối chiếu 2026-11-22, chuẩn so sánh = schema 16 field của hero trận
+`StartGameP`: uuid/code/level/breakThrough/skills/attr/derma/avatarCodes/avatarChapterCodes/
+avatarLevel/crown/crownLevel/crownGeneLevel/fightCap/relic/artifact):**
+
+| Mode | battleType | Dữ liệu trận | Roster trong capture | Đánh giá |
+|---|---|---|---|---|
+| Campaign | 3 | lineup đủ 16 field | không có nguồn nào (các file cũ chụp trước khi hook có snapshot) | roster thụ động = cache lobby, thiếu `relic`+`artifact` từng hero |
+| U Đô | 21 | như trên | không có (events-pmain-20261114) | như trên |
+| Tranh Bá | 42 | như trên | không có (events-pmain-20261121 — chụp 10:50, trước commit hook snapshot 14:20) | như trên |
+| Đêm Đỏ | 47/48 | như trên | `refreshMemberInfosR`: đủ schema × full roster (36 hero/thành viên) + moduleDatas account (organ/daoist/summonCreature/dermaList/buildSkinList) | **đầy đủ** — lưu ý file 20261119 bị hook cũ cắt `"<deep>"` ở entryInfos; hook mới serialize nguyên vẹn |
+
+Cache lobby (`HeroModule._uuid2HeroMap`, nguồn duy nhất của snapshot ở mode solo) đủ 14/16 field
+(attr/skills/derma/avatar 36/36) nhưng **không bao giờ có `relic`+`artifact`**: quét toàn bộ 315
+message sock của capture broad 20261119, hai field này chỉ xuất hiện trong
+`refreshMemberInfosR` (chỉ server gửi tự nhiên ở mode team). Snapshot đánh dấu
+`incompleteFields: ["artifact","relic"]` để UI biết mà hiển thị. Vẫn giữ nguyên tắc: sim ưu tiên
+hero trong trận, rồi roster có trong capture; không lấy roster từ file/account khác; file capture
+cũ không chứa roster sẽ không tự có thêm dữ liệu; phải có yêu cầu user trước mỗi lần mở pmain.
 
 Ra `.tmp/battle_research/events-*.jsonl` (`StartGameP` + `QuitRoom`). Dữ liệu thô và script
 probe (gitignored) cũng ở `.tmp/battle_research/`: `startgamep-<uuid>.json`, `hook.js`,

@@ -10,17 +10,29 @@
   const record = (kind, msg, obj) => {
     try { window.__recordBattle(JSON.stringify({ kind, data: { msg, obj } })).catch(() => {}); } catch {}
   };
+  // Keep-alive and chat traffic is pure noise; every other decoded lobby message (both
+  // directions) goes to disk so the enter/start comparison and any natural roster/artifact
+  // push (HeroInfoP, GetHeroInfoR, refreshMemberInfosR, GetPlayerArtifactR) are all captured.
+  const NOISE = /(?:Ping|GetChatList)/;
   const snapshot = () => {
     try {
       // Read an already logged-in game's cache, without asking the server for anything.
       const heroes = [];
       cls("HeroModule").Ins._uuid2HeroMap.foreach((_k, hero) => heroes.push(hero));
-      if (!heroes.length) return;
+      if (!heroes.length) {
+        record("roster", "HeroRosterSnapshotError", { reason: "hero cache empty" });
+        return;
+      }
       record("roster", "HeroRosterSnapshot", {
         playerId: cls("PlayerModule").Ins.playerId,
         heros: { ...heroes, _length: heroes.length }, source: "hero-module", complete: false,
+        // Lobby pushes (HeroInfoP/GetHeroInfoR) never carry per-hero relic/artifact — verified
+        // over the full broad capture events-pmain-20261119; only the battle lineup has them.
+        incompleteFields: ["artifact", "relic"],
       });
-    } catch {}
+    } catch (err) {
+      record("roster", "HeroRosterSnapshotError", { reason: String(err?.message || err) });
+    }
   };
   td.onStartGamePPush = function (data) {
     snapshot();
@@ -37,8 +49,7 @@
     return result;
   };
   socket.log = function (msg, obj) {
-    // Serialize the actual decoded object directly, so nested gear entries are not cut to <deep>.
-    if (typeof msg === "string" && /(?:HeroInfoP|GetHeroInfoR|refreshMemberInfosR)\(/.test(msg)) record("sock", msg, obj);
+    if (typeof msg === "string" && !NOISE.test(msg)) record("sock", msg, obj);
     return log.apply(this, arguments);
   };
   window.__battleCaptureReady = true;

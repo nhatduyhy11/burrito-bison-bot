@@ -20,13 +20,16 @@ const teamMember = ({ baseInfo, moduleDatas }) => ({
   playerId: Number(baseInfo.playerId), name: baseInfo.name, fightCap: baseInfo.fightCap, heros: moduleDatas.heros,
 });
 
-// Battles (StartGameP .. QuitRoom) in one capture file.
+// Battles (StartGameP .. QuitRoom) in one capture file. Each battle also carries `pre`: the
+// lobby events recorded since the previous battle ended (enter payloads, roster pushes,
+// artifact responses, the previous battle's reward response).
 function loadCapture(file) {
   const lines = fs.readFileSync(file, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
   const battles = [];
   let cur = null;
   let team = null; // latest refreshMemberInfosR members
   let roster = null; // explicit passive snapshot of this account, before StartGameP
+  let pre = []; // lobby events outside or after a battle
   for (const e of lines) {
     const msg = e.data && typeof e.data === "object" ? String(e.data.msg || "") : "";
     if (e.kind === "sock" && msg.includes("refreshMemberInfosR(") && e.data.obj?.members) {
@@ -37,7 +40,8 @@ function loadCapture(file) {
     }
     if (e.kind === "room" && msg.includes("StartGameP")) {
       const start = e.data.obj;
-      cur = { file, start, events: [] };
+      cur = { file, start, pre, events: [] };
+      pre = [];
       const ids = listItems(start.playerInfos).map((p) => Number(p.playerId));
       const main = team?.find((m) => m.playerId === ids[0]);
       if (main) cur.roster = { playerId: main.playerId, heros: main.heros, source: "team", complete: true };
@@ -48,7 +52,10 @@ function loadCapture(file) {
       battles.push(cur);
       continue;
     }
-    if (!cur) continue;
+    if (!cur || cur.quit) {
+      pre.push(e);
+      continue;
+    }
     cur.events.push(e);
     if (e.kind === "sock" && msg.includes("QuitRoom(")) cur.quit = e.data.obj;
   }
