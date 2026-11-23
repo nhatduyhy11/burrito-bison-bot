@@ -81,6 +81,14 @@ class AuthTests(unittest.TestCase):
 
 
 class CliTests(unittest.TestCase):
+    def test_browser_stays_open_by_default_with_explicit_auto_close(self):
+        base = ["--auth-json", "auth.json", "--acc", "a", "--server", "519"]
+        self.assertTrue(parse_args(base).keep_open)
+        self.assertTrue(parse_args(base + ["--keep-open"]).keep_open)
+        self.assertFalse(parse_args(base + ["--close-after-verify"]).keep_open)
+        with redirect_stderr(StringIO()), self.assertRaises(SystemExit):
+            parse_args(base + ["--keep-open", "--close-after-verify"])
+
     def test_screenshot_delay_validation(self):
         base = ["--auth-json", "auth.json", "--acc", "a", "--server", "519"]
         args = parse_args(base + ["--screenshot", "--screenshot-delay", "0"])

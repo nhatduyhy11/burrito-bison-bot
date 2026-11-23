@@ -26,14 +26,18 @@ uv run python scripts/sv_switch/switch.py \
 - `--server N` (alias `--sv N`): `s_id` server đích, lấy object đầy đủ từ danh sách
   backend mới mỗi lần chạy; không dùng metadata hardcode hay cache research.
 - `--headless`: chạy ẩn. `--browser chrome|chromium` (mặc định chrome).
-- `--keep-open`: giữ browser sau khi xác minh, Ctrl+C để đóng. Mặc định đóng browser
-  sau khi nhận được dữ liệu nhân vật, có thể trước khi UI tải asset xong.
+- Mặc định giữ browser sau khi xác minh để bạn tiếp tục dùng game. Đóng tab/cửa sổ
+  game hoặc nhấn Ctrl+C để thoát script. `--keep-open` vẫn được giữ làm alias
+  tương thích cho hành vi mặc định này.
+- `--close-after-verify`: tự đóng browser sau khi xác minh và chụp ảnh (nếu có).
+  Dùng cho automation, đặc biệt khi chạy `--headless`; nếu không chụp ảnh, browser
+  có thể đóng trước khi UI tải asset xong.
 - `--timeout 120`: thời hạn login/xác minh, tính bằng giây.
 - `--screenshot`: lưu `screenshot.png` trong thư mục output sau khi backend xác minh
   login thành công. `--screenshot-delay 20` là thời gian đợi asset/UI, tính bằng giây
   (hữu hạn, ≥ 0), không tính vào `--timeout`. Ảnh chụp giao diện hiện tại, có thể còn
   popup sự kiện/onboarding; script không tự bấm đóng popup hay thao tác gameplay.
-  Có thể dùng thêm `--keep-open` để kiểm tra UI. Ảnh có thể chứa tên/ID nhân vật,
+  Browser vẫn mở sau khi chụp theo mặc định. Ảnh có thể chứa tên/ID nhân vật,
   tài nguyên và chat trong game; chỉ metadata kết quả được lọc token.
 - `--out path`: thư mục output mới. Mặc định tạo thư mục riêng dưới `.tmp/sv-switch`.
   `result.json` chứa server đích, lựa chọn cũ, có nhân vật sẵn hay không, server/ID

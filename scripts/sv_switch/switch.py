@@ -71,10 +71,16 @@ def parse_args(argv=None):
     )
     parser.add_argument("--browser", choices=("chrome", "chromium"), default="chrome")
     parser.add_argument("--headless", action="store_true")
-    parser.add_argument(
+    lifetime = parser.add_mutually_exclusive_group()
+    lifetime.add_argument(
         "--keep-open",
-        action="store_true",
-        help="Keep browser open after verification until Ctrl+C",
+        dest="keep_open", action="store_true", default=True,
+        help="Keep browser open until you close the game window or press Ctrl+C (default)",
+    )
+    lifetime.add_argument(
+        "--close-after-verify",
+        dest="keep_open", action="store_false",
+        help="Close browser after verification and optional screenshot",
     )
     parser.add_argument(
         "--timeout", type=float, default=120, help="Total login timeout in seconds"
@@ -101,6 +107,22 @@ def parse_args(argv=None):
     if args.profile is not None and not args.profile.is_dir():
         parser.error("--profile must point to an existing profile directory")
     return args
+
+
+async def wait_for_user_close(page, context):
+    closed = asyncio.Event()
+
+    def on_close(*_):
+        closed.set()
+
+    page.on("close", on_close)
+    context.on("close", on_close)
+    try:
+        if not page.is_closed():
+            await closed.wait()
+    finally:
+        page.remove_listener("close", on_close)
+        context.remove_listener("close", on_close)
 
 
 async def run(args):
@@ -289,8 +311,8 @@ async def run(args):
             if args.keep_open:
                 # Result must exist on disk while the browser is held open.
                 write_result()
-                print("[open] Ctrl+C to close", flush=True)
-                await asyncio.Event().wait()
+                print("[open] Close the game window or press Ctrl+C to exit", flush=True)
+                await wait_for_user_close(page, context)
         except Exception as exc:  # noqa: BLE001 — fail closed and redact browser errors
             result["success"] = False
             # Browser exceptions can embed authenticated URLs; keep diagnostic output
