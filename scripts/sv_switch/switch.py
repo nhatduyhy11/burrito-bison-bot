@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import json
+import math
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -79,6 +80,15 @@ def parse_args(argv=None):
         "--timeout", type=float, default=120, help="Total login timeout in seconds"
     )
     parser.add_argument(
+        "--screenshot", action="store_true", help="Save screenshot.png after verified login"
+    )
+    parser.add_argument(
+        "--screenshot-delay",
+        type=float,
+        default=20,
+        help="Seconds to let UI assets load before screenshot (default: 20)",
+    )
+    parser.add_argument(
         "--out", type=Path, help="New output directory; default .tmp/sv-switch/run-..."
     )
     args = parser.parse_args(argv)
@@ -86,6 +96,8 @@ def parse_args(argv=None):
         parser.error("--auth-json and --acc must be supplied together")
     if args.server <= 0 or args.timeout <= 0:
         parser.error("--server and --timeout must be positive")
+    if not math.isfinite(args.screenshot_delay) or args.screenshot_delay < 0:
+        parser.error("--screenshot-delay must be finite and non-negative")
     if args.profile is not None and not args.profile.is_dir():
         parser.error("--profile must point to an existing profile directory")
     return args
@@ -269,6 +281,11 @@ async def run(args):
                 f"[verified] backend character server={result['character']['playerServer']}; newRole={result['character']['newRole']}",
                 flush=True,
             )
+            if args.screenshot:
+                await asyncio.sleep(args.screenshot_delay)
+                await page.screenshot(path=str(out / "screenshot.png"), full_page=True)
+                result["screenshot"] = "screenshot.png"
+                print(f"[screenshot] {out / 'screenshot.png'}", flush=True)
             if args.keep_open:
                 # Result must exist on disk while the browser is held open.
                 write_result()

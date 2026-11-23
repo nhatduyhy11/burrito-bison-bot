@@ -81,6 +81,19 @@ class AuthTests(unittest.TestCase):
 
 
 class CliTests(unittest.TestCase):
+    def test_screenshot_delay_validation(self):
+        base = ["--auth-json", "auth.json", "--acc", "a", "--server", "519"]
+        args = parse_args(base + ["--screenshot", "--screenshot-delay", "0"])
+        self.assertTrue(args.screenshot)
+        self.assertEqual(args.screenshot_delay, 0)
+        for delay in ("-1", "nan", "inf"):
+            with (
+                self.subTest(delay=delay),
+                redirect_stderr(StringIO()),
+                self.assertRaises(SystemExit),
+            ):
+                parse_args(base + ["--screenshot-delay", delay])
+
     def test_auth_and_alias(self):
         args = parse_args(
             ["--auth-json", "auth.json", "--acc", "a@example.com", "--sv", "829"]
