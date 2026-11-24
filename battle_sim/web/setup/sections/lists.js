@@ -73,7 +73,10 @@ function ListRow({ ctx, group, item, index }) {
   const { state, dict, update } = ctx;
   const chosen = state[group].map((x) => x?.name).filter(Boolean);
   // The slot fills in place (null = empty): pick a name to fill, '(trống)' or ↻ to reset it.
-  const setSlot = (v) => update((s) => void (s[group][index] = v ? newListItem(group)(v) : null));
+  const setSlot = (v) => update((s) => {
+    // A new choice keeps this slot's star/level; only an empty slot starts at the defaults.
+    s[group][index] = v ? { ...(s[group][index] || newListItem(group)(v)), name: v } : null;
+  });
   const edit = (fn) => update((s) => void fn(s[group][index]));
   const setLevel = (v) => edit((x) => (x.level = v));
   const setStar = (v) => edit((x) => (x.star = v));
