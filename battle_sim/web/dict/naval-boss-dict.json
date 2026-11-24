@@ -5029,60 +5029,6 @@
           ]
         }
       ]
-    },
-    "night_haunter_70072601": {
-      "code": 70072601,
-      "name": "Night Haunter",
-      "name_vn": "Hồi Chuông Đêm",
-      "avatar": "head/head_boss_028",
-      "desc": "Weakness: Melee DMG ·  Resistance: Ranged DMG, CC ·  Trait: Immune to all Ranged DMG and all CC effects",
-      "desc_vn": "Điểm yếu: ST Cận Chiến · Kháng: ST Tầm Xa Khống Chế · Đặc điểm: Miễn tất cả ST Tầm Xa, kháng tất cả khống chế",
-      "presets": [
-        {
-          "level": 10000101,
-          "phase": "audition",
-          "subType": 0,
-          "day": 7,
-          "position": null,
-          "creeps": []
-        }
-      ]
-    },
-    "savage_butcher_70072701": {
-      "code": 70072701,
-      "name": "Savage Butcher",
-      "name_vn": "Đồ Tể Thối Rữa",
-      "avatar": "head/head_boss_032",
-      "desc": "Weakness: None ·  Resistance: Melee DMG, CC ·  Trait: Immune to all CC",
-      "desc_vn": "Điểm yếu: Trống · Kháng: ST Cận Chiến  Khống Chế · Đặc điểm: kháng tất cả khống chế",
-      "presets": [
-        {
-          "level": 10000201,
-          "phase": "audition",
-          "subType": 0,
-          "day": 7,
-          "position": null,
-          "creeps": []
-        }
-      ]
-    },
-    "maniac_clown_70072501": {
-      "code": 70072501,
-      "name": "Maniac Clown",
-      "name_vn": "Gã Hề Điên",
-      "avatar": "head/head_boss_027",
-      "desc": "Weakness: CC effects ·  Resistance: Non-True DMG Immunity ·  Trait: Takes additional True DMG under CC effects",
-      "desc_vn": "Điểm yếu: hiệu quả Khống Chế · Kháng: Ngoài ST Thực · Đặc điểm: Khi bị khống chế, chịu thêm ST Thực",
-      "presets": [
-        {
-          "level": 10000301,
-          "phase": "audition",
-          "subType": 0,
-          "day": 7,
-          "position": null,
-          "creeps": []
-        }
-      ]
     }
   },
   "creeps": {

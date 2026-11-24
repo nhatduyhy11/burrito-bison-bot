@@ -18,6 +18,8 @@ function navalCatalogs(M, V) {
       desc: strip(en.simpleDesc), desc_vn: strip(vi?.simpleDesc) };
   };
   for (const row of rows(M("GuildNavalMonthwarLO")).sort((a, b) => a.id - b.id)) {
+    // Setup supports room occupation only; never export audition bosses, presets or companions.
+    if (row.subType === 0) continue;
     const [bossCode, ...companions] = JSON.parse(row.showCreep);
     const rounds = JSON.parse(row.round).map((id) => {
       const round = M("GuildNavalMonthwarRoundLO").get(id);
@@ -30,8 +32,8 @@ function navalCatalogs(M, V) {
     const boss = monster(bossCode), key = `${slug(boss.name) || 'boss'}_${bossCode}`;
     bosses[key] ||= { ...boss, presets: [] };
     for (const code of companions) creeps[code] ||= monster(code);
-    bosses[key].presets.push({ level: row.id + 1, phase: row.subType === 0 ? "audition" : "rooms",
-      subType: row.subType, day: row.day, position: row.subType === 0 ? null : Math.floor(row.id / 100) % 100,
+    bosses[key].presets.push({ level: row.id + 1, phase: "rooms",
+      subType: row.subType, day: row.day, position: Math.floor(row.id / 100) % 100,
       creeps: companions });
   }
   return { battleType: 42, bosses, creeps };

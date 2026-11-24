@@ -106,10 +106,10 @@ Capture tạo ra dành cho chế độ **Chơi** offline và có danh sách thao
 ### Tranh Bá liên server (battleType 42)
 
 Trong **Màn chơi**, bật **Ghi đè**, chọn **Tranh Bá liên server** → **Boss** → **Bộ quái**.
-Preset ghi rõ sơ tuyển hoặc nhóm/ngày/phòng. Có thể dùng capture campaign, U Đô hoặc
+Chỉ hỗ trợ vòng chiếm phòng; preset ghi rõ nhóm/ngày/phòng. Có thể dùng capture campaign, U Đô hoặc
 Tranh Bá làm nguồn đội hình solo; engine kiểm tra boss/level với config của capture gốc.
 
-Crawl lại catalog riêng (27 boss / 402 preset ở config này):
+Crawl lại catalog riêng (24 boss / 399 preset vòng chiếm phòng ở config này, bỏ sơ tuyển):
 
 ```bash
 node battle_sim/scripts/gen_naval_dict.js sea_66328

@@ -389,6 +389,14 @@ test('naval: boss/preset round trip, rejecting another boss or unknown level', (
   const profile = { map: { mode: 'naval', boss, level: 2040401 } };
   assert.equal(fromProfile(profile, base, dict, catalogs).map.level, null);
   assert.throws(() => fromProfile({ map: { mode: 'naval', boss: 'missing' } }, base, dict, catalogs));
+  for (const [boss, level] of [
+    ['night_haunter_70072601', 10000101],
+    ['savage_butcher_70072701', 10000201],
+    ['maniac_clown_70072501', 10000301],
+  ]) {
+    assert.throws(() => fromProfile({ map: { mode: 'naval', boss, level } }, base, dict, catalogs));
+    assert.equal(fromProfile({ map: { mode: 'naval', boss: 'hell_flytrap_70070401', level } }, base, dict, catalogs).map.level, null);
+  }
   assert.throws(() => fromProfile(profile, base, dict, { maps }), /naval-boss-dict/);
 });
 

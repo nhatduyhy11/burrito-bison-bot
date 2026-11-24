@@ -103,7 +103,7 @@ function CapitalBody({ ctx }) {
   const boss = bosses[state.map.boss];
   const bossOptions = [["", "— chọn boss —"], ...Object.entries(bosses).map(([key, b]) => [key, `${optionText(b)} · ${b.presets.length} bộ quái`, bossPop(b)])];
   const presetOptions = [["", boss ? "— chọn bộ quái —" : "— chọn boss trước —"],
-    ...(boss?.presets || []).map((p) => [String(p.level), (naval ? `${p.phase === "audition" ? "Sơ tuyển" : `Nhóm ${p.subType} · Ngày ${p.day} · Phòng ${p.position}`} — ` : "") +
+    ...(boss?.presets || []).map((p) => [String(p.level), (naval ? `Nhóm ${p.subType} · Ngày ${p.day} · Phòng ${p.position} — ` : "") +
       (p.creeps.map((id) => naval ? optionText(ctx.navalDict.creeps[id]) : creepName(creepsDict, id)).join(" + ") || "Không có quái đi kèm")])];
   const preset = boss?.presets.find((p) => p.level === state.map.level);
   // A new boss resets the preset; a boss with a single preset gets it right away.

@@ -131,8 +131,10 @@ Do đó dòng “TIER2 MATCH” của CLI **không chứng minh** các checkpoin
 ## Hướng mô phỏng sau research
 
 Engine headless replay được type 42 nguyên bản, không cần sửa logic chiến đấu.
-`gen_naval_dict.js` sinh catalog riêng `naval-boss-dict.json` đủ 27 boss/402 preset,
-giữ subtype/ngày/phòng và phân biệt sơ tuyển. Setup có mode **Tranh Bá liên server**:
+`gen_naval_dict.js` sinh catalog riêng `naval-boss-dict.json` gồm 24 boss/399 preset vòng chiếm phòng,
+giữ subtype/ngày/phòng. Từ 2026-11-24 (bbb-tlf), generator bỏ toàn bộ 3 boss và preset sơ tuyển
+(subType 0); số liệu 27 boss/402 row ở phần research bên trên mô tả config game đầy đủ.
+Setup có mode **Tranh Bá liên server**:
 chọn boss rồi chọn preset, profile `{mode: "naval", boss, level}`. Prefill từ capture type 42
 chọn đúng preset; import/export kiểm tra level thuộc boss; battle kiểm tra lại config thật.
 `mirror.js` có bundle `guildPvpPromotion` và sandbox có fallback đăng ký battle config type42.
