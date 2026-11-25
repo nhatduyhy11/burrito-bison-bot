@@ -105,15 +105,14 @@ button.primary { background: var(--accent); color: #0b1220; border-color: var(--
 .dd-opt.disabled { color: var(--muted); opacity: .5; cursor: default; }
 .dd-opt.disabled:hover { background: none; }
 .dd-group { padding: 6px 8px 2px; color: var(--muted); font-size: 11px; font-weight: 600; }
-/* Hover popover: fixed viewport coords, informational only (pointer-events off — it never blocks
-   the controls underneath, and mouse-leave stays with the trigger). */
-.popover { position: fixed; z-index: 60; width: 320px; pointer-events: none; background: #1e2128;
+/* Hover popover: fixed viewport coords. The mouse can move in (useHoverPop bridges the gap) to
+   scroll a tall card and select its text. */
+.popover { position: fixed; z-index: 60; width: 320px; background: #1e2128;
   border: 1px solid var(--line); border-radius: 6px; padding: 8px; box-shadow: 0 8px 24px #0006;
-  font-size: 11px; line-height: 1.45; max-height: calc(100vh - 16px); overflow: hidden;
+  font-size: 11px; line-height: 1.45; max-height: calc(100vh - 16px); overflow-y: auto;
+  cursor: auto; user-select: text; outline: none;
   /* Normal here: the card is a popover child of trigger labels (.row.wide label) whose nowrap would clip long descs. */
   white-space: normal; }
-/* PopHover cards: the mouse can move in to scroll a tall card and select its text. */
-.popover.interactive { pointer-events: auto; overflow-y: auto; cursor: auto; user-select: text; }
 .pop-title { font-weight: 600; font-size: 12px; margin-bottom: 6px; }
 .pop-line { margin-bottom: 6px; }
 .pop-line:last-child { margin-bottom: 0; }

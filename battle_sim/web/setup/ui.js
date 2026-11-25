@@ -82,22 +82,26 @@ export const starsLabel = (stars) => {
   return `Sao ${run}`;
 };
 
-// Place a popover right of the anchor row, clamped into the viewport (fixed coords, so overflow
-// ancestors can't clip it).
+const POP_WIDTH = 320;
+const POP_GAP = 8;
+
+// Place a popover right of the anchor row (left of it when the right side has no room, so it never
+// lands on top of its own trigger / dropdown list), clamped into the viewport (fixed coords, so
+// overflow ancestors can't clip it).
 const popAt = (target, setPop, content) => {
   const r = target.getBoundingClientRect();
-  setPop({
-    x: Math.min(r.right + 8, window.innerWidth - 332),
-    y: Math.max(8, r.top),
-    content,
-  });
+  const room = window.innerWidth - POP_WIDTH - 12;
+  const left = r.left - POP_GAP - POP_WIDTH - 2;
+  const x = r.right + POP_GAP <= room || left < 8 ? Math.min(r.right + POP_GAP, room) : left;
+  setPop({ x, y: Math.max(8, r.top), content });
 };
 
-// Floating card. By default pointer-events stay off so it never blocks the controls underneath
-// and mouse-leave logic stays on the trigger side (SelectPop option popovers). `interactive`
-// (PopHover) lets the mouse enter it to scroll and select text. After layout it is lifted by its
-// real height so a tall card (5 Dị Năng nodes) stays inside the viewport.
-export function Popover({ x, y, interactive, onMouseDown, children }) {
+// Floating card: the mouse can move into it to scroll a tall card and select its text (every hover
+// popover — PopHover labels and SelectPop options — uses useHoverPop for that). tabIndex -1 lets a
+// click inside take focus within the dropdown root, so SelectPop's focusout doesn't close the list.
+// After layout it is lifted by its real height so a tall card (5 Dị Năng nodes) stays inside the
+// viewport.
+export function Popover({ x, y, onMouseEnter, onMouseLeave, onMouseDown, children }) {
   const ref = useRef(null);
   const [top, setTop] = useState(y);
   useLayoutEffect(() => {
@@ -107,34 +111,38 @@ export function Popover({ x, y, interactive, onMouseDown, children }) {
   // Triggers often sit inside a <label>: a click in the card would otherwise activate its control.
   const stopLabel = (e) => e.preventDefault();
   return html`
-    <div class=${interactive ? "popover interactive" : "popover"} ref=${ref}
-      style=${{ left: `${x}px`, top: `${top}px` }}
-      onClick=${interactive ? stopLabel : undefined} onMouseDown=${onMouseDown}>${children}</div>
+    <div class="popover" ref=${ref} tabIndex="-1" style=${{ left: `${x}px`, top: `${top}px` }}
+      onClick=${stopLabel} onMouseDown=${onMouseDown} onMouseEnter=${onMouseEnter} onMouseLeave=${onMouseLeave}>
+      ${children}
+    </div>
   `;
 }
 
 // Grace period for crossing the gap between the trigger and its card.
-const HIDE_DELAY = 200;
+const HIDE_DELAY = 250;
 
-// Hover popover on an arbitrary trigger element (skin labels, the Dị Năng (i) icon). The card is a
-// DOM child of the wrapper, so moving onto it counts as still hovering; the short hide delay
-// bridges the gap beside the trigger. A text-selection drag that leaves the card keeps it open
-// until the mouse button is released.
-export function PopHover({ content, children }) {
+// Shared hover state for a trigger + its card. Leaving the trigger only schedules the hide, so the
+// mouse can cross the gap; entering the card cancels it. A text-selection drag that leaves the
+// card keeps it open until the mouse button is released. beforeHide runs right before a delayed
+// hide unmounts the card.
+function useHoverPop(beforeHide) {
   const [pop, setPop] = useState(null);
   const timer = useRef(0);
   const hovered = useRef(false);
   const dragging = useRef(false);
-  useEffect(() => () => clearTimeout(timer.current), []);
-  const show = (e) => {
-    hovered.current = true;
-    clearTimeout(timer.current);
-    if (!pop) popAt(e.currentTarget, setPop, content);
-  };
+  const cancel = () => clearTimeout(timer.current);
+  useEffect(() => cancel, []);
+  const close = () => { cancel(); hovered.current = false; setPop(null); };
   const scheduleHide = () => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setPop(null), HIDE_DELAY);
+    cancel();
+    timer.current = setTimeout(() => { beforeHide?.(); setPop(null); }, HIDE_DELAY);
   };
+  const show = (target, content) => {
+    hovered.current = true;
+    cancel();
+    popAt(target, setPop, content);
+  };
+  const enter = () => { hovered.current = true; cancel(); };
   const leave = () => {
     hovered.current = false;
     if (!dragging.current) scheduleHide();
@@ -147,10 +155,25 @@ export function PopHover({ content, children }) {
     dragging.current = true;
     document.addEventListener("mouseup", endDrag, { once: true });
   };
+  // own: the card tracks its own enter/leave (it isn't inside the hovered trigger element).
+  const card = (own) => pop && html`
+    <${Popover} x=${pop.x} y=${pop.y} onMouseEnter=${own ? enter : undefined} onMouseLeave=${own ? leave : undefined}
+      onMouseDown=${startDrag}>
+      ${pop.content}
+    <//>
+  `;
+  return { pop, show, enter, leave, close, card };
+}
+
+// Hover popover on an arbitrary trigger element (skin labels, the Dị Năng (i) icon). The card is a
+// DOM child of the wrapper, so moving onto it counts as still hovering the wrapper.
+export function PopHover({ content, children }) {
+  const hp = useHoverPop();
+  const show = (e) => (hp.pop ? hp.enter() : hp.show(e.currentTarget, content));
   return html`
-    <span class="pop-hover" onMouseEnter=${show} onMouseLeave=${leave}>
+    <span class="pop-hover" onMouseEnter=${show} onMouseLeave=${hp.leave}>
       ${children}
-      ${pop && html`<${Popover} x=${pop.x} y=${pop.y} interactive onMouseDown=${startDrag}>${pop.content}<//>`}
+      ${hp.card(false)}
     </span>
   `;
 }
@@ -203,11 +226,17 @@ function PopOption({ opt, selected, active, onPick, onHover, onLeave }) {
 export function SelectPop({ options, value, onChange, ...attrs }) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
-  const [pop, setPop] = useState(null);
   const [up, setUp] = useState(false);
   const root = useRef(null);
   const list = useRef(null);
-  const reset = () => { setOpen(false); setActive(-1); setPop(null); setUp(false); };
+  // A click in the card focuses it; unmounting a focused card would fire focusout (→ close the whole
+  // list), so hand focus back to the trigger button first.
+  const keepFocus = () => {
+    const card = root.current?.querySelector(".popover");
+    if (card?.contains(document.activeElement)) root.current.querySelector("button")?.focus({ preventScroll: true });
+  };
+  const hp = useHoverPop(keepFocus);
+  const reset = () => { setOpen(false); setActive(-1); hp.close(); setUp(false); };
   // Open upward when the list would run past the viewport bottom and there is more room above.
   useLayoutEffect(() => {
     if (!open || !list.current) return;
@@ -227,8 +256,8 @@ export function SelectPop({ options, value, onChange, ...attrs }) {
     if (top >= box.scrollTop && top + el.offsetHeight <= box.scrollTop + box.clientHeight) return;
     box.scrollTop = Math.max(0, top - (box.clientHeight - el.offsetHeight) / 2);
   }, [open, active]);
-  const hidePop = () => setPop(null);
-  const hover = (opt, target) => (opt[2] ? popAt(target, setPop, opt[2]) : hidePop());
+  // Options without a card (e.g. "(trống)") just let the current one fade like a leave.
+  const hover = (opt, target) => (opt[2] ? hp.show(target, opt[2]) : hp.leave());
   const pick = (key) => { reset(); if (key !== value) onChange(key); };
   const toggle = () => {
     if (open) reset();
@@ -259,14 +288,14 @@ export function SelectPop({ options, value, onChange, ...attrs }) {
         <span class="dd-caret" />
       </button>
       ${open && html`
-        <div class=${up ? "dd-list up" : "dd-list"} ref=${list} role="listbox" onMouseLeave=${hidePop}>
+        <div class=${up ? "dd-list up" : "dd-list"} ref=${list} role="listbox" onMouseLeave=${hp.leave}>
           ${options.map((opt, i) => html`
             ${opt[4] && opt[4] !== options[i - 1]?.[4] && html`<div class="dd-group" key=${`g-${opt[4]}`}>${opt[4]}</div>`}
             <${PopOption} key=${opt[0]} opt=${opt} selected=${opt[0] === value} active=${i === active}
-              onPick=${pick} onHover=${hover} onLeave=${hidePop} />`)}
+              onPick=${pick} onHover=${hover} onLeave=${hp.leave} />`)}
         </div>
       `}
-      ${pop && html`<${Popover} x=${pop.x} y=${pop.y}>${pop.content}<//>`}
+      ${open && hp.card(true)}
     </span>
   `;
 }
