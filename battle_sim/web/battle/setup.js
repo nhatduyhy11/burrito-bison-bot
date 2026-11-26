@@ -94,7 +94,10 @@ export function ensureTeamState({ M, rb, step, start, myPid }) {
   const teamInfo = { leaderPlayerId: myPid, team: { id: 1, members } };
   Object.defineProperty(mod, "teamInfo", { get: () => teamInfo, configurable: true });
   mod.amILeader = () => true;
-  step("team stand-in", { battleType: start.battleType, members: members.map((m) => m.baseInfo.playerId) });
+  // The top-left TDBossHeadWidget names the stage from curChallengeId, not StartGameP.level (lobby
+  // team info sets it; default 1001 would show "Ải 1" on every level).
+  mod.curChallengeId = Number(start.level);
+  step("team stand-in", { battleType: start.battleType, level: mod.curChallengeId, members: members.map((m) => m.baseInfo.playerId) });
 }
 
 export function ensureBattleConfig({ M, R, report, step, battleType }) {
