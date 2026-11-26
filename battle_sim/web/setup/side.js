@@ -113,7 +113,12 @@ export function Side({ ctx, battles, profile, initialStatus }) {
         <div id="status" class=${`status ${status.kind}`}>${status.text}</div>
         <${AccountSection} ctx=${ctx} battles=${battles} />
         <${Accordion} title="Profile JSON" defaultOpen=${false} skipExpandAll>
-          <pre id="output">${JSON.stringify(profile, null, 2)}</pre>
+          <div class="profile-json">
+            <div class="profile-json-toolbar">
+              <button id="copyProfileJson" type="button" onClick=${copy} aria-label="Sao chép profile JSON">Copy</button>
+            </div>
+            <pre id="output">${JSON.stringify(profile, null, 2)}</pre>
+          </div>
         <//>
       </div>
     </section>

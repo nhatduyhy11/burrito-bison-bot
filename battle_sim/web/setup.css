@@ -148,6 +148,9 @@ td.name { white-space: normal; }
 .err { color: var(--red); }
 pre { background: #0f1115; border: 1px solid var(--line); border-radius: 6px; padding: 8px; margin: 8px 0 0;
   max-height: 60vh; overflow: auto; font: 12px/1.4 Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
+.profile-json { background: #0f1115; border: 1px solid var(--line); border-radius: 6px; }
+.profile-json-toolbar { display: flex; justify-content: flex-end; padding: 6px 8px 0; }
+.profile-json pre { border: 0; margin: 0; }
 code { font: 12px Consolas, monospace; background: #0f1115; padding: 1px 4px; border-radius: 3px; word-break: break-all; }
 .status { min-height: 1.4em; margin-top: 6px; }
 .tabs { display: flex; gap: 4px; margin: 0 0 10px; border-bottom: 1px solid var(--line); }
