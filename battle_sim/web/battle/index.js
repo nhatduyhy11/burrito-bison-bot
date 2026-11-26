@@ -39,13 +39,16 @@ export async function runBattle({ sim, step, R }) {
 
   captureErrors(ctx);
   setupMain(ctx);
-  // Names and worn Summoner skins (derma): StartGameP has neither; a Đêm Đỏ capture keeps both in
-  // its team info. Fallback Player/Guest with the default model.
+  // Đêm Đỏ always uses fixed names by leaderId, regardless of capture names or player order.
+  // Worn Summoner skins (derma) still come from the capture's team info.
+  const blood = [47, 48].includes(start.battleType);
   const team = new Map((sim.capture.team || []).map((p) => [Number(p.playerId), p]));
   const players = rb.listItems(start.playerInfos).map((p, i) => {
     const playerId = Number(p.playerId);
     const m = team.get(playerId);
-    return { playerId, name: m?.name || (i === 0 ? "Player" : `Guest ${i}`), derma: m?.derma || 0 };
+    const name = blood ? (playerId === Number(start.leaderId) ? "Pandora" : "ĐạiKGà")
+      : m?.name || (i === 0 ? "Player" : `Guest ${i}`);
+    return { playerId, name, derma: m?.derma || 0 };
   });
   stubNetwork({ ...ctx, myPid, summonerDerma, players });
   initModules(ctx);

@@ -9,15 +9,15 @@ import { hasSummonedJoker, JOKER_SUMMON } from "../../hero-lineup.js";
 import { HeroCard } from "./heroes.js";
 
 const SIDES = [
-  { side: "master", title: "Master", group: "heroes" },
-  { side: "guest", title: "Guest", group: "guestHeroes" },
+  { side: "master", title: "Master", name: "Pandora", group: "heroes" },
+  { side: "guest", title: "Guest", name: "ĐạiKGà", group: "guestHeroes" },
 ];
 
 const power = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : Number(n || 0).toLocaleString("vi-VN"));
 
-function sideNote(member) {
+function sideNote(member, name) {
   if (!member) return "không có roster trong capture";
-  return `${member.name} · lực 3 hero lúc capture ${power(member.lineupFightCap)} · lực acc ${power(member.fightCap)}`;
+  return `${name} · lực 3 hero lúc capture ${power(member.lineupFightCap)} · lực acc ${power(member.fightCap)}`;
 }
 
 export function BloodTeams({ ctx }) {
@@ -27,12 +27,12 @@ export function BloodTeams({ ctx }) {
   const loli = lineup.find(({ name }) => name === JOKER_SUMMON.hero);
   const showJoker = hasSummonedJoker(lineup, loli?.custom && loli.slots.includes(JOKER_SUMMON.skin));
   const loliSide = loli && (state.heroes.slice(0, BLOOD_SIDE).includes(loli) ? "master" : "guest");
-  const sides = SIDES.map(({ side, title, group }) => {
+  const sides = SIDES.map(({ side, title, name, group }) => {
     const heroes = state[group].slice(0, BLOOD_SIDE);
     const member = baseBattle?.team?.find((m) => m.side === side);
     return html`
       <div class="subsection" key=${side}>
-        <h3>${title} <span class="note">${sideNote(member)}</span></h3>
+        <h3>${title} <span class="note">${sideNote(member, name)}</span></h3>
         ${heroes.map((hero, index) => html`
           <${HeroCard} key=${`${side}${index}`} ctx=${ctx} hero=${hero} index=${index} group=${group} chosen=${chosen} />`)}
         ${showJoker && loliSide === side && html`
