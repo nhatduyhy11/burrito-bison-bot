@@ -22,6 +22,37 @@ const teamMember = ({ baseInfo, moduleDatas }) => ({
   heros: moduleDatas.heros,
 });
 
+// Solo roster gear: the lobby cache (HeroRosterSnapshot) has no per-hero relic/artifact. The login
+// responses GetRelicInfoR / GetArtifactInfoR (this account only) carry wearList = item uuid -> heroUuid
+// plus the item lists, so each roster hero gets them in the battle lineup's shape: relic = relic code,
+// artifact = {uuid, code, battleEntryInfos?}. A hero with no wearList entry wears nothing. Without a
+// response the field stays missing and is kept in incompleteFields (not guessed). They arrive at login
+// only and not in every session.
+function enrichRoster(roster, gear) {
+  const heros = listItems(roster.heros);
+  const wornBy = (resp, items) => {
+    const byUuid = new Map(listItems(resp[items]).map((it) => [it.uuid, it]));
+    return new Map(listItems(resp.wearList).map((w) => [w.heroUuid, byUuid.get(w.uuid)]).filter(([, it]) => it));
+  };
+  const filled = [];
+  if (gear.relic) {
+    const worn = wornBy(gear.relic, "relicList");
+    for (const h of heros) if (worn.has(h.uuid)) h.relic = worn.get(h.uuid).code;
+    filled.push("relic");
+  }
+  if (gear.artifact) {
+    const worn = wornBy(gear.artifact, "artifactList");
+    for (const h of heros) {
+      const it = worn.get(h.uuid);
+      if (it) h.artifact = { uuid: it.uuid, code: it.code, ...(listItems(it.battleEntryInfos).length ? { battleEntryInfos: it.battleEntryInfos } : {}) };
+    }
+    filled.push("artifact");
+  }
+  if (!filled.length) return roster;
+  const incompleteFields = (roster.incompleteFields || []).filter((f) => !filled.includes(f));
+  return { ...roster, incompleteFields, complete: incompleteFields.length === 0, gearFrom: filled.map((f) => `${f}:wearList`) };
+}
+
 // Battles (StartGameP .. QuitRoom) in one capture file. Each battle also carries `pre`: the
 // lobby events recorded since the previous battle ended (enter payloads, roster pushes,
 // artifact responses, the previous battle's reward response).
@@ -32,8 +63,13 @@ function loadCapture(file) {
   let team = null; // latest refreshMemberInfosR members
   let roster = null; // explicit passive snapshot of this account, before StartGameP
   let pre = []; // lobby events outside or after a battle
+  const gear = {}; // latest GetRelicInfoR / GetArtifactInfoR responses
   for (const e of lines) {
     const msg = e.data && typeof e.data === "object" ? String(e.data.msg || "") : "";
+    if (e.kind === "sock" && e.data.obj?.wearList && !e.data.obj.err) {
+      if (msg.includes("GetRelicInfoR(")) gear.relic = e.data.obj;
+      if (msg.includes("GetArtifactInfoR(")) gear.artifact = e.data.obj;
+    }
     if (e.kind === "sock" && msg.includes("refreshMemberInfosR(") && e.data.obj?.members) {
       team = listItems(e.data.obj.members).map(teamMember);
     }
@@ -47,7 +83,7 @@ function loadCapture(file) {
       const ids = listItems(start.playerInfos).map((p) => Number(p.playerId));
       const main = team?.find((m) => m.playerId === ids[0]);
       if (main) cur.roster = { playerId: main.playerId, heros: main.heros, source: "team", complete: true };
-      else if (roster && Number(roster.playerId) === ids[0]) cur.roster = JSON.parse(JSON.stringify(roster));
+      else if (roster && Number(roster.playerId) === ids[0]) cur.roster = enrichRoster(JSON.parse(JSON.stringify(roster)), gear);
       if (TEAM_BATTLE_TYPES.has(start.battleType) && team && ids.every((id) => team.some((m) => m.playerId === id))) {
         cur.team = team;
       }

@@ -122,3 +122,40 @@ test('loadCapture keeps lobby events between battles as each battle pre-window',
   assert.deepEqual(battles[1].events.map((e) => e.data.msg), ['QuitRoom(']);
   assert.equal(battles[1].start.battleType, 3);
 });
+
+test('solo roster gets relic/artifact from login wearList responses, in the battle lineup shape', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'roster-gear-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const path = join(dir, 'capture.jsonl');
+  const roster = { playerId: 123, heros: list([{ code: 2, uuid: 'h2' }, { code: 3, uuid: 'h3' }, { code: 4, uuid: 'h4' }]),
+    complete: false, incompleteFields: ['artifact', 'relic'] };
+  const entries = list([{ code: 40002907, value: 2483 }]);
+  const relics = { err: 0, relicList: list([{ code: 82060401, uuid: 'r1', star: 3 }, { code: 82050201, uuid: 'r2' }]),
+    wearList: list([{ heroUuid: 'h2', uuid: 'r1' }]) };
+  const artifacts = { err: 0, artifactList: list([{ code: 10406001, uuid: 'a1', entryInfos: list([{ code: 1, value: 2 }]), battleEntryInfos: entries },
+    { code: 11304001, uuid: 'a2', lockEntryCodes: list([]) }]), wearList: list([{ heroUuid: 'h2', uuid: 'a1' }, { heroUuid: 'h3', uuid: 'a2' }]) };
+  const write = (lines) => writeFileSync(path, lines.map(JSON.stringify).join('\n'));
+  const tail = [event('roster', 'HeroRosterSnapshot', roster), event('room', 'StartGameP', start), event('sock', 'QuitRoom(', {})];
+  write([event('sock', ' 收到 GetRelicInfoR(5) 来自 RelicProxy(33)', relics), event('sock', ' 收到 GetArtifactInfoR(3) 来自 ArtifactProxy(32)', artifacts), ...tail]);
+  const enriched = loadCapture(path)[0].roster;
+  const [h2, h3, h4] = [0, 1, 2].map((i) => enriched.heros[i]);
+  assert.equal(h2.relic, 82060401);
+  assert.deepEqual(h2.artifact, { uuid: 'a1', code: 10406001, battleEntryInfos: entries });
+  assert.equal(h3.relic, undefined); // wears no relic
+  assert.deepEqual(h3.artifact, { uuid: 'a2', code: 11304001 });
+  assert.equal(h4.relic, undefined);
+  assert.equal(h4.artifact, undefined);
+  assert.deepEqual(enriched.incompleteFields, []);
+  assert.equal(enriched.complete, true);
+  assert.deepEqual(enriched.gearFrom, ['relic:wearList', 'artifact:wearList']);
+  // Only the relic response: artifact stays a known gap, nothing invented.
+  write([event('sock', ' 收到 GetRelicInfoR(5) 来自 RelicProxy(33)', relics), ...tail]);
+  const partial = loadCapture(path)[0].roster;
+  assert.equal(partial.heros[0].relic, 82060401);
+  assert.equal(partial.heros[0].artifact, undefined);
+  assert.deepEqual(partial.incompleteFields, ['artifact']);
+  assert.equal(partial.complete, false);
+  // No response: roster unchanged.
+  write(tail);
+  assert.deepEqual(loadCapture(path)[0].roster, roster);
+});

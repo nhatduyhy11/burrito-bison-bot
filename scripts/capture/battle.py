@@ -48,8 +48,9 @@ def main():
                 print(f"TEAM ROSTER {members.get('_length', 0)} members (complete, has artifact/relic)", flush=True)
             elif msg.startswith('StartGameP'):
                 print(f"START type={obj.get('battleType')} level={obj.get('level')} uuid={obj.get('uuid')}", flush=True)
-            elif 'GetPlayerArtifactR' in msg:
-                print('ARTIFACT response captured', flush=True)
+            elif 'GetRelicInfoR(' in msg or 'GetArtifactInfoR(' in msg:
+                kind = 'RELIC' if 'GetRelicInfoR(' in msg else 'ARTIFACT'
+                print(f"{kind} wearList captured ({(obj.get('wearList') or {}).get('_length', 0)} worn; fills solo roster gear)", flush=True)
             elif msg.startswith('QuitRoom'):
                 print('QUIT captured', flush=True)
 
