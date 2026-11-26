@@ -22,7 +22,7 @@ export async function runBattle({ sim, step, R }) {
   // ?seed=random (or any 24-hex string) starts a different battle with the same account data.
   const start = { ...sim.capture.start, uuid: pickSeed(params.get("seed"), sim.capture.start.uuid) };
   const rb = window.makeRebuilder(R);
-  let summonerDerma = 0;
+  let summonerDerma;
   if (play && params.has("profile")) {
     const { applyProfile } = await import("./profile.js");
     ({ summonerDerma } = await applyProfile(start, rb, M, step, sim.capture.team, sim.capture.roster));
@@ -39,7 +39,14 @@ export async function runBattle({ sim, step, R }) {
 
   captureErrors(ctx);
   setupMain(ctx);
-  stubNetwork({ ...ctx, myPid, summonerDerma });
+  // Worn Summoner skins (derma): StartGameP has none; a Đêm Đỏ capture keeps them in its team info.
+  // No team info: default model.
+  const team = new Map((sim.capture.team || []).map((p) => [Number(p.playerId), p]));
+  const players = rb.listItems(start.playerInfos).map((p) => {
+    const playerId = Number(p.playerId);
+    return { playerId, derma: team.get(playerId)?.derma || 0 };
+  });
+  stubNetwork({ ...ctx, myPid, summonerDerma, players });
   initModules(ctx);
   if (play) unlockMonthCards(ctx);
   if (play) unlockWheelRefresh(ctx);

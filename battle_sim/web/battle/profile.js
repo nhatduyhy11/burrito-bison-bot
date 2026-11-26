@@ -10,7 +10,8 @@ import { applyHeroSelection } from "./hero/selection.js";
 import { applyMapProfile } from "./map-profile.js";
 
 // Rewrites start (StartGameP) in place. Returns what the page stubs need beyond StartGameP:
-// { summonerDerma } = worn Summoner skin (read by stubs.js stubNetwork), 0 when unset.
+// { summonerDerma } = worn Summoner skin (read by stubs.js stubNetwork): undefined when the profile
+// has no summonerSkins (keep the capture's), 0 for the default model.
 // team = capture.team (Đêm Đỏ roster, lib/capture.js), undefined for other captures.
 export async function applyProfile(start, rb, M, step, team, roster) {
   const read = async (name) => {
@@ -24,7 +25,7 @@ export async function applyProfile(start, rb, M, step, team, roster) {
   const catalog = { ...heroDict, ...supportDict };
   if (Object.hasOwn(profile, "map")) await applyMapProfile(start, profile.map || {}, rb, M, step);
   const player = { ...rb.listItems(start.playerInfos)[0] };
-  let summonerDerma = 0;
+  let summonerDerma; // undefined: profile leaves the worn skin to the capture
   const asList = (items) => ({ ...items, _length: items.length });
   const choices = (key, max) => {
     const names = profile[key];
@@ -109,6 +110,7 @@ export async function applyProfile(start, rb, M, step, team, roster) {
     const skills = picked.filter(({ option }) => !isPassiveSummonerSkin(option));
     if (skills.length > SUMMONER_SLOTS) throw new Error(`Profile summonerSkins has more than ${SUMMONER_SLOTS} skill slots`);
     const worn = profile.summonerWorn ?? null;
+    summonerDerma = 0; // summonerSkins set: worn null = default model, even if the capture wore one
     if (worn !== null) {
       const entry = picked.find(({ selection }) => selection.name === worn);
       if (!entry || M("DermaLO").get(entry.option.code)?.dermatype !== 2) throw new Error(`Invalid summonerWorn: ${worn}`);

@@ -16,8 +16,10 @@ function listItems(j) {
 // member's full hero roster and account fightCap. It never reaches the battle; the setup page and
 // the profile engine use it to know who owns which hero (docs/planning/blood_night_setup.md).
 const TEAM_BATTLE_TYPES = new Set([47, 48]);
+// derma = the worn Summoner skin (model only; StartGameP does not carry it).
 const teamMember = ({ baseInfo, moduleDatas }) => ({
-  playerId: Number(baseInfo.playerId), name: baseInfo.name, fightCap: baseInfo.fightCap, heros: moduleDatas.heros,
+  playerId: Number(baseInfo.playerId), name: baseInfo.name, fightCap: baseInfo.fightCap, derma: baseInfo.derma || 0,
+  heros: moduleDatas.heros,
 });
 
 // Battles (StartGameP .. QuitRoom) in one capture file. Each battle also carries `pre`: the
