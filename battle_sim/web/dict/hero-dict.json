@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_66930 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
   "heroes": {
     "hanuman": {
       "code": 50000001,
@@ -208,7 +208,7 @@
               "code": 80040131000,
               "name": "Punishing Thunder",
               "name_vn": "Sấm Sét Oanh Tạc",
-              "desc_vn": "哈奴曼每5秒对场上10个随机不同的敌方释放雷劫造成240%攻击力的伤害，并附加5秒<麻痹>,每秒造成240%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"48\"><u>雷霆清算</u></color>。"
+              "desc_vn": "Hanuman mỗi 5s phóng Lôi Kiếp lên 10 địch ngẫu nhiên khác nhau trên sân, gây ST bằng 240% Công, kèm 5s <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 240% Công. Mục tiêu cứ trúng 3 lần Lôi Kiếp sẽ chịu 3s <color=#f57c00 click=\"onClicked\" param=\"48\"><u>Thanh Toán Sấm Sét</u></color>."
             },
             {
               "stars": [
@@ -217,7 +217,7 @@
               "code": 80040132000,
               "name": "Punishing Thunder",
               "name_vn": "Sấm Sét Oanh Tạc",
-              "desc_vn": "哈奴曼每5秒对场上15个随机不同的敌方释放雷劫造成280%攻击力的伤害，并附加5秒<麻痹>,每秒造成280%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"49\"><u>雷霆清算</u></color>。"
+              "desc_vn": "Hanuman mỗi 5s phóng Lôi Kiếp lên 15 địch ngẫu nhiên khác nhau trên sân, gây ST bằng 280% Công, kèm 5s <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 280% Công. Mục tiêu cứ trúng 3 lần Lôi Kiếp sẽ chịu 3s <color=#f57c00 click=\"onClicked\" param=\"49\"><u>Thanh Toán Sấm Sét</u></color>."
             },
             {
               "stars": [
@@ -226,7 +226,7 @@
               "code": 80040133000,
               "name": "Punishing Thunder",
               "name_vn": "Sấm Sét Oanh Tạc",
-              "desc_vn": "哈奴曼每5秒对场上15个随机不同的敌方释放雷劫造成320%攻击力的伤害，并附加5秒<麻痹>,每秒造成320%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"50\"><u>雷霆清算</u></color>，期间每次清算伤害都有50%几率造成【打断】。"
+              "desc_vn": "Hanuman mỗi 5s phóng Lôi Kiếp lên 15 địch ngẫu nhiên khác nhau trên sân, gây ST bằng 320% Công, kèm 5s <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 320% Công. Mục tiêu cứ trúng 3 lần Lôi Kiếp sẽ chịu 3s <color=#f57c00 click=\"onClicked\" param=\"50\"><u>Thanh Toán Sấm Sét</u></color>, trong thời gian đó mỗi lần Thanh Toán có 50% xác suất gây 【Ngăn Chặn】."
             },
             {
               "stars": [
@@ -235,7 +235,7 @@
               "code": 80040134000,
               "name": "Punishing Thunder",
               "name_vn": "Sấm Sét Oanh Tạc",
-              "desc_vn": "哈奴曼每5秒对场上20个随机不同的敌方释放雷劫造成360%攻击力的伤害，并附加5秒<麻痹>,每秒造成360%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"51\"><u>雷霆清算</u></color>，期间每次清算伤害都有50%几率造成【打断】。"
+              "desc_vn": "Hanuman mỗi 5s phóng Lôi Kiếp lên 20 địch ngẫu nhiên khác nhau trên sân, gây ST bằng 360% Công, kèm 5s <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 360% Công. Mục tiêu cứ trúng 3 lần Lôi Kiếp sẽ chịu 3s <color=#f57c00 click=\"onClicked\" param=\"51\"><u>Thanh Toán Sấm Sét</u></color>, trong thời gian đó mỗi lần Thanh Toán có 50% xác suất gây 【Ngăn Chặn】."
             },
             {
               "stars": [
@@ -244,7 +244,7 @@
               "code": 80040135000,
               "name": "Punishing Thunder",
               "name_vn": "Sấm Sét Oanh Tạc",
-              "desc_vn": "哈奴曼每5秒对场上20个随机不同的敌方释放雷劫造成400%攻击力的伤害，并附加5秒<麻痹>,每秒造成400%攻击力的麻痹伤害。目标每受到3次雷劫就进行3秒<color=#f57c00 click=\"onClicked\" param=\"52\"><u>雷霆清算</u></color>，期间每次清算伤害都有100%几率造成【打断】。"
+              "desc_vn": "Hanuman mỗi 5s phóng Lôi Kiếp lên 20 địch ngẫu nhiên khác nhau trên sân, gây ST bằng 400% Công, kèm 5s <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, mỗi giây gây ST Tê Liệt bằng 400% Công. Mục tiêu cứ trúng 3 lần Lôi Kiếp sẽ chịu 3s <color=#f57c00 click=\"onClicked\" param=\"52\"><u>Thanh Toán Sấm Sét</u></color>, trong thời gian đó mỗi lần Thanh Toán có 100% xác suất gây 【Ngăn Chặn】."
             }
           ],
           "requires": [
@@ -2076,7 +2076,7 @@
           "code": 10090301000,
           "name": "Ark Core",
           "name_vn": "Lò Phản Ứng Ark",
-          "desc_vn": "Hiệp Sĩ Sấm Sét gây ST Trực Tiếp时, ST tiếp theo lên mục tiêu này+5%, duy trì 12s"
+          "desc_vn": "Khi Hiệp Sĩ Sấm Sét gây ST Trực Tiếp, ST tiếp theo lên mục tiêu này+5%, duy trì 12s"
         }
       ],
       "skins": {
@@ -2332,7 +2332,7 @@
             "code": 10090602000,
             "name": "Ark Core",
             "name_vn": "Lò Phản Ứng Ark",
-            "desc_vn": "Hiệp Sĩ Sấm Sét gây ST Trực Tiếp时, ST tiếp theo lên mục tiêu này+8%, duy trì 12s"
+            "desc_vn": "Khi Hiệp Sĩ Sấm Sét gây ST Trực Tiếp, ST tiếp theo lên mục tiêu này+8%, duy trì 12s"
           },
           "showInfo": {
             "code": 10090502000,
@@ -2389,7 +2389,7 @@
             "code": 10090602000,
             "name": "Ark Core",
             "name_vn": "Lò Phản Ứng Ark",
-            "desc_vn": "Hiệp Sĩ Sấm Sét gây ST Trực Tiếp时, ST tiếp theo lên mục tiêu này+8%, duy trì 12s"
+            "desc_vn": "Khi Hiệp Sĩ Sấm Sét gây ST Trực Tiếp, ST tiếp theo lên mục tiêu này+8%, duy trì 12s"
           },
           "minBreakThrough": 9
         },
@@ -4689,7 +4689,7 @@
         {
           "code": 10300301000,
           "name": "Decay Field",
-          "name_vn": "凋零领域",
+          "name_vn": "Vùng Điêu Linh",
           "desc_vn": "Trong trận: Địch lân cận chịu Thủ Phép-15%"
         }
       ],
@@ -4886,7 +4886,7 @@
           "skillInfo": {
             "code": 10300602000,
             "name": "Decay Field",
-            "name_vn": "凋零领域",
+            "name_vn": "Vùng Điêu Linh",
             "desc_vn": "Trong trận: Địch lân cận chịu Thủ Phép-45%"
           },
           "showInfo": {
@@ -4898,7 +4898,7 @@
           "replacesInfo": {
             "code": 10300303000,
             "name": "Decay Field",
-            "name_vn": "凋零领域",
+            "name_vn": "Vùng Điêu Linh",
             "desc_vn": "Trong trận: Kéo dài 60% thời gian <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>"
           },
           "minBreakThrough": 9
@@ -4947,7 +4947,7 @@
           "skillInfo": {
             "code": 10300605000,
             "name": "Decay Field",
-            "name_vn": "凋零领域",
+            "name_vn": "Vùng Điêu Linh",
             "desc_vn": "Trong trận: Kéo dài 100% thời gian <color=#f57c00 click=\"onClicked\" param=\"1\"><u>Thiêu Đốt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"3\"><u>Tê Liệt</u></color>, <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>"
           },
           "showInfo": {
@@ -4959,7 +4959,7 @@
           "replacesInfo": {
             "code": 10300602000,
             "name": "Decay Field",
-            "name_vn": "凋零领域",
+            "name_vn": "Vùng Điêu Linh",
             "desc_vn": "Trong trận: Địch lân cận chịu Thủ Phép-45%"
           },
           "minBreakThrough": 9

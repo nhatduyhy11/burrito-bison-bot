@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_66930 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
   "antiques": {
     "jadeite_cup": {
       "code": 3001,
@@ -3544,6 +3544,87 @@
           "name": "Gold 3",
           "name_vn": "Vàng 3",
           "desc_vn": "Trong chiến đấu cứ 1 lần triệu hồi , đặt máy móc, triệu hồi Dị Thú, thi triển Ảo Thuật sẽ kéo dài thời gian chiến đấu 1s, giới hạn 30s"
+        }
+      ]
+    },
+    "nightmare_spirit_urn": {
+      "code": 7049,
+      "name": "Nightmare Spirit Urn",
+      "name_vn": "Bình Yêu Linh Ác Mộng",
+      "color": "gold",
+      "maxStar": 15,
+      "ranks": [
+        704901,
+        704902,
+        704903,
+        704904,
+        704905,
+        704906,
+        704907,
+        704908,
+        704909,
+        704910,
+        704911,
+        704912,
+        704913,
+        704914,
+        704915
+      ],
+      "starSkills": [
+        {
+          "stars": [
+            1,
+            2,
+            3
+          ],
+          "code": 60700401000,
+          "name": "Gold 4",
+          "name_vn": "Vàng 4",
+          "desc_vn": "Mỗi Dị Thú trong trận tăng 40% ST cho toàn bộ Anh Hùng phe ta."
+        },
+        {
+          "stars": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "code": 60700402000,
+          "name": "Gold 4",
+          "name_vn": "Vàng 4",
+          "desc_vn": "Mỗi Dị Thú trong trận tăng 55% ST cho toàn bộ Anh Hùng phe ta."
+        },
+        {
+          "stars": [
+            8,
+            9,
+            10,
+            11
+          ],
+          "code": 60700403000,
+          "name": "Gold 4",
+          "name_vn": "Vàng 4",
+          "desc_vn": "Mỗi Dị Thú trong trận tăng 70% ST cho toàn bộ Anh Hùng phe ta."
+        },
+        {
+          "stars": [
+            12,
+            13,
+            14
+          ],
+          "code": 60700404000,
+          "name": "Gold 4",
+          "name_vn": "Vàng 4",
+          "desc_vn": "Mỗi Dị Thú trong trận tăng 85% ST cho toàn bộ Anh Hùng phe ta."
+        },
+        {
+          "stars": [
+            15
+          ],
+          "code": 60700405000,
+          "name": "Gold 4",
+          "name_vn": "Vàng 4",
+          "desc_vn": "Mỗi Dị Thú trong trận tăng 100% ST cho toàn bộ Anh Hùng phe ta."
         }
       ]
     }

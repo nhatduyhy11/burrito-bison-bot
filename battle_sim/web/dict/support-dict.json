@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_66930 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
   "summonerSkins": {
     "skeletian": {
       "code": 20200,
@@ -3964,6 +3964,104 @@
           ]
         }
       ]
+    },
+    "snow_empress": {
+      "code": 10014,
+      "name": "Snow Empress",
+      "name_vn": "Nữ Hoàng Băng Tuyết",
+      "color": "gold",
+      "maxLevel": 50,
+      "maxStar": 5,
+      "skills": [
+        {
+          "type": 140001,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 40314201000,
+              "name": "Mystic Ice Pierce",
+              "name_vn": "Huyền Băng Xuyên Thích",
+              "desc_vn": "Nữ Hoàng Băng Tuyết phóng gai băng cực hàn dưới chân kẻ địch, gây ST phạm vi bằng 16000% Công lên kẻ địch"
+            },
+            {
+              "stars": [
+                2
+              ],
+              "code": 40314202000,
+              "name": "Mystic Ice Pierce",
+              "name_vn": "Huyền Băng Xuyên Thích",
+              "desc_vn": "ST gây ra trở thành 20000%"
+            }
+          ]
+        },
+        {
+          "type": 140002,
+          "starSkills": [
+            {
+              "stars": [
+                3
+              ],
+              "code": 40314401000,
+              "name": "Frostfall Grace",
+              "name_vn": "Giáng Thế Băng Ân",
+              "desc_vn": "ST của [Băng Linh Thần Tứ] tăng lên 12000%, và kèm theo hiệu quả [Sương Hàn] 6s"
+            },
+            {
+              "stars": [
+                4
+              ],
+              "code": 40314402000,
+              "name": "Frostfall Grace",
+              "name_vn": "Giáng Thế Băng Ân",
+              "desc_vn": "ST của [Băng Linh Thần Tứ] đổi thành 16000%, số lần triệu hồi miễn phí đổi thành 3 lần"
+            }
+          ]
+        },
+        {
+          "type": 140003,
+          "starSkills": [
+            {
+              "stars": [
+                1
+              ],
+              "code": 40314301000,
+              "name": "Ice Spirit's Blessing",
+              "name_vn": "Băng Linh Thần Tứ",
+              "desc_vn": "Khi Nữ Hoàng Băng Tuyết ra sân gây ST bằng 8000% Công đội lên toàn bộ kẻ địch, và nhận 1 lần triệu hồi miễn phí, đồng thời bỏ qua giới hạn số lượng triệu hồi trên sân, có thể ra sân cùng lúc với bất kỳ Thú Triệu Hồi nào"
+            }
+          ]
+        },
+        {
+          "type": 140004,
+          "starSkills": [
+            {
+              "stars": [
+                2
+              ],
+              "code": 40314501000,
+              "name": "Frost Prison",
+              "name_vn": "Sương Ngục Băng Lao",
+              "desc_vn": "Khi Nữ Hoàng Băng Tuyết rời sân gây ST bằng 8000% Công đội lên toàn bộ kẻ địch, và [Đóng Băng] toàn bộ kẻ địch 6s"
+            }
+          ]
+        },
+        {
+          "type": 140005,
+          "starSkills": [
+            {
+              "stars": [
+                5
+              ],
+              "code": 40314601000,
+              "name": "Winter's Frozen Grip",
+              "name_vn": "Lẫm Đông Hàn Áp",
+              "desc_vn": "Khi Nữ Hoàng Băng Tuyết ở trên sân, toàn bộ kẻ địch chịu thêm 150% ST"
+            }
+          ]
+        }
+      ]
     }
   },
   "spells": {
@@ -5287,8 +5385,8 @@
                 1
               ],
               "code": 80011201000,
-              "name": "Tortoise Array",
-              "name_vn": "Trận Pháp Huyền Vũ",
+              "name": "Heating Pressure",
+              "name_vn": "Cao Áp Nhiệt",
               "desc_vn": "Với mỗi 1 tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn Dịch]</u></color> của Cửa hiện tại, ST của toàn bộ Anh Hùng phe ta tăng 3%, tối đa 45%"
             },
             {
@@ -5296,8 +5394,8 @@
                 2
               ],
               "code": 80011202000,
-              "name": "Tortoise Array",
-              "name_vn": "Trận Pháp Huyền Vũ",
+              "name": "Heating Pressure",
+              "name_vn": "Cao Áp Nhiệt",
               "desc_vn": "Với mỗi 1 tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn Dịch]</u></color> của Cửa hiện tại, ST của toàn bộ Anh Hùng phe ta tăng 3.5%, tối đa 52.5%"
             },
             {
@@ -5305,8 +5403,8 @@
                 3
               ],
               "code": 80011203000,
-              "name": "Tortoise Array",
-              "name_vn": "Trận Pháp Huyền Vũ",
+              "name": "Heating Pressure",
+              "name_vn": "Cao Áp Nhiệt",
               "desc_vn": "Với mỗi 1 tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn Dịch]</u></color> của Cửa hiện tại, ST của toàn bộ Anh Hùng phe ta tăng 4%, tối đa 60%"
             },
             {
@@ -5314,8 +5412,8 @@
                 4
               ],
               "code": 80011204000,
-              "name": "Tortoise Array",
-              "name_vn": "Trận Pháp Huyền Vũ",
+              "name": "Heating Pressure",
+              "name_vn": "Cao Áp Nhiệt",
               "desc_vn": "Với mỗi 1 tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn Dịch]</u></color> của Cửa hiện tại, ST của toàn bộ Anh Hùng phe ta tăng 5%, tối đa 75%"
             },
             {
@@ -5323,8 +5421,8 @@
                 5
               ],
               "code": 80011205000,
-              "name": "Tortoise Array",
-              "name_vn": "Trận Pháp Huyền Vũ",
+              "name": "Heating Pressure",
+              "name_vn": "Cao Áp Nhiệt",
               "desc_vn": "Với mỗi 1 tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn Dịch]</u></color> của Cửa hiện tại, ST của toàn bộ Anh Hùng phe ta tăng 6%, tối đa 90%"
             }
           ]
@@ -5341,31 +5439,46 @@
               "stars": [
                 1
               ],
-              "code": 80011301000
+              "code": 80011301000,
+              "name": "Demonic Rift",
+              "name_vn": "Khe Nứt Vạn Ma",
+              "desc_vn": "Với mỗi tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn]</u></color> hiện có của cửa, ST toàn bộ Anh Hùng phe ta tăng 9%, tối đa 135%, ST Tinh Anh và BOSS địch phải chịu tăng 3%, tối đa 45%; khi cửa chịu ST, có tỷ lệ 12% ném kẻ tấn công từ trên trời xuống, gây 300% ATK Đội thành ST và gây hiệu ứng trong 5s: <color=#f57c00 click=\"onClicked\" param=\"27\"><u>[Định Thân]</u></color>"
             },
             {
               "stars": [
                 2
               ],
-              "code": 80011302000
+              "code": 80011302000,
+              "name": "Demonic Rift",
+              "name_vn": "Khe Nứt Vạn Ma",
+              "desc_vn": "Với mỗi tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn]</u></color> hiện có của cửa, ST toàn bộ Anh Hùng phe ta tăng 10%, tối đa 150%, ST Tinh Anh và BOSS địch phải chịu tăng 3.5%, tối đa 52.5%; khi cửa chịu ST, có tỷ lệ 15% ném kẻ tấn công từ trên trời xuống, gây 300% ATK Đội thành ST và gây hiệu ứng trong 5s: <color=#f57c00 click=\"onClicked\" param=\"27\"><u>[Định Thân]</u></color>"
             },
             {
               "stars": [
                 3
               ],
-              "code": 80011303000
+              "code": 80011303000,
+              "name": "Demonic Rift",
+              "name_vn": "Khe Nứt Vạn Ma",
+              "desc_vn": "Với mỗi tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn]</u></color> hiện có của cửa, ST toàn bộ Anh Hùng phe ta tăng 11%, tối đa 165%, ST Tinh Anh và BOSS địch phải chịu tăng 4%, tối đa 60%; khi cửa chịu ST, có tỷ lệ 15% ném kẻ tấn công từ trên trời xuống, gây 300% ATK Đội thành ST và gây hiệu ứng trong 5s: <color=#f57c00 click=\"onClicked\" param=\"27\"><u>[Định Thân]</u></color>"
             },
             {
               "stars": [
                 4
               ],
-              "code": 80011304000
+              "code": 80011304000,
+              "name": "Demonic Rift",
+              "name_vn": "Khe Nứt Vạn Ma",
+              "desc_vn": "Với mỗi tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn]</u></color> hiện có của cửa, ST toàn bộ Anh Hùng phe ta tăng 12%, tối đa 180%, ST Tinh Anh và BOSS địch phải chịu tăng 4.5%, tối đa 67.5%; khi cửa chịu ST, có tỷ lệ 17% ném kẻ tấn công từ trên trời xuống, gây 300% ATK Đội thành ST và gây hiệu ứng trong 5s: <color=#f57c00 click=\"onClicked\" param=\"27\"><u>[Định Thân]</u></color>"
             },
             {
               "stars": [
                 5
               ],
-              "code": 80011305000
+              "code": 80011305000,
+              "name": "Demonic Rift",
+              "name_vn": "Khe Nứt Vạn Ma",
+              "desc_vn": "Với mỗi tầng <color=#f57c00 click=\"onClicked\" param=\"90\"><u>[Miễn]</u></color> hiện có của cửa, ST toàn bộ Anh Hùng phe ta tăng 13%, tối đa 195%, ST Tinh Anh và BOSS địch phải chịu tăng 5%, tối đa 75%; khi cửa chịu ST, có tỷ lệ 20% ném kẻ tấn công từ trên trời xuống, gây 300% ATK Đội thành ST và gây hiệu ứng trong 5s: <color=#f57c00 click=\"onClicked\" param=\"27\"><u>[Định Thân]</u></color>"
             }
           ],
           "requires": [
@@ -5985,31 +6098,46 @@
               "stars": [
                 1
               ],
-              "code": 80021201000
+              "code": 80021201000,
+              "name": "Spacetime Rewind",
+              "name_vn": "Nghịch Chuyển Thời Không",
+              "desc_vn": "Khi triệu hồi trong trận, có tỷ lệ 27% trả 7/10 giá gốc, 18% trả 5/10 giá gốc, 9% trả 3/10 giá gốc, đồng thời tăng vĩnh viễn ST Anh Hùng đã Thức Tỉnh phe ta thêm 8%, tối đa 80%; khi tỷ lệ HP cửa dưới 30%, sản lượng Giường trong 10s tăng 200%, hồi 10s, mỗi trận tối đa kích hoạt 4 lần"
             },
             {
               "stars": [
                 2
               ],
-              "code": 80021202000
+              "code": 80021202000,
+              "name": "Spacetime Rewind",
+              "name_vn": "Nghịch Chuyển Thời Không",
+              "desc_vn": "Khi triệu hồi trong trận, có tỷ lệ 30% trả 7/10 giá gốc, 20% trả 5/10 giá gốc, 10% trả 3/10 giá gốc, đồng thời tăng vĩnh viễn ST Anh Hùng đã Thức Tỉnh phe ta thêm 10%, tối đa 100%; khi tỷ lệ HP cửa dưới 30%, sản lượng Giường trong 10s tăng 200%, hồi 10s, mỗi trận tối đa kích hoạt 5 lần"
             },
             {
               "stars": [
                 3
               ],
-              "code": 80021203000
+              "code": 80021203000,
+              "name": "Spacetime Rewind",
+              "name_vn": "Nghịch Chuyển Thời Không",
+              "desc_vn": "Khi triệu hồi trong trận, có tỷ lệ 33% trả 7/10 giá gốc, 22% trả 5/10 giá gốc, 11% trả 3/10 giá gốc, đồng thời tăng vĩnh viễn ST Anh Hùng đã Thức Tỉnh phe ta thêm 12%, tối đa 120%; khi tỷ lệ HP cửa dưới 30%, sản lượng Giường trong 10s tăng 250%, hồi 10s, mỗi trận tối đa kích hoạt 5 lần"
             },
             {
               "stars": [
                 4
               ],
-              "code": 80021204000
+              "code": 80021204000,
+              "name": "Spacetime Rewind",
+              "name_vn": "Nghịch Chuyển Thời Không",
+              "desc_vn": "Khi triệu hồi trong trận, có tỷ lệ 36% trả 7/10 giá gốc, 24% trả 5/10 giá gốc, 12% trả 3/10 giá gốc, đồng thời tăng vĩnh viễn ST Anh Hùng đã Thức Tỉnh phe ta thêm 14%, tối đa 140%; khi tỷ lệ HP cửa dưới 30%, sản lượng Giường trong 10s tăng 250%, hồi 10s, mỗi trận tối đa kích hoạt 6 lần"
             },
             {
               "stars": [
                 5
               ],
-              "code": 80021205000
+              "code": 80021205000,
+              "name": "Spacetime Rewind",
+              "name_vn": "Nghịch Chuyển Thời Không",
+              "desc_vn": "Khi triệu hồi trong trận, có tỷ lệ 36% trả 7/10 giá gốc, 24% trả 5/10 giá gốc, 12% trả 3/10 giá gốc, 4% trả 1/10 giá gốc, đồng thời tăng vĩnh viễn ST Anh Hùng đã Thức Tỉnh phe ta thêm 16%, tối đa 160%; khi tỷ lệ HP cửa dưới 30%, sản lượng Giường trong 10s tăng 300%, hồi 10s, mỗi trận tối đa kích hoạt 6 lần"
             }
           ],
           "requires": [
@@ -6264,31 +6392,46 @@
               "stars": [
                 1
               ],
-              "code": 80060501000
+              "code": 80060501000,
+              "name": "Blazing Tail Jet",
+              "name_vn": "Phun Lửa Đuôi Rực",
+              "desc_vn": "Mỗi 5 Điện Năng tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 16%"
             },
             {
               "stars": [
                 2
               ],
-              "code": 80060502000
+              "code": 80060502000,
+              "name": "Blazing Tail Jet",
+              "name_vn": "Phun Lửa Đuôi Rực",
+              "desc_vn": "Mỗi 5 Điện Năng tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 24%"
             },
             {
               "stars": [
                 3
               ],
-              "code": 80060503000
+              "code": 80060503000,
+              "name": "Blazing Tail Jet",
+              "name_vn": "Phun Lửa Đuôi Rực",
+              "desc_vn": "Mỗi 5 Điện Năng tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 32%"
             },
             {
               "stars": [
                 4
               ],
-              "code": 80060504000
+              "code": 80060504000,
+              "name": "Blazing Tail Jet",
+              "name_vn": "Phun Lửa Đuôi Rực",
+              "desc_vn": "Mỗi 5 Điện Năng tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 40%"
             },
             {
               "stars": [
                 5
               ],
-              "code": 80060505000
+              "code": 80060505000,
+              "name": "Blazing Tail Jet",
+              "name_vn": "Phun Lửa Đuôi Rực",
+              "desc_vn": "Mỗi 5 Điện Năng tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 55%"
             }
           ]
         },
@@ -6304,31 +6447,46 @@
               "stars": [
                 1
               ],
-              "code": 80060601000
+              "code": 80060601000,
+              "name": "Cosmic Lightchaser",
+              "name_vn": "Truy Quang Hoàn Trụ",
+              "desc_vn": "Số Lượng Xây+1, mỗi Máy Phát Điện mỗi cấp cho toàn đội 2% ST, mỗi 200 Điện Năng còn lại tăng toàn đội 2% ATK và 4% ST Bạo, tối đa 20% và 40%"
             },
             {
               "stars": [
                 2
               ],
-              "code": 80060602000
+              "code": 80060602000,
+              "name": "Cosmic Lightchaser",
+              "name_vn": "Truy Quang Hoàn Trụ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, mỗi Máy Phát Điện mỗi cấp cho toàn đội 2.5% ST, mỗi 200 Điện Năng còn lại tăng toàn đội 2.5% ATK và 5% ST Bạo, tối đa 25% và 50%"
             },
             {
               "stars": [
                 3
               ],
-              "code": 80060603000
+              "code": 80060603000,
+              "name": "Cosmic Lightchaser",
+              "name_vn": "Truy Quang Hoàn Trụ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, mỗi Máy Phát Điện mỗi cấp cho toàn đội 3% ST, mỗi 200 Điện Năng còn lại tăng toàn đội 3% ATK và 6% ST Bạo, tối đa 30% và 60%"
             },
             {
               "stars": [
                 4
               ],
-              "code": 80060604000
+              "code": 80060604000,
+              "name": "Cosmic Lightchaser",
+              "name_vn": "Truy Quang Hoàn Trụ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, mỗi Máy Phát Điện mỗi cấp cho toàn đội 3.5% ST, mỗi 200 Điện Năng còn lại tăng toàn đội 3.5% ATK và 7% ST Bạo, tối đa 35% và 70%"
             },
             {
               "stars": [
                 5
               ],
-              "code": 80060605000
+              "code": 80060605000,
+              "name": "Cosmic Lightchaser",
+              "name_vn": "Truy Quang Hoàn Trụ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, Sản Lượng Cơ Bản+20%, mỗi Máy Phát Điện mỗi cấp cho toàn đội 4% ST, mỗi 200 Điện Năng còn lại tăng toàn đội 4% ATK và 8% ST Bạo, tối đa 40% và 80%"
             }
           ],
           "requires": [
@@ -6583,31 +6741,46 @@
               "stars": [
                 1
               ],
-              "code": 80050501000
+              "code": 80050501000,
+              "name": "Unbridled Revelry",
+              "name_vn": "Cuồng Yến Phóng Túng",
+              "desc_vn": "Mỗi 300 Ngân Phiếu tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 16%"
             },
             {
               "stars": [
                 2
               ],
-              "code": 80050502000
+              "code": 80050502000,
+              "name": "Unbridled Revelry",
+              "name_vn": "Cuồng Yến Phóng Túng",
+              "desc_vn": "Mỗi 300 Ngân Phiếu tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 24%"
             },
             {
               "stars": [
                 3
               ],
-              "code": 80050503000
+              "code": 80050503000,
+              "name": "Unbridled Revelry",
+              "name_vn": "Cuồng Yến Phóng Túng",
+              "desc_vn": "Mỗi 300 Ngân Phiếu tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 32%"
             },
             {
               "stars": [
                 4
               ],
-              "code": 80050504000
+              "code": 80050504000,
+              "name": "Unbridled Revelry",
+              "name_vn": "Cuồng Yến Phóng Túng",
+              "desc_vn": "Mỗi 300 Ngân Phiếu tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 40%"
             },
             {
               "stars": [
                 5
               ],
-              "code": 80050505000
+              "code": 80050505000,
+              "name": "Unbridled Revelry",
+              "name_vn": "Cuồng Yến Phóng Túng",
+              "desc_vn": "Mỗi 300 Ngân Phiếu tiêu hao, ST Anh Hùng phe ta+0.1%, giới hạn 55%"
             }
           ]
         },
@@ -6623,31 +6796,46 @@
               "stars": [
                 1
               ],
-              "code": 80050601000
+              "code": 80050601000,
+              "name": "Cosmic Cat Eyes",
+              "name_vn": "Miêu Đồng Hoàn Vũ",
+              "desc_vn": "Số Lượng Xây+1, mỗi Mèo Chiêu Tài mỗi cấp cho toàn đội 2% ST, mỗi 2500 Ngân Phiếu còn lại tăng toàn đội 2% Tốc Công và 2% Bạo, tối đa 20%"
             },
             {
               "stars": [
                 2
               ],
-              "code": 80050602000
+              "code": 80050602000,
+              "name": "Cosmic Cat Eyes",
+              "name_vn": "Miêu Đồng Hoàn Vũ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, mỗi Mèo Chiêu Tài mỗi cấp cho toàn đội 2.5% ST, mỗi 2500 Ngân Phiếu còn lại tăng toàn đội 2.5% Tốc Công và 2.5% Bạo, tối đa 25%"
             },
             {
               "stars": [
                 3
               ],
-              "code": 80050603000
+              "code": 80050603000,
+              "name": "Cosmic Cat Eyes",
+              "name_vn": "Miêu Đồng Hoàn Vũ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, mỗi Mèo Chiêu Tài mỗi cấp cho toàn đội 3% ST, mỗi 2500 Ngân Phiếu còn lại tăng toàn đội 3% Tốc Công và 3% Bạo, tối đa 30%"
             },
             {
               "stars": [
                 4
               ],
-              "code": 80050604000
+              "code": 80050604000,
+              "name": "Cosmic Cat Eyes",
+              "name_vn": "Miêu Đồng Hoàn Vũ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, mỗi Mèo Chiêu Tài mỗi cấp cho toàn đội 3.5% ST, mỗi 2500 Ngân Phiếu còn lại tăng toàn đội 3.5% Tốc Công và 3.5% Bạo, tối đa 35%"
             },
             {
               "stars": [
                 5
               ],
-              "code": 80050605000
+              "code": 80050605000,
+              "name": "Cosmic Cat Eyes",
+              "name_vn": "Miêu Đồng Hoàn Vũ",
+              "desc_vn": "Số Lượng Xây+1, Giới Hạn Cấp+1, Sản Lượng Cơ Bản+20%, mỗi Mèo Chiêu Tài mỗi cấp cho toàn đội 4% ST, mỗi 2500 Ngân Phiếu còn lại tăng toàn đội 4% Tốc Công và 4% Bạo, tối đa 40%"
             }
           ],
           "requires": [
@@ -6866,8 +7054,8 @@
       "name": "White Phantom of Night",
       "name_vn": "Bạch Ảnh Huyễn Dạ",
       "color": "red",
-      "frontModel": "zuoqi_07_A",
-      "backModel": "zuoqi_07_B",
+      "frontModel": "zuoqi_09_A",
+      "backModel": "zuoqi_09_B",
       "hiddenUntilOwned": true,
       "ranks": [
         {

@@ -1,5 +1,5 @@
 {
-  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_65553 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
+  "_generated": "node battle_sim/scripts/gen_profile_dict.js sea_66930 (names: lang_en, vi: lang_vi, desc fallback: lang_en)",
   "heroes": {
     "50000001": {
       "pool": 1,
@@ -761,7 +761,7 @@
       "code": 10130705000,
       "name": "Brutal Carnage",
       "name_vn": "Như Bẻ Cành Khô",
-      "desc_vn": "替换神器5:青龙风刃令有几率附加5秒<color=#f57c00 click=\"onClicked\" param=\"2\"><u>流血</u></color>",
+      "desc_vn": "Thay thế Thần Khí 5: [Lệnh Phong Nhận Thanh Long] có xác suất gây 5s <color=#f57c00 click=\"onClicked\" param=\"2\"><u>Mất HP</u></color>",
       "type": "PASSIVE"
     },
     "10130706000": {

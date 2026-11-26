@@ -474,7 +474,21 @@ async function main() {
   }));
 
   const stamp = `node battle_sim/scripts/gen_profile_dict.js ${CONFIG_VERSION} (names: lang_en, vi: lang_vi, desc fallback: lang_en)`;
-  const write = (file, data) => fs.writeFileSync(file, JSON.stringify({ _generated: stamp, ...data }, null, 2) + "\n");
+  // lang_vi sometimes keeps the Chinese source (client translation gaps): swap in vn-fixes.json by
+  // exact string, then list whatever Chinese is left so new gaps get a fix entry.
+  const { _note, ...vnFixes } = JSON.parse(fs.readFileSync(path.join(__dirname, "vn-fixes.json"), "utf8"));
+  const cjk = /[一-鿿]/;
+  const fixVn = (o, file, at) => {
+    if (typeof o === "string") {
+      const fixed = vnFixes[o] ?? o;
+      if (cjk.test(fixed)) console.warn(`untranslated Chinese in ${path.basename(file)} ${at}: ${fixed}`);
+      return fixed;
+    }
+    if (Array.isArray(o)) return o.map((v, i) => fixVn(v, file, `${at}[${i}]`));
+    if (o && typeof o === "object") return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, fixVn(v, file, `${at}.${k}`)]));
+    return o;
+  };
+  const write = (file, data) => fs.writeFileSync(file, JSON.stringify(fixVn({ _generated: stamp, ...data }, file, ""), null, 2) + "\n");
   write(HERO_OUT, { heroes });
   write(SUPPORT_OUT, { summonerSkins, summonerGear, traps, pets, spells, buildings, mounts, mountPrivilegeTypes });
   write(MAP_OUT, maps);
