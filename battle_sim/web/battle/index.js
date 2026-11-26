@@ -39,12 +39,13 @@ export async function runBattle({ sim, step, R }) {
 
   captureErrors(ctx);
   setupMain(ctx);
-  // Worn Summoner skins (derma): StartGameP has none; a Đêm Đỏ capture keeps them in its team info.
-  // No team info: default model.
+  // Names and worn Summoner skins (derma): StartGameP has neither; a Đêm Đỏ capture keeps both in
+  // its team info. Fallback Player/Guest with the default model.
   const team = new Map((sim.capture.team || []).map((p) => [Number(p.playerId), p]));
-  const players = rb.listItems(start.playerInfos).map((p) => {
+  const players = rb.listItems(start.playerInfos).map((p, i) => {
     const playerId = Number(p.playerId);
-    return { playerId, derma: team.get(playerId)?.derma || 0 };
+    const m = team.get(playerId);
+    return { playerId, name: m?.name || (i === 0 ? "Player" : `Guest ${i}`), derma: m?.derma || 0 };
   });
   stubNetwork({ ...ctx, myPid, summonerDerma, players });
   initModules(ctx);

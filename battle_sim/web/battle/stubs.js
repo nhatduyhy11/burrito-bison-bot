@@ -2,8 +2,8 @@
 //   - console.error keeps stacks; ?trace=Module.method records the first throw with its stack
 //   - SocketMgr / GameRoomSocket.send   -> logged, never sent (there is no socket anyway)
 //   - PlayerModule.getMultiPlayerData   -> resolved at once (player data comes from StartGameP)
-//   - PlayerModule.playerInfo           -> playerId, plus derma (worn Summoner skin): profile, else capture
-//   - PlayerModule base-info cache      -> the other players (Đêm Đỏ guest) with their capture derma
+//   - PlayerModule.playerInfo           -> playerId + name, plus derma (worn Summoner skin): profile, else capture
+//   - PlayerModule base-info cache      -> the other players (Đêm Đỏ guest) with their capture name + derma
 //   - BuildProxy.QuitRoomRequest        -> recorded, answered locally with the client's own result
 //   - BuildProxy.SetPauseRequest        -> answered locally (pause button / pause panel)
 
@@ -61,17 +61,17 @@ export function stubNetwork({ M, report, step, myPid, summonerDerma, players = [
   const me = players.find((p) => p.playerId === Number(myPid));
   // The profile's worn skin wins; without one, the capture's (Đêm Đỏ team info).
   const derma = summonerDerma ?? me?.derma ?? 0;
-  const info = { playerId: myPid, ...(derma ? { derma } : {}) };
+  const info = { playerId: myPid, name: me?.name, ...(derma ? { derma } : {}) };
   PlayerModule.Ins._playerInfo = { info, playerMoney: undefined, compressionFightCap: 0, speedCardEndDt: 0 };
   // Other players (Đêm Đỏ guest): the battle reads them through getSiglePlayerData, which serves the
-  // base-info cache before asking the server. Seed it with the guest's worn skin.
+  // base-info cache before asking the server. Seed it so the guest gets a name (not "undefined").
   // dt far ahead: the entry never expires (dt + CACHE_DURA >= server time).
   for (const p of players) {
-    if (p === me || !p.derma) continue;
+    if (p === me) continue;
     PlayerModule.Ins._basePlayerCacheData.set(PlayerModule.Ins.getPlayerDataKey(p.playerId),
-      { pInfo: { playerId: p.playerId, derma: p.derma }, lastGetDataDt: 0, dt: 4e12 });
+      { pInfo: { playerId: p.playerId, name: p.name, ...(p.derma ? { derma: p.derma } : {}) }, lastGetDataDt: 0, dt: 4e12 });
   }
-  step("player", { playerId: PlayerModule.Ins.playerId, derma: info.derma || 0, players: players.map((p) => `${p.playerId}:${p.derma}`) });
+  step("player", { playerId: PlayerModule.Ins.playerId, derma: info.derma || 0, players: players.map((p) => `${p.playerId}:${p.name}:${p.derma}`) });
 }
 
 // Play mode, this page only: act as if both privilege month cards are bought, in every battle type.
