@@ -16,6 +16,23 @@ const creepsDict = JSON.parse(readFileSync(new URL('../web/dict/creeps-dict.json
 const antiqueDict = JSON.parse(readFileSync(new URL('../web/dict/antique-dict.json', import.meta.url)));
 const base = { battle: '', seed: '' };
 
+test('resolution defaults for old profiles and survives JSON round trips without map overrides', () => {
+  assert.equal(emptyState().resolution, '640x720');
+  assert.equal(fromProfile({}, base, dict).resolution, '640x720');
+  for (const resolution of ['640x720', '720x810', '800x900', '960x1080']) {
+    const [width, height] = resolution.split('x').map(Number);
+    assert.equal(width * 9, height * 8);
+    const state = fromProfile({ resolution }, base, dict);
+    assert.equal(state.map, null);
+    const json = JSON.parse(JSON.stringify(toProfile(state, dict)));
+    assert.equal(json.resolution, resolution);
+    assert.equal(fromProfile(json, base, dict, { antiqueDict }).resolution, resolution);
+  }
+  for (const resolution of ['broken', '0x0', null, 800]) {
+    assert.throws(() => fromProfile({ resolution }, base, dict), /Resolution/);
+  }
+});
+
 test('all setup states retain five editable hero slots, including partial imports', () => {
   const state = emptyState();
   normalize(state, dict);

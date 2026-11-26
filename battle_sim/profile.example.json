@@ -1,4 +1,5 @@
 {
+  "resolution": "640x720",
   "map": { "mode": "campaign", "stage": 66 },
   "heroes": [
     { "name": "hanuman", "skin": "supreme_thunderlord", "star": 1 },

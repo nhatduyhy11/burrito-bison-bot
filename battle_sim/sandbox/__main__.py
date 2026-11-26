@@ -59,7 +59,7 @@ async def run(args) -> int:
             with tempfile.TemporaryDirectory(prefix="battle_sim_profile_") as profile:
                 ctx, page, cap = await browser.launch(
                     pw, profile, origins=tuple(origins.values()) if args.setup else (origins["vn"],), cdp_port=cdp_port, channel=args.browser,
-                    headless=args.headless, size=args.size, record=args.record, emit=emit,
+                    headless=args.headless, size=browser.profile_size(profile_data, args.size), record=args.record, emit=emit,
                     profile_json=lambda: profile_data,  # read per request: --setup swaps it between runs
                 )
 
@@ -95,6 +95,7 @@ async def run(args) -> int:
                         url += "&play=1" + (f"&seed={args.seed}" if args.seed else "")
                         if profile_data is not None:
                             url += "&profile=1"
+                    await page.set_viewport_size(browser.viewport_size(browser.profile_size(profile_data, args.size)))
                     await page.goto(url, wait_until="domcontentloaded")
                     sim = None
                     deadline = time.time() + args.timeout

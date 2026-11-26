@@ -7,6 +7,9 @@ import { SUMMONER_SLOTS } from "../summoner-skills.js";
 import { defaultAntiques } from "../antiques.js";
 import { MAX_STAGE, holeNum } from "../artifacts.js";
 
+export const RESOLUTIONS = ["640x720", "720x810", "800x900", "960x1080"];
+export const DEFAULT_RESOLUTION = RESOLUTIONS[0];
+
 const LIMITS = { heroes: 5, traps: 3, pets: 3, spells: 2, summonerSkins: SUMMONER_SLOTS };
 // Đêm Đỏ (map mode "blood"): Teams shows heroes[0..2] as Master and guestHeroes as Guest
 // (docs/planning/blood_night_setup.md); heroes[3..4] stay in the state but are not exported.
@@ -35,7 +38,7 @@ export const takeStashed = (key) => {
 // antiqueDict = antique-dict.json; without it the antique section starts empty.
 function emptyState(dict, antiqueDict) {
   return {
-    battle: "", seed: "", map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
+    battle: "", seed: "", resolution: DEFAULT_RESOLUTION, map: null, heroes: Array.from({ length: LIMITS.heroes }, () => newHero("")),
     guestHeroes: Array.from({ length: BLOOD_SIDE }, () => newHero("")),
     mounts: null, summonedJoker: newHero(JOKER_SUMMON.summonedHero), traps: null, pets: null, spells: null,
     buildings: Object.fromEntries(BUILDINGS.map(([key]) => [key, null])), goldenSkinsCount: null, summonerSkins: null,

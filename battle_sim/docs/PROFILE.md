@@ -8,6 +8,8 @@ uv run python battle_sim/sandbox --battle "<uuid>" --play --profile battle_sim/p
 
 Bỏ trường muốn giữ từ capture. Với các danh sách như `traps`, `pets` và `spells`, mảng rỗng xóa danh sách. Các trường có thể dùng `null` được ghi riêng bên dưới. Hero hỗ trợ vẫn lấy từ capture.
 
+`resolution` chọn viewport khi mở trận: `"640x720"` (mặc định hiện tại), `"720x810"`, `"800x900"` hoặc `"960x1080"`. Tất cả giữ tỉ lệ 8:9 của 640×720. Dropdown **Resolution** nằm cạnh **Mode**, được lưu khi xuất/nhập JSON. Ví dụ `"resolution": "800x900"`; chạy bằng `--profile` cũng áp dụng giá trị này. Profile cũ không có trường này giữ kích thước của runner.
+
 ## Map và đội hình
 
 - `map` chọn màn chơi. Campaign dùng `{ "mode": "campaign", "stage": 66 }` và cần capture campaign để lấy đồng đội robot. U Đô dùng `{ "mode": "capital", "boss": "cursed_botchling", "level": 20701 }`, trong đó `level` phải là một preset thật của boss trong catalog. Tranh Bá liên server dùng `{ "mode": "naval", "boss": "hell_flytrap_70070401", "level": 2040401 }` (type 42), lấy boss và preset từ [naval-boss-dict.json](../web/dict/naval-boss-dict.json). Chỉ hỗ trợ vòng chiếm phòng, preset phân biệt nhóm/ngày/phòng; boss và preset sơ tuyển không có trong catalog. Khi bỏ `map`, trận giữ màn gốc. Xem [map-dict.json](../web/dict/map-dict.json) và [boss-dict.json](../web/dict/boss-dict.json).

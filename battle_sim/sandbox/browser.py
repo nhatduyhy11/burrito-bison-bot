@@ -5,6 +5,23 @@ import re
 from dataclasses import dataclass, field
 
 
+RESOLUTIONS = ("640x720", "720x810", "800x900", "960x1080")
+
+
+def profile_size(profile, fallback):
+    """Profile resolution overrides the existing viewport default / --size."""
+    if profile is None or "resolution" not in profile:
+        return fallback
+    resolution = profile["resolution"]
+    if resolution not in RESOLUTIONS:
+        raise ValueError(f"invalid resolution: {resolution!r}; choose from {RESOLUTIONS}")
+    return resolution
+
+
+def viewport_size(size):
+    return dict(zip(("width", "height"), map(int, size.split("x"))))
+
+
 @dataclass
 class Capture:
     """What the page did during a run that the report cares about."""
@@ -21,7 +38,7 @@ async def launch(pw, profile_dir, *, origins, cdp_port, channel, headless, size,
     """Open the sandbox browser on `profile_dir`. `size` is "WxH"; `record` a video directory or None;
     `emit(kind, msg)` writes the run log; `profile_json()` returns the formation profile to serve as
     /__sim/active-profile.json (None = let the mirror answer). Returns (context, page, capture)."""
-    viewport = dict(zip(("width", "height"), map(int, size.split("x"))))
+    viewport = viewport_size(size)
     ctx = await pw.chromium.launch_persistent_context(
         profile_dir,
         channel=channel,

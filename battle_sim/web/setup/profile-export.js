@@ -1,10 +1,10 @@
 // Setup page state -> profile JSON (the format web/battle/profile.js reads).
 import * as R from "./skin-rules.js";
 import { hasSummonedJoker, JOKER_SUMMON } from "../hero-lineup.js";
-import { BLOOD_SIDE, BUILDINGS, heroSkins, buildSkins, isBlood, lineupHeroes } from "./profile-state.js";
+import { DEFAULT_RESOLUTION, BLOOD_SIDE, BUILDINGS, heroSkins, buildSkins, isBlood, lineupHeroes } from "./profile-state.js";
 
 export function toProfile(state, dict) {
-  const profile = {};
+  const profile = { resolution: state.resolution ?? DEFAULT_RESOLUTION };
   if (["capital", "naval"].includes(state.map?.mode)) profile.map = { mode: state.map.mode, boss: state.map.boss, level: state.map.level };
   else if (isBlood(state)) profile.map = { mode: "blood", level: state.map.level };
   else if (state.map) profile.map = { mode: "campaign", stage: state.map.stage };

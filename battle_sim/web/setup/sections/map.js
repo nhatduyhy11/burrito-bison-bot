@@ -2,6 +2,7 @@
 // Capital: the room a boss shows up in never changes its stats, so the form only picks the boss and
 // which 3 creep types come with it (see battle_sim/docs/planning/capital.md).
 import { Accordion, html, NumberInput, PopHover, Select, SelectPop, optionText } from "../ui.js";
+import { RESOLUTIONS } from "../profile-state.js";
 import { BloodBody } from "./blood-map.js";
 
 const MODE_OPTIONS = [["campaign", "Campaign"], ["capital", "U Đô (Capital)"], ["naval", "Tranh Bá liên server"]];
@@ -12,9 +13,16 @@ export function MapSection({ ctx }) {
   const onToggle = (on) => ctx.toggleWithPrefill("map", on);
   return html`
     <${Accordion} title="Màn chơi" hint="Campaign / U Đô / Tranh Bá / Đêm Đỏ; tắt = màn của capture" override=${{ enabled, onToggle }}>
-      ${enabled && html`<${MapBody} ctx=${ctx} />`}
+      ${enabled ? html`<${MapBody} ctx=${ctx} />` : html`<div class="row"><${ResolutionSelect} ctx=${ctx} /></div>`}
     <//>
   `;
+}
+
+function ResolutionSelect({ ctx }) {
+  const options = RESOLUTIONS.map((value, i) => [value, value.replace("x", " × ") + (i === 0 ? " (default)" : "")]);
+  const setResolution = (value) => ctx.update((s) => void (s.resolution = value));
+  return html`<label>Resolution <${Select} options=${options} value=${ctx.state.resolution}
+    onChange=${setResolution} /></label>`;
 }
 
 function MapBody({ ctx }) {
@@ -35,6 +43,7 @@ function MapBody({ ctx }) {
   return html`
     <div class="row">
       <label>Mode <${Select} options=${options} value=${state.map.mode} onChange=${setMode} /></label>
+      <${ResolutionSelect} ctx=${ctx} />
     </div>
     ${body}
   `;

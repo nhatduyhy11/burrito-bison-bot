@@ -5,6 +5,8 @@ import asyncio
 import json
 import re
 
+from browser import profile_size
+
 SETUP_PAGE = "/__sim/setup.html"
 UUID_RE = re.compile(r"^[0-9a-f]{24}$")
 
@@ -35,6 +37,7 @@ class SetupPage:
             raise ValueError(f"invalid seed: {seed!r}")
         if not isinstance(profile, dict):
             raise ValueError("profile must be an object")
+        profile_size(profile, "640x720")  # validate before saving the profile
         await self.ensure_region(region)
         profiles = self.profiles_dir if region == "vn" else self.gat_profiles_dir
         profiles.mkdir(parents=True, exist_ok=True)

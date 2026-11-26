@@ -6,7 +6,7 @@ import { antiqueSelections } from "../antiques.js";
 import { resolveRelic } from "../relics.js";
 import { resolveBeautyBag } from "../beauty-bags.js";
 import {
-  LIMITS, BLOOD_SIDE, buildSkins, heroSkins, emptyState, newHero, newBuilding, normalize, artifactState,
+  RESOLUTIONS, LIMITS, BLOOD_SIDE, buildSkins, heroSkins, emptyState, newHero, newBuilding, normalize, artifactState,
 } from "./profile-state.js";
 
 // Lenient import of a profile JSON (as written by toProfile or by hand). Unknown names throw.
@@ -14,6 +14,10 @@ import {
 // each needed only when the profile has that part.
 export function fromProfile(profile, base, dict, { maps, bossDict, navalDict, bloodDict, antiqueDict, relicLines, beautyBagTypes } = {}) {
   const next = { ...emptyState(dict, antiqueDict), battle: base.battle, seed: base.seed };
+  if (profile.resolution !== undefined) {
+    if (!RESOLUTIONS.includes(profile.resolution)) throw new Error(`Resolution không hợp lệ: ${profile.resolution}`);
+    next.resolution = profile.resolution;
+  }
   const need = (group, name) => {
     if (!Object.hasOwn(dict[group], name)) throw new Error(`Không có ${group} "${name}" trong hero-dict.json / support-dict.json`);
     return name;
