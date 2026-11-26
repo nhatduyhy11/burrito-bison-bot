@@ -4,6 +4,7 @@
 //   node battle_sim/scripts/mirror.js fetch     # download into .tmp/battle_sim/mirror/<ClientVer>/
 //   node battle_sim/scripts/mirror.js bundles   # every bundle of the deploy, marked mirrored or not
 //   add --bundle a,b to plan/fetch to include bundles not listed in MODE_BUNDLES yet
+//   add --gat to mirror the live GAT deploy into .tmp/battle_sim_gat/mirror/<ClientVer>/ (keeps tw assets)
 // Public static files only (game host /, /assets, /ext-res), anonymous GETs, no login,
 // nothing sent to game servers. Already-present files are skipped, so re-running resumes.
 //
@@ -14,8 +15,13 @@ const fs = require("fs");
 const path = require("path");
 const http = require("../lib/http");
 const cocos = require("../lib/cocos_bundle");
-const { GAME, liveDeploy } = require("../lib/deploy");
-const versions = require("../lib/versions");
+const { liveDeploy: liveDeployOf } = require("../lib/deploy");
+const regions = require("../lib/versions");
+
+const GAT = process.argv.includes("--gat");
+const versions = GAT ? regions.gat : regions.vn;
+const GAME = versions.GAME;
+const liveDeploy = () => liveDeployOf(GAME);
 
 // Bundles every battle loads (boot, engine, battle UI; hangup/summonCreature/hero are lobby UI
 // the battle view still pulls in).
@@ -36,7 +42,9 @@ const BUNDLES = [...new Set([...CORE_BUNDLES, ...Object.values(MODE_BUNDLES).fla
 // ext-res: battle models + frames + data, plus the shuzhi/ image folders the battle UI loads
 // (portraits, half-body portraits, item, skill, artifact, trap and building icons). Region variants other than base/_sea are skipped.
 const EXT_RES_KEEP = /^(model\/|model_frame\/|userProto\/|data\/|shuzhi\/(head|icon|skillicon|TDBattle|shenbing|machine|half|build)\/)/;
-const EXT_RES_REGION = /^(model\/([^/]*_(jp|kr|tw|us)|(kr|tw|jp|us)_[^/]*)\/|shuzhi\/.*(^|[/_])(jp|kr|tw|us)(_|\.))/;
+// GAT runs the tw locale, so its tw variants are kept.
+const SKIP_REGIONS = GAT ? "jp|kr|us" : "jp|kr|tw|us";
+const EXT_RES_REGION = new RegExp(String.raw`^(model\/([^/]*_(${SKIP_REGIONS})|(${SKIP_REGIONS})_[^/]*)\/|shuzhi\/.*(^|[/_])(${SKIP_REGIONS})(_|\.))`);
 const CONCURRENCY = 8;
 
 const TEXTURE_EXTS = [".png", ".jpg", ".webp", ".jpeg"];
@@ -57,7 +65,7 @@ function mirrorRoot(clientVer) {
 
 // Static files for one bundle: config, script, imports (exact), natives (candidates).
 async function bundleJobs(name, hash) {
-  const cfg = await cocos.loadBundleConfig(name, hash);
+  const cfg = await cocos.loadBundleConfig(name, hash, versions.ASSET_HOST);
   const base = `assets/${name}/`;
   const jobs = [
     { group: name, path: `${base}config.${hash}.json` },
@@ -211,7 +219,7 @@ async function main() {
       console.log(`  ${BUNDLES.includes(b) ? "*" : " "}${onDisk ? "+" : " "} ${b}`);
     }
   } else {
-    throw new Error("usage: mirror.js plan|fetch|bundles [--bundle a,b]");
+    throw new Error("usage: mirror.js plan|fetch|bundles [--bundle a,b] [--gat]");
   }
 }
 

@@ -1,26 +1,31 @@
 """Passive battle + roster capture. The user plays normally; no automation or game requests.
 
 uv run python scripts/capture/battle.py --profile .tmp/pmain
+uv run python scripts/capture/battle.py --profile .tmp/pcn --cn   # GAT
 """
 import argparse
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
+VN_TZ = timezone(timedelta(hours=7))  # Asia/Ho_Chi_Minh, no DST; zoneinfo needs tzdata on Windows
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--profile', required=True, type=Path)
     parser.add_argument('--output', type=Path)
-    parser.add_argument('--url', default='https://hauntedroomvnh5.joynetgame.com/')
+    parser.add_argument('--url', help='Override the URL selected by --cn.')
+    parser.add_argument('--cn', action='store_true',
+                        help='GAT server; events go to .tmp/battle_sim_gat/ where the GAT sandbox reads them.')
     args = parser.parse_args()
-    stamp = datetime.now(ZoneInfo('Asia/Ho_Chi_Minh')).strftime('%Y%m%d-%H%M%S')
-    target = args.output or ROOT / '.tmp/battle_research' / f'events-{args.profile.name}-{stamp}.jsonl'
+    args.url = args.url or ('https://hauntheroesweb.acenetgame.com/' if args.cn else 'https://hauntedroomvnh5.joynetgame.com/')
+    stamp = datetime.now(VN_TZ).strftime('%Y%m%d-%H%M%S')
+    out_dir = ROOT / ('.tmp/battle_sim_gat' if args.cn else '.tmp/battle_research')
+    target = args.output or out_dir / f'events-{args.profile.name}-{stamp}.jsonl'
     target.parent.mkdir(parents=True, exist_ok=True)
     hook = Path(__file__).with_name('battle-hook.js').read_text()
 
