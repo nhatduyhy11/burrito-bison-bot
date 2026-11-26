@@ -41,8 +41,8 @@ ROOT = Path(__file__).resolve().parents[2]
 async def run(args) -> int:
     cache = ROOT / ".tmp" / "battle_sim"
     gat_cache = ROOT / ".tmp" / "battle_sim_gat"  # = versions.gat.CACHE in battle_sim/lib/versions.js
-    origins = {"vn": "http://127.0.0.1:8090", "gat": "http://127.0.0.1:8091"}
-    cdp_port = 9334
+    origins = {"vn": f"http://127.0.0.1:{args.port}", "gat": "http://127.0.0.1:8091"}
+    cdp_port = args.cdp_port
     profiles = cache / "profiles"
     profile_data = json.loads(args.profile.read_text(encoding="utf-8")) if args.profile else None
     log_path = cache / f"sandbox-{time.strftime('%Y%m%d-%H%M%S')}.log"
@@ -55,7 +55,7 @@ async def run(args) -> int:
 
     try:
         async with AsyncExitStack() as stack, async_playwright() as pw:
-            mirrors = {"vn": await stack.enter_async_context(server.mirror(ROOT, 8090, emit))}
+            mirrors = {"vn": await stack.enter_async_context(server.mirror(ROOT, args.port, emit))}
             with tempfile.TemporaryDirectory(prefix="battle_sim_profile_") as profile:
                 ctx, page, cap = await browser.launch(
                     pw, profile, origins=tuple(origins.values()) if args.setup else (origins["vn"],), cdp_port=cdp_port, channel=args.browser,
@@ -161,6 +161,8 @@ def main() -> int:
                     help="open the profile setup page first; its Play button starts --play with the chosen battle and profile")
     ap.add_argument("--keep", action="store_true", help="keep the window open after the run")
     ap.add_argument("--headless", action="store_true")
+    ap.add_argument("--port", type=int, default=8090, help="VN mirror port (another sandbox may hold 8090)")
+    ap.add_argument("--cdp-port", type=int, default=9334, help="Chrome DevTools port (another sandbox may hold 9334)")
     ap.add_argument("--browser", choices=("chrome", "chromium"), default="chrome")
     ap.add_argument("--timeout", type=float, default=120)
     ap.add_argument("--record", help="record the page as .webm into this directory (saved when the window closes)")

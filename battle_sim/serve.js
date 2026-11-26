@@ -80,7 +80,8 @@ function battleRoute(urlPath, reqRegion) {
   const m = /^\/__sim\/battle\/([0-9a-f]{24})\.json$/.exec(urlPath);
   if (!m) return undefined;
   const b = reqRegion.loadBattles().find((x) => x.start.uuid === m[1]);
-  return b ? { start: b.start, quit: b.quit, ...(b.team ? { team: b.team } : {}) } : null;
+  // roster = this account's hero roster (lib/capture.js): heroes outside the lineup for the profile engine and setup.
+  return b ? { start: b.start, quit: b.quit, ...(b.team ? { team: b.team } : {}), ...(b.roster ? { roster: b.roster } : {}) } : null;
 }
 
 // Đêm Đỏ capture: per member, master (leaderId) first: name, account fightCap and the summed
