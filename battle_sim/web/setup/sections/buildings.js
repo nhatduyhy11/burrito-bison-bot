@@ -55,9 +55,12 @@ function BuildingSkinTable({ entry, skins, edit }) {
   const forced = buildingForced(entry, skins);
   const locked = buildingLocks(skins, entry.slots);
   const count = (slot) => entry.slots.filter((key) => skins[key].slot === slot).length;
-  const orderedSkins = Object.entries(skins).sort(([, a], [, b]) =>
-    (COLOR_ORDER[a.color] ?? 2) - (COLOR_ORDER[b.color] ?? 2));
+  const orderedSkins = Object.entries(skins)
+    .filter(([, skin]) => !skin.default)
+    .sort(([, a], [, b]) => (COLOR_ORDER[a.color] ?? 2) - (COLOR_ORDER[b.color] ?? 2));
   const wornOptions = orderedSkins.map(([key, skin]) => [key, optionText(skin)]);
+  const wornValue = skins[entry.worn]?.default ? "" : entry.worn;
+  if (!wornValue) wornOptions.unshift(["", "Chọn skin", true]);
   const setWorn = (v) => edit((e) => (e.worn = v));
   const slotNote = `Slot: ${count("red")}/1 đỏ, ${count("gold")}/2 vàng, ${count("special")}/1 loại 3`;
   const rows = orderedSkins.map(([key, skin]) => {
@@ -80,7 +83,7 @@ function BuildingSkinTable({ entry, skins, edit }) {
   return html`
     <div>
       <div class="row">
-        <label>Đang mặc <${Select} options=${wornOptions} value=${entry.worn} onChange=${setWorn} /></label>
+        <label>Đang mặc <${Select} options=${wornOptions} value=${wornValue} onChange=${setWorn} /></label>
         <span class="note">${slotNote}</span>
       </div>
       <table>
